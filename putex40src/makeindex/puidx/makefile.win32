@@ -1,0 +1,43 @@
+# Makefile for MakeIndex (Win32 version)		-*- Makefile -*-
+# Time-stamp: "97/01/04 20:02:32 mik"
+
+prefix = ..\..\..\..
+bindir = $(prefix)\miktex\bin
+
+INSTALL_PROGRAM = copy
+
+CFLAGS = -I.\..\..\lib -DDBCS -DOS_WIN32 -DIBM_PC_MICROSOFT -DMIKTEX -DMIKTEX_DLL \
+		-MD -Ox
+OBJS = genind.obj mkind.obj qsort.obj scanid.obj scanst.obj sortid.obj dbcs.obj
+
+all: puidx.exe
+
+puidx.exe: $(OBJS) .\..\..\lib\miktex.lib makeindex.res
+	link -out:$@ $**
+
+makeindex.res: makeindex.rc .\..\..\lib\miktex.version
+	rc -I.\..\..\lib makeindex.rc
+
+install: puidx.exe
+	$(INSTALL_PROGRAM) puidx.exe $(bindir)\puidx.exe
+
+mostlyclean:
+	del *.obj
+	del makeindex.res
+
+clean: mostlyclean
+	del puidx.exe
+
+depend: genind.c mkind.c qsort.c scanid.c scanst.c sortid.c
+	makedepend -DDBCS -DOS_WIN32 -DIBM_PC_MICROSOFT -DMIKTEX \
+		-f makefile.win32 -I. -I.\..\..\lib $**
+
+# DO NOT DELETE
+
+genind.obj: mkind.h genind.h
+mkind.obj: mkind.h .\..\..\lib/miktex.h .\..\..\lib/c4plib.h
+qsort.obj: mkind.h
+scanid.obj: mkind.h scanid.h
+scanst.obj: mkind.h scanst.h
+sortid.obj: mkind.h
+dbcs.obj: dbcs.h

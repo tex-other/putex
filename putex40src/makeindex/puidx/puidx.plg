@@ -1,0 +1,72 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: puidx - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "D:\Temp\RSP114.tmp" with contents
+[
+/nologo /ML /W3 /GX /O2 /I ".\..\..\lib" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "OS_WIN32" /D "IBM_PC_MICROSOFT" /D "MIKTEX" /D "MIKTEX_DLL" /D "DBCS" /Fp"Release/puidx.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"E:\PUTeX\miktex\makeindex\puidx\dbcs.c"
+"E:\PUTeX\miktex\makeindex\puidx\genind.c"
+"E:\PUTeX\miktex\makeindex\puidx\mkind.c"
+"E:\PUTeX\miktex\makeindex\puidx\qsort.c"
+"E:\PUTeX\miktex\makeindex\puidx\scanid.c"
+"E:\PUTeX\miktex\makeindex\puidx\scanst.c"
+"E:\PUTeX\miktex\makeindex\puidx\sortid.c"
+]
+Creating command line "cl.exe @D:\Temp\RSP114.tmp" 
+Creating temporary file "D:\Temp\RSP115.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib .\..\..\lib\WinRel\miktex.lib /nologo /subsystem:console /incremental:no /pdb:"Release/puidx.pdb" /machine:I386 /out:"Release/puidx.exe" 
+.\Release\dbcs.obj
+.\Release\genind.obj
+.\Release\mkind.obj
+.\Release\qsort.obj
+.\Release\scanid.obj
+.\Release\scanst.obj
+.\Release\sortid.obj
+]
+Creating command line "link.exe @D:\Temp\RSP115.tmp"
+<h3>Output Window</h3>
+Compiling...
+dbcs.c
+genind.c
+mkind.c
+E:\PUTeX\miktex\makeindex\puidx\mkind.c(665) : warning C4101: 'ptr' : unreferenced local variable
+E:\PUTeX\miktex\makeindex\puidx\mkind.c(666) : warning C4101: 'i' : unreferenced local variable
+E:\PUTeX\miktex\makeindex\puidx\mkind.c(667) : warning C4101: 'len' : unreferenced local variable
+qsort.c
+scanid.c
+E:\PUTeX\miktex\makeindex\puidx\scanid.c(322) : warning C4018: '==' : signed/unsigned mismatch
+E:\PUTeX\miktex\makeindex\puidx\scanid.c(346) : warning C4018: '==' : signed/unsigned mismatch
+E:\PUTeX\miktex\makeindex\puidx\scanid.c(461) : warning C4018: '==' : signed/unsigned mismatch
+E:\PUTeX\miktex\makeindex\puidx\scanid.c(469) : warning C4018: '==' : signed/unsigned mismatch
+E:\PUTeX\miktex\makeindex\puidx\scanid.c(477) : warning C4018: '==' : signed/unsigned mismatch
+E:\PUTeX\miktex\makeindex\puidx\scanid.c(478) : warning C4018: '==' : signed/unsigned mismatch
+E:\PUTeX\miktex\makeindex\puidx\scanid.c(479) : warning C4018: '==' : signed/unsigned mismatch
+E:\PUTeX\miktex\makeindex\puidx\scanid.c(490) : warning C4018: '==' : signed/unsigned mismatch
+E:\PUTeX\miktex\makeindex\puidx\scanid.c(494) : warning C4018: '==' : signed/unsigned mismatch
+E:\PUTeX\miktex\makeindex\puidx\scanid.c(498) : warning C4018: '==' : signed/unsigned mismatch
+E:\PUTeX\miktex\makeindex\puidx\scanid.c(534) : warning C4028: formal parameter 1 different from declaration
+scanst.c
+sortid.c
+Linking...
+Creating temporary file "D:\Temp\RSP117.bat" with contents
+[
+@echo off
+copy Release\puidx.exe c:\texmf\miktex\bin\puidx.exe
+]
+Creating command line "D:\Temp\RSP117.bat"
+
+複製了         1 個檔案。
+
+
+
+<h3>Results</h3>
+puidx.exe - 0 error(s), 14 warning(s)
+</pre>
+</body>
+</html>
