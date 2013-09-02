@@ -1,0 +1,23 @@
+%!TeX Encoding=GBK
+%!TeX Program=PULaTeX
+\documentclass{twarticle}
+%default     GBK2K-H FandolSong-Regular.otf
+%细明        GBK2K-H FandolSong-Regular.otf
+%中明        GBK2K-H FandolSong-Bold.otf
+%中黑        GBK2K-H FandolHei-Regular.otf
+%中楷        GBK2K-H FandolKai-Regular.otf
+\newcommand{\puxcmd}[1]{{\tt \char'134PUX#1}\index{PUX#1@{\tt\char'134PUX#1}}}
+\begin{document}
+\begin{center}
+\begin{tabular}{|l|l|lll|} \hline
+\multicolumn{1}{|c}{\PUXFmm 命　令} & \multicolumn{1}{|c}{\PUXFmm 格　式}  & \multicolumn{1}{|c}{\bf 12} & \multicolumn{1}{c}{\bf 123} & \multicolumn{1}{c|}{\bf 1230531} \\ \hline
+\puxcmd{cnumber} & 小　写   & \PUXcnumber 12  & \PUXcnumber 123  & \PUXcnumber 1230531 \\
+\puxcmd{scnumber} & 俗　体   & \PUXscnumber 12 & \PUXscnumber 123 & \PUXscnumber 1230531 \\
+\puxcmd{ucnumber} &大　写   & \PUXucnumber 12 & \PUXucnumber 123 & \PUXucnumber 1230531 \\
+\puxcmd{fcnumber} & 正　式   & \PUXfcnumber 12 & \PUXfcnumber 123 & \PUXfcnumber 1230531 \\
+\puxcmd{acnumber} & 阿拉伯 & \PUXacnumber 12 & \PUXacnumber 123 & \PUXacnumber 1230531 \\
+\puxcmd{cjknumber} & 中　文 & \PUXcjknumber 12 & \PUXcjknumber 123 & \PUXcjknumber 1230531 \\
+\hline
+\end{tabular}
+\end{center}
+\end{document}
