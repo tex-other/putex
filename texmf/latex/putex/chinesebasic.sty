@@ -1,0 +1,54 @@
+%% This is file 'chinesebasic.sty'
+%%
+%% Copyright 1999-2004
+%% The PUTeX Project and any individual authors listed elsewhere
+%% in this file.
+%% This file is part of the PUTeX system. You are NOT allowed to
+%% distribute a modified version of this file.
+%% ----------------------------------------
+%%   This system is distributed in the hope that it will be useful,
+%%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+%%
+\NeedsTeXFormat{LaTeX2e}[2003/12/01]
+\ProvidesPackage{chinesebasic}[2004/09/13 1.1 PULaTeX standard package]
+\newcommand*{\@PU}{P\kern-.15em\lower.5ex\hbox{U}}
+\newcommand*{\PUTeX}{\@PU\kern-.2em\TeX}
+\newcommand*{\PULaTeX}{\@PU\kern-.125em\LaTeX}
+\newcommand*{\PULaTeXe}{\@PU\kern-.125em\LaTeXe}
+\newcommand*{\@cnumber}[1]{\PUXcnumber #1}
+\newcommand*{\@Cnumber}[1]{\PUXucnumber #1}
+\newcommand*{\cnumber}[1]{\expandafter\@cnumber\csname c@#1\endcsname}
+\newcommand*{\Cnumber}[1]{\expandafter\@Cnumber\csname c@#1\endcsname}
+\ifnum\the\puxCharSet=1 % Big5
+  \newcommand*{\CDOTS}{\mbox{\kern0pt}}% Chinese center dots
+  \newcounter{roc@year}
+  \setcounter{roc@year}{\year}
+  \addtocounter{roc@year}{-1911}
+  \newcommand*{\rocyear}{\theroc@year}
+  \newcommand*{\roctoday}{い地チ瓣 \cnumber{roc@year}  \PUXcnumber\month る \PUXcnumber\day ら}
+  \newcommand*{\Roctoday}{い地チ瓣 \Cnumber{roc@year}  \PUXucnumber\month る \PUXucnumber\day ら}
+  \newcommand*{\pu@clist@name}{}
+  \newcommand*{\pu@CLIST@name}{滁禠把}
+  \newcommand*{\pu@clist@sep}{}
+\else % GBK
+  \newcommand*{\CDOTS}{\mbox{…\kern0pt…}}% Chinese center dots
+  \newcommand*{\pu@clist@name}{一二三}
+  \newcommand*{\pu@CLIST@name}{壹贰参}
+  \newcommand*{\pu@clist@sep}{、}
+\fi
+\newenvironment{\pu@clist@name}{%
+  \if@twocolumn\setlength\leftmargini{2.5em}\else\setlength\leftmargini{3.6em}\fi
+  \renewcommand*{\labelenumi}{\cnumber{enumi}\pu@clist@sep}
+  \renewcommand*{\labelenumii}{\arabic{enumii}.}
+  \renewcommand*{\labelenumiii}{(\alph{enumiii})}
+  \renewcommand*{\labelenumiv}{\roman{enumiv}.}
+  \begin{enumerate}}{\end{enumerate}}
+\newenvironment{\pu@CLIST@name}{%
+  \if@twocolumn \setlength\leftmargini {2.5em} \else \setlength\leftmargini{3.6em}\fi
+  \renewcommand*{\labelenumi}{\Cnumber{enumi}\pu@clist@sep}
+  \renewcommand*{\labelenumii}{\arabic{enumii}.}
+  \renewcommand*{\labelenumiii}{(\alph{enumiii})}
+  \renewcommand*{\labelenumiv}{\roman{enumiv}.}
+  \begin{enumerate}}{\end{enumerate}}
+\endinput

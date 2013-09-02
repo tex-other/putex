@@ -1,0 +1,19 @@
+%% This is file 'twpkgpatch.sty'
+%%
+%% Copyright 1998-1999
+%% The PUTeX Project and any individual authors listed elsewhere
+%% in this file.
+%% This file is part of the PUTeX system. You are NOT allowed to
+%% distribute a modified version of this file.
+%% ----------------------------------------
+%%   This system is distributed in the hope that it will be useful,
+%%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+%%
+\NeedsTeXFormat{LaTeX2e}[1998/06/01]
+\ProvidesPackage{twpkgpatch}[1999/03/20 1.0 PULaTeX standard package]
+\DeclareOption{fancyvrb}{%
+   \let\tw@FV@UseKeyValues\FV@UseKeyValues
+   \def\FV@UseKeyValues{\puxXspace 1 \tw@FV@UseKeyValues}}
+\ProcessOptions
+\endinput

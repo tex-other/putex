@@ -1,0 +1,34 @@
+%% This is file 'chinesenames.sty'
+%%
+%% Copyright 1999
+%% The PUTeX Project and any individual authors listed elsewhere
+%% in this file.
+%% This file is part of the PUTeX system. You are NOT allowed to
+%% distribute a modified version of this file.
+%% ----------------------------------------
+%%   This system is distributed in the hope that it will be useful,
+%%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+%%
+\NeedsTeXFormat{LaTeX2e}[2003/12/01]
+\ProvidesPackage{chinesenames}[2004/09/13 1.0 PULaTeX standard package]
+\newcommand{\pu@l@n}[1]{\the\PUXlocalnames#1 }% don't remove the space after #1
+\@ifundefined{contentsname}{}{\renewcommand*{\contentsname}{\pu@l@n{96}\pu@l@n{97}}}%目錄
+\@ifundefined{listfigurename}{}{\renewcommand*{\listfigurename}{\pu@l@n{98}\pu@l@n{99}\pu@l@n{96}\pu@l@n{97}}}%圖形目錄
+\@ifundefined{listtablename}{}{\renewcommand*{\listtablename}{\pu@l@n{100}\pu@l@n{101}\pu@l@n{96}\pu@l@n{97}}}%表格目錄
+\@ifundefined{abstractname}{}{\renewcommand*{\abstractname}{\pu@l@n{105}\pu@l@n{106}}}%摘要
+\@ifundefined{partname}{}{\renewcommand*{\partname}{\pu@l@n{95}}}%篇
+\@ifundefined{prefacename}{}{\renewcommand*{\prefacename}{\pu@l@n{94}}}%序
+\@ifundefined{appendixname}{}{\renewcommand*{\appendixname}{\pu@l@n{104}\pu@l@n{97}}}%附錄
+\@ifundefined{indexname}{}{\renewcommand*{\indexname}{\pu@l@n{102}\pu@l@n{103}}}%索引
+\@ifundefined{figurename}{}{\renewcommand*{\figurename}{\pu@l@n{98}}}%圖
+\@ifundefined{tablename}{}{\renewcommand*{\tablename}{\pu@l@n{100}\pu@l@n{101}}}%表格
+\@ifundefined{pagename}{}{\renewcommand*{\pagename}{\pu@l@n{107}}}%頁
+\@ifundefined{seename}{}{\renewcommand*{\seename}{\pu@l@n{108}\pu@l@n{111}}}%參見
+\@ifundefined{alsoname}{}{\renewcommand*{\alsoname}{\pu@l@n{108}\pu@l@n{111}}}%參見
+\@ifundefined{notesname}{}{\renewcommand*{\notesname}{\pu@l@n{112}\pu@l@n{113}}}%備註
+\@ifundefined{headtoname}{}{\renewcommand*{\headtoname}{\pu@l@n{114}}}%致
+\@ifundefined{subjectname}{}{\renewcommand*{\subjectname}{\pu@l@n{115}\pu@l@n{116}主旨}}
+\@ifundefined{refname}{}{\renewcommand*{\refname}{\pu@l@n{108}\pu@l@n{109}\pu@l@n{120}\pu@l@n{121}}}%參考文獻
+\@ifundefined{bibname}{}{\renewcommand*{\bibname}{\pu@l@n{108}\pu@l@n{109}\pu@l@n{120}\pu@l@n{121}}}%參考文獻
+\endinput
