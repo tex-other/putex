@@ -1,0 +1,229 @@
+%% File: pugbk.def
+\puxCharSet=2 % GBK character code
+%%
+%% Set catcodes for GBK character set. Since the default catcode for CJK
+%% characters is 'letter', we need only set charatcters that should be 'other'
+%% such as puntuations and symbols.
+%%
+\PUXrangecatcode"A1A1 to "A1FE=12
+\PUXrangecatcode"A2A1 to "A2FE=12
+\PUXrangecatcode"A3A1 to "A3FE=12
+\PUXrangecatcode"A4A1 to "A4F3=12
+\PUXrangecatcode"A5A1 to "A5F6=12
+\PUXrangecatcode"A6A1 to "A6B8=12
+\PUXrangecatcode"A6C1 to "A6D8=12
+\PUXrangecatcode"A6E0 to "A6EB=12
+\PUXrangecatcode"A6EE to "A6F2=12
+\PUXrangecatcode"A6F4 to "A6F5=12
+\PUXrangecatcode"A7A1 to "A7C1=12
+\PUXrangecatcode"A7D1 to "A7F1=12
+\PUXrangecatcode"A8A1 to "A8C0=12
+\PUXrangecatcode"A8C5 to "A8E9=12
+\PUXrangecatcode"A9A4 to "A9F4=12
+%%
+%% Set typecodes for GBK character set.
+%%
+%% Tail-forbidden GBK characters
+%%
+\PUXtypecode"A1AE=1
+\PUXtypecode"A1B0=1
+\PUXtypecode"A1B2=1
+\PUXtypecode"A1B4=1
+\PUXtypecode"A1B6=1
+\PUXtypecode"A1B8=1
+\PUXtypecode"A1BA=1
+\PUXtypecode"A1BC=1
+\PUXtypecode"A1BE=1
+\PUXtypecode"A3A8=1
+\PUXtypecode"A3AE=1
+\PUXtypecode"A3DB=1
+\PUXtypecode"A3FB=1
+\PUXtypecode"A6E0=1
+\PUXtypecode"A6E2=1
+\PUXtypecode"A6E4=1
+\PUXtypecode"A6E6=1
+\PUXtypecode"A6E8=1
+\PUXtypecode"A6EA=1
+\PUXtypecode"A6EE=1
+\PUXtypecode"A6F0=1
+%%
+%% Head-forbidden GBK characters
+%%
+\PUXrangetypecode"A1A2 to "A1AF=2
+\PUXtypecode"A1B1=2
+\PUXtypecode"A1B3=2
+\PUXtypecode"A1B5=2
+\PUXtypecode"A1B7=2
+\PUXtypecode"A1B9=2
+\PUXtypecode"A1BB=2
+\PUXtypecode"A1BD=2
+\PUXtypecode"A1BF=2
+\PUXtypecode"A1C3=2
+\PUXtypecode"A3A1=2
+\PUXtypecode"A3A2=2
+\PUXtypecode"A3A7=2
+\PUXtypecode"A3A9=2
+\PUXtypecode"A3AC=2
+\PUXtypecode"A3AE=2
+\PUXtypecode"A3BA=2
+\PUXtypecode"A3BB=2
+\PUXtypecode"A3BF=2
+\PUXtypecode"A3DD=2
+\PUXtypecode"A3E0=2
+\PUXtypecode"A3FC=2
+\PUXtypecode"A3FD=2
+\PUXtypecode"A6E1=2
+\PUXtypecode"A6E3=2
+\PUXtypecode"A6E5=2
+\PUXtypecode"A6E7=2
+\PUXtypecode"A6E9=2
+\PUXtypecode"A6EB=2
+\PUXtypecode"A6EF=2
+\PUXtypecode"A6F1=2
+%%
+%% names of local digits
+%%
+\PUXlocalnames0=`\○  % local digit 0
+\PUXlocalnames1=`\一  % local digit 1
+\PUXlocalnames2=`\二  % local digit 2
+\PUXlocalnames3=`\三  % local digit 3
+\PUXlocalnames4=`\四  % local digit 4
+\PUXlocalnames5=`\五  % local digit 5
+\PUXlocalnames6=`\六  % local digit 6
+\PUXlocalnames7=`\七  % local digit 7
+\PUXlocalnames8=`\八  % local digit 8
+\PUXlocalnames9 =`\九  % local digit 9
+%%
+%% names of Chinese digits
+%%
+\PUXlocalnames10=`\○  % simple form 0
+\PUXlocalnames11=`\一  % simple form 1
+\PUXlocalnames12=`\二  % simple form 2
+\PUXlocalnames13=`\三  % simple form 3
+\PUXlocalnames14=`\四  % simple form 4
+\PUXlocalnames15=`\五  % simple form 5
+\PUXlocalnames16=`\六  % simple form 6
+\PUXlocalnames17=`\七  % simple form 7
+\PUXlocalnames18=`\八  % simple form 8
+\PUXlocalnames19=`\九  % simple form 9
+\PUXlocalnames20=`\十  % simple form 10
+\PUXlocalnames21=`\百  % simple form 100
+\PUXlocalnames22=`\千  % simple form 1000
+\PUXlocalnames23=`\万  % simple form 10000
+\PUXlocalnames24=`\亿  % simple form 100000000
+\PUXlocalnames25=`\零  % formal form 0
+\PUXlocalnames26=`\壹  % formal form 1
+\PUXlocalnames27=`\贰  % formal form 2
+\PUXlocalnames28=`\参  % formal form 3
+\PUXlocalnames29=`\肆  % formal form 4
+\PUXlocalnames30=`\伍  % formal form 5
+\PUXlocalnames31=`\陆  % formal form 6
+\PUXlocalnames32=`\柒  % formal form 7
+\PUXlocalnames33=`\捌  % formal form 8
+\PUXlocalnames34=`\玖  % formal form 9
+\PUXlocalnames35=`\拾  % formal form 10
+\PUXlocalnames36=`\佰  % formal form 100
+\PUXlocalnames37=`\仟  % formal form 1000
+\PUXlocalnames38=`\万  % formal form 10000
+\PUXlocalnames39=`\亿  % formal form 100000000
+\PUXlocalnames40="A3B0  % full-width arabic 0
+\PUXlocalnames41="A3B1  % full-width arabic 1
+\PUXlocalnames42="A3B2  % full-width arabic 2
+\PUXlocalnames43="A3B3  % full-width arabic 3
+\PUXlocalnames44="A3B4  % full-width arabic 4
+\PUXlocalnames45="A3B5  % full-width arabic 5
+\PUXlocalnames46="A3B6  % full-width arabic 6
+\PUXlocalnames47="A3B7  % full-width arabic 7
+\PUXlocalnames48="A3B8  % full-width arabic 8
+\PUXlocalnames49="A3B9  % full-width arabic 9
+\PUXlocalnames50=`\负  % character denotes negative
+\PUXlocalnames51="A3AD % symbol denotes negative
+\PUXlocalnames52=`\廿  % the char denotes 20
+\PUXlocalnames53=`\卅  % the char denotes 30
+%
+% the ten Heavenly Stems
+%
+\PUXlocalnames54=`\甲  % the first char of Heavenly Stems
+\PUXlocalnames55=`\乙  % the second char of Heavenly Stems
+\PUXlocalnames56=`\丙  % the third char of Heavenly Stems
+\PUXlocalnames57=`\丁  % the fouth char of Heavenly Stems
+\PUXlocalnames58=`\戊  % the fifth char of Heavenly Stems
+\PUXlocalnames59=`\己  % the sixth char of Heavenly Stems
+\PUXlocalnames60=`\庚  % the seventh char of Heavenly Stems
+\PUXlocalnames61=`\辛  % the eighth char of Heavenly Stems
+\PUXlocalnames62=`\壬  % the ninth char of Heavenly Stems
+\PUXlocalnames63=`\癸  % the tenth char of Heavenly Stems
+%
+% the twelve Earthly Branches
+%
+\PUXlocalnames64=`\子  % the first char of Earthly Branches
+\PUXlocalnames65=`\丑  % the second char of Earthly Branches
+\PUXlocalnames66=`\寅  % the thirdchar of Earthly Branches
+\PUXlocalnames67=`\卯  % the fouth char of Earthly Branches
+\PUXlocalnames68=`\辰  % the fifth char of Earthly Branches
+\PUXlocalnames69=`\巳  % the sixth char of Earthly Branches
+\PUXlocalnames70=`\午  % the seventh char of Earthly Branches
+\PUXlocalnames71=`\未  % the eighth char of Earthly Branches
+\PUXlocalnames72=`\申  % the ninth char of Earthly Branches
+\PUXlocalnames73=`\酉  % the tenth char of Earthly Branches
+\PUXlocalnames74=`\戌  % the eleventh char of Earthly Branches
+\PUXlocalnames75=`\亥  % the twelfth char of Earthly Branches
+%
+% Date
+%
+\PUXlocalnames76=`\年  % year
+\PUXlocalnames77=`\时  % hour
+\PUXlocalnames78=`\分  % minute
+\PUXlocalnames79=`\秒  % second
+\PUXlocalnames80=`\日  % day
+\PUXlocalnames81=`\月  % month
+\PUXlocalnames82=`\火  % fire
+\PUXlocalnames83=`\水  % water
+\PUXlocalnames84=`\木  % wood
+\PUXlocalnames85=`\金  % metal
+\PUXlocalnames86=`\土  % earth
+\PUXlocalnames87=`\星  % star
+\PUXlocalnames88=`\期  % during
+\PUXlocalnames89=`\曜  %
+%
+% seasons
+%
+\PUXlocalnames90=`\春  % spring
+\PUXlocalnames91=`\夏  % summer
+\PUXlocalnames92=`\秋  % autumn
+\PUXlocalnames93=`\冬  % winter
+%%
+%% end of required settings
+%%
+%% Chinese characters for latex labels
+%%
+\PUXlocalnames94=`\序
+\PUXlocalnames95=`\篇
+\PUXlocalnames96=`\目
+\PUXlocalnames97=`\录
+\PUXlocalnames98=`\图
+\PUXlocalnames99=`\形
+\PUXlocalnames100=`\表
+\PUXlocalnames101=`\格
+\PUXlocalnames102=`\索
+\PUXlocalnames103=`\引
+\PUXlocalnames104=`\附
+\PUXlocalnames105=`\摘
+\PUXlocalnames106=`\要
+\PUXlocalnames107=`\页
+\PUXlocalnames108=`\参
+\PUXlocalnames109=`\考
+\PUXlocalnames110=`\书
+\PUXlocalnames111=`\见
+\PUXlocalnames112=`\备
+\PUXlocalnames113=`\注
+\PUXlocalnames114=`\致
+\PUXlocalnames115=`\主
+\PUXlocalnames116=`\旨
+\PUXlocalnames117=`\第
+\PUXlocalnames118=`\章
+\PUXlocalnames119=`\节
+\PUXlocalnames120=`\文
+\PUXlocalnames121=`\献
+%%
+\endinput

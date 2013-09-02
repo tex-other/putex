@@ -1,0 +1,51 @@
+%% FILE: big5faces.def
+\PUXcfacedef\PUXFdefault=default default
+\PUXsetdefaultcface\PUXFdefault
+\PUXcfacedef\PUXFtm=tm 細明
+\PUXcfacedef\PUXFmm=mm 中明
+\PUXcfacedef\PUXFbm=bm 粗明
+\PUXcfacedef\PUXFsm=sm 特明
+\PUXcfacedef\PUXFtk=tk 細楷
+\PUXcfacedef\PUXFmk=mk 中楷
+\PUXcfacedef\PUXFbk=bk 粗楷
+\PUXcfacedef\PUXFsk=sk 特楷
+\PUXcfacedef\PUXFtb=tb 細黑
+\PUXcfacedef\PUXFmb=mb 中黑
+\PUXcfacedef\PUXFbb=bb 粗黑
+\PUXcfacedef\PUXFsb=sb 特黑
+\PUXcfacedef\PUXFtr=tr 細圓
+\PUXcfacedef\PUXFmr=mr 中圓
+\PUXcfacedef\PUXFbr=br 粗圓
+\PUXcfacedef\PUXFsr=sr 特圓
+\PUXcfacedef\PUXFtli=tli 細隸書
+\PUXcfacedef\PUXFmli=mli 中隸書
+\PUXcfacedef\PUXFbli=bli 粗隸書
+\PUXcfacedef\PUXFsli=sli 特隸書
+\PUXcfacedef\PUXFtfs=tfs 細仿宋
+\PUXcfacedef\PUXFmfs=mfs 中仿宋
+\PUXcfacedef\PUXFbfs=bfs 粗仿宋
+\PUXcfacedef\PUXFsfs=sfs 特仿宋
+\PUXcfacedef\PUXFtsn=tsn 細行書
+\PUXcfacedef\PUXFmsn=msn 中行書
+\PUXcfacedef\PUXFbsn=bsn 粗行書
+\PUXcfacedef\PUXFssn=ssn 特行書
+\PUXcfacedef\PUXFtdr=tdr 細疊圓
+\PUXcfacedef\PUXFmdr=mdr 中疊圓
+\PUXcfacedef\PUXFbdr=bdr 粗疊圓
+\PUXcfacedef\PUXFsdr=sdr 特疊圓
+\PUXcfacedef\PUXFsdr=edr 空疊圓
+\PUXcfacedef\PUXFkd=kd 勘亭流
+\PUXcfacedef\PUXFgn=gn 古印
+\PUXcfacedef\PUXFje=je 綜藝
+\PUXcfacedef\PUXFwb=wb 魏碑
+\PUXcfacedef\PUXFpo=po POP1
+\PUXcfacedef\PUXFyt=yt 顏體
+\PUXcfacedef\PUXFlms=lms 儷中宋
+\PUXcfacedef\PUXFgirl=girl 少女
+%
+% 定義中英文字貌匹配
+\PUXfacematch cmr \PUXFtm
+\PUXfacematch cmtt \PUXFtm
+\PUXfacematch cmbx \PUXFmb
+\PUXfacematch cmti \PUXFmk
+\PUXfacematch cmbxti \PUXFmk   % 粗斜體用中楷體

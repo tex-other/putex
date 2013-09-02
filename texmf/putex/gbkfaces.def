@@ -1,0 +1,51 @@
+%% FILE: gbkfaces.def
+\PUXcfacedef\PUXFdefault=default default
+\PUXsetdefaultcface\PUXFdefault
+\PUXcfacedef\PUXFtm=tm 细明
+\PUXcfacedef\PUXFmm=mm 中明
+\PUXcfacedef\PUXFbm=bm 粗明
+\PUXcfacedef\PUXFsm=sm 特明
+\PUXcfacedef\PUXFtk=tk 细楷
+\PUXcfacedef\PUXFmk=mk 中楷
+\PUXcfacedef\PUXFbk=bk 粗楷
+\PUXcfacedef\PUXFsk=sk 特楷
+\PUXcfacedef\PUXFtb=tb 细黑
+\PUXcfacedef\PUXFmb=mb 中黑
+\PUXcfacedef\PUXFbb=bb 粗黑
+\PUXcfacedef\PUXFsb=sb 特黑
+\PUXcfacedef\PUXFtr=tr 细圆
+\PUXcfacedef\PUXFmr=mr 中圆
+\PUXcfacedef\PUXFbr=br 粗圆
+\PUXcfacedef\PUXFsr=sr 特圆
+\PUXcfacedef\PUXFtli=tli 细隶书
+\PUXcfacedef\PUXFmli=mli 中隶书
+\PUXcfacedef\PUXFbli=bli 粗隶书
+\PUXcfacedef\PUXFsli=sli 特隶书
+\PUXcfacedef\PUXFtfs=tfs 细仿宋
+\PUXcfacedef\PUXFmfs=mfs 中仿宋
+\PUXcfacedef\PUXFbfs=bfs 粗仿宋
+\PUXcfacedef\PUXFsfs=sfs 特仿宋
+\PUXcfacedef\PUXFtsn=tsn 细行书
+\PUXcfacedef\PUXFmsn=msn 中行书
+\PUXcfacedef\PUXFbsn=bsn 粗行书
+\PUXcfacedef\PUXFssn=ssn 特行书
+\PUXcfacedef\PUXFtdr=tdr 细迭圆
+\PUXcfacedef\PUXFmdr=mdr 中迭圆
+\PUXcfacedef\PUXFbdr=bdr 粗迭圆
+\PUXcfacedef\PUXFsdr=sdr 特迭圆
+\PUXcfacedef\PUXFsdr=edr 空迭圆
+\PUXcfacedef\PUXFkd=kd 勘亭流
+\PUXcfacedef\PUXFgn=gn 古印
+\PUXcfacedef\PUXFje=je 综艺
+\PUXcfacedef\PUXFwb=wb 魏碑
+\PUXcfacedef\PUXFpo=po POP1
+\PUXcfacedef\PUXFyt=yt 颜体
+\PUXcfacedef\PUXFlms=lms 俪中宋
+\PUXcfacedef\PUXFgirl=girl 少女
+%
+% 定义中英文字貌匹配
+\PUXfacematch cmr \PUXFtm
+\PUXfacematch cmtt \PUXFtm
+\PUXfacematch cmbx \PUXFmb
+\PUXfacematch cmti \PUXFmk
+\PUXfacematch cmbxti \PUXFmk   % 粗斜体用中楷体
