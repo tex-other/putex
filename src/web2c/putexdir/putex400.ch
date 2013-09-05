@@ -706,7 +706,6 @@ TCW: If it is indeed an expanded code, set the flag |expand_char|.
 @^Modified for handling DBCS characters@>
 @z
 
-%% line 7432
 @x
   begin c:=buffer[k+1]; @+if c<@'200 then {yes, one is indeed present}
     begin d:=2;
@@ -715,7 +714,6 @@ TCW: If it is indeed an expanded code, set the flag |expand_char|.
     begin d:=2; expand_char:=true;
 @z
 
-%% line 7451
 @x
 @ @<Scan ahead in the buffer...@>=
 begin repeat cur_chr:=buffer[k]; cat:=cat_code(cur_chr); incr(k);
@@ -725,7 +723,6 @@ begin repeat cur_chr:=buffer[k]; cat:=cat_code(cur_chr); incr(k);
 begin repeat get_wchar(k); cat:=get_cat_code(cur_chr);
 @z
 
-%% line 7455
 @x
 if cat<>letter then decr(k);
   {now |k| points to first nonletter}
@@ -737,21 +734,18 @@ else decr(k);
 if k>loc+1 and not (k = loc+2 and first_control_char > 255) then {multiletter control sequence has been scanned}
 @z
 
-%% line 7477
 @x
   else  begin cur_cmd:=t div @'400; cur_chr:=t mod @'400;
 @y
   else  begin cur_cmd:=t div @"10000; cur_chr:=t mod @"10000;
 @z
 
-%% line 7619
 @x
 if cur_cs=0 then cur_tok:=(cur_cmd*@'400)+cur_chr
 @y
 if cur_cs=0 then cur_tok:=(cur_cmd*@"10000)+cur_chr
 @z
 
-%% line 7763
 @x
   buffer[j]:=info(p) mod @'400; incr(j); p:=link(p);
 @y
@@ -769,21 +763,18 @@ if cur_cs=0 then cur_tok:=(cur_cmd*@"10000)+cur_chr
   p:=link(p); {fix this for 2-byte code}
 @z
 
-%% line 7825
 @x
 done: if cur_cs=0 then cur_tok:=(cur_cmd*@'400)+cur_chr
 @y
 done: if cur_cs=0 then cur_tok:=(cur_cmd*@"10000)+cur_chr
 @z
 
-%% line 7837
 @x
 if cur_cs=0 then cur_tok:=(cur_cmd*@'400)+cur_chr
 @y
 if cur_cs=0 then cur_tok:=(cur_cmd*@"10000)+cur_chr
 @z
 
-%% line 8348
 @x
 toks_register,assign_toks,def_family,set_font,def_font: @<Fetch a token list or
   font identifier, provided that |level=tok_val|@>;
@@ -792,7 +783,6 @@ toks_register,assign_toks,def_family,set_font,def_font,set_cfont:
    @<Fetch a token list or font identifier, provided that |level=tok_val|@>;
 @z
 
-%% line 8350
 @x
 assign_int: scanned_result(eqtb[m].int)(int_val);
 @y
@@ -800,14 +790,12 @@ assign_int,puxg_assign_flag,puxg_assign_int: scanned_result(eqtb[m].int)(int_val
 pux_get_int:@<scan \PUTeX\ internal values@>;
 @z
 
-%% line 8360
 @x
 char_given,math_given: scanned_result(cur_chr)(int_val);
 @y
 char_given,math_given,pux_char_given: scanned_result(cur_chr)(int_val);
 @z
 
-%% line 8371
 @x
 @ @<Fetch a character code from some table@>=
 begin scan_char_num;
@@ -824,7 +812,6 @@ begin
     scan_char_num;
 @z
 
-%% line 8541
 @x
 begin scan_font_ident;
 if m=0 then scanned_result(hyphen_char[cur_val])(int_val)
@@ -838,7 +825,6 @@ if cur_val <= font_max then
 end
 @z
 
-%% line 8672
 @x
 @d octal_token=other_token+"'" {apostrophe, indicates an octal constant}
 @d hex_token=other_token+"""" {double quote, indicates a hex constant}
@@ -853,14 +839,12 @@ end
 @d continental_point_token==(other_token+",") {decimal point, Eurostyle}
 @z
 
-%% line 8732
 @x
 if cur_val>255 then
 @y
 if cur_val>65535 then
 @z
 
-%% line 8761
 @x
 @d zero_token=other_token+"0" {zero, the smallest digit}
 @d A_token=letter_token+"A" {the smallest special hex digit}
@@ -871,7 +855,6 @@ if cur_val>65535 then
 @d other_A_token==(other_token+"A") {special hex digit of type |other_char|}
 @z
 
-%% line 9102
 @x
 `\.{height}' or `\.{width}' or `\.{depth}' specifications are
 found (in any order).
@@ -883,7 +866,6 @@ TCW: not intend to modify the function here;
      just append declarations of scanning routines for PUTeX.
 @z
 
-%% line 9122
 @x
 if scan_keyword("depth") then
 @.depth@>
@@ -902,7 +884,6 @@ end;
 @<PUTeX basic scanning routines@>@;
 @z
 
-%% line 9143
 @x
 var p:pointer; {tail of the token list}
 @!q:pointer; {new node being added to the token list via |store_new_token|}
@@ -941,7 +922,6 @@ pool_ptr:=b; str_toks:=p;
 end;
 @z
 
-%% line 9164
 @x
 containing something like `\.{-3.0pt minus 0.5fill}'.
 @y
@@ -951,14 +931,12 @@ TCW: make the function able to print CJK characters stored in local names table.
 
 @z
 
-%% line 9170
 @x
 begin get_x_token; scan_something_internal(tok_val,false);
 @y
 begin get_x_token; char_val_flag:=false; scan_something_internal(tok_val,false);
 @z
 
-%% line 9174
 @x
   int_val:print_int(cur_val);
 @y
@@ -969,7 +947,6 @@ begin get_x_token; char_val_flag:=false; scan_something_internal(tok_val,false);
           else print_int(cur_val);
 @z
 
-%% line 9211
 @x
 @d font_name_code=4 {command code for \.{\\fontname}}
 @d job_name_code=5 {command code for \.{\\jobname}}
@@ -987,7 +964,6 @@ begin get_x_token; char_val_flag:=false; scan_something_internal(tok_val,false);
 @d upper_cdigit_base=25    {uppercase style Chinese number}
 @z
 
-%% line 9225
 @x
 primitive("jobname",convert,job_name_code);@/
 @!@:job_name_}{\.{\\jobname} primitive@>
@@ -1010,7 +986,6 @@ primitive("PUXnameseq",convert,nameseq_code);@/
 @!@:cjknameseq_}{\.{\\PUXnameseq} primitive@>
 @z
 
-%% line 9233
 @x
   meaning_code: print_esc("meaning");
   font_name_code: print_esc("fontname");
@@ -1026,7 +1001,6 @@ primitive("PUXnameseq",convert,nameseq_code);@/
   nameseq_code: print_esc("PUXnameseq");
 @z
 
-%% line 9245
 @x
 @!save_scanner_status:small_number; {|scanner_status| upon entry}
 @!b:pool_pointer; {base of temporary string}
@@ -1040,7 +1014,6 @@ begin c:=cur_chr; @<Scan the argument for command |c|@>;
 begin c:=cur_chr; @<Scan the argument for command |c|@>;
 @z
 
-%% line 9254
 @x
 case c of
 number_code,roman_numeral_code: scan_int;
@@ -1053,7 +1026,6 @@ cjknumber_code:@<scan a CJK number with a possible selector and then  split it@>
 nameseq_code:@<scan a CJK name sequence number@>;
 @z
 
-%% line 9266
 @x
 roman_numeral_code: print_roman_int(cur_val);
 string_code:if cur_cs<>0 then sprint_cs(cur_cs)
@@ -1073,7 +1045,6 @@ string_code:if cur_cs<>0 then sprint_cs(cur_cs)
     else print_char(cur_chr);
 @z
 
-%% line 9270
 @x
 font_name_code: begin print(font_name[cur_val]);
   if font_size[cur_val]<>font_dsize[cur_val] then
@@ -1103,7 +1074,6 @@ font_name_code: begin
   end;
 @z
 
-%% line 9814
 @x
 if (cur_cmd>active_char)or(cur_chr>255) then {not a character}
   begin m:=relax; n:=256;
@@ -1112,7 +1082,6 @@ if (cur_cmd>active_char)or(cur_chr>65535) then {not a character}
   begin m:=relax; n:=256; {values other than 256 will break latex.fmt}
 @z
 
-%% line 
 @x
 if (cur_cmd>active_char)or(cur_chr>255) then
   begin cur_cmd:=relax; cur_chr:=256;
@@ -1123,7 +1092,6 @@ if (cur_cmd>active_char)or(cur_chr>65535) then
   end;
 @z
 
-%% line 10283
 @x
   pack_job_name(".dvi");
   while not b_open_out(dvi_file) do
@@ -1134,7 +1102,6 @@ if (cur_cmd>active_char)or(cur_chr>65535) then
     prompt_file_name("file name for output",".cdi");
 @z
 
-%% line 11210
 @x
 @ Before we forget about the format of these tables, let's deal with two
 of \TeX's basic scanning routines related to font information.
@@ -1161,7 +1128,6 @@ if cur_cmd=def_font then f:=cur_font
 else if cur_cmd=set_font or cur_cmd=set_cfont then f:=cur_chr
 @z
 
-%% line 11406
 @x
 bytes long, so it is in the range |0<=c<65536|. \TeX82 never uses this
 command, but it should come in handy for extensions of \TeX\ that deal
@@ -1171,7 +1137,6 @@ bytes long, so it is in the range |0<=c<65536|. \PUTeX\ uses this to typeset
 a CJK two-byte character.
 @z
 
-%% line 11612
 @x
 \yskip\hang|pre| 247 |i[1]| |num[4]| |den[4]| |mag[4]| |k[1]| |x[k]|.
 Beginning of the preamble; this must come at the very beginning of the
@@ -1182,7 +1147,6 @@ Beginning of the preamble; this must come at the very beginning of the
 file. Parameters |i|, |c|, |num|, |den|, |mag|, |k|, and |x| are explained below.
 @z
 
-%% line 11618
 @x
 \yskip\hang|post_post| 249. Ending of the postamble, see below.
 
@@ -1199,7 +1163,6 @@ numbers in the range |0<=k<65535|.
 \yskip\noindent Commands 252--255 are undefined at the present time.
 @z
 
-%% line 
 @x
 @d set1=128 {typeset a character and move right}
 @y
@@ -1208,7 +1171,6 @@ numbers in the range |0<=k<65535|.
 @d set4=131 {typeset a four-byte CJK character and move right}
 @z
 
-%% line 11648
 @x
 @d post_post=249 {postamble ending}
 @y
@@ -1217,7 +1179,6 @@ numbers in the range |0<=k<65535|.
 @d cfnt_def=251 {define the meaning of a chinese font}
 @z
 
-%% line 11652
 @x
 $$\hbox{|@!i[1]| |@!num[4]| |@!den[4]| |@!mag[4]| |@!k[1]| |@!x[k]|.}$$
 The |i| byte identifies \.{DVI} format; currently this byte is always set
@@ -1241,14 +1202,12 @@ code value is defined:
   2: GBK (Simplified Chinese used in PRC and Singapore)
 @z
 
-%% line 11680
 @x
 @d id_byte=2 {identifies the kind of \.{DVI} files described here}
 @y
 @d id_byte=100 {identifies the kind of \.{DVI} files described here}
 @z
 
-%% line 11958
 @x
 @ Here's a procedure that outputs a font definition. Since \TeX82 uses at
 most 256 different fonts per job, |fnt_def1| is always used as the command code.
@@ -1259,7 +1218,6 @@ most 256 different fonts per job, |fnt_def1| is always used as the command code.
 TCW: the procedure |dvi_cfont_def| outputs a chinese font definition.
 @z
 
-%% line 11973
 @x
 @<Output the font name whose internal number is |f|@>;
 end;
@@ -1291,14 +1249,12 @@ dvi_four(cface_fw_depth[j]);
 end;
 @z
 
-%% line 12273
 @x
 dvi_h:=0; dvi_v:=0; cur_h:=h_offset; dvi_f:=null_font;
 @y
 dvi_h:=0; dvi_v:=0; cur_h:=h_offset; dvi_f:=null_font; dvi_cf:=null_cfont;
 @z
 
-%% line 12276
 @x
   begin dvi_out(pre); dvi_out(id_byte); {output the preamble}
 @y
@@ -1306,14 +1262,13 @@ dvi_h:=0; dvi_v:=0; cur_h:=h_offset; dvi_f:=null_font; dvi_cf:=null_cfont;
   doc_charset:=pux_charset; dvi_out(doc_charset); {output the preamble}
 @z
 
-%% line 12281
 @x
   print(" TeX output "); print_int(year); print_char(".");
 @y
   print(" PUTeX output "); print_int(year); print_char(".");
 @z
 
-%% line 12351 MMM
+%% MMM
 @x
 @<Output node |p| for |hlist_out|...@>=
 reswitch: if is_char_node(p) then
@@ -1366,7 +1321,6 @@ else @<Output the non-|char_node| |p| for |hlist_out|
     and move to the next node@>
 @z
 
-%% line 12774
 @x
   dvi_out(post_post); dvi_four(last_bop); dvi_out(id_byte);@/
 @y
@@ -1374,7 +1328,6 @@ else @<Output the non-|char_node| |p| for |hlist_out|
   dvi_out(post_post); dvi_four(last_bop); dvi_out(doc_charset); dvi_out(id_byte);@/
 @z
 
-%% line 12974
 @x
 @<Incorporate character dimensions into the dimensions of the hbox...@>=
 begin f:=font(p); i:=char_info(f)(character(p)); hd:=height_depth(i);
@@ -1401,7 +1354,6 @@ p:=link(p);
 end
 @z
 
-%% line 13084
 @x
 font_in_short_display:=null_font; short_display(list_ptr(r)); print_ln;@/
 @y
@@ -1409,7 +1361,6 @@ font_in_short_display:=null_font; cfont_in_short_display:=null_cfont;@/
 short_display(list_ptr(r)); print_ln;@/
 @z
 
-%% line 14062
 @x
   if (is_char_node(p))and(link(p)=null) then
     begin f:=font(p); v:=char_width(f)(char_info(f)(character(p)));
@@ -1427,7 +1378,6 @@ short_display(list_ptr(r)); print_ln;@/
     end;
 @z
 
-%% line 16559
 @x
 if is_char_node(v) then
   begin f:=font(v);
@@ -1443,7 +1393,6 @@ if is_char_node(v) then
   end
 @z
 
-%% line 16564
 @x
   ligature_node: begin f:=font(lig_char(v));@/
     break_width[1]:=@|break_width[1]-
@@ -1459,7 +1408,6 @@ if is_char_node(v) then
     end;
 @z
 
-%% line 16575
 @x
 if is_char_node(s) then
   begin f:=font(s);
@@ -1475,7 +1423,6 @@ if is_char_node(s) then
   end
 @z
 
-%% line 16580
 @x
   ligature_node: begin f:=font(lig_char(s));
     break_width[1]:=break_width[1]+
@@ -1491,14 +1438,12 @@ if is_char_node(s) then
     end;
 @z
 
-%% line 17017
 @x
 font_in_short_display:=null_font
 @y
 cfont_in_short_display:=null_cfont; font_in_short_display:=null_font
 @z
 
-%% line 17060
 @x
 ligature_node: begin f:=font(lig_char(cur_p));
   act_width:=act_width+char_width(f)(char_info(f)(character(lig_char(cur_p))));
@@ -1512,7 +1457,6 @@ ligature_node: begin f:=font(lig_char(cur_p));
   end;
 @z
 
-%% line 17083
 @x
 repeat f:=font(cur_p);
 act_width:=act_width+char_width(f)(char_info(f)(character(cur_p)));
@@ -1530,7 +1474,6 @@ until not is_char_node(cur_p);
 end
 @z
 
-%% line 17127
 @x
 if is_char_node(s) then
   begin f:=font(s);
@@ -1546,7 +1489,6 @@ if is_char_node(s) then
   end
 @z
 
-%% line 17132
 @x
   ligature_node: begin f:=font(lig_char(s));
     disc_width:=disc_width+
@@ -1562,7 +1504,6 @@ if is_char_node(s) then
     end;
 @z
 
-%% line 17143
 @x
 if is_char_node(s) then
   begin f:=font(s);
@@ -1578,7 +1519,6 @@ if is_char_node(s) then
   end
 @z
 
-%% line 17148
 @x
   ligature_node: begin f:=font(lig_char(s));
     act_width:=act_width+
@@ -1594,7 +1534,6 @@ if is_char_node(s) then
     end;
 @z
 
-%% line 18265
 @x
   char_num: begin scan_char_num; cur_chr:=cur_val; cur_cmd:=char_given;
     goto reswitch;
@@ -1611,7 +1550,6 @@ if is_char_node(s) then
   spacer,right_brace: begin if n>1 then @<Enter a hyphenation exception@>;
 @z
 
-%% line 18262
 @x
 if cur_chr="-" then @<Append the value |n| to list |p|@>
 else  begin if lc_code(cur_chr)=0 then
@@ -1647,7 +1585,6 @@ else  begin if is_wchar(cur_chr) then
   end
 @z
 
-%% line 20002
 @x
 @d main_loop=70 {go here to typeset a string of consecutive characters}
 @y
@@ -1658,7 +1595,6 @@ else  begin if is_wchar(cur_chr) then
 @d fetch_next_tok=134 {go here to fetch next token}
 @z
 
-%% line 20011
 @x
 @t\4@>@<Declare the procedure called |handle_right_brace|@>@;
 procedure main_control; {governs \TeX's activities}
@@ -1667,7 +1603,6 @@ procedure main_control; {governs \TeX's activities}
 procedure main_control; {governs \TeX's activities}
 @z
 
-%% line 20013
 @x
 label big_switch,reswitch,main_loop,main_loop_wrapup,
 @y
@@ -1676,7 +1611,6 @@ label big_switch,reswitch,main_loop_wchar,main_loop_wchar+1,save_cur_wchar,
       main_loop_wrapup,main_loop_lookahead+2,
 @z
 
-%% line 20018
 @x
 var@!t:integer; {general-purpose temporary variable}
 begin if every_job<>null then begin_token_list(every_job,every_job_text);
@@ -1688,7 +1622,6 @@ begin if every_job<>null then begin_token_list(every_job,every_job_text);
 big_switch: get_x_token;@/
 @z
 
-%% line 20023
 @x
 hmode+letter,hmode+other_char,hmode+char_given: goto main_loop;
 @y
@@ -1698,7 +1631,6 @@ hmode+letter,hmode+other_char,hmode+char_given:
 hmode+pux_char_given: goto main_loop_wchar;
 @z
 
-%% line 20024
 @x
 hmode+char_num: begin scan_char_num; cur_chr:=cur_val; goto main_loop;@+end;
 hmode+no_boundary: begin get_x_token;
@@ -1716,7 +1648,6 @@ hmode+no_boundary: begin get_x_token;
   end;
 @z
 
-%% line 20030
 @x
 hmode+spacer: if space_factor=1000 then goto append_normal_space
   else app_space;
@@ -1725,7 +1656,6 @@ hmode+ex_space,mmode+ex_space: goto append_normal_space;
 @t\4@>@<Cases of |main_control| that handle spacer@>@;
 @z
 
-%% line 20036
 @x
 main_loop:@<Append character |cur_chr| and the following characters (if~any)
 @y
@@ -1735,7 +1665,6 @@ main_loop_wchar:@<Append double-byte character |cur_chr| and the following doubl
 main_loop:@<Append character |cur_chr| and the following characters (if~any)
 @z
 
-%% line 20100
 @x
 @d adjust_space_factor==@t@>@;@/
   main_s:=sf_code(cur_chr);
@@ -1745,7 +1674,6 @@ main_loop:@<Append character |cur_chr| and the following characters (if~any)
   else main_s:=1000;
 @z
 
-%% line 20110 
 @x
 adjust_space_factor;@/
 main_f:=cur_font;
@@ -1755,7 +1683,6 @@ main_cf:=cur_cfont; {in case the first letter is not a Chinese character}
 main_loop+1:adjust_space_factor; main_f:=cur_font;
 @z
 
-%% line 20201
 @x
 get_next; {set only |cur_cmd| and |cur_chr|, for speed}
 if cur_cmd=letter then goto main_loop_lookahead+1;
@@ -1779,7 +1706,6 @@ if cur_r=false_bchar then cur_r:=non_char {this prevents spurious ligatures}
   a cespace, or leave |lig_stack| empty if there's no character there@>
 @z
 
-%% line 20313
 @x
 else temp_ptr:=new_param_glue(space_skip_code);
 link(tail):=temp_ptr; tail:=temp_ptr;
@@ -1790,7 +1716,6 @@ link(tail):=temp_ptr; tail:=temp_ptr;
 if pux_xspace=0 then goto reswitch else goto big_switch
 @z
 
-%% line 21031
 @x
 hbox_group: package(0);
 adjusted_hbox_group: begin adjust_tail:=adjust_head; package(0);
@@ -1802,7 +1727,6 @@ adjusted_hbox_group: begin adjust_tail:=adjust_head;
   end;
 @z
 
-%% line 21078
 @x
 vmode+start_par: new_graf(cur_chr>0);
 vmode+letter,vmode+other_char,vmode+char_num,vmode+char_given,
@@ -1814,7 +1738,6 @@ vmode+letter,vmode+other_char,vmode+char_num,vmode+char_given,
    vmode+math_shift,vmode+un_hbox,vmode+vrule,
 @z
 
-%% line 21345
 @x
 begin if tail<>head then
   begin if is_char_node(tail) then p:=tail
@@ -1823,7 +1746,6 @@ begin if tail<>head then
   begin if is_char_node(tail) and not is_wchar_node(tail) then p:=tail
 @z
 
-%% line 21775
 @x
 reswitch: if is_char_node(p) then
   begin f:=font(p); d:=char_width(f)(char_info(f)(character(p)));
@@ -1840,7 +1762,6 @@ reswitch: if is_char_node(p) then
   end;
 @z
 
-%% line 21864
 @x
 letter,other_char,char_given: begin c:=ho(math_code(cur_chr));
     if c=@'100000 then
@@ -1866,7 +1787,6 @@ letter,other_char,char_given: begin
   end;
 @z
 
-%% line 21870
 @x
 char_num: begin scan_char_num; cur_chr:=cur_val; cur_cmd:=char_given;
   goto reswitch;
@@ -1885,7 +1805,6 @@ pux_char_given:begin print_err("Chinese character is ignored in math mode");
   end;
 @z
 
-%% line 21909
 @x
 mmode+letter,mmode+other_char,mmode+char_given:
   set_math_char(ho(math_code(cur_chr)));
@@ -1900,7 +1819,6 @@ mmode+letter,mmode+other_char,mmode+char_given:
     set_math_char(ho(math_code(cur_chr)));
 @z
 
-%% line 22019
 @x
   letter,other_char: cur_val:=del_code(cur_chr);
 @y
@@ -1911,7 +1829,6 @@ mmode+letter,mmode+other_char,mmode+char_given:
       cur_val:=del_code(cur_chr);
 @z
 
-%% line 22376
 @x
 mmode+math_shift: if cur_group=math_shift_group then after_math
   else off_save;
@@ -1927,7 +1844,6 @@ mmode+math_shift: if cur_group=math_shift_group then begin
   else off_save;
 @z
 
-%% line 22441
 @x
 tail_append(new_math(math_surround,after));
 space_factor:=1000; unsave;
@@ -1939,7 +1855,6 @@ space_factor:=1000; unsave;
 end
 @z
 
-%% line 22680
 @x
 any_mode(set_font),
 any_mode(def_font),
@@ -1964,7 +1879,6 @@ any_mode(pux_set_default_cface),
 any_mode(pux_dump_font_info),
 @z
 
-%% line 22699
 @x
 @t\4@>@<Declare subprocedures for |prefixed_command|@>@t@>@;@/
 procedure prefixed_command;
@@ -1974,7 +1888,6 @@ procedure prefixed_command;
 procedure prefixed_command;
 @z
 
-%% line 22707
 @x
 @!n:integer; {ditto}
 @!e:boolean; {should a definition be expanded? or was \.{\\let} not done?}
@@ -1984,7 +1897,6 @@ procedure prefixed_command;
 @<Other variables used by the procedure |prefixed_command|@>@;
 @z
 
-%% line 22789
 @x
 set_font: define(cur_font_loc,data,cur_chr);
 @y
@@ -1993,7 +1905,6 @@ set_font: begin define(cur_font_loc,data,cur_chr);@/
   end;
 @z
 
-%% line 22843
 @x
 @d toks_def_code=6 {|shorthand_def| for \.{\\toksdef}}
 @y
@@ -2001,7 +1912,6 @@ set_font: begin define(cur_font_loc,data,cur_chr);@/
 @d pux_char_def_code=7 {|shorthand_def| for \.{\\PUXchardef}}
 @z
 
-%% line 22858
 @x
 primitive("toksdef",shorthand_def,toks_def_code);@/
 @!@:toks_def_}{\.{\\toksdef} primitive@>
@@ -2012,7 +1922,6 @@ primitive("PUXchardef",shorthand_def,pux_char_def_code);@/
 @!@:pux_char_def_}{\.{\\toksdef} primitive@>
 @z
 
-%% line 22868
 @x
   mu_skip_def_code: print_esc("muskipdef");
   char_sub_def_code: print_esc("charsubdef");
@@ -2024,7 +1933,6 @@ primitive("PUXchardef",shorthand_def,pux_char_def_code);@/
   othercases print_esc("PUXchardef")
 @z
 
-%% line 22884
 @x
   case n of
   char_def_code: begin scan_char_num; define(p,char_given,cur_val);
@@ -2043,7 +1951,6 @@ primitive("PUXchardef",shorthand_def,pux_char_def_code);@/
   othercases begin scan_eight_bit_int;
 @z
 
-%% line 22986
 @x
 primitive("catcode",def_code,cat_code_base);
 @!@:cat_code_}{\.{\\catcode} primitive@>
@@ -2058,7 +1965,6 @@ primitive("PUXlocalnames",def_code,pux_local_names_base);
 @!@:pux_local_names_base_}{\.{\\PUXlocalnames} primitive@>
 @z
 
-%% line 23007
 @x
   else if chr_code=math_code_base then print_esc("mathcode")
 @y
@@ -2068,7 +1974,6 @@ primitive("PUXlocalnames",def_code,pux_local_names_base);
   else if chr_code=math_code_base then print_esc("mathcode")
 @z
 
-%% line 23019
 @x
   p:=cur_chr; scan_char_num; p:=p+cur_val; scan_optional_equals;
   scan_int;
@@ -2086,7 +1991,6 @@ primitive("PUXlocalnames",def_code,pux_local_names_base);
   else scan_int;
 @z
 
-%% line 23037
 @x
 else if cur_chr=math_code_base then n:=@'100000
 @y
@@ -2096,7 +2000,6 @@ else if cur_chr=pux_local_names_base then n:=65535
 else if cur_chr=math_code_base then n:=@'100000
 @z
 
-%% line 23160
 @x
 set_box: begin scan_eight_bit_int;
   if global then n:=256+cur_val@+else n:=cur_val;
@@ -2115,7 +2018,6 @@ set_box: begin scan_eight_bit_int;
   else begin print_err("Improper "); print_esc("setbox");
 @z
 
-%% line 23321
 @x
 procedure new_font(@!a:small_number);
 label common_ending;
@@ -2187,7 +2089,6 @@ common_ending: equiv(u):=f; eqtb[font_id_base+f]:=eqtb[u]; font_id_text(f):=t;
 end;
 @z
 
-%% line 23586
 @x
 @!t:halfword; {token}
 @!c:eight_bits; {character code}
@@ -2198,7 +2099,6 @@ begin b:=cur_chr; p:=scan_toks(false,false); p:=link(def_ref);
 begin b:=cur_chr; p:=scan_toks(false,false); p:=link(def_ref);
 @z
 
-%% line 23601
 @x
 @<Change the case of the token in |p|, if a change is appropriate@>=
 t:=info(p);
@@ -2216,7 +2116,6 @@ if t<cs_token_flag+single_base then
   end
 @z
 
-%% line 23750
 @x
 @<Dump the font information@>;
 @y
@@ -2226,7 +2125,6 @@ if t<cs_token_flag+single_base then
 @<Dump the CJK font information@>;
 @z
 
-%% line 23779
 @x
 @<Undump the font information@>;
 @y
@@ -2236,14 +2134,12 @@ if t<cs_token_flag+single_base then
 @<Undump the CJK font information@>;
 @z
 
-%% line 24496
 @x
 15: begin font_in_short_display:=null_font; short_display(n);
 @y
 15: begin font_in_short_display:=null_font; cfont_in_short_display:=null_cfont; short_display(n);
 @z
 
-%% line 24967
 @x
 @* \[55] Index.
 @y
