@@ -629,6 +629,7 @@ const_string XETEXHELP[] = {
 #endif /* XeTeX */
 
 #ifdef PUTeX
+const_string based_prog_name = "TeX";
 const_string PUTEXHELP[] = {
     "Usage: putex [OPTION]... [TEXNAME[.tex]] [COMMANDS]",
     "   or: putex [OPTION]... \\FIRST-LINE",
@@ -657,7 +658,7 @@ const_string PUTEXHELP[] = {
     "-interaction=STRING     set interaction mode (STRING=batchmode/nonstopmode/",
     "                          scrollmode/errorstopmode)",
 #ifdef IPC
-    "-ipc                    send DVI output to a socket as well as the usual",
+    "-ipc                    send CDI output to a socket as well as the usual",
     "                          output file",
     "-ipc-start              as -ipc, and also start the server at the other end",
 #endif /* IPC */
@@ -666,7 +667,7 @@ const_string PUTEXHELP[] = {
     "                          the bits of NUMBER",
     "[-no]-mktex=FMT         disable/enable mktexFMT generation (FMT=tex/tfm)",
     "-mltex                  enable MLTeX extensions such as \\charsubdef",
-    "-output-comment=STRING  use STRING for DVI file comment instead of date",
+    "-output-comment=STRING  use STRING for CDI file comment instead of date",
     "-output-directory=DIR   use existing DIR as the directory to write files in",
     "[-no]-parse-first-line  disable/enable parsing of first line of input file",
     "-progname=STRING        set program (and fmt) name to STRING",
@@ -686,5 +687,5 @@ const_string PUTEXHELP[] = {
     "-version                output version information and exit",
     NULL
 };
-#endif /* puTeX */
+#endif /* PUTeX */
 #endif /* TEXMFMP_HELP */

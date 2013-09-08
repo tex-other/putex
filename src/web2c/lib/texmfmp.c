@@ -72,7 +72,7 @@
 #define IS_pTeX 1
 #define IS_upTeX 1
 #include <euptexdir/euptexextra.h>
-#elif defined (puTeX)
+#elif defined (PUTeX)
 #include <putexdir/putexextra.h>
 #else
 #define BANNER "This is TeX, Version 3.1415926"

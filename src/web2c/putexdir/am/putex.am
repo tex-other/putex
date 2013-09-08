@@ -17,7 +17,7 @@ putex_c_h = putexini.c putex0.c putexcoerce.h putexd.h
 nodist_putex_SOURCES = $(putex_c_h) putex-pool.c
 dist_putex_SOURCES = putexdir/putexextra.c putexdir/putexextra.h putexdir/putex_version.h
 
-# We must create etexd.h and etexdir/etex_version.h before building the etex_OBJECTS.
+# We must create putexd.h and putexdir/putex_version.h before building the putex_OBJECTS.
 putex_prereq = putexd.h putexdir/putex_version.h
 $(putex_OBJECTS): $(putex_prereq)
 
