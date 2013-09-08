@@ -10,6 +10,8 @@ endif PUTEX
 EXTRA_PROGRAMS += putex
 
 putex_CPPFLAGS = $(AM_CPPFLAGS)
+
+# With --enable-ipc, PUTeX may need to link with -lsocket.
 putex_LDADD = $(LDADD) $(ipc_socketlibs)
 
 # PUTeX C sources
