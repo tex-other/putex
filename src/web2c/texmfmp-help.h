@@ -629,7 +629,6 @@ const_string XETEXHELP[] = {
 #endif /* XeTeX */
 
 #ifdef PUTeX
-const_string based_prog_name = "TeX";
 const_string PUTEXHELP[] = {
     "Usage: putex [OPTION]... [TEXNAME[.tex]] [COMMANDS]",
     "   or: putex [OPTION]... \\FIRST-LINE",

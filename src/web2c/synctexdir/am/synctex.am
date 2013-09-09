@@ -320,4 +320,4 @@ dist_putex_SOURCES += \
 
 putex_CPPFLAGS += -D__SyncTeX__ -DSYNCTEX_ENGINE_H=\"synctex-putex.h\"
 
-endif TEX_SYNCTEX
+endif PUTEX_SYNCTEX
