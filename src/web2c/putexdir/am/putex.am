@@ -25,7 +25,7 @@ $(putex_OBJECTS): $(putex_prereq)
 
 $(putex_c_h): putex-web2c
 	@$(web2c) putex
-putex-web2c: putex.p $(web2c_texmf)
+putex-web2c: putex.p $(web2c_texmf) putexdir/putex.defines
 	@$(web2c) putex
 
 putex-pool.c: putex.pool putexd.h $(makecpool_stamp)
@@ -57,7 +57,7 @@ putex_ch_srcs = \
 	$(putex_ch_synctex) \
 	tex-binpool.ch
 
-EXTRA_DIST += $(putex_web_srcs) $(putex_ch_srcs)
+EXTRA_DIST += $(putex_web_srcs) $(putex_ch_srcs) putexdir/putex.defines
 
 DISTCLEANFILES += $(nodist_putex_SOURCES) putex.web putex.ch putex-web2c \
 	putex.p putex.pool putex-tangle
