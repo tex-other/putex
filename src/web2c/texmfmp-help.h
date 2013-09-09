@@ -649,7 +649,6 @@ const_string PUTEXHELP[] = {
     "",
     "  If no arguments or options are specified, prompt for input.",
     "",
-    "-enc                    enable encTeX extensions such as \\mubyte",
     "[-no]-file-line-error   disable/enable file:line:error style messages",
     "-fmt=FMTNAME            use FMTNAME instead of program name or a %& line",
     "-halt-on-error          stop processing at the first error",
@@ -666,7 +665,6 @@ const_string PUTEXHELP[] = {
     "-kpathsea-debug=NUMBER  set path searching debugging flags according to",
     "                          the bits of NUMBER",
     "[-no]-mktex=FMT         disable/enable mktexFMT generation (FMT=tex/tfm)",
-    "-mltex                  enable MLTeX extensions such as \\charsubdef",
     "-output-comment=STRING  use STRING for CDI file comment instead of date",
     "-output-directory=DIR   use existing DIR as the directory to write files in",
     "[-no]-parse-first-line  disable/enable parsing of first line of input file",
@@ -681,8 +679,6 @@ const_string PUTEXHELP[] = {
 #if defined(__SyncTeX__)
     "-synctex=NUMBER         generate SyncTeX data for previewers if nonzero",
 #endif
-    "-translate-file=TCXNAME use the TCX file TCXNAME",
-    "-8bit                   make all characters printable by default",
     "-help                   display this help and exit",
     "-version                output version information and exit",
     NULL
