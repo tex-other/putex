@@ -85,6 +85,8 @@ static int    really_quiet  = 0;
  * See, dev_set_string() in pdfdev.c.
  */
 static int pdfdecimaldigits = 2;
+// PUTeX
+static int ascent = 0, descent = 0;
 
 /* Image cache life in hours */
 /*  0 means erase all old images and leave new images */
@@ -129,7 +131,9 @@ set_default_pdf_filename(void)
     strncpy(pdf_filename, dvi_base, strlen(dvi_base) - 4);
     pdf_filename[strlen(dvi_base)-4] = '\0';
   } else if (strlen(dvi_base) > 4 &&
-             !STRN_CMP(".dvi", dvi_base+strlen(dvi_base)-4, 4)) {
+//             !STRN_CMP(".dvi", dvi_base+strlen(dvi_base)-4, 4)) {
+// PUTeX
+             !STRN_CMP(".cdi", dvi_base+strlen(dvi_base)-4, 4)) {
     pdf_filename = NEW(strlen(dvi_base)+1, char);
     strncpy(pdf_filename, dvi_base, strlen(dvi_base)-4);
     pdf_filename[strlen(dvi_base)-4] = '\0';
@@ -389,6 +393,51 @@ set_verbose (int argc, char *argv[])
   }
 }
 
+// PUTeX
+#define PDFUNIT(x) ((double) ROUND((1000.0*(x)/(head->unitsPerEm)), 1))
+void
+get_ascent_descent(char *name)
+{
+  char    *fullname;
+  sfnt    *sfont;
+  unsigned long   offset = 0;
+  int font_index = 0;  /* Fix me!! */
+  struct tt_head_table *head;
+  struct tt_os2__table *os2;
+
+  if ((fullname = kpse_find_file(name, kpse_truetype_format, 1)) == NULL) {
+  	fprintf(stderr, "\nCan't locate TTF font file: %s\n", name);
+  	exit(1);
+  }
+  if ((sfont = sfnt_open(fullname)) == NULL) {
+  	fprintf(stderr, "\nCan't open TTF font file: %s\n", name);
+  	exit(1);
+  }
+  switch (sfont->type) {
+  case SFNT_TYPE_TTC:
+    offset = ttc_read_offset(sfont, font_index);
+    break;
+  case SFNT_TYPE_TRUETYPE:
+    if (font_index > 0) {
+  	  fprintf(stderr, "\nCan't locate TTF font file: %s\n", name);
+  	  exit(1);
+    } else
+      offset = 0;
+    break;
+  default:
+    sfnt_close(sfont);
+  	fprintf(stderr, "\nUnknown TrueType format: %s\n", name);
+  	exit(1);
+  }
+  if (sfnt_read_table_directory(sfont, offset) < 0)
+    ERROR("Reading TrueType table directory failed.");
+  
+  os2  = tt_read_os2__table(sfont);
+  head = tt_read_head_table(sfont);
+  ascent = PDFUNIT(os2->sTypoAscender);
+  descent = PDFUNIT(os2->sTypoDescender);
+}
+
 
 static void
 do_args (int argc, char *argv[])
@@ -610,7 +659,8 @@ do_args (int argc, char *argv[])
 
   if (argc > 1) {
     if (!really_quiet)
-      fprintf(stderr, "Multiple dvi filenames?");
+        // PUTeX
+      fprintf(stderr, "Multiple cdi filenames?");
     usage();
   } else if (argc > 0) {
     /*
@@ -618,10 +668,10 @@ do_args (int argc, char *argv[])
      * do_args was called from config file.  In that case, there is
      * no dvi file name.  Check for that case .
      */
-    if (!mp_mode && STRN_CMP(".dvi", argv[0] + strlen(argv[0]) - 4, 4)) {
+    if (!mp_mode && STRN_CMP(".cdi", argv[0] + strlen(argv[0]) - 4, 4)) {
       dvi_filename = NEW(strlen(argv[0]) + 5, char);
       strcpy(dvi_filename, argv[0]);
-      strcat(dvi_filename, ".dvi");
+      strcat(dvi_filename, ".cdi");
     } else {
       dvi_filename = NEW(strlen(argv[0]) + 1, char);
       strcpy(dvi_filename, argv[0]);
@@ -869,6 +919,7 @@ main (int argc, char *argv[])
     const char *base = xbasename(argv[0]);
 
     if (STRN_CMP(base, "dvipdfmx", 8) != 0 &&
+        STRN_CMP(base, "cdi2pdf",7) != 0 &&
         (STRN_CMP(base, "dvipdfm",7) == 0 || STRN_CMP(base, "ebb", 3) == 0))
       compat_mode = 1;
 
@@ -880,7 +931,7 @@ main (int argc, char *argv[])
 
   if (argc < 2) {
     if (!really_quiet)
-      fprintf(stderr, "No dvi filename specified.");
+      fprintf(stderr, "No cdi filename specified.");
     usage();
     return 1;
   }
@@ -916,12 +967,12 @@ main (int argc, char *argv[])
   dpx_delete_old_cache(image_cache_life);
 
   if (!dvi_filename) {
-    WARN("No dvi filename specified.");
+    WARN("No cdi filename specified.");
     usage();
     return 1;
   }
 
-  /* Check for ".dvi" at end of argument name */
+  /* Check for ".cdi" at end of argument name */
   if (pdf_filename == NULL)
     set_default_pdf_filename();
 
