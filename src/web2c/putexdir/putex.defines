@@ -1,4 +1,5 @@
-{ putex.defines: Web declarations of PUTeX
+{
+putex.defines: Web declarations of PUTeX
 
 This file is part of PUTeX,
 which is based on the web2c distribution of TeX,
