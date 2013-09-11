@@ -1,0 +1,24 @@
+if PUTEX_SYNCTEX
+
+putex_CPPFLAGS += -I$(srcdir)/synctexdir $(ZLIB_INCLUDES)
+
+putex_LDADD += $(ZLIB_LIBS)
+putex_prereq += $(ZLIB_DEPEND)
+
+putex_ch_synctex = \
+	synctexdir/synctex-def.ch0 \
+	synctexdir/synctex-mem.ch0 \
+	synctexdir/synctex-mem.ch2 \
+	synctexdir/synctex-rec.ch0 \
+	synctexdir/synctex-rec.ch1 \
+	synctexdir/synctex-rec.ch2
+
+dist_putex_SOURCES += \
+	synctexdir/synctex.c \
+	synctexdir/synctex.h \
+	synctexdir/synctex-common.h \
+	synctexdir/synctex-putex.h
+
+putex_CPPFLAGS += -D__SyncTeX__ -DSYNCTEX_ENGINE_H=\"synctex-putex.h\"
+
+endif PUTEX_SYNCTEX
