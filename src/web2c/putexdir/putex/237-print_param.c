@@ -1,0 +1,61 @@
+void print_param(long n)
+{
+ switch (n) {
+ case pretolerance_code: print_esc(S(1035)); break;
+ case tolerance_code: print_esc(S(1036)); break;
+ case line_penalty_code: print_esc(S(1037)); break;
+ case hyphen_penalty_code: print_esc(S(1038)); break;
+ case ex_hyphen_penalty_code: print_esc(S(1039)); break;
+ case club_penalty_code: print_esc(S(1040)); break;
+ case widow_penalty_code: print_esc(S(1041)); break;
+ case display_widow_penalty_code: print_esc(S(1042)); break;
+ case broken_penalty_code: print_esc(S(1043)); break;
+ case bin_op_penalty_code: print_esc(S(1044)); break;
+ case rel_penalty_code: print_esc(S(1045)); break;
+ case pre_display_penalty_code: print_esc(S(1046)); break;
+ case post_display_penalty_code: print_esc(S(1047)); break;
+ case inter_line_penalty_code: print_esc(S(1048)); break;
+ case double_hyphen_demerits_code: print_esc(S(1049)); break;
+ case final_hyphen_demerits_code: print_esc(S(1050)); break;
+ case adj_demerits_code: print_esc(S(1051)); break;
+ case mag_code: print_esc(S(1052)); break;
+ case delimiter_factor_code: print_esc(S(1053)); break;
+ case looseness_code: print_esc(S(1054)); break;
+ case time_code: print_esc(S(1055)); break;
+ case day_code: print_esc(S(1056)); break;
+ case month_code: print_esc(S(1057)); break;
+ case year_code: print_esc(S(1058)); break;
+ case show_box_breadth_code: print_esc(S(1059)); break;
+ case show_box_depth_code: print_esc(S(1060)); break;
+ case hbadness_code: print_esc(S(1061)); break;
+ case vbadness_code: print_esc(S(1062)); break;
+ case pausing_code: print_esc(S(1063)); break;
+ case tracing_online_code: print_esc(S(1064)); break;
+ case tracing_macros_code: print_esc(S(1065)); break;
+ case tracing_stats_code: print_esc(S(1066)); break;
+ case tracing_paragraphs_code: print_esc(S(1067)); break;
+ case tracing_pages_code: print_esc(S(1068)); break;
+ case tracing_output_code: print_esc(S(1069)); break;
+ case tracing_lost_chars_code: print_esc(S(1070)); break;
+ case tracing_commands_code: print_esc(S(1071)); break;
+ case tracing_restores_code: print_esc(S(1072)); break;
+ case uc_hyph_code: print_esc(S(1073)); break;
+ case output_penalty_code: print_esc(S(1074)); break;
+ case max_dead_cycles_code: print_esc(S(1075)); break;
+ case hang_after_code: print_esc(S(1076)); break;
+ case floating_penalty_code: print_esc(S(1077)); break;
+ case global_defs_code: print_esc(S(1078)); break;
+ case cur_fam_code: print_esc(S(333)); break;
+ case escape_char_code: print_esc(S(1079)); break;
+ case default_hyphen_char_code: print_esc(S(1080)); break;
+ case default_skew_char_code: print_esc(S(1081)); break;
+ case endline_char_code: print_esc(S(1082)); break;
+ case newline_char_code: print_esc(S(1083)); break;
+ case language_code: print_esc(S(1084)); break;
+ case left_hyphen_min_code: print_esc(S(1085)); break;
+ case righth_yphen_min_code: print_esc(S(1086)); break;
+ case holding_inserts_code: print_esc(S(1087)); break;
+ case error_context_lines_code: print_esc(S(1088)); break;
+ default: print(S(1255)); break;
+ }
+}
