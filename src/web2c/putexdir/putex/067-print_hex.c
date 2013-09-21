@@ -1,14 +1,11 @@
-void printhex(long n)
+/* Hexadecimal printing of nonnegative integers is accomplished by |print_hex|. */
+void print_hex(integer n) /* prints a positive integer in hexadecimal form */
 {
-  int k;
+  unsigned char k;
   char digs[23];
-
-  k = 0;
-  printchar('"');
+  k=0; print_char('"');
   do {
-    digs[k] = n & 15;
-    n /= 16;
-    k++;
-  } while (n != 0);
-  printthedigs(k,digs);
+    digs[k]=n&15; n/=16; k++;
+  } while (n!=0);
+  print_the_digs(k, digs);
 }
