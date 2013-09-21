@@ -165,7 +165,7 @@ typedef union memory_word {
 #define filll 3 /* third-order infinity */
 
 #define kern_node 11 /* |type| of a kern node */
-#define explicit 1 /* |subtype| of kern nodes from \./* \\kern} and \./* \\/} */
+#define explicit 1 /* |subtype| of kern nodes from \.{\\kern} and \.{\\/} */
 #define acc_kern 2 /* |subtype| of kern nodes from accents */
 
 #define penalty_node 12 /* |type| of a penalty node */

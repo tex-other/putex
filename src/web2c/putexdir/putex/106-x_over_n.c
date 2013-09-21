@@ -1,29 +1,23 @@
-Static long xovern(long x, long n)
+/* We also need to divide scaled dimensions by integers. */
+static scaled x_overn_(scaled x, integer n)
 {
   long Result;
-  boolean negative;
-
+  boolean negative; /* should |remainder| be negated? */
   negative = false;
-  if (n == 0) {
-    aritherror = true;
-    Result = 0;
-    texremainder = x;
+  if (n==0) {
+    arith_error=true; Result=0; remainder=x;
   } else {
-    if (n < 0) {
-      x = -x;
-      n = -n;
-      negative = true;
+    if (n<0) {
+      x=-x; n=-n; negative=true;
     }
-    if (x >= 0) {
-      Result = x / n;
-      texremainder = x % n;
+    if (x>=0) {
+      Result=x/n; remainder=x%n;
     } else {
-      Result = -(-x / n);
-      texremainder = -(-x % n);
+      Result=-(-x/n); remainder=-(-x%n);
     }
   }
   if (negative)
-    texremainder = -texremainder;
+    remainder=-remainder;
   return Result;
 }
 
