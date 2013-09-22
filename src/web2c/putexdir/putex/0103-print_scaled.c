@@ -13,7 +13,7 @@ void print_scaled(scaled s)
 {
   scaled delta; /* amount of allowable inaccuracy */
   if (s<0) {
-    print_char('-'); s=-s; /* print the sign, if negative */
+    print_char('-'); negate(s); /* print the sign, if negative */
   }
   print_int(s/unity); /* print the integer part */
   print_char('.');

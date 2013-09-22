@@ -1,5 +1,5 @@
 /* We also need to divide scaled dimensions by integers. */
-static scaled x_overn_(scaled x, integer n)
+scaled x_overn_(scaled x, integer n)
 {
   long Result;
   boolean negative; /* should |remainder| be negated? */

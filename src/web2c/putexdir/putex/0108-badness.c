@@ -15,7 +15,7 @@ treated as infinitely bad, and represented by 10000.
 It is not difficult to prove that $$\hbox{|badness(t+1,s)>=badness(t,s)
 >=badness(t,s+1)|}.$$ The badness function defined here is capable of
 computing at most 1095 distinct values, but that is plenty. */
-static halfword badness(scaled t, scaled s) /* compute badness, given |t>=0| */
+halfword badness(scaled t, scaled s) /* compute badness, given |t>=0| */
 {
   integer r; /* approximation to $\alpha t/s$, where $\alpha^3\approx
   100\cdot2^{18}$ */
