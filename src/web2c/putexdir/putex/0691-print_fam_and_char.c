@@ -1,7 +1,6 @@
-Static void print_fam_and_char(halfword p)
+/* Here are some simple routines used in the display of noads. */
+static void print_fam_and_char(pointer p) /* prints family and character */
 {
-  printesc(S(333));
-  printint(fam(p));
-  printchar(' ');
-  print(character(p) - minquarterword);
+  print_esc("fam"); print_int(fam(p)); print_char(' ');
+  print_ASCII(character(p)-min_quarterword);
 }

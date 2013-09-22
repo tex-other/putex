@@ -1,22 +1,22 @@
-Static void scanfilename(void)
+/* Now let's consider the ``driver''
+routines by which \TeX\ deals with file names
+in a system-independent manner.  First comes a procedure that looks for a
+file name in the input by calling |get_x_token| for the information. */
+static void scan_file_name(void)
 {
-  nameinprogress = true;
+  name_in_progress=true;
   beginname();
-  /*406:*/
   do {
-    getxtoken();
-    /*:406*/
-  } while (curcmd == spacer);
+    get_x_token();
+  } while (cur_cmd==spacer);
   while (true) {
-    if (curcmd > otherchar || curchr > 255) {
-      backinput();
-      goto _Ldone;
+    if (cur_cmd>other_char||cur_chr>255) {
+      back_input(); goto PUdone;
     }
-    if (!morename(curchr))
-      goto _Ldone;
-    getxtoken();
+    if (!more_name(cur_chr)) goto PUdone;
+    get_x_token();
   }
-_Ldone:
-  endname();
-  nameinprogress = false;
+PUdone:
+  endn_ame();
+  name_in_progress = false;
 }

@@ -1,11 +1,8 @@
-void printsize(long s)
+void print_size(integer s)
 {
-  if (s == 0) {
-    printesc(S(266));
-    return;
+  if (s==text_size) print_esc("textfont");
+  else {
+    if (s==script_size) print_esc("scriptfont");
+    else print_esc("scriptscriptfont");
   }
-  if (s == scriptsize)
-    printesc(S(267));
-  else
-    printesc(S(268));
 } 

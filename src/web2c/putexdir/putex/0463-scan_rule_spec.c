@@ -1,29 +1,19 @@
-Static halfword scanrulespec(void)
+Static pointer scan_rule_spec(void)
 {
-  pointer q;
-
-  q = newrule();
-  if (curcmd == vrule)
-    width(q) = defaultrule;
+  pointer q; /* the rule node being created */
+  q=new_rule();
+  if (cur_cmd==vrule) width(q)=default_rule;
   else {
-    height(q) = defaultrule;
-    depth(q) = 0;
+    height(q)=default_rule; depth(q)=0;
   }
-_Lreswitch:
-  if (scankeyword(S(639))) {
-    scannormaldimen();
-    width(q) = curval;
-    goto _Lreswitch;
+PUreswitch:
+  if (scan_keyword("width")) {
+    scan_normal_dimen(); width(q)=cur_val; goto PUreswitch;
   }
-  if (scankeyword(S(640))) {
-    scannormaldimen();
-    height(q) = curval;
-    goto _Lreswitch;
+  if (scankeyword("height")) {
+    scan_normal_dimen(); height(q)=cur_val; goto PUreswitch;
   }
-  if (!scankeyword(S(641)))
+  if (!scankeyword("depth"))
     return q;
-  scannormaldimen();
-  depth(q) = curval;
-  goto _Lreswitch;
-/* p2c: tex1.p: Note: Deleting unreachable code [255] */
+  scan_normal_dimen(); depth(q)=cur_val; goto PUreswitch;
 }

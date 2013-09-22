@@ -1,10 +1,10 @@
-void printstyle(long c)
+void print_style(integer c)
 {
- switch (c / 2) {
- case 0: printesc(S(336)); break;
- case 1: printesc(S(337)); break;
- case 2: printesc(S(338)); break;
- case 3: printesc(S(339)); break;
- default: print(S(340)); break;
- }
+  switch (c/2) {
+    case 0: print_esc("displaystyle"); break; /* |display_style=0| */
+    case 1: print_esc("textstyle"); break; /* |text_style=2| */
+    case 2: print_esc("scriptstyle"); break; /* |script_style=4| */
+    case 3: print_esc("scriptscriptstyle"); break; /* |script_script_style=6| */
+    default print("Unknown style!"); break;
+  }
 }
