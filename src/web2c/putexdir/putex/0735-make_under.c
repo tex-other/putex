@@ -1,17 +1,13 @@
-Static void makeunder(halfword q)
+void make_under(pointer q)
 {
-  pointer p, x, y;
-  scaled delta;
+  pointer p, x, y; /* temporary registers for box construction */
+  scaled delta; /* overall height plus depth */
 
-  x = cleanbox(nucleus(q), curstyle);
-  p = newkern(defaultrulethickness * 3);
-  link(x) = p;
-  link(p) = fractionrule(defaultrulethickness);
-  y = vpack(x, 0, additional);
-/* p2c: tex1.p: Warning: Too many arguments for foovpack [299] */
-  delta = height(y) + depth(y) + defaultrulethickness;
-  height(y) = height(x);
-  depth(y) = delta - height(y);
-  info(nucleus(q)) = y;
-  mathtype(nucleus(q)) = subbox;
+  x=clean_box(nucleus(q), cur_style);
+  p=new_kern(default_rule_thickness*3); link(x)=p;
+  link(p)=fraction_rule(default_rule_thickness);
+  y=vpack(x,0,additional);
+  delta=height(y)+depth(y)+default_rule_thickness;
+  height(y)=height(x); depth(y)=delta-height(y);
+  info(nucleus(q))=y; math_type(nucleus(q))=sub_box;
 }

@@ -1,14 +1,11 @@
-Static void showcurcmdchr(void)
+/* Here is a procedure that displays the current command. */
+void show_cur_cmd_chr(void)
 {
-  begindiagnostic();
-  printnl('{');
-  if (mode != shownmode) {
-    printmode(mode);
-    print(S(488));
-    shownmode = mode;
+  begin_diagnostic(); print_nl('{');
+  if (mode!=shown_mode) {
+    print_mode(mode); print(": "); shown_mode=mode;
   }
-  printcmdchr(curcmd, curchr);
-  printchar('}');
-  enddiagnostic(false);
+  print_cmd_chr(cur_cmd, cur_chr); print_char('}');
+  end_diagnostic(false);
 }
 

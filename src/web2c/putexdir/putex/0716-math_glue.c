@@ -1,30 +1,22 @@
-Static halfword mathglue(halfword g, long m)
+/* Here is a subroutine that creates a new glue specification from another
+one that is expressed in `\.{mu}', given the value of the math unit. */
+pointer mathglue(pointer g, scaled m)
 {
-  pointer p;
-  long n;
-  scaled f;
+  pointer p; /* the new glue specification */
+  integer n; /* integer part of |m| */
+  scaled f; /* fraction part of |m| */
 
-  n = xovern(m, 65536L);
-  f = texremainder;
-  if (f < 0) {
-    n--;
-    f += 65536L;
+  n=x_over_n(m,65536L);f=remainder;
+  if (f<0) {
+    decr(n); f+=65536L;
   }
-  p = getnode(gluespecsize);
-  width(p) = multandadd(n, width(g), xnoverd(width(g), f, 65536L),
-			    1073741823L);
-  stretchorder(p) = stretchorder(g);
-  if (stretchorder(p) == normal)
-    stretch(p) = multandadd(n, stretch(g),
-	xnoverd(stretch(g), f, 65536L), 1073741823L);
-  else
-    stretch(p) = stretch(g);
-  shrinkorder(p) = shrinkorder(g);
-  if (shrinkorder(p) == normal)
-    shrink(p) = multandadd(n, shrink(g),
-			       xnoverd(shrink(g), f, 65536L),
-			       1073741823L);
-  else
-    shrink(p) = shrink(g);
+  p=get_node(glue_spec_size);
+  width(p)=mult_and_add(n,width(g),xn_over_d(width(g),f,65536L),1073741823L); /* convert \.{mu} to \.{pt} */
+  stretch_order(p)=stretch_order(g);
+  if (stretch_order(p) == normal) stretch(p)=mult_and_add(n,stretch(g),xn_over_d(stretch(g),f,65536L),1073741823L);
+  else stretch(p)=stretch(g);
+  shrink_order(p)=shrink_order(g);
+  if (shrink_order(p)==normal) shrink(p)=mult_and_add(n,shrink(g),xn_over_d(shrink(g),f,65536L),1073741823L);
+  else shrink(p)=shrink(g);
   return p;
 }
