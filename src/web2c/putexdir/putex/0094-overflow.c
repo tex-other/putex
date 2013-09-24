@@ -1,20 +1,17 @@
-void overflow(strnumber s, long n)
+/* Here is the most dreaded error message. */
+void overflow(str_number s, integer n)
 {
-  normalizeselector();
-  printnl(S(292));
-  print(S(294));
-  print(s);
-  printchar('=');
-  printint(n);
-  printchar(']');
-  help2(S(295),S(296));
-  if (interaction == errorstopmode)
-    interaction = scrollmode;
-  if (logopened)   /*_DEBUG*/
+  normalize_selector();
+  print_err("TeX capacity exceeded, sorry [");
+  print(s); print_char('='); print_int(n); print_char(']');
+  help2("If you really absolutely need more capacity,",
+          "you can ask a wizard to enlarge me.");
+  if (interaction==error_stop_mode)
+    interaction=scroll_mode;
+  if (log_opened)
     error();
-  if (interaction > batchmode)
+  if (interaction>batch_mode)
     debughelp();
-  /*_ENDDEBUG*/
-  history = fatalerrorstop;
-  jumpout();
+  history=fatal_error_stop;
+  jump_out();
 }

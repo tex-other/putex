@@ -1,15 +1,15 @@
-Static void showbox(halfword p)
-{  /*236:*/
-  depththreshold = showboxdepth;
-  breadthmax = showboxbreadth;   /*:236*/
-  if (breadthmax <= 0)
-    breadthmax = 5;
+/* The recursive machinery is started by calling |show_box|. */
+void showbox(halfword p)
+{
+  depth_threshold=show_box_depth;
+  breadth_max=show_box_breadth;
+  if (breadth_max<=0) breadth_max = 5;
 #if 0
   if (poolptr + depththreshold >= poolsize)
     depththreshold = poolsize - poolptr - 1;
 #else
-	depththreshold = str_adjust_to_room(depththreshold);
+	depth_threshold = str_adjust_to_room(depth_threshold);
 #endif
-  shownodelist(p);
-  println();
+  show_node_list(p);
+  print_ln();
 }

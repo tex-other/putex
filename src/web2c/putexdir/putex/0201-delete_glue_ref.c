@@ -1,4 +1,5 @@
-Static void deleteglueref(halfword p)
+void delete_glue_ref(pointer p)
+/* |p| points to a glue specification */
 {
-  karmafastdeleteglueref(p);
+  fast_delete_glue_ref(p);
 }

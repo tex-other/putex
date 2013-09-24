@@ -1,7 +1,7 @@
-Static void enddiagnostic(boolean blankline)
+void end_diagnostic(boolean blank_line)
+/* restore proper conditions after tracing */
 {
-  printnl(S(385));
-  if (blankline)
-    println();
-  selector = diag_oldsetting;
+  print_nl("");
+  if (blank_line) print_ln();
+  selector=old_setting;
 }
