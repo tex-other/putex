@@ -1,9 +1,11 @@
-Static void eqworddefine(halfword p, long w)
+/* The counterpart of |eq_define| for the remaining (fullword) positions in
+|eqtb| is called |eq_word_define|. Since |xeq_level[p]>=level_one| for all
+|p|, a `|restore_zero|' will never be used in this case. */
+void eq_word_define(halfword p, integer w)
 {
-  if (xeqlevel[p - intbase] != curlevel) {
-    eqsave(p, xeqlevel[p - intbase]);
-    xeqlevel[p - intbase] = curlevel;
+  if (xeq_level[p]!=cur_level) {
+    eq_save(p,xeq_level[p]); xeq_level[p]=cur_level;
   }
-  eqtb[p - activebase].int_ = w;
+  eqtb[p].int_=w;
 }
 

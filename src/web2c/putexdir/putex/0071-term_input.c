@@ -1,16 +1,14 @@
-Static void terminput(void)
+void terminput(void) /* gets a line from the terminal */
 {
-  short k;
-
+  unsigned short k; /* index into |buffer| */
   fflush(termout);
-  if (!inputln(&termin, true))
-    fatalerror(S(302));
-  termoffset = 0;
-  selector--;
-  if (last != first) {
-    for (k = first; k < last; k++)
-      print(buffer[k]);
+  if (!input_ln(&term_in, true))
+    fatal_error(S(302));
+  term_offset=0;
+  decr(selector);
+  if (last!=first) {
+    for (k=first;k<last;k++) print(buffer[k]);
   }
-  println();
-  selector++;
+  print_ln();
+  incr(selector); /* restore previous status */
 }

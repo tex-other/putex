@@ -1,17 +1,15 @@
-void sprintcs(halfword p)
+/* Here is a similar procedure; it avoids the error checks, and it never
+prints a space after the control sequence. */
+void sprintcs(pointer p) /* prints a control sequence */
 {
-  if (p >= hashbase) {
-    printesc(text(p));
-    return;
-  }
-  if (p < singlebase) {
-    print(p - activebase);
-    return;
-  }
-  if (p < nullcs)
-    printesc(p - singlebase);
+  if (p>=hash_base) print_esc(text(p));
   else {
-    printesc(S(262));
-    printesc(S(263));
+    if (p<single_base) print(p-active_base);
+    else {
+      if (p<null_cs) print_esc(p-single_base);
+      else {
+        print_esc("csname"); print_esc("endcsname");
+      }
+    }
   }
 }

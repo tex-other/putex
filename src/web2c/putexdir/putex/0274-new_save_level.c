@@ -1,18 +1,13 @@
-Static void newsavelevel(groupcode c)
+void new_save_level(group_code c) /* begin a new level of grouping */
 {
-  if (saveptr > maxsavestack) {
-    maxsavestack = saveptr;
-    if (maxsavestack > savesize - 6)
-      overflow(S(476), savesize);
+  if (save_ptr>max_save_stack) {
+    max_save_stack=save_ptr;
+    if (max_save_stack>save_size-6) overflow("save size", save_size);
   }
-  savetype(saveptr) = levelboundary;
-  savelevel(saveptr) = curgroup;
-  saveindex(saveptr) = curboundary;
-  if (curlevel == maxquarterword)
-    overflow(S(477), maxquarterword - minquarterword);
-  curboundary = saveptr;
-  curlevel++;
-  saveptr++;
-  curgroup = c;
+  save_type(save_ptr)=level_boundary; save_level(save_ptr)=cur_group;
+  save_index(save_ptr)=cur_boundary;
+  if (cur_level==max_quarterword)
+    overflow("grouping levels", max_quarterword-min_quarterword);
+  cur_boundary=save_ptr; incr(cur_level); incr(save_ptr); cur_group=c;
 }
 

@@ -1,18 +1,15 @@
-Static void eqsave(halfword p, quarterword l)
+/* To save a value of |eqtb[p]| that was established at level |l|, we
+can use the following subroutine. */
+void eq_save(pointer p, quarterword l) /* saves |eqtb[p]| */
 {
-  if (saveptr > maxsavestack) {
-    maxsavestack = saveptr;
-    if (maxsavestack > savesize - 6)
-      overflow(S(476), savesize);
+  if (save_ptr>max_save_stack) {
+    max_save_stack=save_ptr;
+    if (max_save_stack>save_size-6) overflow("save size", save_size);
   }
-  if (l == levelzero)
-    savetype(saveptr) = restorezero;
+  if (l==level_zero) save_type(save_ptr)=restore_zero;
   else {
-    savestack[saveptr] = eqtb[p - activebase];
-    saveptr++;
-    savetype(saveptr) = restoreoldvalue;
+    save_stack[save_ptr]=eqtb[p]; incr(saveptr);
+    save_type(save_ptr)=restore_old_value;
   }
-  savelevel(saveptr) = l;
-  saveindex(saveptr) = p;
-  saveptr++;
+  save_level(save_ptr)=l; save_index(save_ptr)=p; incr(saveptr);
 }

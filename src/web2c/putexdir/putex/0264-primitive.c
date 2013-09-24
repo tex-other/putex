@@ -1,13 +1,15 @@
-Static void primitive(strnumber s, quarterword c, halfword o)
+/* We need to put \TeX's ``primitive'' control sequences into the hash
+table, together with their command code (which will be the |eq_type|)
+and an operand (which will be the |equiv|). The |primitive| procedure
+does this, in a way that no \TeX\ user can. The global value |cur_val|
+contains the new |eqtb| pointer after |primitive| has acted. */
+void primitive(str_number s, quarterword c, halfword o)
 {
-  if (s < 256)
-    curval = s + singlebase;
+  if (s<256) cur_val=s+single_base;
   else {
-	curval = idlookup_s(s,false);
-    flushstring();
-    text(curval) = s;
+	cur_val = idlookup_s(s,false);
+    flush_string();
+    text(cur_val)=s;
   }
-  eqlevel(curval) = levelone;
-  eqtype(curval) = c;
-  equiv(curval) = o;
+  eq_level(cur_val)=level_one; eq_type(cur_val)=c; equiv(cur_val)=o;
 }

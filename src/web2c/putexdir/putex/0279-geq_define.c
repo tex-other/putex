@@ -1,8 +1,6 @@
-Static void geqdefine(halfword p, quarterword t, halfword e)
+Static void geq_define(pointer p, quarterword t, halfword e)
 {
-  eqdestroy(eqtb[p - activebase]);
-  eqlevel(p) = levelone;
-  eqtype(p) = t;
-  equiv(p) = e;
+  eq_destroy(eqtb[p]);
+  eq_level(p)=level_one; eq_type(p)=t; equiv(p)=e;
 }
 
