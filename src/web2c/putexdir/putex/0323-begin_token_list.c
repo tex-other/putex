@@ -1,44 +1,32 @@
-Static void begintokenlist(halfword p, quarterword t)
+/* Here is a procedure that starts a new level of token-list input, given
+a token list |p| and its type |t|. If |t=macro|, the calling routine should
+set |name| and |loc|. */
+void begin_token_list(pointer p, quarterword t)
 {
-  if (inputptr > maxinstack) {
-    maxinstack = inputptr;
-    if (inputptr == stacksize)
-      overflow(S(508), stacksize);
+  /* enter a new input level, save the old */
+  if (input_ptr>max_in_stack) {
+    max_in_stack=input_ptr;
+    if (input_ptr==stack_size) overflow("input stack size",stack_size);
   }
-  inputstack[inputptr] = curinput;
-  inputptr++;
-  state = tokenlist;
-  start = p;
-  tokentype = t;
-  if (t < macro) {
-    loc = p;
-    return;
+  input_stack[input_ptr]=cur_input; /* stack the record */
+  incr(input_ptr);
+  state=tokenlist; start=p; token_type=t;
+  if (t<macro) { /* the token list starts with a reference count */
+    add_token_ref(p);
+    if (t==macro) {
+      param_start=param_ptr;
+    } else {
+      loc = link(p);
+      if (tracing_macros>1)
+          begin_diagnostic(); print_nl('');
+      switch (t) {
+          case mark_text: print_esc("mark"); break;
+          case write_text:  print_esc("write"); break;
+          default: print_cmd_chr(assign_toks,t-output_text+output_routine_loc); break;
+      }
+      print("->"); token_show(p); end_diagnostic(false);
+    }
+  } else {
+    loc=p;
   }
-  addtokenref(p);
-  if (t == macro) {
-    paramstart = paramptr;
-    return;
-  }
-  loc = link(p);
-  if (tracingmacros <= 1)
-    return;
-  begindiagnostic();
-  printnl(S(385));
-  switch (t) {
-
-  case marktext:
-    printesc(S(402));
-    break;
-
-  case writetext:
-    printesc(S(379));
-    break;
-
-  default:
-    printcmdchr(assigntoks, t - outputtext + outputroutineloc);
-    break;
-  }
-  print(S(310));
-  tokenshow(p);
-  enddiagnostic(false);
 }

@@ -1,10 +1,8 @@
-Static void print_delimiter(halfword p)
+void print_delimiter(pointer p) /* prints a delimiter as 24-bit hex value */
 {
-  long a;
-  a = small_fam(p) * 256 + small_char(p) - minquarterword;
-  a = a * 4096 + large_fam(p) * 256 + large_char(p) - minquarterword;
-  if (a < 0)
-    print_int(a);
-  else
-    print_hex(a);
+  integer a; /* accumulator */
+  a=small_fam(p)*256+qo(small_char(p));
+  a=a*4096+large_fam(p)*256+qo(large_char(p));
+  if (a<0) print_int(a); /* this should never happen */
+  else print_hex(a);
 }

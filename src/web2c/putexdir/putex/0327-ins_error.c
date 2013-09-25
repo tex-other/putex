@@ -1,8 +1,5 @@
-Static void inserror(void)
+void ins_error(void)
 {
-  OKtointerrupt = false;
-  backinput();
-  tokentype = inserted;
-  OKtointerrupt = true;
-  error();
+  OK_to_interrupt=false; back_input(); token_type=inserted;
+  OK_to_interrupt=true; error();
 }

@@ -1,12 +1,12 @@
-Static void xtoken(void)
+/* The |get_x_token| procedure is equivalent to two consecutive
+procedure calls: |get_next; x_token|. */
+void x_token(void) /* |get_x_token| without the initial |get_next| */
 {
-  while (curcmd > maxcommand) {
+  while (cur_cmd>max_command) {
     expand();
-    getnext();
+    get_next();
   }
-/*
-  pack_tok(curtok,curcs,curcmd,curchr);
-*/
-  curtok = pack_tok(curcs,curcmd,curchr);
+  if (cur_cs==0) cur_tok=(cur_cmd*0400)+cur_chr;
+  else cur_tok=cs_token_flag+cur_cs;
 }
 
