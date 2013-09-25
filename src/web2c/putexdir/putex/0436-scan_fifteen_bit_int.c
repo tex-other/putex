@@ -1,11 +1,9 @@
-Static void scanfifteenbitint(void)
+void scan_fifteen_bit_int(void)
 {
-  scanint();
-  if ((unsigned long)curval <= 32767)
-    return;
-  printnl(S(292));
-  print(S(580));
-  help2(S(581),S(575));
-  interror(curval);
-  curval = 0;
+  scan_int();
+  if (cur_val<0 || cur_val>077777) {
+    print_err("Bad mathchar");
+    help2("A mathchar number must be between 0 and 32767.",
+      "I changed this one to zero."); int_error(cur_val); cur_val=0;
+  }
 }

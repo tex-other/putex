@@ -1,11 +1,9 @@
-Static void scancharnum(void)
+void scan_char_num(void)
 {
-  scanint();
-  if ((unsigned long)curval <= 255)
-    return;
-  printnl(S(292));
-  print(S(576));
-  help2(S(577),S(575));
-  interror(curval);
-  curval = 0;
+  scan_int();
+  if (cur_val<0 || cur_val>255) {
+    print_err("Bad character code");
+    help2("A character number must be between 0 and 255.",
+      "I changed this one to zero."); int_error(cur_val); cur_val=0;
+  }
 }

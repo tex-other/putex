@@ -1,11 +1,9 @@
-Static void scantwentysevenbitint(void)
+void scan_twenty_seven_bit_int(void)
 {
-  scanint();
-  if ((unsigned long)curval <= 134217727L)
-    return;
-  printnl(S(292));
-  print(S(582));
-  help2(S(583),S(575));
-  interror(curval);
-  curval = 0;
+  scan_int();
+  if (cur_val<0 || cur_val>0777777777) {
+    print_err("Bad delimiter code");
+    help2("A numeric delimiter code must be between 0 and 2^{27}-1.",
+      "I changed this one to zero."); int_error(cur_val); cur_val=0;
+  }
 }
