@@ -1,9 +1,10 @@
-Static long heightplusdepth(internalfontnumber f, quarterword c)
+/* Another handy subroutine computes the height plus depth of
+a given character: */
+scaled heigth_plus_depth(internalfontnumber f, quarterword c)
 {
-  fourquarters q;
-  eightbits hd;
+  four_quarters q;
+  eight_bits hd; /* |height_depth| byte */
 
-  q = charinfo(f, c);
-  hd = heightdepth(q);
-  return (charheight(f, hd) + chardepth(f, hd));
+  q=char_info(f,c); hd=height_depth(q);
+  return (char_height(f,hd)+char_depth(f,hd));
 }

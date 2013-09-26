@@ -1,5 +1,5 @@
-Static strnumber amakenamestring(FILE **f)
+str_number a_make_name_string(alpha_file f)
 {
-  return (makenamestring());
+  return (make_name_string());
 }
 

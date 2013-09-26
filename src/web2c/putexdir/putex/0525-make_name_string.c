@@ -1,12 +1,10 @@
-Static strnumber makenamestring(void)
+str_number make_name_string(void)
 {
-  /* char */ int k, FORLIM; /* INT */
-
-    {
-    FORLIM = namelength;
-    for (k = 0; k < namelength; k++) {
-      appendchar(xord[nameoffile[k]]);
+  unsinged int k; /* index into |name_of_file| */
+  {
+    for (k=0; k<name_length; k++) {
+      append_char(xord[name_of_file[k]]);
     }
-    return (makestring());
+    return (make_string());
   }
 }

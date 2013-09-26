@@ -1,23 +1,17 @@
-Static void openorclosein(void)
+void open_or_close_in(void)
 {
-  int c;
-  int n;
+  unsigned char c; /* 1 for \.{\\openin}, 0 for \.{\\closein} */
+  unsigned char n; /* stream number */
 
-  c = curchr;
-  scanfourbitint();
-  n = curval;
-  if (readopen[n] != closed) {
-    aclose(&readfile[n]);
-    readopen[n] = closed;
+  c=cur_chr; scan_four_bit_int(); n=cur_val;
+  if (read_open[n]!=closed) {
+    a_close(&readfile[n]);
+    read_open[n]=closed;
   }
-  if (c == 0)
-    return;
-  scanoptionalequals();
-  scanfilename();
-  if (curext == S(385))
-    curext = S(669);
-  packfilename(curname,S(677),curext);
-  if (aopenin(&readfile[n]))
-    readopen[n] = justopen;
+  if (c!=0) {
+    scan_optional_equals(); scan_file_name();
+    if (cur_ext=="") cur_ext=".tex";
+    pack_file_name(cur_name,"",cur_ext);
+  if (a_open_in(&read_file[n])) read_open[n]=just_open;
 }
 

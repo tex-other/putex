@@ -1,21 +1,14 @@
-Static void alterprevgraf(void)
+void alter_prev_graf(void)
 {
-  int p;
-
-  nest[nestptr] = curlist;
-  p = nestptr;
-  while (abs(nest[p].modefield) != vmode)
-    p--;
-  scanoptionalequals();
-  scanint();
-  if (curval >= 0) {
-    nest[p].pgfield = curval;
-    curlist = nest[nestptr];
-    return;
+  unsigned int p; /* index into |nest| */
+  nest[nest_ptr]=cur_list; p=nest_ptr;
+  while (abs(nest[p].mode_field)!=vmode) decr(p);
+  scan_optional_equals(); scan_int();
+  if (cur_val<0) {
+    print_err("Bad "); print_esc("prevgraf");
+    help1("I allow only nonnegative values here.");
+    int_error(cur_val);
+  } else {
+    nest[p].pg_field=cur_val; cur_list=nest[nest_ptr];
   }
-  printnl(S(292));
-  print(S(773));
-  printesc(S(948));
-  help1(S(949));
-  interror(curval);
 }

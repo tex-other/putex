@@ -1,4 +1,4 @@
-Static strnumber wmakenamestring(FILE **f)
+str_number w_make_name_string(word_file f)
 {
-  return (makenamestring());
+  return (make_name_string());
 }

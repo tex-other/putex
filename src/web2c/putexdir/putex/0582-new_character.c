@@ -1,21 +1,18 @@
-Static halfword newcharacter(internalfontnumber f, eightbits c)
+/* Here is a function that returns a pointer to a character node for a
+given character in a given font. If that character doesn't exist,
+|null| is returned instead. */
+pointer new_character(internal_font_number f, eight_bits c)
 {
   halfword Result;
-  pointer p;
+  pointer p; /* newly allocated node */
 
-  if (fontbc[f ] <= c) {
-    if (fontec[f ] >= c) {
-      if (charexists(charinfo(f, c))) {
-	p = getavail();
-	font(p) = f;
-	character(p) = c;
-	Result = p;
-	goto _Lexit;
+  if (font_bc[f]<=c) {
+    if (font_ec[f]>=c) {
+      if (char_exists(charinfo(f, qi(c)))) {
+        p=get_avail(); font(p)=f; character(p)=qi(c);
+        return p;
       }
     }
   }
-  charwarning(f, c);
-  Result = 0;
-_Lexit:
-  return Result;
+  char_warning(f,c);
 }

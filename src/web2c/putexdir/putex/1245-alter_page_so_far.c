@@ -1,9 +1,6 @@
-Static void alterpagesofar(void)
+void alter_page_so_far(void)
 {
-  int c;
-
-  c = curchr;
-  scanoptionalequals();
-  scannormaldimen();
-  pagesofar[c] = curval;
+  unsigned char c; /* index into |page_so_far| */
+  c=cur_chr; scan_optional_equals(); scan_normal_dimen();
+  page_so_far[c]=cur_val;
 }
