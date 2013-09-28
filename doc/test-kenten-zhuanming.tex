@@ -1,0 +1,16 @@
+\documentclass{article}
+\usepackage{luatexja-fontspec}
+\setmainjfont{SimSun}
+\parindent0pt
+\def\kenten#1{\texttt{#1:}&{\jfontspec{#1}你好啊。\kern-4\zw ＿＿＿＿}}
+\begin{document}
+\begin{tabular}{ll}
+\kenten{SimSun}\\
+\kenten{AdobeSongStd-Light}\\
+\kenten{MingLiU}\\
+\kenten{IPAexMincho}\\
+\kenten{SimHei}\\
+\kenten{KaiTi}\\
+\kenten{SimFang}\\
+\end{tabular}
+\end{document}
