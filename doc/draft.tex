@@ -1,0 +1,124 @@
+1. 关于图像的东西。AMS的ftp://ftp.ams.org/ams/author-info/documentation/creating-graphics.pdf
+2. 关于Arabic的，生成的PDF中需要能够复制出来，tagged PDF，参考PDFlib中的示例
+3. PDFlib公司出版的Die PostScript und PDF-Bibel需要看一下，内容不错
+4. LuaTeX的历史：MKII-MkIV, The History of LuaTeX
+5. tri-directional typesetting，NTS文档中提到的一个事情
+6. ELECTRONIC PUBLISHING, VOL. 2(3), 3-26, triroff, an adaptation of the device-independent troff for formatting tri-directional text
+   http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.27.4329&rep=rep1&type=pdf
+7. Comments on the Future of TeX and METAFONT
+   http://www.tug.org/TUGboat/tb11-4/tb30beebe-future.pdf
+8. Alexander Berdnikov. Russian Typographical Traditions in Mathematical Literature
+9. Ulrik Vieth. Math typesetting in TeX: The good, the bad, the ugly
+10. 专利号：200610112738。一种文字排版的方法
+    专利号：200710121797。一种图文的自动排版方法
+    专利号：201010242739。电子文档排版方法及装置
+    专利号：201010548068。排版方法和装置
+    专利号：200810240307。一种排版文件的处理方法及装置
+    专利号：200910090195。一种文书文件的排版方法及装置
+    专利号：200810239732。绘制符号花边的方法和装置
+11. United States Patent: Optimal Line Break Determination.
+12. Remco R. Bouckaert. A Probabilistic Line Breaking Algorithm.
+    www.cs.waikato.ac.nz/~remco/line.pdf
+13. liblinebreak, vimgadgets.sourceforge.net/liblinebreak/
+14. 韩世勇，Microtypographic extensions to the TeX typesetting system
+    www.pragma-ade.com/pdftex/thesis.pdf
+15. 韩世勇，Margin Kerning and Font Expansion with pdfTeX
+16. 韩世勇，A closer look at TrueType fonts and pdfTeX
+17. Computer-Aided Design. Vol. 27, No. 3, pp193-207, 1996. Oriental Character Font Design by a Structured Composition of Stroke Elements.
+18. Tung Yun Mei. LCCD, A Language for Chinese Character Design.
+19. John Hobby, Gu Guoan. A Chinese METAFONT.
+20. ELECTRONIC PUBLISHING, VOL. 6(2), 67-91 (JUNE 1993). Structure extraction and automatic hinting of Chinese outline characters
+21. John Plaice on Omega and Beyond (an interview)
+22. Omega and OpenType Fonts
+23. Adobe Font Metrics File Format Specification
+24. Multiple Master math extension fonts
+25. Breaking Paragraphs into Lines
+26. The Oxford Guide to Style
+27. Type Rules
+28. Unicode Explained
+29. Unix Text Processing
+30. Words into Type
+31. Practical Printing
+32. PostScript Language Reference
+33. Literate Programming
+34. Adobe CJKV Character Collections and CMaps for CID-Keyed Fonts
+35. Building CMap Files for CID-Keyed Fonts
+36. CID-Keyed Font Technology Overview
+37. SING Glyphlet Production: Tips, Tricks & Techniques
+38. OpenType-CID/CFF CJK Fonts: ‘name’ Table Tutorial
+39. Designing Multiple Master Typefaces
+40. Font Naming Issues
+41. CID-Keyed sfnt Font File Format for the Macintosh
+42. CJKV Information Processing
+43. Computer Systems A Programmer's Perspective, 2E (CSAPP2e)
+44. LGPL Hyphenation Library
+    http://www.linux-magazine.com/Online/News/LGPL-Hyphenation-Library
+    http://swolter.sdf1.org/software/libhyphenate.html
+45. libhyphenation.a in Android.
+46. Libhnj, a library for high quality hyphenation and justification
+47. TeXHyphenator-J
+48. Using TeX hyphenation patterns in OpenOffice.org
+    http://wiki.openoffice.org/wiki/Documentation/SL/Using_TeX_hyphenation_patterns_in_OpenOffice.org
+49. Knuth linebreaking elements for Formatting Objects
+    http://www.leverkruid.eu/GKPLinebreaking/elements.html
+50. Unicode line breaking rules: explanations and criticism
+    http://www.cs.tut.fi/~jkorpela/unicode/linebr.html
+51. GLOBAL MULTIPLE OBJECTIVE LINE BREAKING, ALEX HOLKNER
+    http://bowman.infotech.monash.edu.au/~pmoulder/line-breaking/holkner-multiobjective-linebreaking-paper.pdf
+52. dvipdfmx 文件解说：
+    agl.c | Adobe Glyph List
+    bmpimage.c | BMP文件支持，写入PDF的object，校验函数，colorspace
+    cff.c | CFF格式字体处理。
+    cff_dict.c | CFF字体词典。有启发性的地方：UnderlinePosition，UnderlineThickness
+    cff_stdstr.h | Glyph的名字。
+    cff_types.h | 定义了读取CFF字体需要用到的类型定义。
+    cid.c | 对于CIDType0和CIDType2的字体处理。六种CID类型。
+          | 注意各种PDF版本支持的ROS。
+          | Render Mode是独立于字体的。
+    cid_basefont.h | 这是所谓的基本CID字体系列，但是不是真正意义上的，是基于Adobe阅读器的基本CID字体。
+                   | 注意：各个版本的Adobe Reader使用CID字体名并不是一样的。
+                   | 非嵌入式的CID字体的作用是减少PDF体积，一般在打印机中存在。
+                   | 注意/Panose的生成。
+    cidtype0.c | 这个呢，主要是加入水平和垂直方向的Metrics。142行有亮点存在。
+               | 注意写入ToUnicode的部分。
+               | get_font_attr这个函数中也进行了一些参数的设定，尤其是StemV。
+    cidtype2.c | 这个是写入TrueType的。编码比较多了。FreeType是可以进行分析的，但是子集化必须自己进行处理。
+               | 单独写成库的话，一定要把子集化字体做出来，这个有利于制作字体。
+    cmap.c | 这个是读取CMap的库，CMap对于精确处理编码是很有帮助的。
+    cmap_read.c | 这个是一个简单的parser。
+    cmap_write.c | 这是一个写入的东西，写入到PDF才能够复制出有编码的文本出来。
+    cs_type2.c | 这个有关于PostScript了。
+    dpxconf.c | 这个是关于尺寸的，有个叫做libpaper的库。其实没有必要用libpaper。
+    dpxcrypt.c | 这个是关于加密算法的，有一个简单的MD5算法。
+    dpxfile.c | 利用Kpathsea查找各种文件。
+    dpxutil.c | 这里是一堆辅助函数。
+    dvi.c | 这个是DVI转换成PDF的主力了。
+          | 实际上，从不同的驱动来看，字体的技术已经分层了：1. 实体，2.虚拟，3，次字体。
+          | 虚拟字体有助于解决多语种的问题，一个所谓unifont机制。
+    dvicodes.h | 已经定义了的opcode。
+    dvipdfmx.c | 主程序。
+    epdf.c | 各种裁剪框。但是请注意，这是将PDF作为插图插入的情况。
+    error.c | 各种报错程序。
+    fontmap.c | 字体映射文件，映射是由离到合的过程。支持pdfTeX那种映射的情况。
+              | pdf_load_native_font，这个函数里面有问题。
+    jpegimage.c | 这个是关于JPEG文件处理的，需要查看一定的材料。
+    mem.c | 关于内存管理的。
+    mpost.c | 注意57行开始的注释。这是处理PostScript代码的。
+    numbers.c | 操作数。
+    pdfcolor.c | 关于PDF中的各种色彩。
+    pdfdev.c | 关于各种PDF生成计算。注意对于未知的计算：图像模式，文本模式，字符串模式。
+             | 在数据结构中就需要对TFM和实际字体进行适当的映射，而LuaTeX做的并不太好。
+             | LuaTeX对于东方语言的支持在底层上面就是缺乏的，所以当然不会出现什么好结果。
+    pdfdoc.c | 这里就是处理一些special代码的地方了。
+    pdfdraw.c | 这个就是全局处理绘图的地方了。
+    
+
+
+
+
+
+
+
+
+
+ 
