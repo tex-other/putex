@@ -111,14 +111,87 @@
              | LuaTeX对于东方语言的支持在底层上面就是缺乏的，所以当然不会出现什么好结果。
     pdfdoc.c | 这里就是处理一些special代码的地方了。
     pdfdraw.c | 这个就是全局处理绘图的地方了。
-    
-
-
-
-
-
-
-
-
-
- 
+    pdfencoding.c | Type1和Type3字体进行重新编码的东西。
+    pdfencrypt.c | 对object进行加密。
+    pdffont.c | 一个关于PDF中各种字体的一个处理。注意一下数据结构。
+              | 所谓的字体缓存，是子集化的相关的东西。
+    pdfnames.c | 这个是关于object生成的。
+    pdfobj.c | 这个是关于PDF中的各种object的，其中要注意一下字符串。
+    pdfparse.c | 解析PDF插图的。
+    pkfont.c | 关于PK字体处理的，这个需要仔细看一下那本压缩手册。
+             | 这个文件里面是通过搜索库来进行文件的搜索的。
+    pngimage.c | 这个是处理PNG文件的。我在考虑是否加入一个新库进去。
+    sfnt.c | 对于各种字体处理的一个文件。这个文件也被LuaTeX项目吸收进去了。
+           | 我觉得似乎是没有引入FontForge的必要。
+    spc_color.c | 关于color支持的special。
+    spc_dvips.c | 关于dvips支持的special。
+    spc_html.c | 关于超链接的一些special。
+    spc_misc.c | 一些用得到的special。
+    spc_pdfm.c | 一些关于dvipdfmx的special。
+    spc_tpic.c | 关于Pic for TeX的special。
+    spc_util.c | 关于special的使用的。
+    special.c | 关于special的使用。
+    subfont.c | 处理subfont。
+    tfm.c | 关于各种TFM的。
+    vf.c | 关于vf处理的。
+53. dvidvi程序。
+    dvidvi.c 这个是用来处理dvi文件的。Tomas Rokicki写的程序。
+54. ptexenc
+    这个库是pTeX系列所使用的一个编码转换库。
+    支持的编码：jis，euc，sjis，utf8。
+% + ptexenc.h
+%extern PTENCDLL boolean is_internalGBK(void)
+%extern PTENCDLL boolean is_internalBIG5(void)
+%#define isinternalGBK is_internalGBK
+%#define isinternalBIG5 is_internalBIG5
+% + kanjicnv.h
+%extern boolean isGBKkanji1(int c)
+%extern boolean isGBKkanji2(int c)
+%
+%extern boolean isBIG5kanji1(int c)
+%extern boolean isBIG5kanji2(int c)
+% + kanjicnv.c
+%boolean isGBKkanji1(int c)
+%{
+%    c &= 0xff;
+%    return (0x81 <= c && c <= 0xFE);
+%}
+%
+%boolean isGBKkanji2(int c)
+%{
+%    c &= 0xff;
+%    return (0x40 <= c && c <= 0xFE && c != 0x7F);
+%}
+%
+%boolean isBIG5kanji1(int c)
+%{
+%    c &= 0xff;
+%    return (0x80 <= c && c <= 0xFE);
+%}
+%
+%boolean isBIG5kanji2(int c)
+%{
+%    c &= 0xff;
+%    return ((0x40 <= c && c <= 0x7e) || (0xA1 <= c && c <= 0xFE));
+%}
+55. 进化了的CJK语言引擎。
+56. ttdump程序。
+    这是一个字体转储的工具。时间比较久远了。
+57. Springer - Handbook of Data Compression Fifth Edition (2010)
+    5.8 PK Font Compression
+    定义1：font，字体，一组具有同种风格样式和大小的字符或符号
+    定义2：typeface，字型，一组具有不同大小，但风格一样的字体
+    定义3：typeface family，字型组，一组字型
+    定义4：printer's point，印刷点制
+    定义5：style of a font，字体所显示出来的效果
+    定义6：digital font，数字型字体，保存在I/O设备上的一套符号或者字符
+    定义7：glyph，数字型字体中某一符号或者字符所显示出来的形状
+    定义8：metric，bookkeeping infomation，最基本的：高度，深度，宽度。
+    定义9：outline font
+    定义10：bitmap font
+    定义11：computer modern，75种字体
+    定义12：generic font(GF)
+    定义13：PK(PacKed) font
+58. makeindexk程序
+    作者：Pehong Chen，陈丕宏
+    并行qsort。
