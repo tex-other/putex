@@ -4,8 +4,7 @@
 %%%  Modified and patched version for TeX Live
 %%%
 %%%  Copyright (C) 1997-2004 Chey-Woei Tsay <cwtsay@pu.edu.tw>
-%%%  Copyright (C) 2013      Qiyuan Ma      <clerkma@gmail.com>
-%%%                          Jie Su         <suxpert@gmail.com>
+%%%  Copyright (C) 2013      Clerk Ma      <clerkma@gmail.com>
 %%%
 %%%  This is the change file of PUTeX.
 %%%
@@ -54,7 +53,7 @@
 \def\gglob{20, 26} % this should be the next two sections of "<Global...>"
 \def\PUTeX{PU\TeX}
 \def\putexadd{\hskip -0.5in putex -- add -- }
-\def\putexmod{\hskip -0.5in putex -- modify -- }
+\def\putexmod{\hskip -0.5in putex -- mod -- }
 \def\putexend{\hskip -0.5in putex -- end -- }
 @z
 
@@ -62,7 +61,7 @@
 @d banner==TeX_banner
 @d banner_k==TeX_banner_k
 @y
-@d PUTeX_version_string=='-4.0' {current \PUTeX\ version}
+@d PUTeX_version_string=='-5.0' {current \PUTeX\ version}
 @#
 @d PUTeX_banner=='This is PUTeX, Version 3.1415926',PUTeX_version_string
 @d PUTeX_banner_k==PUTeX_banner
@@ -136,6 +135,7 @@ TCW: The |print_wchar| macro is used to print one DBCS character.
 @d is_wchar(#) == ((#)>255)
 @z
 
+%% parallel kanji font, when typesetting kanjis, we need a match table.
 @x
 @!font_in_short_display:integer; {an internal font number}
 @y
@@ -200,6 +200,7 @@ else  begin if (font(p)>cfont_max) then print_char("*")
     print_ASCII(qo(character(p)));
 @z
 
+%% for kinsoku
 @x
 @d max_char_code=15 {largest catcode for individual characters}
 @y
@@ -304,6 +305,7 @@ control sequences.
 @d null_cs=single_base+65536 {equivalent of \.{\\csname\\endcsname}}
 @z
 
+%% parallel font
 @x
 @d font_id_base=frozen_null_font-font_base
   {begins table of 257 permanent font identifiers}
@@ -347,7 +349,7 @@ TCW: Define |cur_cfont_loc| for two-byte char and the macro |cur_cfont|.
 @y
   {TCW: table of 65536 command codes (the ``catcodes'')}
 @d pux_cat_code_base=cat_code_base+256
-@d pux_type_code_base=cat_code_base+65536   {TCW: table of 65536 type codes}
+@d pux_type_code_base=cat_code_base+65536 {TCW: table of 65536 type codes}
 @d lc_code_base=pux_type_code_base+65536 {table of 256 lowercase mappings}
 @z
 
