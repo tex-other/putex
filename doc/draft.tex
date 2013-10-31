@@ -195,3 +195,280 @@
 58. makeindexk程序
     作者：Pehong Chen，陈丕宏
     并行qsort。
+59. 位图字体
+    FONT格式，Macintosh，1984
+    NFNT格式
+    CPI格式
+    FNT格式
+    FON格式
+    PSF格式
+    BDF格式
+    HBF格式
+60. TFM文件的结构。
+    工具：tftopl，pltotf，作者：Leonidas Guibas
+    语法：(KEYWORD VALUE)
+    关键字：大写，旧时代风格
+    中缀：R (real), O (octal), H (hexadecimal), D (decimal), C (character)
+    全局声明：1. CHECKSUM，4-byte，校验
+              2. DESIGNSIZE，0-2048，American printer's points
+              3. DESIGNUNITS，正值
+              4. CODINGSCHEME，废弃
+              5. FAMILY，废弃
+              6. FACE，废弃
+    字体参数：1. SLANT
+              2. SPACE
+              3. STRETCH
+              4. SHRINK
+              5. XHEIGHT
+              6. QUAD = em
+              7. EXTRASPACE
+              8. NUM1/DEFAULTRULETHICKNESS
+              9. NUM2/BIGOPSPACING1
+              10. NUM3/BIGOPSACING2
+              11. DENOM1/BIGOPSPACING3
+              12. DENOM2/BIGOPSPACING4
+              13. SUP1/BIGOPSPACING45
+              14. SUP2
+              15. SUP3
+              16. SUB1
+              17. SUB2
+              18. SUPDROP
+              19. SUBDROP
+              20. DELIM1
+              21. DELIM2
+              22. AXISHEIGHT
+    缩距/合字：1. (LIGTABLE operations) 整体操作
+               2. (LABEL glyph) 初始化字符
+               3. (STOP) 结束
+               4. (KRN C . R -.15)
+               5. (LIG C f H 13)
+    合字类型：1. /LIG/
+              2. /LIG
+              3. LIG/
+    字体数据：1. CHARWD
+              2. CHARHT
+              3. CHARDP
+              4. CHARIC
+              5. NEXTLARGER
+61. JFM的扩展
+%@x [68] l.1068 - pTeX: we print GLUEKERN instead of LIGTABLE
+%  begin left; out('LIGTABLE'); out_ln;@/
+%@y
+%  begin left;
+%  if file_format<>tfm_format then out('GLUEKERN') else out('LIGTABLE');
+%  out_ln;@/
+%@z
+%@ list the |char_type| table in a similar way to the type table
+62. VF的处理
+63. PATGEN
+    第一版：Frank~M. Liang
+    第二版：Peter Breitenlohner
+64. 兼容性的讨论
+    No doubt there still is plenty of room for improvement, but the author
+    is firmly committed to keeping \TeX82 ``frozen'' from now on; stability
+    and reliability are to be its main virtues.
+65. 修改的讨论（不触及核心）
+    On the other hand, the \.{WEB} description can be extended without changing
+    the core of \TeX82 itself, and the program has been designed so that such
+    extensions are not extremely difficult to make.
+66. 名字与兼容系
+    If this program is changed, the resulting system should not be called
+    `\TeX'; the official name `\TeX' by itself is reserved
+    for software systems that are fully compatible with each other.
+67. 魔鬼测试
+    A special test suite called the ``\.{TRIP} test'' is available for
+    helping to determine whether a particular implementation deserves to be
+    known as `\TeX' [cf.~Stanford Computer Science report CS1027,
+    November 1984].
+68. TeX的全貌
+    @p @t\4@>@<Compiler directives@>@/
+    program TEX; {all file names are defined dynamically}
+    label @<Labels in the outer block@>@/
+    const @<Constants in the outer block@>@/
+    mtype @<Types in the outer block@>@/
+    var @<Global variables@>@/
+    @#
+    procedure initialize; {this procedure gets things started properly}
+      var @<Local variables for initialization@>@/
+      begin @<Initialize whatever \TeX\ might access@>@;
+      end;@#
+    @t\4@>@<Basic printing procedures@>@/
+    @t\4@>@<Error handling procedures@>@/
+69. 三个重要的标签
+    @d start_of_TEX=1 {go here when \TeX's variables are initialized}
+    @d end_of_TEX=9998 {go here to close files and terminate gracefully}
+    @d final_end=9999 {this label marks the ending of the program}
+70. 一大波常数正在接近
+    @<Constants...@>=
+    @!mem_max=30000; {greatest index in \TeX's internal |mem| array;
+      must be strictly less than |max_halfword|;
+      must be equal to |mem_top| in \.{INITEX}, otherwise |>=mem_top|}
+    @!mem_min=0; {smallest index in \TeX's internal |mem| array;
+      must be |min_halfword| or more;
+      must be equal to |mem_bot| in \.{INITEX}, otherwise |<=mem_bot|}
+    @!buf_size=500; {maximum number of characters simultaneously present in
+      current lines of open files and in control sequences between
+      \.{\\csname} and \.{\\endcsname}; must not exceed |max_halfword|}
+    @!error_line=72; {width of context lines on terminal error messages}
+    @!half_error_line=42; {width of first lines of contexts in terminal
+      error messages; should be between 30 and |error_line-15|}
+    @!max_print_line=79; {width of longest text lines output; should be at least 60}
+    @!stack_size=200; {maximum number of simultaneous input sources}
+    @!max_in_open=6; {maximum number of input files and error insertions that
+      can be going on simultaneously}
+    @!font_max=75; {maximum internal font number; must not exceed |max_quarterword|
+      and must be at most |font_base+256|}
+    @!font_mem_size=20000; {number of words of |font_info| for all fonts}
+    @!param_size=60; {maximum number of simultaneous macro parameters}
+    @!nest_size=40; {maximum number of semantic levels simultaneously active}
+    @!max_strings=3000; {maximum number of strings; must not exceed |max_halfword|}
+    @!string_vacancies=8000; {the minimum number of characters that should be
+      available for the user's control sequences and font names,
+      after \TeX's own error messages are stored}
+    @!pool_size=32000; {maximum number of characters in strings, including all
+      error messages and help texts, and the names of all fonts and
+      control sequences; must exceed |string_vacancies| by the total
+      length of \TeX's own strings, which is currently about 23000}
+    @!save_size=600; {space for saving values outside of current group; must be
+      at most |max_halfword|}
+    @!trie_size=8000; {space for hyphenation patterns; should be larger for
+      \.{INITEX} than it is in production versions of \TeX}
+    @!trie_op_size=500; {space for ``opcodes'' in the hyphenation patterns}
+    @!dvi_buf_size=800; {size of the output buffer; must be a multiple of 8}
+    @!file_name_size=40; {file names shouldn't be longer than this}
+    @!pool_name='TeXformats:TEX.POOL                     ';
+      {string of length |file_name_size|; tells where the string pool appears}
+    @.TeXformats@>
+71. 字符集
+    \TeX's internal code also defines the value of constants
+    that begin with a reverse apostrophe; and it provides an index to the
+    \.{\\catcode}, \.{\\mathcode}, \.{\\uccode}, \.{\\lccode}, and \.{\\delcode}
+    tables.
+72. 类型定义，这是PASCAL中的定义
+    @ Characters of text that have been converted to \TeX's internal form
+    are said to be of type |ASCII_code|, which is a subrange of the integers.
+    
+    @<Types...@>=
+    @!ASCII_code=0..255; {eight-bit numbers}
+73. PoorMan's Chinese
+    However, other settings of |xchr| will make \TeX\ more friendly on
+    computers that have an extended character set, so that users can type things
+    like `\.^^Z' instead of `\.{\\ne}'. People with extended character sets can
+    assign codes arbitrarily, giving an |xchr| equivalent to whatever
+    characters the users of \TeX\ are allowed to have in their input files.
+74. 初始化之一
+    @<Set init...@>=
+    for i:=0 to @'37 do xchr[i]:=' ';
+    for i:=@'177 to @'377 do xchr[i]:=' ';
+75. 又是类型定义
+    @<Types...@>=
+    @!eight_bits=0..255; {unsigned one-byte quantity}
+    @!alpha_file=packed file of text_char; {files that contain textual data}
+    @!byte_file=packed file of eight_bits; {files that contain binary data}
+76. 类型
+    @<Types...@>=
+    @!pool_pointer = 0..pool_size; {for variables that point into |str_pool|}
+    @!str_number = 0..max_strings; {for variables that point into |str_start|}
+    @!packed_ASCII_code = 0..255; {elements of |str_pool| array}
+77. 三标志的由来
+    @ The first 128 strings will contain 95 standard ASCII characters, and the
+    other 33 characters will be printed in three-symbol form like `\.{\^\^A}'
+    unless a system-dependent change is made here. Installations that have
+    an extended character set, where for example |xchr[@'32]=@t\.{\'^^Z\'}@>|,
+    would like string @'32 to be the single character @'32 instead of the
+    three characters @'136, @'136, @'132 (\.{\^\^Z}). On the other hand,
+    even people with an extended character set will want to represent string
+    @'15 by \.{\^\^M}, since @'15 is |carriage_return|; the idea is to
+    produce visible strings instead of tabs or line-feeds or carriage-returns
+    or bell-rings or characters that are treated anomalously in text files.
+78. pool文件
+    @ When the \.{WEB} system program called \.{TANGLE} processes the \.{TEX.WEB}
+    description that you are now reading, it outputs the \PASCAL\ program
+    \.{TEX.PAS} and also a string pool file called \.{TEX.POOL}. The \.{INITEX}
+    @.WEB@>@.INITEX@>
+    program reads the latter file, where each string appears as a two-digit decimal
+    length followed by the string itself, and the information is recorded in
+    \TeX's string memory.
+    
+    @<Glob...@>=
+    @!init @!pool_file:alpha_file; {the string-pool file output by \.{TANGLE}}
+    tini
+79. TeX中的DIG是个神奇的数组
+    @!dig : array[0..22] of 0..15; {digits in a number being output}
+80. print_ln是打印EOL的。
+81. print_char是用来输出字符的，ASCII
+82. slow_print是为了打印出特殊字符的
+83. print_nl是保证字符出现在新一行的
+84. print_esc是为了打印转义符的
+85. print_two是用来输出0到99之间的数字的
+86. print_hex是用来输出十六进制数的
+87. print_roman_int是个辅助函数
+88. Arithmetic with scaled dimensions.
+89. not a bug, it is a feature
+    (Actually there are three places where \TeX\ uses |div| with a possibly negative
+    numerator. These are harmless; see |div| in the index. Also if the user
+    sets the \.{\\time} or the \.{\\year} to a negative value, some diagnostic
+    information will involve negative-numerator division. The same remarks
+    apply for |mod| as well as for |div|.)
+90. CWEB注记
+    @ /@* 用来表示一个section
+    |int *pa| 用来表示行内的代码
+    @d 等同于#define
+    @f error normal 定义
+    @c @p 等同
+    @h 插入#define
+    @^system dependencies@> 索引
+91. sp
+    @ Physical sizes that a \TeX\ user specifies for portions of documents are
+    represented internally as scaled points. Thus, if we define an `sp' (scaled
+    @^sp@>
+    point) as a unit equal to $2^{-16}$ printer's points, every dimension
+    inside of \TeX\ is an integer number of sp. There are exactly
+    4,736,286.72 sp per inch.  Users are not allowed to specify dimensions
+    larger than $2^{30}-1$ sp, which is a distance of about 18.892 feet (5.7583
+    meters); two such quantities can be added without overflow on a 32-bit
+    computer.
+92. 数据结构入门
+    @* \[8] Packed data.
+    In order to make efficient use of storage space, \TeX\ bases its major data
+    structures on a |memory_word|, which contains either a (signed) integer,
+    possibly scaled, or a (signed) |glue_ratio|, or a small number of
+    fields that are one half or one quarter of the size used for storing
+    integers.
+93. 比较重要的glue_ratio
+    需要仔细看一下：Fixed-point glue setting — an example of WEB 
+    @ When \TeX\ ``packages'' a list into a box, it needs to calculate the
+    proportionality ratio by which the glue inside the box should stretch
+    or shrink. This calculation does not affect \TeX's decision making,
+    so the precise details of rounding, etc., in the glue calculation are not
+    of critical importance for the consistency of results on different computers.
+    
+    We shall use the type |glue_ratio| for such proportionality ratios.
+    A glue ratio should take the same amount of memory as an
+    |integer| (usually 32 bits) if it is to blend smoothly with \TeX's
+    other data structures. Thus |glue_ratio| should be equivalent to
+    |short_real| in some implementations of \PASCAL. Alternatively,
+    it is possible to deal with glue ratios using nothing but fixed-point
+    arithmetic; see {\sl TUGboat \bf3},1 (March 1982), 10--27. (But the
+    routines cited there must be modified to allow negative glue ratios.)
+    @^system dependencies@>
+94. 内存耗尽
+    @ If memory is exhausted, it might mean that the user has forgotten
+    a right brace. We will define some procedures later that try to help
+    pinpoint the trouble.
+95. 是否需要加入方向属性？
+    @d is_char_node(#) == (#>=hi_mem_min)
+      {does the argument point to a |char_node|?}
+    @d font == type {the font code in a |char_node|}
+    @d character == subtype {the character code in a |char_node|}
+96. TeX82 Memory Structure
+97. new_param_glue 参数化glue
+    new_glue 匿名glue
+    new_skip_param 以上二者合体
+98. penalty控制断行分页
+    @ A |penalty_node| specifies the penalty associated with line or page
+    breaking, in its |penalty| field. This field is a fullword integer, but
+    the full range of integer values is not used: Any penalty |>=10000| is
+    treated as infinity, and no break will be allowed for such high values.
+    Similarly, any penalty |<=-10000| is treated as negative infinity, and a
+    break will be forced.
