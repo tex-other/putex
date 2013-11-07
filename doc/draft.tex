@@ -472,3 +472,42 @@
     treated as infinity, and no break will be allowed for such high values.
     Similarly, any penalty |<=-10000| is treated as negative infinity, and a
     break will be forced.
+99. explicit kern
+    明确的，直接的 3989
+100. Uniscribe
+     http://blogs.msdn.com/b/murrays/archive/2010/01/12/special-capabilities-of-a-math-font.aspx
+     http://www.cnblogs.com/geniusvczh/archive/2012/11/06/2757868.html
+     http://msdn.microsoft.com/en-us/library/windows/desktop/dd374096%28v=vs.85%29.aspx
+     http://msdn.microsoft.com/zh-cn/goglobal/bb688099
+     http://www.tfsattic.com/codearc/windows/UnisSample.html
+     http://www.catch22.net/tuts/introduction-uniscribe
+     http://maxradi.us/documents/uniscribe/
+     http://www.microsoft.com/typography/developers/uniscribe/intro.htm
+     http://blog.csdn.net/jianlizhao66/article/details/1480748
+101. eexec Encryption，Type1字体的加密
+102. `T1ascii' translates a PostScript Type 1 font from compact binary (PFB) to
+      ASCII (PFA) format. The result is written to the standard output unless an
+      OUTPUT file is given.
+103. PASCAL的ord函数：ord('a')=97, chr(7)。加上x之后用户编码处理
+     @d null_code 0
+     @d carriage_return 015
+     @d invalid_code 0177
+104. 字符串处理，TeX中所有的字符串都存储在str_pool中
+105. memory_word是分段的，是有固定数目的。
+106. Lyle Ramshaw于1980年设计了TFM文件。
+     JFM是将character code转换成了character type。
+107. new_character 这就是要分析的。
+108. 注意XeTeX中的：
+     function new_native_word_node(f:internal_font_number; n:integer): pointer;
+     function new_native_character(f:internal_font_number; c:UnicodeScalar): pointer;
+     procedure font_feature_warning
+     procedure font_mapping_warning
+     procedure do_locale_linebreaks (s:integer; len:integer);
+109. DVI导言区的内容
+     i[1] DVI类型
+     num[4] den[4] 整数
+     mag[4] 缩放
+110. http://wiki.apache.org/xmlgraphics-fop/GoogleSummerOfCode2006/FloatsImplementationProgress/ImplementingBeforeFloats
+     http://tex.loria.fr/english/texbib.html
+     http://dl.acm.org/citation.cfm?id=865455
+270
