@@ -510,4 +510,220 @@
 110. http://wiki.apache.org/xmlgraphics-fop/GoogleSummerOfCode2006/FloatsImplementationProgress/ImplementingBeforeFloats
      http://tex.loria.fr/english/texbib.html
      http://dl.acm.org/citation.cfm?id=865455
-270
+111. BMP文件格式
+112. Michael Frederick Plass论文：Optimal Pagination Techniques for Automatic Typesetting System
+     a. 当全是文字的时候，是比较好办的，但是在有脚注和图像的时候就复杂了。
+     b. 文本list和figure list：box, glue, penalty, citation
+     c. trivial = 平凡，简单；intervention = 干预
+113. pdftoepdf.cc 调用poppler进行PDF处理的。
+     pdfTeX中的7b部分加入了随机数的支持。受METAPOST影响。
+     所谓的FMT文件：Locations of |mem| between |mem_bot| and
+     |mem_top| may be dumped as part of preloaded format files,
+     by the \.{INITEX} preprocessor.
+     关于mem表的动态分配：Production versions of \TeX\ may extend
+     the memory at both ends in order to provide more space;
+     locations between |mem_min| and |mem_bot| are always
+     used for variable-size nodes, and locations between |mem_top|
+     and |mem_max| are always used for single-word nodes.
+     mem表的分布：null<=
+                        mem_min<=
+                                 mem_bot<
+                                         lo_mem_max<
+                                                   hi_mem_min<
+                                                              mem_top<=
+                                                                       mem_end<=
+                                                                                mem_max
+     
+114. 关于CJK扩展的另一段文字
+     Extensions of \TeX\ for
+     oriental languages should be able to identify oriental fonts by means
+     of this additional header information.
+     @^oriental characters@>@^Chinese characters@>@^Japanese characters@>
+115. TeX关于TFM的处理，确实在不同版本之间存在一定的差异，tex.web-2.0就是个明证。
+     其实更深层次的一点呢，就是七位和八位之间的区别。
+116. TeX源代码的相关部分：TAOCP 2.5的19题。
+117. 写入DVI文件的函数：write_dvi。在PDFTeX中存在着write_pdf。
+118. 976节，这是需要查看的，分页算法。
+119. TeX的String Pool，字符串池。str_pool是所有字符串的数组。
+     而str_start是当前的索要用到的字符串的起始的那个字符串数组。
+     字符串的选用，是直接写入一个整数的，所以有着关系：
+     str_start[s]<=j<str_start[s+1]
+120. hmtx表和microtypography。
+     必须有一个基本值才可以进行运算。
+     还必须要考虑到kerning。
+     GSUB是一个巨大的ligature表，需要定义一个subsititute node。
+     name table的操作。
+     language id。
+     sTypoLineGap与unitsPerEm共同运算行距。
+     cbox与竖排的应用。
+     vmtx是关于竖排的参数的。hmtx是关于横排的参数的。
+     注意：6.1 Advanced Open Font layout extensions
+     注意：layout翻译作布排
+     注意：OFF布排字体使复杂字符和glyph相互映射实现可能，支持连字，位置变体，文本异位，和其他替换成为可能
+     注意：OFF布排字体包含二维的位置和glyph叠加。
+     注意：OFF字体含有书写系统和语言信息，文本处理应用可以读取以便校正。
+     注意：complex typographical。
+     复杂排版的含义就是针对于多语言和非latin的情况。
+     pTeX的\tatebaselineshift等也是对字体的调整，我需要强调的是另外的情况：多字体。
+     用户看到的和打印出来的是glyph而不是character。Glyph是character的表现形式。
+     字体是glyph的集合。用户想取到glyph，就必须读取字体的cmap表。
+     Glyph也可以表现出另外的一些情况：字符合并，字符变体。并不是一对一的关系。
+     Script是指的是书写系统。Language是指语言系统，具有不同的书写方式，比如断行。
+     Feature是指排版中需求的某一种特性。
+     OFF的五大表：GSUB，GPOS，BASE，JSTF和GDEF。
+     GSUB表的作用就是字体替换：单glyph替换，一对多替换，aesthetic（美学）变体，多glyph替换，上下文glyph替换。
+     GPOS表的作用：单字符校正，字符对校正，草写叠加，标记叠加，上下文glyph放置。
+     BASE表的作用：baseline信息。
+     JSTF表的作用：对齐信息，whitespace和Kashida。
+     GDEF表的作用：所有的glyph信息：type（glyph，ligature，复合标记），标记点，连写补助号。
+     文本处理流程：chars -> glyph -> GSUB -> GPOS + BASE -> linebreak -> JSTF -> Render.
+     Glyph Substitution table
+     Glyph Positioning table
+     Baseline table
+     Justification table
+     Glyph Definition table
+     GSUB和GPOS使用的是一样的数据结构。ScriptList，FeatureList，LookupList。
+     OFF有7种GSUB lookup，9种GPOSlookup。
+     baseline的各种类型：hang（藏文，竖写）
+     在PDF参考手册里面说到：A character is an abstract symbol, whereas a glyph is a specific graphical rendering of a character.
+     那么这里的意思就是说：两个层面。
+     Codepoint是一个二进制的数组。
+121. Libotf的API。
+     OTF_open (const char *name); 读取OpenType字体
+     OTF_open_ft_face (FT_Face face); 调用FreeType的字体
+     OTF_close (OTF *otf); 关闭字体
+     OTF_get_table (OTF *otf, const char * name); 读取head/name/cmap/GDEF/GSUB表
+     OTF_check_table (OTF *otf, const char * name); 校验表，如果存在，返回0，否则-1
+     OTF_get_scripts (OTF *otf, int gsubp); 装载OTF_ScriptList
+     OTF_get_features (OTF *otf, int gsubp); 装载OTF_FeatureList
+     OTF_check_features (OTF *otf, int gsubp, OTF_Tag script, OTF_Tag language, const OTF_Tag *features; int n_features); 校验书写/语言系统/特性，特性，返回1，否则返回0，如错误，返回-1
+     OTF_drive_cmap (OTF *otf, OTF_GlyphString *gstring); 处理glyph string
+     OTF_drive_cmap2 (OTF *otf, OTF_GlyphString *gstring, int platform_id, int encoding_id); 处理平台相关的
+     OTF_get_variation_glyphs (OTF *otf, int c, OTF_GlyphID code[256]); 变体字符
+     OTF_drive_gdef (OTF *otf, OTF_GlyphString *gstring); 通过GDEF来处理字符串
+     OTF_drive_gsub (OTF *otf, OTF_GlyphString *gstring, const char *script, const char *language, const char *feature); 通过GSUB来进行字符处理。
+     OTF_drive_gsub_with_log (OTF *otf, OTF_GlyphString *gstring, const char *script, const char *language, const char *feature); 通过GSUB来进行字符处理。并附带日志。
+     OTF_drive_gpos2 (OTF *otf, OTF_GlyphString *gstring, const char *script, const char *language, const char *features); 通过GPOS来进行字符处理
+     OTF_drive_gpos_with_log (OTF *otf, OTF_GlyphString *gstring, const char *script, const char *language, const char *features); 通过GPOS来进行字符处理。并附带日志。
+     OTF_drive_tables (OTF *otf, OTF_GlyphString *gstring, const char *script, const char *language, const char *gsub_features, const char *gpos_features); 复合函数
+     OTF_get_unicode (OTF *otf, OTF_GlyphID code); 取回Glyph的ID
+     OTF_drive_gsub_alternate (OTF *otf, OTF_GlyphString *gstring, const char *script, const char *language, const char *features); 变体替换
+     OTF_iterate_gsub_feature (OTF *otf, OTF_Feature_Callback callback, const char *script, const char *language, const char *feature); feature迭代
+
+     接下来看看定义了的类型：OTF_Tag, OTF_GlyphID, OTF_Offset。
+     OTF_Fixed是两个数，用来指代各种版本。
+     OTF_NameRecord是用来处理Name表的。
+     OTF_max_nameID是最大的nameID数：23
+     一个重要的数据结构：typedef struct { int size; int used; OTF_Glyph *glyphs; } OTF_GlyphString;
+     第一个结构成员：size指的是数组的大小
+     第二个结构成员：used指的是这其中有多少是用了的，为了防止越界，就必须在替换或者调整后重新使用这个数值进行输出。
+     第三个结构成员：指的是一串OTF_Glyph，这里面信息就很丰富了。
+
+
+122. UTF8格式 UTF-8 format (character.h)
+           0-7F       0xxxxxxx
+	       80-7FF      110xxxxx 10xxxxxx
+         800-FFFF     1110xxxx 10xxxxxx 10xxxxxx
+       10000-1FFFFF   11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+      200000-3FFFFFF  111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 
+     4000000-7FFFFFFF 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+123. OpenType的hhea - Horizontal header
+     Fixed  Table version number 版本号
+     FWORD  Asender              最高Asender
+     FWORD  Descender            最低Descender
+     FWORD  LineGap              行距
+     UFWORD advanceWidthMax      hmtx中最大的宽度
+     FWORD  minLeftSideBearing   最小左边距
+     FWORD  minRightSideBearing  最小右边距
+     FWORD  xMaxEntent           $Max(lsb + (xMax - xMin))$
+     SHORT  caretSlopeRise
+     SHORT  caretSlopeRun
+     SHORT  caretOffset
+     SHORT  metricDataFormat
+     USHORT numberOfHMetrics
+124. OpenType的hmtx - Horizontal metrics
+     typedef struct _longHorMetric {
+       USHORT advanceWidth;
+       SHORT  lsb;
+     } longHorMetric;
+125. OpenType的post表，PostScript
+     CFF的VORG表，Vertical origin table
+     TrueType的vmtx，Vertical Metrics
+     cmap - Character to glyph index mapping table
+126. GDEF表
+     表头
+     ULONG  Version
+     Offset GlyphClassDef
+     Offset AttachList
+     Offset LigCaretList
+     Offset MarkAttachClassDef
+     Offset MarkGlyphSetsDef
+127. GlyphClassDef 
+     1). Base glyph (single character, spacing glyph)
+     2). Ligature glyph (multiple character, spacing glyph)
+     3). Mark glyph (non-spacing combining glyph)
+     4). Component glyph (parts of single character, spacing glyph)
+128. AttachList
+     用作缓存
+129. OTF中的head表OTF_head，还缺bbox的四个参数
+     OTF中的name表OTF_name，参数还算齐全
+     OTF中的cmap表OTF_cmap，参数齐全
+130. M17N使用了FLT来对layout进行处理，Font Layout Table
+     对于简单的文本，一对一进行转换即可
+     对于复杂的文本，需要二维上的变换
+     FLT会对文本进行重新排序
+     分为不同的级别，第一级别是字符串，最后一级别是glyph code
+     在其他级别上，是中间状态
+     category 域
+     combining-spec 字符重叠
+     left-padding-flag 左空格
+     right-padding-flag 右空格
+     在绘制文本的时候，先有字体和FLT，然后转换成glyph sequene
+     首先查询catgory表，如果所有的glyph都没有catgory了，那么接着走
+131. 很显然：libotf只是个读取OpenType的库，有时候甚至需要进行手动调整glyph的次序
+     但是，从学术角度上看，这个未必不是个好东西
+132. ICU中的layout engine就是在layout文件夹下的
+133. 商业级别的Layout Engine
+     文鼎的Arphic Layout Engine：http://www.arphic.com/usa/products/ifont/layoutengine_01.htm
+     Bitstream的Panorama：http://en.wikipedia.org/wiki/Panorama_%28Layout_Engine%29
+     蒙纳的Word Type：http://www.monotype.com/services/screen-imaging-solutions/worldtype-layout-engine
+     甲骨文的XmCTL：http://docs.oracle.com/cd/E19455-01/806-0169/6j9hsml4a/index.html
+     D-Type的引擎：http://www.d-type.com/page/text_layout
+     RICOH的引擎：http://www.ricoh.com/font/
+                  http://www.ricoh.com/font/built_in/layout/
+134. 一个项目：UTRRS (Unicode Text Rendering Reference System)
+135. Unicode知识：{\sl Unicode Demystified} By Richard Gillam 
+136. Unicode的断行算法和TeX的断行算法还是有区别的，前者管的太多了
+     而后者很简单，但是效果不错。Linebreak也叫做word warp（变形）。
+     值得注意的是，TeX中可以断行的地方（见TeXbook第14章）：
+     glue, kern, math-off, penalty, discretionary
+137. Y and Y TeX中的可以使用的一些程序
+     dvidump，类似于dviasm，需要加一个反编译的功能？
+     prepdf，去除DVIPS中的位图字体的
+138. Ren\'e Descartes, 而直角坐标叫做：Cartesian coordination
+139. 中国少数民族文字：
+     维吾尔文，哈萨克文，柯尔克孜文：基于阿拉伯文字母，没有复杂的草写和连写
+     锡伯文，蒙古文，满文：基于蒙古文，nirugu类似kinsuda
+     傣语：Tai Le。Windows下的是Dafont。
+     僳僳文：拉丁文 J O Fraser
+140. GNU C 手册
+     1. GCC 允许标示符以$开始
+     2. C99新加的关键字：inline restrict _Bool _Complex _Imaginary
+     3. 白字符是分隔符而不是token
+     4. Pointers hold memory addresses of stored constants
+        or variables. For any data type, including both primitive
+        types and custom types, you can create a pointer that
+        holds the memory address of an instance of that type.
+141. The Fundamentals of Typography摘录
+     1. 双行读取的文字：Boustrophedon。这个叫做Reading direction
+     2. Movable Type 1436
+     3. A typeface is a collection of character which have the same
+       distinct design {\sl Complete Manual of Typography}
+     4. Font is the physical means used to creat a typeface.
+     5. Ligatures是为了避免字符相撞的，Diphthong是双元音
+142. 书写存在自由度，但是活字是被限制在一个方块中的
+     想要有一定的自由度，那就需要一些metrics
+     书写呢，一是写成什么样（glyph），一是在哪写（位置）
+     所谓的Layout Engine就是做这个两个工作的
+     TeX中的glue类似于活字印刷中的铅空
+     
