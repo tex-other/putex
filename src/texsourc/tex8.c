@@ -39,13 +39,8 @@ void math_fraction (void)
       scan_delimiter(mem_top - 12, false); 
     } 
     if(c % 3 == 0)
-    scan_dimen(false, false, false); 
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(1147);    /* Ambiguous; you need another { and } */
-    } 
+    scan_dimen(false, false, false);
+	print_err("Ambiguous; you need another { and }");
     {
       help_ptr = 3; 
       help_line[2]= 1148; /* I'm ignoring this fraction specification, since I don't */
@@ -98,13 +93,8 @@ void math_left_right (void)
   {
     if(cur_group == 15)
     {
-      scan_delimiter(mem_top - 12, false); 
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);    /* !  */
-  print(773);     /* Extra  */
-      } 
+      scan_delimiter(mem_top - 12, false);
+	  print_err("Extra "); 
       print_esc(871); /* right */
       {
   help_ptr = 1; 
@@ -164,12 +154,7 @@ void after_math (void)
     (font_params[eqtb[(hash_size + 1853)].hh.v.RH]< 22)||
     (font_params[eqtb[(hash_size + 1869)].hh.v.RH]< 22)) 
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(1152);    /* Math formula deleted: Insufficient symbol fonts */
-    } 
+	  print_err("Math formula deleted: Insufficient symbol fonts");
     {
       help_ptr = 3; 
       help_line[2]= 1153; /* Sorry, but I can't typeset math unless \textfont Sorry, but I can't typeset math unless \textfont 2 */ 
@@ -184,12 +169,7 @@ void after_math (void)
       (font_params[eqtb[(hash_size + 1854)].hh.v.RH]< 13)||
       (font_params[eqtb[(hash_size + 1870)].hh.v.RH]< 13)) 
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(1156);    /* Math formula deleted: Insufficient extension fonts */
-    } 
+	  print_err("Math formula deleted: Insufficient extension fonts");
     {
       help_ptr = 3; 
       help_line[2]= 1157; /* Sorry, but I can't typeset math unless \textfont 3 */
@@ -209,12 +189,7 @@ void after_math (void)
       get_x_token (); 
       if(cur_cmd != 3)
       {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(1160);    /* Display math should end with $$ */
-  } 
+		  print_err("Display math should end with $$");
   {
     help_ptr = 2; 
     help_line[1]= 1161; /* The `$' that I just saw supposedly matches a previous `$$'. */
@@ -237,12 +212,7 @@ void after_math (void)
     (font_params[eqtb[(hash_size + 1853)].hh.v.RH]< 22)||
     (font_params[eqtb[(hash_size + 1869)].hh.v.RH]< 22)) 
     {
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* !  */
-  print(1152);  /* Math formula deleted: Insufficient symbol fonts */
-      } 
+		print_err("Math formula deleted: Insufficient symbol fonts");
       {
   help_ptr = 3; 
   help_line[2]= 1153;   /* Sorry, but I can't typeset math unless \textfont 2 */ 
@@ -257,12 +227,7 @@ void after_math (void)
        (font_params[eqtb[(hash_size + 1854)].hh.v.RH]< 13)|| 
        (font_params[eqtb[(hash_size + 1870)].hh.v.RH]< 13)) 
     {
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* !  */
-  print(1156);  /* Math formula deleted: Insufficient extension fonts */
-      } 
+		print_err("Math formula deleted: Insufficient extension fonts");
       {
   help_ptr = 3; 
   help_line[2]= 1157;   /* Sorry, but I can't typeset math unless \textfont 3 */
@@ -305,12 +270,7 @@ void after_math (void)
     {
       get_x_token (); 
       if(cur_cmd != 3) {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(1160);    /* Display math should end with $$ */
-  } 
+		  print_err("Display math should end with $$");
   {
     help_ptr = 2; 
     help_line[1]= 1161; /* The `$' that I just saw supposedly matches a previous `$$'. */
@@ -489,12 +449,7 @@ lab20:
   } while(!(cur_tok != 2592)); 
 /*  if((cur_cs == 0)||(cur_cs > (hash_size + 514))) */  /* 95/Jan/10 */
   if((cur_cs == 0)||(cur_cs > (hash_size + hash_extra + 514))) {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(1178);    /* Missing control sequence inserted */
-    } 
+	  print_err("Missing control sequence inserted");
     {
       help_ptr = 5; 
       help_line[4]= 1179; /* Please don't say `\def cs{...}', say `\def\cs{...}'. */
@@ -541,12 +496,7 @@ void do_register_command_ (small_number a)
       } 
       if(cur_cmd != 89)
       {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(682);   /* You can't use ` */
-  } 
+		  print_err("You can't use `");
   print_cmd_chr(cur_cmd, cur_chr); 
   print(683);     /* ' after  */
   print_cmd_chr(q, 0); 
@@ -655,12 +605,7 @@ void do_register_command_ (small_number a)
     } 
   } 
   if(arith_error){
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(1201);    /* Arithmetic overflow */
-    } 
+	  print_err("Arithmetic overflow");
     {
       help_ptr = 2; 
       help_line[1]= 1202; /* I can't carry out that multiplication or division, */
@@ -701,12 +646,7 @@ void alter_aux (void)
       scan_int (); 
       if((cur_val <= 0)||(cur_val > 32767)) 
       {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(1207);    /* Bad space factor */
-  } 
+		  print_err("Bad space factor");
   {
     help_ptr = 1; 
     help_line[0]= 1208; /* I allow only values in the range 1..32767 here. */
@@ -728,12 +668,7 @@ void alter_prev_graf (void)
   scan_int (); 
   if(cur_val < 0)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262); /* ! */
-      print(949); /* Bad */
-    } 
+	  print_err("Bad ");
     print_esc(529); /* prevgraf */
     {
       help_ptr = 1; 
@@ -836,11 +771,7 @@ void new_font_(small_number a)
     s = cur_val; 
     if((s <= 0)||(s >= 134217728L)) /* 2^27 */
     {
-      {
-  if(interaction == 3)  ; 
-  print_nl(262);  /* ! */
-  print(1216);  /* Improper `at' size(*/
-      } 
+		print_err("Improper `at' size(");
       print_scaled(s); 
       print(1217);  /* pt), replaced by 10pt */
       {
@@ -857,11 +788,7 @@ void new_font_(small_number a)
     scan_int (); 
     s = - (integer) cur_val; 
     if((cur_val <= 0)||(cur_val > 32768L))  {
-      {
-  if(interaction == 3)  ; 
-  print_nl(262);  /* ! */
-  print(549);   /* Illegal magnification has been changed to 1000 */
-      } 
+		print_err("Illegal magnification has been changed to 1000");
       {
   help_ptr = 1; 
   help_line[0]= 550;  /* The magnification ratio must be between 1 and 32768. */
@@ -881,8 +808,8 @@ void new_font_(small_number a)
     k2 = str_start[cur_name];
     l1 = str_start[cur_area + 1] - str_start[cur_area];
     l2 = str_start[cur_name + 1] - str_start[cur_name];
-    showchar('\n');
-    showline("FONT ", 0);
+    show_char('\n');
+    show_line("FONT ", 0);
     for (i = 0; i < l1; i++) {
       *sch++ = str_pool[i+k1];
     }
@@ -891,7 +818,7 @@ void new_font_(small_number a)
     }
     *sch++ = ' ';
     *sch++ = '\0';
-    showline(log_line, 0);
+    show_line(log_line, 0);
   }
 /*  if (ignore_frozen) goto lab69; */     /* 98/Oct/5 */
 
@@ -919,7 +846,7 @@ void new_font_(small_number a)
               if (ignore_frozen == 0 || f > frozenfontptr) { /* 99/Mar/26 */
                 if (trace_flag) {
                   sprintf(log_line, "SKIPPING %ld ", s);
-                  showline(log_line, 0);
+                  show_line(log_line, 0);
                 }
                 goto lab50;
               }
@@ -932,7 +859,7 @@ void new_font_(small_number a)
             if (ignore_frozen == 0 || f > frozenfontptr) { /* 99/Mar/26 */
               if (trace_flag) {
                 sprintf(log_line, "SKIPPING %ld ", s);
-                showline(log_line, 0);
+                show_line(log_line, 0);
               }
               goto lab50;
             }
@@ -943,14 +870,14 @@ void new_font_(small_number a)
 
 /* lab69: */  /* 98/Oct/5 */
 /* end of paragraph 1257 */
-  if (trace_flag) showline("READING ", 0);  /* debugging only */
+  if (trace_flag) show_line("READING ", 0);  /* debugging only */
   f = read_font_info(u, cur_name, cur_area, s); 
 
 /* common_ending: equiv[u] <- f;  */  /* use existing font info */
   lab50:
   if (trace_flag) {
     sprintf(log_line, "NEW FONT %d ", f); /* debugging only */
-    showline(log_line, 0);
+    show_line(log_line, 0);
   }
   eqtb[u].hh.v.RH = f; 
 /*  eqtb[(hash_size + 524) + f]= eqtb[u];*/ /* eqtb[frozen_null+font+f] */
@@ -958,7 +885,7 @@ void new_font_(small_number a)
 #ifdef SHORTHASH            /*  debugging only  1996/Jan/20 */
   if (t > 65535L) {
     sprintf(log_line, "ERROR: %s too large %d\n",  "hash_used", t);
-    showline(log_line, 1);
+    show_line(log_line, 1);
   }
 #endif
 /*  hash[(hash_size + 524) + f].v.RH = t;  */
@@ -1083,13 +1010,7 @@ void issue_message (void)
 #endif
   } 
   else {
-      
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(335);   /* */
-    } 
+    print_err("");  
     slow_print(s); 
     if(eqtb[(hash_size + 1321)].hh.v.RH != 0)
     use_err_help = true; 
@@ -1199,13 +1120,8 @@ void show_whatever (void)
     } 
     break; 
   } 
-  end_diagnostic(true); 
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);  /* !  */
-    print(1249);  /* OK */
-  } 
+  end_diagnostic(true);
+  print_err("OK");
   if(selector == 19)
   if(eqtb[(hash_size + 3192)].cint <= 0)
   {
@@ -1379,12 +1295,7 @@ void handle_right_brace (void)
     break; 
   case 0 : 
     {
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* !  */
-  print(1038);  /* Too many }'s */
-      } 
+		print_err("Too many }'s");
       {
   help_ptr = 2; 
   help_line[1]= 1039;   /* You've closed more groups than you opened. */
@@ -1468,12 +1379,7 @@ void handle_right_brace (void)
       if((cur_input.loc_field != 0)||((cur_input.index_field != 6)&&(
       cur_input.index_field != 3)))
       {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(1004);    /* Unbalanced output routine */
-  } 
+		  print_err("Unbalanced output routine");
   {
     help_ptr = 2; 
     help_line[1]= 1005; /* Your sneaky output routine has problematic {'s and/or }'s. */
@@ -1491,12 +1397,7 @@ void handle_right_brace (void)
       insert_penalties = 0; 
       if(eqtb[(hash_size + 1833)].hh.v.RH != 0)
       {
-      {
-        if(interaction == 3)
-        ; 
-        print_nl(262);    /* !  */
-        print(1007);    /* Output routine didn't use all of  */
-      } 
+		  print_err("Output routine didn't use all of ");
       print_esc(406);   /* box */
       print_int(255); 
       {
@@ -1534,13 +1435,8 @@ void handle_right_brace (void)
       back_input (); 
 /*      cur_tok = (hash_size + 4610);  */
 /*      cur_tok = (hash_size + 4095 + 515);  */
-      cur_tok = (hash_size + hash_extra + 4095 + 515); 
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* !  */
-  print(622);   /* Missing  */
-      } 
+      cur_tok = (hash_size + hash_extra + 4095 + 515);
+	  print_err("Missing ");
       print_esc(893); /* cr */
       print(623);   /* inserted */
       {

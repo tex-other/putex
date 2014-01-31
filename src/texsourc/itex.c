@@ -263,11 +263,11 @@ if (!non_ascii) {
 			  break;
 		  }
 	  if (flag) {		/* 127 here means mapping undefined */
-		  showline("Inverted mapping xord[] pairs:\n", 0);
+		  show_line("Inverted mapping xord[] pairs:\n", 0);
 		  for (k = 0; k < 256; k++) {	/*  entries in xord / xchr */
 			  if (xord[k]!= 127) {
 				  sprintf(log_line, "%d => %d\n", k, xord[k]);
-				  showline(log_line, 0);
+				  show_line(log_line, 0);
 			  }
 		  }
 	  }
@@ -451,7 +451,7 @@ if (!non_ascii) {
 #else
 /* trap the -i on command line situation if INITEX was NOT defined */
   if (is_initex) {
-	  showline("Sorry, somebody forgot to make an INITEX!\n", 1);
+	  show_line("Sorry, somebody forgot to make an INITEX!\n", 1);
   }
 #endif /* not INITEX */
 } 
@@ -1171,12 +1171,7 @@ void prefixed_command (void)
     } while(!((cur_cmd != 10)&&(cur_cmd != 0))); 
     if(cur_cmd <= 70)
     {
-      {
-	if(interaction == 3)
-	; 
-	print_nl(262);	/* !  */
-	print(1173);	/* You can't use a prefix with ` */
-      } 
+      print_err("You can't use a prefix with `");
       print_cmd_chr(cur_cmd, cur_chr); 
       print_char(39);	/* ' */
       {
@@ -1188,12 +1183,7 @@ void prefixed_command (void)
     } 
   } 
   if((cur_cmd != 97)&&(a % 4 != 0)) {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);		/* ! */
-      print(682);		/* You can't use ` */
-    } 
+    print_err("You can't use `");
     print_esc(1165);		/* long */
     print(1175);		/* ' or ` */
     print_esc(1166);		/* outer */
@@ -1337,12 +1327,7 @@ void prefixed_command (void)
       n = cur_val; 
       if(! scan_keyword(836))	/* to */
       {
-	{
-	  if(interaction == 3)
-	; 
-	  print_nl(262);		/* ! */
-	  print(1067);		/* Missing `to' inserted */
-	} 
+      print_err("Missing `to' inserted");
 	{
 	  help_ptr = 2; 
 	  help_line[1]= 1194;	/* You should have said `\read<number> to \cs'. */
@@ -1482,12 +1467,7 @@ void prefixed_command (void)
       scan_int (); 
       if(((cur_val < 0)&&(p < (hash_size + 3474))) ||(cur_val > n)) 
       {
-	{
-	  if(interaction == 3)
-	; 
-	  print_nl(262);		/* ! */
-	  print(1196);		/* Invalid code(*/
-	} 
+		  print_err("Invalid code(");
 	print_int(cur_val); 
 	if(p < (hash_size + 3474))
 		print(1197);	/*), should be in the range 0.. */
@@ -1542,13 +1522,7 @@ void prefixed_command (void)
 		  scan_box(1073741824L + n); /* 2^30 + n */ /* box_flag + n */
 	  }
       else {
-	  
-	{
-	  if(interaction == 3)
-	; 
-	  print_nl(262);		/* ! */
-	  print(677);		/* Improper  */
-	} 
+	  print_err("Improper ");
 	print_esc(533);		/* setbox */
 	{
 	  help_ptr = 2; 
@@ -1614,12 +1588,7 @@ void prefixed_command (void)
       goto lab30; 
   }						/* bkph */
 #endif /* INITEX */
-      {
-	if(interaction == 3)
-	; 
-	print_nl(262);	/* ! */
-	print(1210);	/* Patterns can be loaded only by INITEX */
-      } 
+     print_err("Patterns can be loaded only by INITEX");
       help_ptr = 0; 
       error (); 
       do {
@@ -1678,27 +1647,27 @@ lab30:
 
 /* added following explanations 96/Jan/10 */
 
-void badformatorpool (char *name, char *defaultname, char *envvar)
+void bad_formator_pool (char *name, char *defaultname, char *envvar)
 {
 	if (name == NULL) name = defaultname;
 	sprintf(log_line, "(Perhaps %s is for an older version of TeX)\n", name); 
-	showline(log_line, 0);
+	show_line(log_line, 0);
 	name_of_file[name_length + 1] = '\0';	/* null terminate */
 	sprintf(log_line, "(Alternatively, %s may have been corrupted)\n", name_of_file+1);
-	showline(log_line, 0);
+	show_line(log_line, 0);
 	name_of_file[name_length + 1] = ' ';	/* space terminate */
 	sprintf(log_line,
 		"(Perhaps your %s environment variable is not set correctly)\n", envvar);
-	showline(log_line, 0);
+	show_line(log_line, 0);
 	{
 		char *s;						/* extra info 99/April/28 */
 		if ((s = grabenv(envvar)) != NULL) {
 			sprintf(log_line, "(%s=%s)\n", envvar, s);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 		}
 		else {
 			sprintf(log_line, "%s environment variable not set\n", envvar);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 		}
 	}
 #ifndef _WINDOWS
@@ -1727,7 +1696,7 @@ bool load_fmt_file (void)
 /*	we already read this once earlier to grab mem_top */
 	if (trace_flag) {
 		sprintf(log_line, "Read from fmt file mem_top = %d TeX words\n", x);
-		showline(log_line, 0);
+		show_line(log_line, 0);
 	}
 /*    allocate_main_memory (x); */	/* allocate main memory at this point */
     mem = allocate_main_memory(x);	/* allocate main memory at this point */
@@ -1766,7 +1735,7 @@ bool load_fmt_file (void)
 		if (trace_flag) {
 			sprintf(log_line, "undump string pool reallocation (%d > %d)\n",
 			   x, current_pool_size);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 		}
 		str_pool = realloc_str_pool (x - current_pool_size + increment_pool_size);
 	}
@@ -1778,7 +1747,7 @@ bool load_fmt_file (void)
     {
    ; 
       sprintf(log_line, "%s%s\n",  "---! Must increase the ", "string pool size"); 
-	  showline(log_line, 0);
+	  show_line(log_line, 0);
       goto lab6666; 
     } 
     else pool_ptr = x; 
@@ -1793,7 +1762,7 @@ bool load_fmt_file (void)
 		if (trace_flag) {
 			sprintf(log_line, "undump string pointer reallocation (%d > %d)\n",
 				  x, current_max_strings);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 		}
 		str_start = realloc_str_start(x - current_max_strings + increment_max_strings);
 	}
@@ -1805,7 +1774,7 @@ bool load_fmt_file (void)
     {
    ; 
       sprintf(log_line,  "%s%s\n",  "---! Must increase the ", "max strings"); 
-	  showline(log_line, 0);
+	  show_line(log_line, 0);
       goto lab6666; 
     } 
     else str_ptr = x; 
@@ -1847,9 +1816,9 @@ bool load_fmt_file (void)
 /*  if(mem_min < -2) */
   if(mem_min < mem_bot - 2)					/*  ? splice in block below */
   {
-/*	or call addvariablespace(mem_bot - (mem_min + 1)) */
+/*	or call add_variable_space(mem_bot - (mem_min + 1)) */
 
-    if (trace_flag) showline("Splicing in mem_min space in undump!\n", 0);
+    if (trace_flag) show_line("Splicing in mem_min space in undump!\n", 0);
 
     p = mem[rover + 1].hh.v.LH; 
     q = mem_min + 1; 
@@ -1945,7 +1914,7 @@ bool load_fmt_file (void)
   undump_int(cs_count);			/* cs_count */
   if (trace_flag) {
 	  sprintf(log_line, "itex undump cs_count %d ", cs_count); /* debugging */
-	  showline(log_line, 0);
+	  show_line(log_line, 0);
   }
   {
     undump_int(x);				/* font_mem_size */
@@ -1955,13 +1924,13 @@ bool load_fmt_file (void)
 #ifdef ALLOCATEFONT
 	if (trace_flag) {
 		sprintf(log_line, "Read from fmt fmem_ptr = %d\n", x);
-		showline(log_line, 0);
+		show_line(log_line, 0);
 	}
     if(x > current_font_mem_size){	/* 93/Nov/28 dynamic allocate font_info */
 		if (trace_flag) {
 			sprintf(log_line, "Undump realloc font_info (%d > %d)\n",
 				   x, current_font_mem_size);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 		}
 		font_info = realloc_font_info(x - current_font_mem_size + increment_font_mem_size);
 	}
@@ -1973,7 +1942,7 @@ bool load_fmt_file (void)
     {
    ; 
       sprintf(log_line, "%s%s\n",  "---! Must increase the ", "font mem size"); 
-	  showline(log_line, 0);
+	  show_line(log_line, 0);
       goto lab6666; 
     } 
     else fmem_ptr = x; 
@@ -1989,7 +1958,7 @@ bool load_fmt_file (void)
       {
 	; 
 		sprintf(log_line, "%s%s\n",  "---! Must increase the ", "font max"); 
-		showline(log_line, 0);
+		show_line(log_line, 0);
 		goto lab6666; 
       } 
       else font_ptr = x; 
@@ -2069,7 +2038,7 @@ bool load_fmt_file (void)
 			  sprintf(log_line,
 					  "oldfont_mem_size is %d --- hit %d times. Using non_address %d\n",
 					  oldfont_mem_size, count, non_address);
-			  showline(log_line, 0);
+			  show_line(log_line, 0);
 		  }
 
 	  }
@@ -2145,7 +2114,7 @@ bool load_fmt_file (void)
     {
    ; 
       sprintf(log_line, "%s%s\n",  "---! Must increase the ", "trie size"); 
-	  showline(log_line, 0);
+	  show_line(log_line, 0);
       goto lab6666; 
     } 
     else j = x; 
@@ -2171,7 +2140,7 @@ bool load_fmt_file (void)
     {
    ; 
       sprintf(log_line, "%s%s\n",  "---! Must increase the ", "trie op size"); 
-	  showline(log_line, 0);
+	  show_line(log_line, 0);
       goto lab6666; 
     } 
     else j = x; 
@@ -2269,10 +2238,10 @@ bool load_fmt_file (void)
 
   lab6666:; 
   sprintf(log_line, "(Fatal format file error; I'm stymied)\n"); 
-  showline(log_line, 1);
+  show_line(log_line, 1);
 /* added following bit of explanation 96/Jan/10 */
   if (! knuth_flag)
-	  badformatorpool(format_file, "the format file", "TEXFORMATS");
+	  bad_formator_pool(format_file, "the format file", "TEXFORMATS");
   Result = false; 
   return Result; 
 } 
@@ -2344,7 +2313,7 @@ void final_clean_up (void)
 		while(c++ < for_end);
 	} 
 /* *********************************************************************** */
-		storefmtfile ();	// returns a value ?
+		store_fmt_file ();	// returns a value ?
 	}
 #endif /* INITEX */
 	if (!is_initex) 			/* 2000/March/3 */
@@ -2361,29 +2330,29 @@ int checkpool (char *task)
 
 	if (task != NULL) {
 		sprintf(log_line, "Check on string pool start (%s)\n", task);
-		showline(log_line, 0);
+		show_line(log_line, 0);
 	}
 	for (k = 0; k < 32; k++) {
 		if (str_start[k] != 3 * k) {
 			sprintf(log_line, "k %d str_start[k] %d\n", k, str_start[k]);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 		}
 	}
 	for (k = 32; k < 128; k++) {
 		if (str_start[k] != 96 + (k - 32)) {
 			sprintf(log_line, "k %d str_start[k] %d\n", k, str_start[k]);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 		}
 	}
 	for (k = 128; k < 256; k++) {
 		if (str_start[k] != 194 + 4 * (k - 128)){
 			sprintf(log_line, "k %d str_start[k] %d\n", k, str_start[k]);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 		}
 	}
 	if (task != NULL) {
 		sprintf(log_line, "Check on string pool (%s)\n", task);
-		showline(log_line, 0);
+		show_line(log_line, 0);
 	}
 	for (k = 0; k < str_ptr; k++) {
 		if (str_start[k+1] == 0) break;
@@ -2402,7 +2371,7 @@ int checkpool (char *task)
 		if (flag) {
 			bad++;
 			sprintf(log_line, "BAD %d (start at %d): ", k, st);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 			s = log_line;
 			for (i = 0; i < n; i++) {
 				c = str_pool[st + i];
@@ -2426,11 +2395,11 @@ int checkpool (char *task)
 			}
 			*s++ = '\n';
 			*s++ = '\0';
-			showline(log_line, stdout);
+			show_line(log_line, stdout);
 		}
 	}
 	sprintf(log_line, "end of check (%s)\n", bad ? "BAD" : "OK");
-	showline(log_line, 0);
+	show_line(log_line, 0);
 	if (bad) {
 		if (task == NULL) return bad;
 		else exit(1);
@@ -2439,7 +2408,7 @@ int checkpool (char *task)
 }  /* DEBUGGING ONLY */
 #endif
 
-void showfrozen (void)
+void show_frozen (void)
 {
 	int i, j, n;
 	fprintf(log_file, "\n");
@@ -2469,7 +2438,7 @@ int texbody (void)					/* now returns a value --- bkph */
 { 
   history = 3; 
 
-  setpaths(TEXFORMATPATHBIT + TEXINPUTPATHBIT + TEXPOOLPATHBIT + TFMFILEPATHBIT); 
+  set_paths(TEXFORMATPATHBIT + TEXINPUTPATHBIT + TEXPOOLPATHBIT + TFMFILEPATHBIT); 
 
   if(ready_already == 314159L)goto lab1; /* magic number */
 /*	These tests are almost all compile time tests and so could be eliminated */
@@ -2536,9 +2505,9 @@ int texbody (void)					/* now returns a value --- bkph */
   if(bad > 0) {
     sprintf(log_line,  "%s%s%ld\n",  "Ouch---my internal constants have been clobbered!",
 			"---case ", (long) bad); 
-	showline(log_line, 1);
+	show_line(log_line, 1);
     if (! knuth_flag) 
-		badformatorpool(format_file, "the format file", "TEXFORMATS");	/* 96/Jan/17 */
+		bad_formator_pool(format_file, "the format file", "TEXFORMATS");	/* 96/Jan/17 */
     goto lab9999;			// abort
   } 
   initialize (); 
@@ -2564,9 +2533,9 @@ lab1:			/* get here directly if ready_already already set ... */
   tally = 0; 
   term_offset = 0; 
   file_offset = 0; 
-  showline(tex_version, 0); 
+  show_line(tex_version, 0); 
   sprintf(log_line, " (%s %s)", application, yandyversion);
-  showline(log_line, 0);
+  show_line(log_line, 0);
   if(format_ident > 0)slow_print(format_ident); 
   print_ln (); 
 #ifndef _WINDOWS
@@ -2656,7 +2625,7 @@ lab1:			/* get here directly if ready_already already set ... */
 /*	show font TFMs frozen into format file */
 /*	moved here after start_input to ensure the log file is open */
   if (show_tfm_flag && log_opened && font_ptr > 0) 		/* 98/Sep/28 */
-	  showfrozen();
+	  show_frozen();
 
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -2664,13 +2633,13 @@ lab1:			/* get here directly if ready_already already set ... */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   history = 0; 
 
-  if (show_cs_names) printcsnames(stdout, 0);		/* 98/Mar/31 */
+  if (show_cs_names) print_cs_names(stdout, 0);		/* 98/Mar/31 */
 
   main_control();			/* read-eval-print loop :-) in tex8.c */
 
 //	what if abort_flag is set now ?
 
-  if (show_cs_names) printcsnames(stdout, 1);		/* 98/Mar/31 */
+  if (show_cs_names) print_cs_names(stdout, 1);		/* 98/Mar/31 */
 
 //	what if abort_flag is set now ?
 
@@ -2697,7 +2666,7 @@ lab1:			/* get here directly if ready_already already set ... */
 
 #ifdef ALLOCATEMAIN
 /* add a block of variable size node space below mem_bot */
-void addvariablespace(int size)
+void add_variable_space(int size)
 {	/* used in tex0.c, local.c, itex.c */
 	
 	halfword p;
@@ -2709,7 +2678,7 @@ void addvariablespace(int size)
 	mem_min = t - (size + 1);			/* first word in new block - 1 */
 /*	mem_min = mem_start; */				/* allocate all of it at once */
 	if (mem_min < mem_start) {			/* sanity test */
-		if (trace_flag) showline("WARNING: mem_min < mem_start!\n", 0);
+		if (trace_flag) show_line("WARNING: mem_min < mem_start!\n", 0);
 		mem_min = mem_start;
 	}
 	p = mem[rover + 1].hh.v.LH; 
@@ -2739,7 +2708,7 @@ void addvariablespace(int size)
 
 #ifdef INITEX
 /* split out to allow sharing of code from do_initex and newpattern */
-void resettrie (void)
+void reset_trie (void)
 {
 	integer k;
 	{
@@ -3054,7 +3023,7 @@ void do_initex (void)
 /*  hash_used = (hash_size + 514);  */
   hash_used = (hash_size + hash_extra + 514);	/* 96/Jan/10 */
   cs_count = 0; 
-  if (trace_flag) showline("itex cs_count=0 ", 0);		/* debugging */
+  if (trace_flag) show_line("itex cs_count=0 ", 0);		/* debugging */
 /* eq_type(frozen_dont_expand) <- dont_expand; */
 /*  eqtb[10023].hh.b0 = 116;  */
 /*  eqtb[(hash_size + 523)].hh.b0 = 116;  */
@@ -3091,7 +3060,7 @@ void do_initex (void)
   font_params[0]= 7; 
   param_base[0]= -1; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***  */
-  resettrie ();					/* shared 93/Nov/26 */
+  reset_trie ();					/* shared 93/Nov/26 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***  */
 /*  {register integer for_end; k = 0; for_end = 6; if(k <= for_end) do 
     font_info[k].cint = 0; 
@@ -3225,10 +3194,10 @@ bool get_strings_started (void)
 	{
 	; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-	  showline("! string pool file has no check sum.\n", 1); 
+	  show_line("! string pool file has no check sum.\n", 1); 
 /*	  added following bit of explanation 96/Jan/16 */
 	  if (! knuth_flag) 
-	      badformatorpool(string_file, "the pool file", "TEXPOOL");
+	      bad_formator_pool(string_file, "the pool file", "TEXPOOL");
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 	  (void) a_close(pool_file); 
 	  Result = false; 
@@ -3245,10 +3214,10 @@ bool get_strings_started (void)
 	    {
 	   ; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-		  showline("! string pool file check sum doesn't have nine digits.\n", 1);
+		  show_line("! string pool file check sum doesn't have nine digits.\n", 1);
 /*		  added following bit of explanation 96/Jan/16 */
 		  if (! knuth_flag) 
-		      badformatorpool(string_file, "the pool file", "TEXPOOL");
+		      bad_formator_pool(string_file, "the pool file", "TEXPOOL");
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 	      (void) a_close(pool_file); 
 	      Result = false; 
@@ -3264,10 +3233,10 @@ bool get_strings_started (void)
 	  lab30: if(a != BEGINFMTCHECKSUM){
 	 ; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-		showline("! string pool check sum doesn't match; tangle me again.\n", 1);
+		show_line("! string pool check sum doesn't match; tangle me again.\n", 1);
 /*	    added following bit of explanation 96/Jan/16 */
 		if (! knuth_flag) 
-		    badformatorpool(string_file, "the pool file", "TEXPOOL");
+		    bad_formator_pool(string_file, "the pool file", "TEXPOOL");
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 	    (void) a_close(pool_file); 
 	    Result = false; 
@@ -3282,10 +3251,10 @@ bool get_strings_started (void)
 	  {
 	 ; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-		showline("! string pool line doesn't begin with two digits.\n", 1);
+		show_line("! string pool line doesn't begin with two digits.\n", 1);
 /*		added following bit of explanation 96/Jan/16 */
 		if (! knuth_flag) 
-		    badformatorpool(string_file, "the pool file", "TEXPOOL");
+		    bad_formator_pool(string_file, "the pool file", "TEXPOOL");
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 	    (void) a_close(pool_file); 
 	    Result = false; 
@@ -3297,7 +3266,7 @@ bool get_strings_started (void)
 /* can freely extend memory, so we need not be paranoid - stringvacancies */
 /*	  if(pool_ptr + l + stringvacancies > current_pool_size)*/
 	  if(pool_ptr + l + stringmargin > current_pool_size){
-		  if (trace_flag) showline("String margin reallocation\n", 0);
+		  if (trace_flag) show_line("String margin reallocation\n", 0);
 /*		  str_pool =  realloc_str_pool (pool_ptr + l + stringvacancies */
 		  str_pool =  realloc_str_pool (pool_ptr + l + stringmargin 
 					- current_pool_size  + increment_pool_size);
@@ -3309,7 +3278,7 @@ bool get_strings_started (void)
 #endif
 	  {
 	 ; 
-	    showline("! You have to increase POOLSIZE.\n", 1);
+	    show_line("! You have to increase POOLSIZE.\n", 1);
 	    (void) a_close(pool_file); 
 	    Result = false; 
 	    return(Result); 
@@ -3344,9 +3313,9 @@ bool get_strings_started (void)
  ; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     sprintf(log_line, "! I can't read %s.\n", poolname); 
-	showline(log_line, 1);
+	show_line(log_line, 1);
 	if (! knuth_flag)
-	showline("  (Was unable to find tex.poo or tex.pool)\n", 0); /* extra explain */
+	show_line("  (Was unable to find tex.poo or tex.pool)\n", 0); /* extra explain */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     Result = false; 
     return(Result); 
@@ -3420,7 +3389,7 @@ void primitive_ (str_number s, quarterword c, halfword o)
     } 
 /*	**********************  debugging only  96/Jan/20 should not happen */
 #ifdef SHORTHASH
-	if (s > 65535L) showline("ERROR: hash entry too large\n", 1);
+	if (s > 65535L) show_line("ERROR: hash entry too large\n", 1);
 #endif
     hash[cur_val].v.RH = s;
   }
@@ -3632,10 +3601,10 @@ void new_patterns (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (! trie_not_ready) {					/* new stuff */
 	  if (allow_patterns) {	
-		  if (trace_flag) showline("Resetting patterns\n", 0);
-		  resettrie();					/* RESET PATTERNS -  93/Nov/26 */
+		  if (trace_flag) show_line("Resetting patterns\n", 0);
+		  reset_trie();					/* RESET PATTERNS -  93/Nov/26 */
 		  if (reset_exceptions) {
-			  if (trace_flag) showline("Resetting exceptions\n", 0);
+			  if (trace_flag) show_line("Resetting exceptions\n", 0);
 			  reset_hyphen();			/* RESET HYPHENEXCEPTIONS -  93/Nov/26 */
 		  }
 	  }
@@ -3666,12 +3635,7 @@ void new_patterns (void)
 	    cur_chr = eqtb[(hash_size + 2139) + cur_chr].hh.v.RH; 
 	    if(cur_chr == 0)
 	    {
-	      {
-		if(interaction == 3)
-		; 
-		print_nl(262);	/* ! */
-		print(951);		/* Nonletter */
-	      } 
+			print_err("Nonletter");
 	      {
 		help_ptr = 1; 
 		help_line[0]= 950;	/* (See Appendix H.) */
@@ -3745,12 +3709,7 @@ void new_patterns (void)
 	    } 
 	    if(trie_o[q]!= min_trie_op)
 	    {
-	      {
-		if(interaction == 3)
-		; 
-		print_nl(262);	/* ! */
-		print(952);		/* Duplicate pattern */
-	      } 
+			print_err("Duplicate pattern");
 	      {
 		help_ptr = 1; 
 		help_line[0]= 950;	/* (See Appendix H.) */
@@ -3768,12 +3727,7 @@ void new_patterns (void)
 	break; 
 	default: 
 	{
-	  {
-	    if(interaction == 3)
-	 ; 
-	    print_nl(262);	/* ! */
-	    print(949);		/* Bad  */
-	  } 
+		print_err("Bad ");
 	  print_esc(947);	/* patterns */
 	  {
 	    help_ptr = 1; 
@@ -3787,13 +3741,7 @@ void new_patterns (void)
     lab30:; 
   } 
   else {
-      
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262); /* ! */
-      print(946);	/* Too late for  */
-    } 
+      print_err("Too late for ");
     print_esc(947);	/* patterns */
     {
       help_ptr = 1; 
@@ -3918,27 +3866,22 @@ void init_trie (void)
 #endif /* INITEX */
 
 #ifdef INITEX
-void storefmtfile (void) 
+void store_fmt_file (void) 
 {/* 41 42 31 32 */
   integer j, k, l; 
   halfword p, q; 
   integer x; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (!is_initex) {			/* redundant check 94/Feb/14 */
-	  showline("! \\dump is performed only by INITEX\n", 1);
+	  show_line("! \\dump is performed only by INITEX\n", 1);
 	  if (! knuth_flag)
-		  showline("  (Use -i on the command line)\n", 0);
+		  show_line("  (Use -i on the command line)\n", 0);
 	  abort_flag++;
 	  return;
   }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if(save_ptr != 0) {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262); /* ! */
-      print(1252);	/* You can't dump inside a group */
-    } 
+	  print_err("You can't dump inside a group");
     {
       help_ptr = 1; 
       help_line[0]= 1253;	/* `{...\dump}' is a no-no.. */
@@ -3967,7 +3910,7 @@ void storefmtfile (void)
 /*  {
 	  int n= eqtb[(hash_size + 3186)].cint;
 	  sprintf(log_line, "YEAR: %ld\n", n);
-	  showline(log_line, 0);
+	  show_line(log_line, 0);
   } */
   print_char(46); /* . */
   print_int(eqtb[(hash_size + 3185)].cint); 
@@ -4119,7 +4062,7 @@ void storefmtfile (void)
   if (trace_flag) {
 	  sprintf(log_line, "itex cs_count %d hash_size %d hash_extra %d hash_used %d",
 		 cs_count, hash_size, hash_extra, hash_used);			/* debugging */
-	  showline(log_line, 0);
+	  show_line(log_line, 0);
   }
 /*	for p <- hash_base to hash_used do */
   {
@@ -4133,7 +4076,7 @@ void storefmtfile (void)
 			  incr(cs_count); 
 			  if (trace_flag) {
 				  sprintf(log_line, "itex cs_count++ ");
-				  showline(log_line, 0); /* debugging */
+				  show_line(log_line, 0); /* debugging */
 			  }
 		  } 
 	  while(p++ < for_end);
@@ -4271,7 +4214,7 @@ void storefmtfile (void)
   eqtb[(hash_size + 3194)].cint = 0;	/* tracingstats  */
   w_close(fmt_file); 
 //  return 0;
-} /* end of storefmtfile */
+} /* end of store_fmt_file */
 #endif /* INITEX */
 
 #ifdef INITEX

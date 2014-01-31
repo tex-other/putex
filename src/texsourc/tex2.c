@@ -121,12 +121,7 @@ void prepare_mag (void)
 {
   if((mag_set > 0)&&(eqtb[(hash_size + 3180)].cint != mag_set)) 
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(266);  /* ! */
-      print(544);   /* Incompatible magnification(*/
-    } 
+	  print_err("Incompatible magnification(");
     print_int(eqtb[(hash_size + 3180)].cint); 
     print(545);     /*)*/
     print_nl(546);    /*  the previous value will be retained */
@@ -142,12 +137,7 @@ void prepare_mag (void)
   if((eqtb[(hash_size + 3180)].cint <= 0)||
     (eqtb[(hash_size + 3180)].cint > 32768L)) 
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* ! */
-      print(549);   /* Illegal magnification has been changed to 1000 */
-    } 
+	  print_err("Illegal magnification has been changed to 1000");
     {
       help_ptr = 1; 
       help_line[0]= 550; /* The magnification ratio must be between 1 and 32768. */
@@ -661,21 +651,11 @@ void check_outer_validity (void)
     {
       runaway (); 
       if(cur_cs == 0)
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* ! */
-  print(601);   /* File ended */
-      } 
+		  print_err("File ended");
       else {
     
-  cur_cs = 0; 
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262); /* ! */
-    print(602); /* Forbidden control sequence found */
-  } 
+  cur_cs = 0;
+  print_err("Forbidden control sequence found");
       } 
       print(603); /*  while scanning  */
       p = get_avail (); 
@@ -726,13 +706,7 @@ void check_outer_validity (void)
       error (); 
     } 
     else {
-  
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* ! */
-  print(595);   /* Incomplete  */
-      } 
+  print_err("Incomplete ");
       print_cmd_chr(105, cur_if); /* i */
       print(596); /*; all text was ignored after line  */
       print_int(skip_line); 
@@ -865,12 +839,7 @@ void macro_call (void)
       if(s != r)
       if(s == 0)
       {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(647);   /* Use of  */
-  } 
+		  print_err("Use of ");
   sprint_cs(warning_index); 
   print(648);     /*  doesn't match its definition */
   {
@@ -919,13 +888,8 @@ void macro_call (void)
       {
   if(long_state == 111)
   {
-    runaway (); 
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);  /* !  */
-      print(642);   /* Paragraph ended before  */
-    } 
+    runaway ();
+	print_err("Paragraph ended before ");
     sprint_cs(warning_index); 
     print(643);   /* was complete */
     {
@@ -978,13 +942,8 @@ void macro_call (void)
     {
       if(long_state == 111)
       {
-        runaway (); 
-        {
-    if(interaction == 3)
-    ; 
-    print_nl(262);  /* !  */
-    print(642);   /* Paragraph ended before  */
-        } 
+        runaway ();
+		print_err("Paragraph ended before ");
         sprint_cs(warning_index); 
         print(643); /*  was complete */
         {
@@ -1027,13 +986,8 @@ void macro_call (void)
       } 
       else {
     
-  back_input (); 
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(634);   /* Argument of  */
-  } 
+  back_input ();
+  print_err("Argument of ");
   sprint_cs(warning_index); 
   print(635);     /*  has an extra } */
   {
@@ -1233,12 +1187,7 @@ void expand (void)
   } while(!(cur_cs != 0)); 
   if(cur_cmd != 67)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);  /* !  */
-      print(622);   /* Missing  */
-    } 
+	  print_err("Missing ");
     print_esc(502); /* endcsname */
     print(623);   /*  inserted */
     {
@@ -1307,13 +1256,7 @@ void expand (void)
       if(if_limit == 1)
       insert_relax (); 
       else {
-    
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(773);   /* Extra  */
-  } 
+    print_err("Extra ");
   print_cmd_chr(106, cur_chr);  /* j */
   {
     help_ptr = 1; 
@@ -1341,12 +1284,7 @@ void expand (void)
       break; 
       default: 
       {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(616);   /* Undefined control sequence */
-  } 
+		  print_err("Undefined control sequence");
   {
     help_ptr = 5; 
     help_line[4]= 617; /* The control sequence at the end of the top line */
@@ -1417,12 +1355,7 @@ void scan_left_brace (void)
   } while(!((cur_cmd != 10)&&(cur_cmd != 0))); 
   if(cur_cmd != 1)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(654);   /* Missing { inserted */
-    } 
+	print_err("Missing { inserted"); 
     {
       help_ptr = 4; 
       help_line[3]= 655; /* A left brace was mandatory here, so I've put one in. */
@@ -1479,12 +1412,7 @@ bool scan_keyword_(str_number s)
 } 
 void mu_error (void) 
 { 
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);  /* !  */
-    print(659);   /* Incompatible glue units */
-  } 
+	print_err("Incompatible glue units");
   {
     help_ptr = 1; 
     help_line[0]= 660; /* I'm going to assume that 1mu=1pt when they're mixed. */
@@ -1496,12 +1424,7 @@ void scan_eight_bit_int (void)
     scan_int (); 
   if((cur_val < 0)||(cur_val > 255)) 
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(684);   /* Bad register code */
-    } 
+	  print_err("Bad register code");
     {
       help_ptr = 2; 
       help_line[1]= 685; /* A register number must be between 0 and 255. */
@@ -1516,12 +1439,7 @@ void scan_char_num (void)
     scan_int (); 
   if((cur_val < 0)||(cur_val > 255)) 
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(687);   /* Bad character code */
-    } 
+	  print_err("Bad character code");
     {
       help_ptr = 2; 
       help_line[1]= 688; /* A character number must be between 0 and 255. */
@@ -1536,12 +1454,7 @@ void scan_four_bit_int (void)
     scan_int (); 
   if((cur_val < 0)||(cur_val > 15)) 
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(689);   /* Bad number */
-    } 
+	  print_err("Bad number");
     {
       help_ptr = 2; 
       help_line[1]= 690; /* Since I expected to read a number between 0 and 15, */
@@ -1556,12 +1469,7 @@ void scan_fifteen_bit_int (void)
     scan_int (); 
   if((cur_val < 0)||(cur_val > 32767)) 
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(691);   /* Bad mathchar */
-    } 
+	  print_err("Bad mathchar");
     {
       help_ptr = 2; 
       help_line[1]= 692; /* A mathchar number must be between 0 and 32767. */
@@ -1576,12 +1484,7 @@ void scan_twenty_seven_bit_int (void)
     scan_int (); 
   if((cur_val < 0)||(cur_val > 134217727L)) /* 2^27 - 1 */
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(693);   /* Bad delimiter code */
-    } 
+	  print_err("Bad delimiter code");
     {
       help_ptr = 2; 
       help_line[1]= 694; /* A numeric delimiter code must be between 0 and 2^{27}-1. */
@@ -1609,13 +1512,7 @@ void scan_font_ident (void)
     f = eqtb[m + cur_val].hh.v.RH; 
   } 
   else {
-      
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(811);   /* Missing font identifier */
-    } 
+      print_err("Missing font identifier");
     {
       help_ptr = 2; 
       help_line[1]= 812; /* I was looking for a control sequence whose */
@@ -1681,12 +1578,7 @@ void find_font_dimen_(bool writing)
   } 
 /* compiler error: '-' : incompatible types - from 'union fmemoryword *' to 'struct fourunsignedchars *' */
   if(cur_val == fmem_ptr){
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(796);   /* Font  */
-    } 
+	  print_err("Font ");
 /*    print_esc(hash[(hash_size + 524) + f].v.RH); */
     print_esc(hash[(hash_size + hash_extra + 524) + f].v.RH); /*96/Jan/10*/
     print(814); /* has  only  */
@@ -1739,12 +1631,7 @@ void scan_something_internal_(small_number level, bool negative)
   case 88 : 
     if(level != 5)
     {
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* !  */
-  print(661);   /* Missing number, treated as zero */
-      } 
+		print_err("Missing number, treated as zero");
       {
   help_ptr = 3; 
   help_line[2]= 662; /* A number should have been here; I inserted `0'. */
@@ -1807,12 +1694,7 @@ void scan_something_internal_(small_number level, bool negative)
   case 79 : 
     if(abs(mode)!= m)
     {
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* !  */
-  print(677);   /* Improper  */
-      } 
+		print_err("Improper ");
       print_cmd_chr(79, m); /* O */
       {
   help_ptr = 4; 
@@ -1999,12 +1881,7 @@ void scan_something_internal_(small_number level, bool negative)
     break; 
     default: 
     {
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* !  */
-  print(682);   /* You can't use ` */
-      } 
+		print_err("You can't use `");
       print_cmd_chr(cur_cmd, cur_chr); 
       print(683); /* ' after  */
       print_esc(534); /* the */
@@ -2263,12 +2140,7 @@ lab20:
       case 32 : 
       case 48 : 
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);  /* !  */
-      print(610);   /* Text line contains an invalid character */
-    } 
+	  print_err("Text line contains an invalid character"); 
     {
       help_ptr = 2; 
       help_line[1]= 611; /* A funny symbol that I can't read has just been input. */

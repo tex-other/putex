@@ -51,8 +51,8 @@ MYLIBAPI int yandytex(HWND, char *, int (*) (char *, char *, char *));
 #ifdef _WINDOWS
   int ConsoleInput(char * question, char * help, char * buffer);
 #else
-  #define showline(str,flag) fputs(str,stdout)
-  #define showchar(chr) putc(chr, stdout)
+  #define show_line(str,flag) fputs(str,stdout)
+  #define show_char(chr) putc(chr, stdout)
 #endif
 
 //////////////////////////////////////////////////////////

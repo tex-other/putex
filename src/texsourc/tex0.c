@@ -29,6 +29,13 @@ static void winerror (char * message)
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+void print_err (const char * s)
+{
+  if (interaction == error_stop_mode);
+  //print_nl("! ");
+  print_string(s);
+}
+/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 // print newline
 /* sec 0058 */
@@ -37,7 +44,7 @@ void print_ln(void)
    switch(selector){
      case term_and_log:
      {
-       showchar('\n');
+       show_char('\n');
        term_offset = 0; 
        (void) putc ('\n',  log_file);
        file_offset = 0; 
@@ -51,7 +58,7 @@ void print_ln(void)
      break; 
      case term_only:
      {
-       showchar('\n');
+       show_char('\n');
        term_offset = 0; 
      } 
      break; 
@@ -75,12 +82,12 @@ void print_char_(ASCII_code s)
   switch(selector){
     case term_and_log:
     {
-      (void) showchar(Xchr(s));
+      (void) show_char(Xchr(s));
       incr(term_offset); 
       (void) putc(Xchr(s),  log_file);
       incr(file_offset); 
       if(term_offset == max_print_line){
-        showchar('\n');
+        show_char('\n');
         term_offset = 0; 
       } 
       if(file_offset == max_print_line){
@@ -98,7 +105,7 @@ void print_char_(ASCII_code s)
     break; 
     case term_only:
     {
-      (void) showchar(Xchr(s));
+      (void) show_char(Xchr(s));
       incr(term_offset); 
       if(term_offset == max_print_line)print_ln (); 
     } 
@@ -189,6 +196,11 @@ void print_(integer s)
     incr(j); 
   }
 } 
+void print_string_ (unsigned char *s)
+{
+  // 2000 Jun 18
+  while (*s > 0) print_char(*s++);
+}
 /* sec 0060 */
 // print string number s from string pool by calling print_
 void slow_print_(integer s)
@@ -315,7 +327,7 @@ void sprint_cs_(halfword p)
 void print_file_name_(integer n, integer a, integer e)
 { 
 /*  sprintf(log_line, "\na %d n %d e %d\n", a, n, e); */
-/*  showline(log_line, 0); */
+/*  show_line(log_line, 0); */
 //  print_char(33);  // debugging only
   slow_print(a); 
 //  print_char(33);  // debugging only
@@ -327,9 +339,12 @@ void print_file_name_(integer n, integer a, integer e)
 /* sec 0699 */
 void print_size_(integer s) 
 { 
-  if(s == 0)print_esc(409);     /* textfont */
-  else if(s == 16) print_esc(410);  /* scriptfont */
-  else print_esc(411);          /* scriptscriptfont */
+  if (s == 0)
+    print_esc(409); /* textfont */
+  else if (s == 16)
+    print_esc(410); /* scriptfont */
+  else
+    print_esc(411); /* scriptscriptfont */
 } 
 /* sec 1355 */
 void print_write_whatsit_(str_number s, halfword p)
@@ -356,7 +371,7 @@ void jump_out (void)
 #endif
     ready_already = 0; 
 
-    if (trace_flag) showline("EXITING at JUMPOUT\n", 0);
+    if (trace_flag) show_line("EXITING at JUMPOUT\n", 0);
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 //    if (endit(history) != 0) history = 2; /* 93/Dec/26 in local.c */
@@ -375,7 +390,7 @@ void jump_out (void)
 // NOTE: this may JUMPOUT either via X, or because of too many errors
 void error(void)
 {/* 22 10 */ 
-    ASCII_code c; 
+  ASCII_code c; 
   integer s1, s2, s3, s4; 
   if(history < 2) history = 2;
 
@@ -579,13 +594,8 @@ lab22:          /* loop */
 
 void fatal_error_(str_number s)
 {
-   normalize_selector (); 
-  {
-    if(interaction == 3)
-      ; 
-    print_nl(262);  /* ! */
-    print(285);   /* Emergency stop */
-  } 
+  normalize_selector ();
+  print_err("Emergency stop");
   {
     help_ptr = 1; 
     help_line[0]= s;  // given string goes into help line
@@ -607,13 +617,8 @@ void fatal_error_(str_number s)
 /* sec 0094 */
 void overflow_(str_number s, integer n)
 {
-   normalize_selector (); 
-  {
-    if(interaction == 3)
-      ; 
-    print_nl(262);  /* ! */
-    print(286);   /* TeX capacity exceeded, sorry[*/
-  } 
+   normalize_selector ();
+   print_err("TeX capacity exceeded, sorry[");
   print(s); 
   print_char(61); /* '=' */
   print_int(n); 
@@ -626,11 +631,11 @@ void overflow_(str_number s, integer n)
   if (! knuth_flag) {   /*  Additional comments 98/Jan/5 */
     if (s == 945 && n == trie_size) {
       sprintf(log_line, "\n  (Maybe use -h=... on command line in ini-TeX)\n");
-      showline(log_line, 0);
+      show_line(log_line, 0);
     }
     else if (s == 942 && n == hyphen_prime) {
       sprintf(log_line, "\n  (Maybe use -e=... on command line in ini-TeX)\n");
-      showline(log_line, 0);
+      show_line(log_line, 0);
     }
   }
   if(interaction == 3)interaction = 2; 
@@ -648,14 +653,9 @@ void overflow_(str_number s, integer n)
 /* sec 0095 */
 void confusion_(str_number s)
 {
-   normalize_selector (); 
+  normalize_selector (); 
   if(history < 2) {
-    {
-      if(interaction == 3)
-        ; 
-      print_nl(262); /* ! */
-      print(289); /* This can't happen(*/
-    } 
+	  print_err("This can't happen(");
     print(s); 
     print_char(41); /*)*/
     {
@@ -664,13 +664,7 @@ void confusion_(str_number s)
     } 
   } 
   else {
-    
-    {
-      if(interaction == 3)
-        ; 
-      print_nl(262); /* ! */
-      print(291); /* I can't go on meeting you like this */
-    } 
+    print_err("I can't go on meeting you like this");
     {
       help_ptr = 2; 
       help_line[1]= 292; /* One of your faux pas seems to have wounded me deeply... */
@@ -693,14 +687,14 @@ void confusion_(str_number s)
 } 
 /* sec 0037 */
 bool init_terminal (void) 
-{/* 10 */ register bool Result; 
+{/* 10 */
+  register bool Result; 
   int flag;
   t_open_in (); 
 
   if(last > first)  {
     cur_input.loc_field = first; 
-    while((cur_input.loc_field < last)&&
-        (buffer[cur_input.loc_field]== ' '))
+    while((cur_input.loc_field < last) && (buffer[cur_input.loc_field]== ' '))
       incr(cur_input.loc_field);    // step over initial white space
     if(cur_input.loc_field < last){
       Result = true; 
@@ -723,8 +717,8 @@ bool init_terminal (void)
     flag = input_ln(stdin, true);
 #endif
     if(! flag){
-      showchar('\n');
-      showline("! End of file on the terminal... why?\n", 1); 
+      show_char('\n');
+      show_line("! End of file on the terminal... why?\n", 1); 
       Result = false; 
       return Result; 
     } 
@@ -738,7 +732,7 @@ bool init_terminal (void)
       return Result;    // there is an input file name
     } 
     sprintf(log_line, "%s\n",  "Please type the name of your input file."); 
-    showline(log_line, 1);
+    show_line(log_line, 1);
   }
 //  return Result; 
 } 
@@ -790,7 +784,8 @@ bool str_eq_buf_(str_number s, integer k)
 } 
 /* sec 0045 */
 bool str_eq_str_(str_number s, str_number t)
-{/* 45 */ register bool Result; 
+{/* 45 */
+  register bool Result; 
   pool_pointer j, k; 
   bool result; 
   result = false; 
@@ -800,7 +795,6 @@ bool str_eq_str_(str_number s, str_number t)
   j = str_start[s]; 
   k = str_start[t]; 
   while(j < str_start[s + 1]){
-      
     if(str_pool[j]!= str_pool[k])
     goto lab45; 
     incr(j); 
@@ -864,14 +858,14 @@ void print_roman_int_(integer n)
 } 
 /* sec 0070 */
 void print_current_string(void)
-{ 
-  pool_pointer j; 
-  j = str_start[str_ptr]; 
+{
+  pool_pointer j;
+  j = str_start[str_ptr];
   while(j < pool_ptr) {
-    print_char(str_pool[j]); 
-    incr(j); 
-  } 
-} 
+    print_char(str_pool[j]);
+    incr(j);
+  }
+}
 
 int stringlength (int str_ptr)
 {
@@ -958,16 +952,16 @@ char * make_up_query_string (int promptstr)
 // void term_input(void)
 void term_input (int promptstr, int nhelplines)
 { 
-    integer k;
+  integer k;
   int flag;
-  char *helpstring=NULL;
-  char *querystring=NULL;
+  char *helpstring = NULL;
+  char *querystring = NULL;
 //  if (nhelplines != 0) {
 //    helpstring = make_up_help_string (nhelplines);
 //    printf(helpstring);
 //    free(helpstring);
 //  }
-  showline("\n", 0);    // force it to show what may be buffered up ???
+  show_line("\n", 0);    // force it to show what may be buffered up ???
   helpstring = NULL;  
 #ifdef _WINDOWS
   if (promptstr != 0) querystring = make_up_query_string (promptstr);
@@ -1043,23 +1037,23 @@ void int_error_ (integer n)
 
 void normalize_selector (void) 
 {
-  if(log_opened)  selector = 19; 
-  else selector = 17; 
-  if(job_name == 0) open_log_file (); 
-  if(interaction == 0)decr(selector); 
-} 
+  if (log_opened)
+    selector = 19;
+  else
+    selector = 17;
+  if (job_name == 0)
+    open_log_file ();
+  if (interaction == 0)
+    decr(selector);
+}
 
 void pause_for_instructions (void) 
 {
-   if(OK_to_interrupt){
+   if (OK_to_interrupt) {
     interaction = 3; 
-    if((selector == 18)||(selector == 16)) incr(selector); 
-    {
-      if(interaction == 3)
-      ; 
-      print_nl(262);    /* ! */
-      print(294);   /* Interruption */
-    } 
+    if((selector == 18)||(selector == 16))
+      incr(selector);
+	print_err("Interruption");
     {
     help_ptr = 3; 
     help_line[2]= 295; /* You rang? */
@@ -1098,7 +1092,7 @@ scaled round_decimals_(small_number k)
 /* This has some minor speedup changes - no real advantage probably ... */
 void print_scaled_(scaled s)
 { 
-  scaled delta; 
+  scaled delta;
   if(s < 0)
   {
     print_char(45);           /* '-' */
@@ -1118,7 +1112,8 @@ void print_scaled_(scaled s)
 } 
 
 scaled mult_and_add_(integer n, scaled x, scaled y, scaled maxanswer)
-{register scaled Result;
+{
+  register scaled Result;
   if(n < 0)
   {
     x = - (integer) x; 
@@ -1171,7 +1166,8 @@ scaled x_over_n_(scaled x, integer n)
 } 
 
 scaled xn_over_d_(scaled x, integer n, integer d)
-{register scaled Result; 
+{
+  register scaled Result; 
   bool positive; 
   nonnegative_integer t, u, v; 
   if(x >= 0)
@@ -1205,7 +1201,8 @@ scaled xn_over_d_(scaled x, integer n, integer d)
 } 
 
 halfword badness_(scaled t, scaled s)
-{register halfword Result;
+{
+  register halfword Result;
   integer r; 
   if(t == 0)
   Result = 0; 
@@ -1415,7 +1412,8 @@ void runaway (void)
 /* else fail ! */ /* paragraph 120 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 halfword get_avail (void) 
-{register halfword Result; 
+{
+  register halfword Result; 
   halfword p; 
   p = avail; 
   if(p != 0)                /* while p<>null do */
@@ -1476,7 +1474,8 @@ void flush_list_(halfword p)          /* paragraph 123 */
 } 
 
 halfword get_node_(integer s) 
-{/* 40 10 20 */ register halfword Result; 
+{/* 40 10 20 */
+  register halfword Result; 
   halfword p; 
   halfword q; 
   integer r; 
@@ -1525,7 +1524,7 @@ halfword get_node_(integer s)
 /*    Result = 262143L;  */ /* NO ! */
     Result = empty_flag; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if (trace_flag) showline("Merged adjacent multi-word nodes\n", 0);
+  if (trace_flag) show_line("Merged adjacent multi-word nodes\n", 0);
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     return Result; 
   } 
@@ -1572,18 +1571,17 @@ halfword get_node_(integer s)
       return 0;
     }
   }
-/*  if (trace_flag) showline("Extending downwards by %d\n", block_size, 0); */
+/*  if (trace_flag) show_line("Extending downwards by %d\n", block_size, 0); */
   if (mem_min - (block_size + 1) <= mem_start) { /* check again */
     if (trace_flag) {
-      sprintf(log_line, "mem_min %d, mem_start %d, block_size %d\n",
-          mem_min, mem_start, block_size);
-      showline(log_line, 0);
+      sprintf(log_line, "mem_min %d, mem_start %d, block_size %d\n", mem_min, mem_start, block_size);
+      show_line(log_line, 0);
     }
     overflow(298, mem_max + 1 - mem_min); /* darn: allocation failed ! */
     return 0;     // abort_flag set
   }
 /* avoid function call in following ? */
-  addvariablespace (block_size); /* now to be found in itex.c */
+  add_variable_space (block_size); /* now to be found in itex.c */
   goto lab20;         /* go try get_node again */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
@@ -1594,7 +1592,7 @@ halfword get_node_(integer s)
 #endif /* STAT */
 
 /*  if (trace_flag) {
-    if (r == 0) showline("r IS ZERO in ZGETNODE!\n", 0);
+    if (r == 0) show_line("r IS ZERO in ZGETNODE!\n", 0);
   } */      /* debugging code 93/dec/15 */
 
   Result = r; 
@@ -1619,7 +1617,8 @@ void free_node_(halfword p, halfword s)
 } 
 
 halfword new_null_box (void) 
-{register halfword Result; 
+{
+  register halfword Result; 
   halfword p; 
   p = get_node(7); 
   mem[p].hh.b0 = 0; 
@@ -1641,7 +1640,8 @@ halfword new_null_box (void)
 //   ones that are not allowed to run.
 
 halfword new_rule (void) 
-{register halfword Result;
+{
+  register halfword Result;
   halfword p; 
   p = get_node(4);          /* rule_node_size */
   mem[p].hh.b0 = 2;       /* rule_node type */
@@ -1657,7 +1657,8 @@ halfword new_rule (void)
 //   contents of the |font|, |character|, and |lig_ptr| fields.
 
 halfword new_ligature_(quarterword f, quarterword c, halfword q)
-{register halfword Result; 
+{
+  register halfword Result; 
   halfword p; 
   p = get_node(2);      /* small_node_size */
   mem[p].hh.b0 = 6;   /* ligature_node type */
@@ -1674,7 +1675,8 @@ halfword new_ligature_(quarterword f, quarterword c, halfword q)
 //  temporary processing as ligatures are being created.
 
 halfword new_lig_item_(quarterword c)
-{register halfword Result;
+{
+  register halfword Result;
   halfword p; 
   p = get_node(2);      /* small_node_size */
   mem[p].hh.b1 = c;   /* character */ 
@@ -1684,7 +1686,8 @@ halfword new_lig_item_(quarterword c)
 } 
 
 halfword new_disc (void) 
-{register halfword Result; 
+{
+  register halfword Result; 
   halfword p; 
   p = get_node(2); 
   mem[p].hh.b0 = 7; 
@@ -1696,7 +1699,8 @@ halfword new_disc (void)
 } 
 
 halfword new_math_(scaled w, small_number s)
-{register halfword Result;
+{
+  register halfword Result;
   halfword p; 
   p = get_node(2); 
   mem[p].hh.b0 = 9; 
@@ -1706,8 +1710,9 @@ halfword new_math_(scaled w, small_number s)
   return Result; 
 } 
 
-halfword znewspec(halfword p)
-{register halfword Result;
+halfword new_spec_(halfword p)
+{
+  register halfword Result;
   halfword q; 
   q = get_node(4); 
   mem[q]= mem[p]; 
@@ -1720,7 +1725,8 @@ halfword znewspec(halfword p)
 } 
 
 halfword new_param_glue_(small_number n)
-{register halfword Result; 
+{
+  register halfword Result; 
   halfword p; 
   halfword q; 
   p = get_node(2); 
@@ -1734,8 +1740,9 @@ halfword new_param_glue_(small_number n)
   return Result; 
 } 
 
-halfword znewglue(halfword q)
-{register halfword Result; 
+halfword new_glue_(halfword q)
+{
+  register halfword Result; 
   halfword p; 
   p = get_node(2); 
   mem[p].hh.b0 = 10; 
@@ -1747,8 +1754,9 @@ halfword znewglue(halfword q)
   return Result; 
 } 
 
-halfword znewskipparam(small_number n)
-{register halfword Result; 
+halfword new_skip_param_(small_number n)
+{
+  register halfword Result; 
   halfword p; 
   temp_ptr = new_spec(eqtb[(hash_size + 782) + n].hh.v.RH); /* gluebase + n */
   p = new_glue(temp_ptr); 
@@ -1759,7 +1767,8 @@ halfword znewskipparam(small_number n)
 } 
 
 halfword new_kern_(scaled w)
-{register halfword Result;
+{
+  register halfword Result;
   halfword p; 
   p = get_node(2); 
   mem[p].hh.b0 = 11; 
@@ -1770,7 +1779,8 @@ halfword new_kern_(scaled w)
 } 
 
 halfword new_penalty_(integer m)
-{register halfword Result; 
+{
+  register halfword Result; 
   halfword p; 
   p = get_node(2); 
   mem[p].hh.b0 = 12; 
@@ -2040,14 +2050,13 @@ void short_display_(integer p)
 void print_font_and_char_ (integer p)
 {
   if(p > mem_end)
-  print_esc(307); /* CLOBBERED. */
+    print_esc(307); /* CLOBBERED. */
   else {
-      
     if((mem[p].hh.b0 > font_max)) /* font(p) */
-    print_char(42);   /* * */
+      print_char(42);   /* * */
 /*    else print_esc(hash[(hash_size + 524) + mem[p].hh.b0].v.RH); */
-    else print_esc(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH);  
-                      /* 96/Jan/10 */
+    else
+      print_esc(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH); /* 96/Jan/10 */
     print_char(32);   /*   */
     print(mem[p].hh.b1);      /* character(p) */
   } 
@@ -2065,15 +2074,16 @@ void print_mark_ (integer p)
 void print_rule_dimen_ (scaled d)
 {
   if((d == -1073741824L)) /* - 2^30 */
-  print_char(42);   /* * */
-  else print_scaled(d); 
+    print_char(42);   /* * */
+  else
+    print_scaled(d); 
 } 
 
 void print_glue_(scaled d, integer order, str_number s)
 {
   print_scaled(d); 
   if((order < 0)||(order > 3)) 
-  print(308); /* foul */
+    print(308); /* foul */
   else if(order > 0)
   {
     print(309); /* fil */
@@ -2092,7 +2102,6 @@ void print_spec_(integer p, str_number s)
   if((p < mem_min)||(p >= lo_mem_max)) 
   print_char(42);   /* * */
   else {
-      
     print_scaled(mem[p + 1].cint); 
     if(s != 0)
     print(s); 
@@ -2129,7 +2138,7 @@ void print_delimiter_(halfword p)
 
 void print_subsidiary_data_(halfword p, ASCII_code c)
 {
-  if((pool_ptr - str_start[str_ptr])>= depth_threshold)
+  if((pool_ptr - str_start[str_ptr]) >= depth_threshold)
   {
     if(mem[p].hh.v.RH != 0)
     print(312); /* [] */

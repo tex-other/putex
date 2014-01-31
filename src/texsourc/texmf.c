@@ -183,13 +183,13 @@ int main (int ac, char *av[])
 		flag = main_program ();		// texbody in itex.c
 		if (trace_flag) {
 			sprintf(log_line, "EXITING at %s %d %d %d\n", "MAIN", flag, ret, jump_used);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 		}
 	}
 	else {	// get here from non-local jump via jumpbuffer - if any
 		if (trace_flag) {
 			sprintf(log_line, "EXITING at %s %d %d %d\n", "JUMPOUT", flag, ret, jump_used);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 		}
 	}
 
@@ -215,7 +215,7 @@ void t_open_in (void)
 /* int ch, flag; */
 	int i;
 
-/*	if (trace_flag) showline("Entering t_open_in (texmf)\n", 0); */
+/*	if (trace_flag) show_line("Entering t_open_in (texmf)\n", 0); */
 
 	buffer[first] = 0;	/* So the first `strcat' will work.  */
 
@@ -294,17 +294,17 @@ void get_date_and_time (integer *minutes, integer *day, integer *month, integer 
 	(void)  time (&clock);	/* - seconds since 1970 */ 
 	if (trace_flag) {
 		sprintf(log_line, "The time is %u\n", clock); 	/* debugging */
-		showline(log_line, 0);		
+		show_line(log_line, 0);		
 	}
 	if (clock < 0) {
-		showline("Time not available!\n", 1);
+		show_line("Time not available!\n", 1);
 /*		clock = 0; *//* 901621283 1998 July 28 06:21:00 */
 	}
 	tmptr = localtime (&clock);
 /*	MS C runtime library has trouble for clock >= 2^31 !!! */
 	if (tmptr == NULL) {						/* debugging 95/Dec/30*/
 		sprintf(log_line, "Cannot convert time (%0ld)!\n", clock);
-		showline(log_line, 1);
+		show_line(log_line, 1);
 		*year=2038; *month=1; *day=18; *minutes=22 * 60 + 14;
 	}
 	else {
@@ -316,7 +316,7 @@ void get_date_and_time (integer *minutes, integer *day, integer *month, integer 
 			sprintf(log_line, "%d-%d-%d %d:%d\n",
 			tmptr->tm_year + 1900, tmptr->tm_mon + 1, tmptr->tm_mday,
 				tmptr->tm_hour, tmptr->tm_min);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 		}
 	}
 
@@ -324,7 +324,7 @@ void get_date_and_time (integer *minutes, integer *day, integer *month, integer 
 #ifdef MSDOS
 	if (!no_interrupts) {
 		if (signal(SIGINT, catch_interrupt)== SIG_ERR) {
-			showline(" CTRL-C handler not installed\n", 0);
+			show_line(" CTRL-C handler not installed\n", 0);
 #ifndef _WINDOWS
 			uexit(1);  /* do we care when run as DLL ? */
 #endif
@@ -341,21 +341,21 @@ void get_date_and_time (integer *minutes, integer *day, integer *month, integer 
 
 /* I/O for TeX and Metafont.  */ /* give file name ? */
 
-void complainline (FILE *output)
+void complain_line (FILE *output)
 {
-	showline("\n", 0);
+	show_line("\n", 0);
 #ifdef ALLOCATEBUFFER
 	sprintf(log_line, "! Unable to read an entire line---buf_size=%d.\n", current_buf_size);
 #else
 	sprintf(log_line, "! Unable to read an entire line---buf_size=%d.\n",	buf_size);
 #endif
-	if (output == stderr) showline(log_line, 1);
-	else if (output == stdout) showline(log_line, 0);
+	if (output == stderr) show_line(log_line, 1);
+	else if (output == stdout) show_line(log_line, 0);
 	else fputs(log_line, output);			// never
-	showline("  (File may have a line termination problem.)", 0);
+	show_line("  (File may have a line termination problem.)", 0);
 }
 
-void showbadline (FILE *output, int first, int last)
+void show_bad_line (FILE *output, int first, int last)
 {	/* 1994/Jan/21 */
 	int i, c, d, ch;
 	char *s=log_line;
@@ -392,8 +392,8 @@ void showbadline (FILE *output, int first, int last)
 //	putc(' ', output);		/*	putc('\n', output); */
 	*s++ = ' ';
 	*s++ = '\0';
-	if (output == stderr) showline(log_line, 1);
-	else if (output == stdout) showline(log_line, 0);
+	if (output == stderr) show_line(log_line, 1);
+	else if (output == stdout) show_line(log_line, 0);
 	else fputs(log_line, output);		// log_file
 }
 
@@ -440,7 +440,7 @@ bool input_line_finish (void) {
 			if (ch > 126 ||  (ch < ' ' && ch != '\t' && ch != '\f'
 							  && ch != '\r' && ch != '\n')) {
 				sprintf(log_line, "\n! non ASCII char (%d) in line: ", ch);
-				showline(log_line, 1);
+				show_line(log_line, 1);
 				if (log_opened) 
 					fprintf(log_file, "\n! non ASCII char (%d) in line: ", ch);
 /*			  buffer[i]= 127; */ /* not defined - invalid char */
@@ -449,8 +449,8 @@ bool input_line_finish (void) {
 			}
 		}
 		if (flag) {
-			showbadline(errout, first, last);
-			if (log_opened)  showbadline(log_file, first, last);
+			show_bad_line(errout, first, last);
+			if (log_opened)  show_bad_line(log_file, first, last);
 		}
 	}
 /* Don't bother using xord if we don't need to. */ /* for input line */
@@ -546,7 +546,7 @@ bool input_line (FILE *f)
 
 //	can break out of above on EOF '\n' or '\r
 //	sprintf(log_line, "BREAK on %d at %ld\n", i, ftell(f));
-//	showline(log_line, 0);	// debugging only
+//	show_line(log_line, 0);	// debugging only
 
 	if (return_flag) {		/* let return terminate line as well as newline */
 	  if (i == '\r') {			/* see whether return followed by newline */
@@ -560,11 +560,11 @@ bool input_line (FILE *f)
 	}
 
 //	sprintf(log_line, "first %d last %d\n", first, last);
-//	showline(log_line, 0);		// debugging only
+//	show_line(log_line, 0);		// debugging only
 //	strncpy(log_line, &buffer[first], last - first + 1);
 //	log_line[last-first] = '\n';
 //	log_line[last-first+1] = '\0';
-//	showline(log_line, 0);		// debugging only
+//	show_line(log_line, 0);		// debugging only
 
 //	Turn Ctrl-Z at end of file into newline 2000 June 22
 //	if (i == EOF && trimeof != 0 && buffer[last-1] == 26) last--;	/* ^Z */
@@ -573,7 +573,7 @@ bool input_line (FILE *f)
 //		buffer[last] = '\0';
 		last--;
 //		sprintf(log_line, "CTRL-Z first %d last %d\n", first, last);
-//		showline(log_line, 0);	// debugging only
+//		show_line(log_line, 0);	// debugging only
 	}
 	if (i == EOF && last == first)
 		return false;		/* EOF and line empty - true end of file */
@@ -581,8 +581,8 @@ bool input_line (FILE *f)
 /*	Didn't get the whole line because buffer was too small?  */
 /*	This shouldn't happen anymore 99/Jan/23 */
 	if (i != EOF && i != '\n' && i != '\r')  {
-		complainline(errout);
-		if (log_opened) complainline(log_file);	/* ? 93/Nov/20 */
+		complain_line(errout);
+		if (log_opened) complain_line(log_file);	/* ? 93/Nov/20 */
 /*		This may no longer be needed ... now that we grow it */
 		if (truncate_long_lines) {				/* 98/Feb/3 */
 			while (i != EOF && i != '\n' && i != '\r')  {
@@ -601,7 +601,7 @@ bool input_line (FILE *f)
 
 static char *edit_value = EDITOR;
 
-void unshroudstring (char *real_var, char *var, int n) {
+void unshroud_string (char *real_var, char *var, int n) {
 	int c;
 	char *s=real_var;
 	char *t=var;
@@ -612,22 +612,22 @@ void unshroudstring (char *real_var, char *var, int n) {
 	else *s = '\0';				/* terminate it anyway */
 } /* 93/Nov/20 */
 
-char *getenvshroud (char *var) {
+char *get_env_shroud (char *var) {
 	char real_var[32];
 	char *real_value;
 
-	unshroudstring (real_var, var, sizeof(real_var));
+	unshroud_string (real_var, var, sizeof(real_var));
 /*	real_value = getenv(real_var); */			/* 1994/Mar/1 */
 	real_value = grabenv(real_var);				/* 1994/Mar/1 */
 	if (trace_flag) {
 		sprintf(log_line, "\nset %s=", real_var);
-		showline(log_line, 0);
+		show_line(log_line, 0);
 		if (real_value != NULL) {
-			showline(real_value, 0);
+			show_line(real_value, 0);
 		}
-		showline("\n", 0);
+		show_line("\n", 0);
 	}
-/*	return getenvshroud (real_var); */	/* serious bug ! since 93/Nov/20 */
+/*	return get_env_shroud (real_var); */	/* serious bug ! since 93/Nov/20 */
 /*	return getenv (real_var);	*/		/* fixed 93/Dec/28 */
 	return real_value;					/* 94/Mar/1 */
 } 	/* 93/Nov/20 */
@@ -641,7 +641,7 @@ char *getenvshroud (char *var) {
 
 /* called from close_files_and_terminate in  tex9.c */
 
-void calledit (ASCII_code *stringpool, pool_pointer fnstart,
+void call_edit (ASCII_code *stringpool, pool_pointer fnstart,
 			  integer fnlength, integer linenumber) {
 	char *command, *s, *t, *u;
 	char c;
@@ -674,13 +674,13 @@ void calledit (ASCII_code *stringpool, pool_pointer fnstart,
 	n = fcloseall();						/* paranoia 1994/Aug/10 */
 	if (n > 0 && verbose_flag) {
 		sprintf(log_line, "Closed %d streams\n", n);
-		showline(log_line, 0);
+		show_line(log_line, 0);
 	}
 
 /*	Replace the default with the value of the appropriate environment
     variable, if it's set.  */
 /*  s = getenv (edit_var);   */		/* 93/Nov/20 */
-	s = getenvshroud (edit_var);	
+	s = get_env_shroud (edit_var);	
 	if (s != NULL) edit_value = s;	/* OK, replace wired in default */
 
 /*	Construct the command string.  */
@@ -705,11 +705,11 @@ void calledit (ASCII_code *stringpool, pool_pointer fnstart,
 #ifdef MSDOS
 						sprintf(log_line,
 								"! bad command syntax (%c).\n", 'd');
-						showline(log_line, 1);
+						show_line(log_line, 1);
 #else
 						sprintf(log_line,
 								"! `%%d' cannot appear twice in editor command.\n");
-						showline(log_line, 1);
+						show_line(log_line, 1);
 #endif
 						uexit(1); 
 					}
@@ -723,11 +723,11 @@ void calledit (ASCII_code *stringpool, pool_pointer fnstart,
 #ifdef MSDOS
 						sprintf(log_line,
 								"! bad command syntax (%c).\n", 's'); 
-						showline(log_line, 1);
+						show_line(log_line, 1);
 #else
 						sprintf(log_line,
 								"! `%%s' cannot appear twice in editor command.\n");
-						showline(log_line, 1);
+						show_line(log_line, 1);
 #endif
 						uexit(1); 
 					}
@@ -749,11 +749,11 @@ void calledit (ASCII_code *stringpool, pool_pointer fnstart,
 #ifdef MSDOS
 						sprintf(log_line, 
 								 "! bad command syntax (%c).\n", 'l'); 
-						showline(log_line, 1);
+						show_line(log_line, 1);
 #else
 						sprintf(log_line,
 								"! `%%l' cannot appear twice in editor command.\n");
-						showline(log_line, 1);
+						show_line(log_line, 1);
 #endif
 						uexit(1); 
 					}
@@ -788,7 +788,7 @@ void calledit (ASCII_code *stringpool, pool_pointer fnstart,
 	if (strlen(command) + 1 >= commandlen) {	/* should not happen! */
 		sprintf(log_line,
 				"Command too long (%d > %d)\n", strlen(command) + 1, commandlen);
-		showline(log_line, 1);
+		show_line(log_line, 1);
 		uexit(1); 
 	}
 
@@ -800,19 +800,19 @@ void calledit (ASCII_code *stringpool, pool_pointer fnstart,
 
 	if (system (command) != 0) {
 //		fprintf (errout, "\n");
-		showline("\n", 0);
+		show_line("\n", 0);
 //		fprintf (errout,
 		sprintf(log_line,
 				 "! Error in call: %s\n", command); /* shroud ? */
-		showline(log_line, 1);
+		show_line(log_line, 1);
 /*		errno seems to be 0 typically, so perror says "no error" */
 #ifdef MSDOS
 		if (errno != 0) perrormod("! DOS says");			/* 94/Aug/10 - bkph */
 #endif
 		sprintf(log_line, "  (TEXEDIT=%s)\n", edit_value);
-		showline(log_line, 0);
-		showline("  (Editor specified may be missing or path may be wrong)\n", 0);
-		showline("  (or there may be missing -- or extraneous -- quotation signs)\n", 0);
+		show_line(log_line, 0);
+		show_line("  (Editor specified may be missing or path may be wrong)\n", 0);
+		show_line("  (or there may be missing -- or extraneous -- quotation signs)\n", 0);
 	}
 	uexit(1);				/*	Quit, since we found an error.  */
 }
@@ -884,9 +884,9 @@ static int swap_items (char *p, int nitems, int size) {
 			break;
 
 		default:
-			showline("\n", 0);
+			show_line("\n", 0);
 			sprintf(log_line, "! I can't (un)dump a %d byte item.\n", size);
-			showline(log_line, 1);
+			show_line(log_line, 1);
 			uexit(1);
 	}
 	return 0;
@@ -908,10 +908,10 @@ int do_dump (char *p, int item_size, int nitems, FILE *out_file) {
 
 /*  if (fwrite (p, item_size, nitems, out_file) != nitems) */ /* bkph */
 	if ((int) fwrite (p, item_size, nitems, out_file) != nitems){
-		showline("\n", 0);
+		show_line("\n", 0);
 		sprintf(log_line, "! Could not write %d %d-byte item%s.\n",
                nitems, item_size, (nitems > 1) ? "s" : "");
-		showline(log_line, 1);
+		show_line(log_line, 1);
 		uexit(1);
     }
 
@@ -935,18 +935,18 @@ int do_undump (char *p, int item_size, int nitems, FILE *in_file)
 #ifdef MSDOS_HACK
 	unsigned int nbytes = item_size * nitems;
     if ((unsigned int) read(fileno (in_file), p, nbytes) != nbytes) {
-		showline("\n", 0);
+		show_line("\n", 0);
 		sprintf(log_line, "! Could not read %d %d-byte item%s.\n",
                nitems, item_size, (nitems > 1) ? "s" : "");
-		showline(log_line, 1);
+		show_line(log_line, 1);
 		uexit(1);
     }
 #else
     if ((int) fread(p, item_size, nitems, in_file) != nitems) {
-		showline("\n", 0);
+		show_line("\n", 0);
 		sprintf(log_line, "! Could not read %d %d-byte item%s.\n",
                nitems, item_size, (nitems > 1) ? "s" : "");
-		showline(log_line, 1);
+		show_line(log_line, 1);
 		uexit(1);
     }
 #endif
@@ -1148,11 +1148,11 @@ initscreen ()
 	return ((*mfwp->mfwsw_initscreen) ());
       else
 	{
-		showline("\n", 0);
+		show_line("\n", 0);
 		sprintf(log_line,
                    "! Couldn't initialize the online display for a `%s'.\n",
                    ttytype);
-		showline(log_line, 1);
+		show_line(log_line, 1);
 		return 1;
 	}
   
@@ -1176,7 +1176,7 @@ updatescreen ()
     ((*mfwp->mfwsw_updatescrn) ());
   else
     {
-      showline("Updatescreen called\n", 0);
+      show_line("Updatescreen called\n", 0);
     }
 #else /* TRAP */
   fprintf (log_file, "Calling UPDATESCREEN\n");
@@ -1199,7 +1199,7 @@ blankrectangle (left, right, top, bottom)
     {
       sprintf(log_line, "Blankrectangle l=%d  r=%d  t=%d  b=%d\n",
 	      left, right, top, bottom);
-	  showline(log_line, 0);
+	  show_line(log_line, 0);
     }
 #else /* TRAP */
   fprintf (log_file, "\nCalling BLANKRECTANGLE(%d,%d,%d,%d)\n", left,
@@ -1225,13 +1225,13 @@ paintrow (row, init_color, transition_vector, vector_size)
   else
     {
       sprintf(log_line, "Paintrow r=%d  c=%d  v=");
-	  showline(log_line, 0);
+	  show_line(log_line, 0);
       while (vector_size-- > 0) {
 //		  printf ("%d  ", transition_vector++);
 		  sprintf(log_line, "%d  ", transition_vector++);
-		  showline(log_line, 0);
+		  show_line(log_line, 0);
 	  }
-      showline("\n", 0);
+      show_line("\n", 0);
     }
 #else /* TRAP */
   unsigned k;

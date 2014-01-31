@@ -176,17 +176,17 @@ halfword new_disc(void);
 halfword new_math_(scaled, small_number); 
 #define new_math(w, s) new_math_((scaled) (w), (small_number) (s))
 #define newmath_regmem register memory_word *mem=zmem;
-halfword znewspec(halfword); 
-#define new_spec(p) znewspec((halfword) (p))
+halfword new_spec_(halfword); 
+#define new_spec(p) new_spec_((halfword) (p))
 #define newspec_regmem register memory_word *mem=zmem;
 halfword new_param_glue_(small_number); 
 #define new_param_glue(n) new_param_glue_((small_number) (n))
 #define newparamglue_regmem register memory_word *mem=zmem, *eqtb=zeqtb;
-halfword znewglue(halfword); 
-#define new_glue(q) znewglue((halfword) (q))
+halfword new_glue_(halfword); 
+#define new_glue(q) new_glue_((halfword) (q))
 #define newglue_regmem register memory_word *mem=zmem;
-halfword znewskipparam(small_number); 
-#define new_skip_param(n) znewskipparam((small_number) (n))
+halfword new_skip_param_(small_number); 
+#define new_skip_param(n) new_skip_param_((small_number) (n))
 #define newskipparam_regmem register memory_word *mem=zmem, *eqtb=zeqtb;
 halfword new_kern_(scaled); 
 #define new_kern(w) new_kern_((scaled) (w))
@@ -466,14 +466,14 @@ halfword new_character_(internal_font_number, eight_bits); /* halfword new_chara
 #define newcharacter_regmem register memory_word *mem=zmem;
 void dvi_swap(void); /* void dvi_swap(); */
 #define dviswap_regmem
-void zdvifour(integer); /* void zdvifour(); */
-#define dvi_four(x) zdvifour((integer) (x))
+void dvi_four_(integer); /* void dvi_four_(); */
+#define dvi_four(x) dvi_four_((integer) (x))
 #define dvifour_regmem
 void zdvipop(integer); /* void zdvipop(); */
 #define dvi_pop(l) zdvipop((integer) (l))
 #define dvipop_regmem
-void zdvifontdef(internal_font_number); /* void zdvifontdef(); */
-#define dvi_font_def(f) zdvifontdef((internal_font_number) (f))
+void dvi_font_def_(internal_font_number); /* void dvi_font_def_(); */
+#define dvi_font_def(f) dvi_font_def_((internal_font_number) (f))
 #define dvifontdef_regmem
 void zmovement(scaled, eight_bits); /* void zmovement(); */
 #define movement(w, o) zmovement((scaled) (w), (eight_bits) (o))
@@ -481,8 +481,8 @@ void zmovement(scaled, eight_bits); /* void zmovement(); */
 void prune_movements_(integer); /* void prune_movements_(); */
 #define prune_movements(l) prune_movements_((integer) (l))
 #define prunemovements_regmem register memory_word *mem=zmem;
-void zspecialout(halfword); /* void zspecialout(); */
-#define special_out(p) zspecialout((halfword) (p))
+void special_out_(halfword); /* void special_out_(); */
+#define special_out(p) special_out_((halfword) (p))
 #define specialout_regmem register memory_word *mem=zmem;
 void write_out_(halfword); /* void write_out_(); */
 #define write_out(p) write_out_((halfword) (p))
@@ -494,8 +494,8 @@ void hlist_out(void); /* void hlist_out(); */
 #define hlistout_regmem register memory_word *mem=zmem;
 void vlist_out(void); /* void vlist_out(); */
 #define vlistout_regmem register memory_word *mem=zmem;
-void zshipout(halfword); /* void zshipout(); */
-#define ship_out(p) zshipout((halfword) (p))
+void ship_out_(halfword); /* void ship_out_(); */
+#define ship_out(p) ship_out_((halfword) (p))
 #define shipout_regmem register memory_word *mem=zmem, *eqtb=zeqtb;
 void scan_spec_(group_code, bool); /* void scan_spec_(); */
 #define scan_spec(c, threecodes) scan_spec_((group_code) (c), (bool) (threecodes))
@@ -827,8 +827,8 @@ void shift_case(void); /* void shift_case(); */
 #define shiftcase_regmem register memory_word *mem=zmem, *eqtb=zeqtb;
 void show_whatever(void); /* void show_whatever(); */
 #define showwhatever_regmem register memory_word *mem=zmem, *eqtb=zeqtb;
-// void storefmtfile(void);
-int storefmtfile(void);
+// void store_fmt_file(void);
+int store_fmt_file(void);
 #define storefmtfile_regmem register memory_word *mem=zmem, *eqtb=zeqtb;
 void new_whatsit_(small_number, small_number); /* void new_whatsit_(); */
 #define new_whatsit(s, w) new_whatsit_((small_number) (s), (small_number) (w))
@@ -886,13 +886,15 @@ int texbody(void);          /* 1993/Dec/16 bkph */
 #endif
 
 /* this basically removes all use for these stupid #define foo_regmem s */
-
+void print_err (const char * s);
 void initialize (void);
 void print_ln (void);
 void print_char_(ASCII_code);
 #define print_char(s) print_char_((ASCII_code) (s))
 void print_(integer);
 #define print(s) print_((integer) (s))
+void print_string_(unsigned char * s);
+#define print_string(s) print_string_((unsigned char *) s)
 void slow_print_(integer);
 #define slow_print(s) slow_print_((integer) (s))
 void print_nl_(str_number);
@@ -976,14 +978,14 @@ halfword new_lig_item_(quarterword);
 halfword new_disc(void);
 halfword new_math_(scaled, small_number);
 #define new_math(w, s) new_math_((scaled) (w), (small_number) (s))
-halfword znewspec(halfword);
-#define new_spec(p) znewspec((halfword) (p))
+halfword new_spec_(halfword);
+#define new_spec(p) new_spec_((halfword) (p))
 halfword new_param_glue_(small_number);
 #define new_param_glue(n) new_param_glue_((small_number) (n))
-halfword znewglue(halfword);
-#define new_glue(q) znewglue((halfword) (q))
-halfword znewskipparam(small_number);
-#define new_skip_param(n) znewskipparam((small_number) (n))
+halfword new_glue_(halfword);
+#define new_glue(q) new_glue_((halfword) (q))
+halfword new_skip_param_(small_number);
+#define new_skip_param(n) new_skip_param_((small_number) (n))
 halfword new_kern_(scaled);
 #define new_kern(w) new_kern_((scaled) (w))
 halfword new_penalty_(integer);
@@ -1153,36 +1155,36 @@ halfword new_character_(internal_font_number, eight_bits);
 #define new_character(f, c) new_character_((internal_font_number) (f), (eight_bits) (c))
 #ifdef ALLOCATEDVIBUF
   void dvi_swap(void);
-  void zdvifour(integer);
-  #define dvi_four(x) zdvifour((integer) (x))
+  void dvi_four_(integer);
+  #define dvi_four(x) dvi_four_((integer) (x))
   void zdvipop(integer);
   #define dvi_pop(l) zdvipop((integer) (l))
-  void zdvifontdef(internal_font_number);
-  #define dvi_font_def(f) zdvifontdef((internal_font_number) (f))
+  void dvi_font_def_(internal_font_number);
+  #define dvi_font_def(f) dvi_font_def_((internal_font_number) (f))
   void zmovement(scaled, eight_bits);
   #define movement(w, o) zmovement((scaled) (w), (eight_bits) (o))
-  void zspecialout(halfword);
-  #define special_out(p) zspecialout((halfword) (p))
+  void special_out_(halfword);
+  #define special_out(p) special_out_((halfword) (p))
   void hlist_out(void);
   void vlist_out(void);
-  void zshipout(halfword);
-  #define ship_out(p) zshipout((halfword) (p))
+  void ship_out_(halfword);
+  #define ship_out(p) ship_out_((halfword) (p))
 #else /* not ALLOCATEDVIBUF */
   void dvi_swap(void);
-  void zdvifour(integer);
-  #define dvi_four(x) zdvifour((integer) (x))
+  void dvi_four_(integer);
+  #define dvi_four(x) dvi_four_((integer) (x))
   void zdvipop(integer);
   #define dvi_pop(l) zdvipop((integer) (l))
-  void zdvifontdef(internal_font_number);
-  #define dvi_font_def(f) zdvifontdef((internal_font_number) (f))
+  void dvi_font_def_(internal_font_number);
+  #define dvi_font_def(f) dvi_font_def_((internal_font_number) (f))
   void zmovement(scaled, eight_bits);
   #define movement(w, o) zmovement((scaled) (w), (eight_bits) (o))
-  void zspecialout(halfword);
-  #define special_out(p) zspecialout((halfword) (p))
+  void special_out_(halfword);
+  #define special_out(p) special_out_((halfword) (p))
   void hlist_out(void);
   void vlist_out(void);
-  void zshipout(halfword);
-  #define ship_out(p) zshipout((halfword) (p))
+  void ship_out_(halfword);
+  #define ship_out(p) ship_out_((halfword) (p))
 #endif
 void prune_movements_(integer);
 #define prune_movements(l) prune_movements_((integer) (l))
@@ -1381,7 +1383,7 @@ void open_or_close_in(void);
 void issue_message(void);
 void shift_case(void);
 void show_whatever(void);
-void storefmtfile(void);
+void store_fmt_file(void);
 void new_whatsit_(small_number, small_number);
 #define new_whatsit(s, w) new_whatsit_((small_number) (s), (small_number) (w))
 void new_write_whatsit_(small_number);

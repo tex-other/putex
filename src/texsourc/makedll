@@ -24,7 +24,7 @@ LINK = link
 # CFLAGS=-c -DDOS -DMSDOS -DPHARLAP -DTeX -DMYDEBUG -Ilib -YX -Ox -Ge -Gy -Gf -W4
 # Release version
 # CFLAGS=/c /MT /W4 /GX /Ox /O2 /DMT /DMSDOS /DTeX /DPHARLAP /DNDEBUG /D_X86=1 /DWIN32 /D_WIN32 /DNDEBUG /D_WINDOWS /Ilib /YX
-CFLAGS=/c /MT /W4 /Ox /O2 /DMT /DMSDOS /DTeX /DPHARLAP /DNDEBUG /D_X86=1 /DWIN32 /D_WIN32 /DNDEBUG /D_WINDOWS /Ilib /YX
+CFLAGS=/c /MT /W4 /Ox /O2 /DMT /DMSDOS /DTeX /DPHARLAP /DNDEBUG /D_X86=1 /DWIN32 /D_WIN32 /DNDEBUG /D_WINDOWS
 # Debugging version
 # CFLAGS=/c /MT /W4 /GX /Od /Zi /DMT /DMSDOS /DTeX /DPHARLAP /D_X86=1 /DWIN32 /D_WIN32 /D_WINDOWS
 
@@ -49,7 +49,6 @@ texmf.dll: $(objs)
 	$(LINK) $(LFLAGS) texmf itex openinou subroute local \
 	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9
 	copy texmf.dll yandytex.dll
-	copy yandytex.dll .\winsourc\ /y
 
 # ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
 

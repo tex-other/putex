@@ -91,9 +91,9 @@ extern void errprintpascalstring (char *); /* extern void errprintpascalstring (
 extern integer inputint (FILE *);	/* extern integer inputint (); */
 extern void zinput3ints (integer *, integer *, integer *);
 /* extern void zinput3ints (); */
-extern void setpaths (int);		/* extern void setpaths (); */
-// extern void checkfclose (FILE *);	/* in openinou.c 93/Nov/20 */
-extern int checkfclose (FILE *);	/* in openinou.c 93/Nov/20 */
+extern void set_paths (int);		/* extern void set_paths (); */
+// extern void check_fclose (FILE *);	/* in openinou.c 93/Nov/20 */
+extern int check_fclose (FILE *);	/* in openinou.c 93/Nov/20 */
 
 /* String routines.  */
 /* extern void makesuffixpas (); */ /* not defined, not used ? bkph */

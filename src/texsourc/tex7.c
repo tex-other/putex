@@ -36,14 +36,14 @@ void build_page (void)
 
 /* begin if (link(contrib_head)=null)or output_active then return; l.19351 */
   if((mem[mem_top - 1].hh.v.RH == 0)|| output_active)
-  return; 
+    return; 
   do {
       lab22: p = mem[mem_top - 1].hh.v.RH; 
 /*    if(last_glue != 262143L) */
     if(last_glue != empty_flag)
-    delete_glue_ref(last_glue); 
-    last_penalty = 0; 
-    last_kern = 0; 
+      delete_glue_ref(last_glue);
+    last_penalty = 0;
+    last_kern = 0;
     if(mem[p].hh.b0 == 10)
     {
       last_glue = mem[p + 1].hh.v.LH; 
@@ -54,232 +54,225 @@ void build_page (void)
 /*      last_glue = 262143L;  */
       last_glue = empty_flag; 
       if(mem[p].hh.b0 == 12)
-      last_penalty = mem[p + 1].cint; 
+        last_penalty = mem[p + 1].cint; 
       else if(mem[p].hh.b0 == 11)
-      last_kern = mem[p + 1].cint; 
+        last_kern = mem[p + 1].cint; 
     } 
     switch(mem[p].hh.b0)
-    {case 0 : 
-    case 1 : 
-    case 2 : 
-      if(page_contents < 2)
-      {
-  if(page_contents == 0)
-  freeze_page_specs(2); 
-  else page_contents = 2; 
-  q = new_skip_param(9); 
-  if(mem[temp_ptr + 1].cint > mem[p + 3].cint)
-  mem[temp_ptr + 1].cint = mem[temp_ptr + 1].cint - mem[p + 3]
- .cint; 
-  else mem[temp_ptr + 1].cint = 0; 
-  mem[q].hh.v.RH = p; 
-  mem[mem_top - 1].hh.v.RH = q; 
-  goto lab22; 
+    {
+      case 0 :
+      case 1 :
+      case 2 :
+        if(page_contents < 2)
+        {
+          if(page_contents == 0)
+            freeze_page_specs(2);
+          else
+            page_contents = 2;
+          q = new_skip_param(9);
+          if(mem[temp_ptr + 1].cint > mem[p + 3].cint)
+            mem[temp_ptr + 1].cint = mem[temp_ptr + 1].cint - mem[p + 3].cint;
+          else
+            mem[temp_ptr + 1].cint = 0;
+          mem[q].hh.v.RH = p;
+          mem[mem_top - 1].hh.v.RH = q;
+          goto lab22;
       } 
       else {
-    
-  page_so_far[1]= page_so_far[1]+ page_so_far[7]+ mem[p + 3]
- .cint; 
-  page_so_far[7]= mem[p + 2].cint; 
-  goto lab80; 
+        page_so_far[1]= page_so_far[1]+ page_so_far[7]+ mem[p + 3].cint;
+        page_so_far[7]= mem[p + 2].cint; 
+        goto lab80; 
       } 
       break; 
-    case 8 : 
-      goto lab80; 
+    case 8 :
+      goto lab80;
       break; 
-    case 10 : 
+    case 10 :
       if(page_contents < 2)
-      goto lab31; 
+        goto lab31; 
       else if((mem[page_tail].hh.b0 < 9)) 
-      pi = 0; 
-      else goto lab90; 
-      break; 
+        pi = 0; 
+      else
+        goto lab90; 
+      break;
     case 11 : 
       if(page_contents < 2)
-      goto lab31; 
+        goto lab31;
       else if(mem[p].hh.v.RH == 0)
-      return; 
+        return; 
       else if(mem[mem[p].hh.v.RH].hh.b0 == 10)
-      pi = 0; 
-      else goto lab90; 
+        pi = 0; 
+      else
+        goto lab90;
       break; 
     case 12 : 
       if(page_contents < 2)
-      goto lab31; 
-      else pi = mem[p + 1].cint; 
+        goto lab31; 
+      else
+        pi = mem[p + 1].cint; 
       break; 
     case 4 : 
       goto lab80; 
       break; 
     case 3 : 
       {
-  if(page_contents == 0)
-  freeze_page_specs(1); 
-  n = mem[p].hh.b1; 
-  r = mem_top; 
-  while(n >= mem[mem[r].hh.v.RH].hh.b1)r = mem[r].hh 
- .v.RH; 
-  n = n; 
-  if(mem[r].hh.b1 != n)
-  {
-    q = get_node(4); 
-    mem[q].hh.v.RH = mem[r].hh.v.RH; 
-    mem[r].hh.v.RH = q; 
-    r = q; 
-    mem[r].hh.b1 = n; 
-    mem[r].hh.b0 = 0; 
-    ensure_vbox(n); 
-    if(eqtb[(hash_size + 1578) + n].hh.v.RH == 0)
-    mem[r + 3].cint = 0; 
-    else mem[r + 3].cint = mem[eqtb[(hash_size + 1578) + n].hh.v.RH + 3]
-   .cint + mem[eqtb[(hash_size + 1578) + n].hh.v.RH + 2].cint; 
-    mem[r + 2].hh.v.LH = 0; 
-    q = eqtb[(hash_size + 800) + n].hh.v.RH; 
-    if(eqtb[(hash_size + 3218) + n].cint == 1000)
-    h = mem[r + 3].cint; 
-    else h = x_over_n(mem[r + 3].cint, 1000)* eqtb[(hash_size + 3218) + n]
-   .cint; 
-    page_so_far[0]= page_so_far[0]- h - mem[q + 1].cint; 
-    page_so_far[2 + mem[q].hh.b0]= page_so_far[2 + mem[q]
-    .hh.b0]+ mem[q + 2].cint; 
-    page_so_far[6]= page_so_far[6]+ mem[q + 3].cint; 
-    if((mem[q].hh.b1 != 0)&&(mem[q + 3].cint != 0)) 
-    {
+        if(page_contents == 0)
+          freeze_page_specs(1);
+        n = mem[p].hh.b1;
+        r = mem_top;
+        while(n >= mem[mem[r].hh.v.RH].hh.b1)
+          r = mem[r].hh.v.RH;
+        n = n; 
+        if(mem[r].hh.b1 != n)
+        {
+          q = get_node(4);
+          mem[q].hh.v.RH = mem[r].hh.v.RH;
+          mem[r].hh.v.RH = q; 
+          r = q;
+          mem[r].hh.b1 = n;
+          mem[r].hh.b0 = 0;
+          ensure_vbox(n);
+          if(eqtb[(hash_size + 1578) + n].hh.v.RH == 0)
+            mem[r + 3].cint = 0; 
+          else
+            mem[r + 3].cint = mem[eqtb[(hash_size + 1578) + n].hh.v.RH + 3].cint + mem[eqtb[(hash_size + 1578) + n].hh.v.RH + 2].cint; 
+          mem[r + 2].hh.v.LH = 0; 
+          q = eqtb[(hash_size + 800) + n].hh.v.RH;
+          if(eqtb[(hash_size + 3218) + n].cint == 1000)
+            h = mem[r + 3].cint; 
+          else
+            h = x_over_n(mem[r + 3].cint, 1000)* eqtb[(hash_size + 3218) + n].cint; 
+          page_so_far[0]= page_so_far[0]- h - mem[q + 1].cint; 
+          page_so_far[2 + mem[q].hh.b0]= page_so_far[2 + mem[q].hh.b0]+ mem[q + 2].cint; 
+          page_so_far[6]= page_so_far[6]+ mem[q + 3].cint; 
+          if((mem[q].hh.b1 != 0)&&(mem[q + 3].cint != 0)) 
+          {
+			  print_err("Infinite glue shrinkage inserted from");
+            print_esc(392);    /* skip*/
+            print_int(n);
+            {
+              help_ptr = 3;
+              help_line[2]= 993;  /* The correction glue for page breaking with insertions */
+              help_line[1]= 994;  /* must have finite shrinkability. But you may proceed, */
+              help_line[0]= 916;  /* since the offensive shrinkability has been made finite. */
+            } 
+            error (); 
+          } 
+        } 
+        if(mem[r].hh.b0 == 1)
+          insert_penalties = insert_penalties + mem[p + 1].cint; 
+        else {
+          mem[r + 2].hh.v.RH = p;
+          delta = page_so_far[0]- page_so_far[1]- page_so_far[7] + page_so_far[6];
+          if(eqtb[(hash_size + 3218) + n].cint == 1000)
+            h = mem[p + 3].cint; 
+          else
+            h = x_over_n(mem[p + 3].cint, 1000)* eqtb[(hash_size + 3218) + n].cint;
+          if(((h <= 0)||(h <= delta)) &&(mem[p + 3].cint + mem[r + 3].cint <= eqtb[(hash_size + 3751) + n].cint))
+          {
+            page_so_far[0]= page_so_far[0]- h; 
+            mem[r + 3].cint = mem[r + 3].cint + mem[p + 3].cint; 
+          } 
+          else {
+            if(eqtb[(hash_size + 3218) + n].cint <= 0)
+              w = 1073741823L;  /* 2^30 - 1 */
+            else {
+              w = page_so_far[0]- page_so_far[1]- page_so_far[7];
+              if(eqtb[(hash_size + 3218) + n].cint != 1000)
+                w = x_over_n(w, eqtb[(hash_size + 3218) + n].cint)* 1000;
+            } 
+            if(w > eqtb[(hash_size + 3751) + n].cint - mem[r + 3].cint)
+              w = eqtb[(hash_size + 3751) + n].cint - mem[r + 3].cint; 
+            q = vert_break(mem[p + 4].hh.v.LH, w, mem[p + 2].cint); 
+            mem[r + 3].cint = mem[r + 3].cint + best_height_plus_depth;
+            ;
+#ifdef STAT
+            if(eqtb[(hash_size + 3196)].cint > 0)
+            {
+              begin_diagnostic (); 
+              print_nl(995);   /* % split */
+              print_int(n); 
+              print(996);   /*  to */
+              print_scaled(w); 
+              print_char(44);  /*, */
+              print_scaled(best_height_plus_depth); 
+              print(925);   /*  p= */
+              if(q == 0)    /* if q=null l.19614 */
+                print_int(-10000); 
+              else if(mem[q].hh.b0 == 12)
+                print_int(mem[q + 1].cint); 
+              else print_char(48); /* 0 */
+              end_diagnostic(false); 
+            } 
+#endif /* STAT */
+            if(eqtb[(hash_size + 3218) + n].cint != 1000)
+              best_height_plus_depth = x_over_n(best_height_plus_depth, 1000) * eqtb[(hash_size + 3218) + n].cint; 
+            page_so_far[0]= page_so_far[0]- best_height_plus_depth; 
+            mem[r].hh.b0 = 1; 
+            mem[r + 1].hh.v.RH = q; 
+            mem[r + 1].hh.v.LH = p; 
+            if(q == 0)
+              insert_penalties = insert_penalties - 10000; 
+            else if(mem[q].hh.b0 == 12)
+              insert_penalties = insert_penalties + mem[q + 1].cint; 
+          } 
+        } 
+        goto lab80; 
+      } 
+      break; 
+    default:
       {
-        if(interaction == 3)
-     ; 
-        print_nl(262);   /* ! */
-        print(992);   /* Infinite glue shrinkage inserted from */
-      } 
-      print_esc(392);    /* skip*/
-      print_int(n); 
-      {
-        help_ptr = 3; 
-        help_line[2]= 993;  /* The correction glue for page breaking with insertions */
-        help_line[1]= 994;  /* must have finite shrinkability. But you may proceed, */
-        help_line[0]= 916;  /* since the offensive shrinkability has been made finite. */
-      } 
-      error (); 
+        confusion(987); /* page */
+        return;       // abort_flag set
+      }
+      break; 
     } 
-  } 
-  if(mem[r].hh.b0 == 1)
-  insert_penalties = insert_penalties + mem[p + 1].cint; 
-  else {
-      
-    mem[r + 2].hh.v.RH = p; 
-    delta = page_so_far[0]- page_so_far[1]- page_so_far[7]+ 
-    page_so_far[6]; 
-    if(eqtb[(hash_size + 3218) + n].cint == 1000)
-    h = mem[p + 3].cint; 
-    else h = x_over_n(mem[p + 3].cint, 1000)* eqtb[(hash_size + 3218) + n]
-   .cint; 
-    if(((h <= 0)||(h <= delta)) &&(mem[p + 3].cint + mem 
-   [r + 3].cint <= eqtb[(hash_size + 3751) + n].cint)) 
+    if(pi < 10000)/* pi may be used ... */
     {
-      page_so_far[0]= page_so_far[0]- h; 
-      mem[r + 3].cint = mem[r + 3].cint + mem[p + 3].cint; 
-    } 
-    else {
-        
-      if(eqtb[(hash_size + 3218) + n].cint <= 0)
-      w = 1073741823L;  /* 2^30 - 1 */
-      else {
-    
-        w = page_so_far[0]- page_so_far[1]- page_so_far[7]; 
-        if(eqtb[(hash_size + 3218) + n].cint != 1000)
-        w = x_over_n(w, eqtb[(hash_size + 3218) + n].cint)* 1000; 
-      } 
-      if(w > eqtb[(hash_size + 3751) + n].cint - mem[r + 3].cint)
-      w = eqtb[(hash_size + 3751) + n].cint - mem[r + 3].cint; 
-      q = vert_break(mem[p + 4].hh.v.LH, w, mem[p + 2].cint); 
-      mem[r + 3].cint = mem[r + 3].cint + best_height_plus_depth; 
-;
+      if(page_so_far[1]< page_so_far[0])
+        if((page_so_far[3]!= 0)||(page_so_far[4]!= 0)||(page_so_far[5]!= 0)) 
+          b = 0; 
+        else
+          b = badness(page_so_far[0]- page_so_far[1], page_so_far[2]);
+      else if(page_so_far[1]- page_so_far[0]> page_so_far[6])
+        b = 1073741823L;  /* 2^30 - 1 */
+      else
+        b = badness(page_so_far[1]- page_so_far[0], page_so_far[6]);
+      if(b < 1073741823L) /* 2^30 - 1 */
+        if(pi <= -10000)
+          c = pi; 
+        else if(b < 10000)
+          c = b + pi + insert_penalties; 
+        else
+          c = 100000L; 
+      else
+        c = b; 
+      if (insert_penalties >= 10000)
+        c = 1073741823L;  /* 2^30 - 1 */
+      ;
 #ifdef STAT
       if(eqtb[(hash_size + 3196)].cint > 0)
       {
         begin_diagnostic (); 
-        print_nl(995);   /* % split */
-        print_int(n); 
-        print(996);   /*  to */
-        print_scaled(w); 
-        print_char(44);  /*, */
-        print_scaled(best_height_plus_depth); 
+        print_nl(37);  /* % */
+        print(921);   /*  t= */
+        print_totals (); 
+        print(990);   /*  g= */
+        print_scaled(page_so_far[0]); 
+        print(924);   /*  b= */
+        if(b == 1073741823L) /* 2^30 - 1 */
+          print_char(42);  /* * */
+        else
+          print_int(b); 
         print(925);   /*  p= */
-        if(q == 0)    /* if q=null l.19614 */
-        print_int(-10000); 
-        else if(mem[q].hh.b0 == 12)
-        print_int(mem[q + 1].cint); 
-        else print_char(48); /* 0 */
+        print_int(pi); 
+        print(991);   /*  c= */
+        if(c == 1073741823L) /* 2^30 - 1 */
+          print_char(42);  /* * */
+        else print_int(c); 
+        if(c <= least_page_cost)
+          print_char(35);  /* # */
         end_diagnostic(false); 
-      } 
-#endif /* STAT */
-      if(eqtb[(hash_size + 3218) + n].cint != 1000)
-      best_height_plus_depth = x_over_n(best_height_plus_depth, 1000)*
-    eqtb[(hash_size + 3218) + n].cint; 
-      page_so_far[0]= page_so_far[0]- best_height_plus_depth; 
-      mem[r].hh.b0 = 1; 
-      mem[r + 1].hh.v.RH = q; 
-      mem[r + 1].hh.v.LH = p; 
-      if(q == 0)
-      insert_penalties = insert_penalties - 10000; 
-      else if(mem[q].hh.b0 == 12)
-      insert_penalties = insert_penalties + mem[q + 1].cint; 
-    } 
-  } 
-  goto lab80; 
-      } 
-    break; 
-      default:
-    {
-      confusion(987); /* page */
-      return;       // abort_flag set
-    }
-      break; 
-  } 
-    if(pi < 10000)/* pi may be used ... */
-    {
-      if(page_so_far[1]< page_so_far[0])
-      if((page_so_far[3]!= 0)||(page_so_far[4]!= 0)||(page_so_far 
-     [5]!= 0)) 
-      b = 0; 
-      else b = badness(page_so_far[0]- page_so_far[1], page_so_far[2])
-   ; 
-      else if(page_so_far[1]- page_so_far[0]> page_so_far[6])
-      b = 1073741823L;  /* 2^30 - 1 */
-      else b = badness(page_so_far[1]- page_so_far[0], page_so_far[6])
-   ; 
-      if(b < 1073741823L) /* 2^30 - 1 */
-      if(pi <= -10000)
-      c = pi; 
-      else if(b < 10000)
-      c = b + pi + insert_penalties; 
-      else c = 100000L; 
-      else c = b; 
-      if(insert_penalties >= 10000)
-      c = 1073741823L;  /* 2^30 - 1 */
-;
-#ifdef STAT
-      if(eqtb[(hash_size + 3196)].cint > 0)
-      {
-  begin_diagnostic (); 
-  print_nl(37);  /* % */
-  print(921);   /*  t= */
-  print_totals (); 
-  print(990);   /*  g= */
-  print_scaled(page_so_far[0]); 
-  print(924);   /*  b= */
-  if(b == 1073741823L) /* 2^30 - 1 */
-  print_char(42);  /* * */
-  else print_int(b); 
-  print(925);   /*  p= */
-  print_int(pi); 
-  print(991);   /*  c= */
-  if(c == 1073741823L) /* 2^30 - 1 */
-  print_char(42);  /* * */
-  else print_int(c); 
-  if(c <= least_page_cost)
-  print_char(35);  /* # */
-  end_diagnostic(false); 
       } 
 #endif /* STAT */
       if(c <= least_page_cost)
@@ -313,12 +306,7 @@ void build_page (void)
       page_so_far[6]= page_so_far[6]+ mem[q + 3].cint; 
       if((mem[q].hh.b1 != 0)&&(mem[q + 3].cint != 0)) 
       {
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);   /* ! */
-    print(988);   /* Infinite glue shrinkage found on current page */
-  } 
+		  print_err("Infinite glue shrinkage found on current page");
   {
     help_ptr = 4; 
     help_line[3]= 989;  /* The page about to be output contains some infinitely */
@@ -360,15 +348,12 @@ void build_page (void)
 void app_space (void) 
 { 
   halfword q; 
-  if((space_factor >= 2000)&&
-    (eqtb[(hash_size + 795)].hh.v.RH != 0)) 
+  if((space_factor >= 2000) && (eqtb[(hash_size + 795)].hh.v.RH != 0)) 
   q = new_param_glue(13); 
-  else {
-      
+  else {      
     if(eqtb[(hash_size + 794)].hh.v.RH != 0)
     main_p = eqtb[(hash_size + 794)].hh.v.RH; 
-    else {
-  
+    else {  
       main_p = font_glue[eqtb[(hash_size + 1834)].hh.v.RH]; 
       if(main_p == 0)
       {
@@ -382,12 +367,9 @@ void app_space (void)
     } 
     main_p = new_spec(main_p); 
     if(space_factor >= 2000)
-    mem[main_p + 1].cint = mem[main_p + 1].cint + font_info[7 + 
-    param_base[eqtb[(hash_size + 1834)].hh.v.RH]].cint; 
-    mem[main_p + 2].cint = xn_over_d(mem[main_p + 2].cint, cur_list 
-   .aux_field.hh.v.LH, 1000); 
-    mem[main_p + 3].cint = xn_over_d(mem[main_p + 3].cint, 1000, 
-    space_factor); 
+    mem[main_p + 1].cint = mem[main_p + 1].cint + font_info[7 + param_base[eqtb[(hash_size + 1834)].hh.v.RH]].cint; 
+    mem[main_p + 2].cint = xn_over_d(mem[main_p + 2].cint, cur_list.aux_field.hh.v.LH, 1000); 
+    mem[main_p + 3].cint = xn_over_d(mem[main_p + 3].cint, 1000, space_factor); 
     q = new_glue(main_p); 
     mem[main_p].hh.v.RH = 0; 
   } 
@@ -399,13 +381,8 @@ void app_space (void)
 void insert_dollar_sign (void) 
 { 
   back_input (); 
-  cur_tok = 804; 
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262); /* ! */
-    print(1011);  /* Proceed; I'll discard its present contents. */
-  } 
+  cur_tok = 804;
+  print_err("Proceed; I'll discard its present contents.");
   {
     help_ptr = 2; 
     help_line[1]= 1012;   /* I've inserted a begin-math/end-math symbol since I think */
@@ -416,12 +393,7 @@ void insert_dollar_sign (void)
 /* sec 1049 */
 void you_cant (void) 
 {
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262); /* ! */
-    print(682);   /* You can't use ` */
-  } 
+  print_err("You can't use `");
   print_cmd_chr(cur_cmd, cur_chr); 
   print(1014);    /* ' in  */
   print_mode(mode); 
@@ -441,7 +413,8 @@ void report_illegal_case (void)
 } 
 /* sec 1051 */
 bool privileged (void) 
-{register bool Result; 
+{
+  register bool Result; 
   if(mode > 0)Result = true; 
   else {
     report_illegal_case (); 
@@ -451,11 +424,11 @@ bool privileged (void)
 } 
 /* sec 1054 */
 bool its_all_over (void) 
-{/* 10 */ register bool Result; 
+{/* 10 */
+  register bool Result; 
   if(privileged ())
   {
-    if((mem_top - 2 == page_tail)&&(head == cur_list 
-   .tail_field)&&(dead_cycles == 0)) 
+    if((mem_top - 2 == page_tail) && (head == cur_list.tail_field) && (dead_cycles == 0)) 
     {
       Result = true; 
       return(Result); 
@@ -483,7 +456,7 @@ bool its_all_over (void)
 /* sec 1060 */
 void append_glue (void)
 {
-   small_number s; 
+  small_number s; 
   s = cur_chr; 
   switch(s)
   {case 0 : 
@@ -534,12 +507,7 @@ void off_save (void)
   halfword p; 
   if(cur_group == 0)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);   /* ! */
-      print(773);   /* Extra  */
-    } 
+	print_err("Extra ");
     print_cmd_chr(cur_cmd, cur_chr); 
     {
       help_ptr = 1; 
@@ -552,12 +520,7 @@ void off_save (void)
     back_input (); 
     p = get_avail (); 
     mem[mem_top - 3].hh.v.RH = p; 
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);   /* ! */
-      print(622);   /* Missing  */
-    } 
+	print_err("Missing ");
     switch(cur_group)
     {case 14 : 
       {
@@ -608,12 +571,7 @@ void off_save (void)
 /* sec 1069 */
 void extra_right_brace (void) 
 {
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);   /* ! */
-    print(1042);  /* Extra }, or forgotten */
-  } 
+  print_err("Extra }, or forgotten");
   switch(cur_group)
   {case 14 : 
     print_esc(513);  /* endgroup */
@@ -725,13 +683,7 @@ void box_end_(integer boxcontext)
       mem[tail + 1].hh.v.RH = cur_box; 
     } 
     else {
-  
-      {
-  if(interaction == 3)
-; 
-  print_nl(262);   /* ! */
-  print(1060);  /* Leaders not followed by proper glue */
-      } 
+    print_err("Leaders not followed by proper glue");
       {
   help_ptr = 3; 
   help_line[2]= 1061;   /* You should say `\leaders <box or rule><hskip or vskip>'. */
@@ -828,12 +780,7 @@ void begin_box_(integer boxcontext)
       n = cur_val; 
       if(! scan_keyword(836))  /* to */
       {
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);   /* ! */
-    print(1067);    /* Missing `to' inserted */
-  } 
+		  print_err("Missing `to' inserted");
   {
     help_ptr = 2; 
     help_line[1]= 1068; /* I'm working on `\vsplit<box number> to <dimen>'; */
@@ -902,13 +849,7 @@ void scan_box_(integer boxcontext)
     box_end(boxcontext); 
   } 
   else {
-      
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);     /* ! */
-      print(1070);      /* A <box> was supposed to be here */
-    } 
+      print_err("A <box> was supposed to be here");
     {
       help_ptr = 3; 
       help_line[2]= 1071; /* I was expecting to see \hbox or \vbox or \copy or \box or */
@@ -1005,12 +946,7 @@ void head_for_vmode (void)
     off_save ();
   }
   else {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);   /* ! */
-      print(682); /* You can't use ` */
-    } 
+	  print_err("You can't use `");
     print_esc(518);  /* hrule */
     print(1076);  /* ' here except with leaders */
     {
@@ -1051,12 +987,7 @@ void begin_insert_or_adjust (void)
     scan_eight_bit_int (); 
     if(cur_val == 255)
     {
-      {
-  if(interaction == 3)
-; 
-  print_nl(262); /* ! */
-  print(1079);  /* You can't  */
-      } 
+		print_err("You can't ");
       print_esc(327); /* insert */
       print_int(255); 
       {
@@ -1171,12 +1102,7 @@ void unpackage (void)
   == 1)&&(mem[p].hh.b0 != 1)) ||((abs(mode)== 
   102)&&(mem[p].hh.b0 != 0)))
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);   /* ! */
-      print(1091);    /* Incompatible list can't be unboxed */
-    } 
+	  print_err("Incompatible list can't be unboxed");
     {
       help_ptr = 3; 
       help_line[2]= 1092; /* Sorry, Pandora. (You sneaky devil.) */
@@ -1264,12 +1190,7 @@ void build_discretionary (void)
     if(mem[p].hh.b0 != 11)
     if(mem[p].hh.b0 != 6)
     {
-      {
-  if(interaction == 3)
-; 
-  print_nl(262);     /* ! */
-  print(1101);    /* Improper discretionary list */
-      } 
+		print_err("Improper discretionary list");
       {
   help_ptr = 1; 
   help_line[0]= 1102;   /* Discretionary lists must contain only boxes and kerns. */
@@ -1301,12 +1222,7 @@ void build_discretionary (void)
     {
       if((n > 0)&&(abs(mode)== 203)) 
       {
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);   /* ! */
-    print(1095);    /* Illegal math  */
-  } 
+		  print_err("Illegal math ");
   print_esc(346);  /* discretionary */
   {
     help_ptr = 2; 
@@ -1323,13 +1239,7 @@ void build_discretionary (void)
       if(n <= max_quarterword)     /* 96/Oct/12 ??? */
       mem[tail].hh.b1 = n; 
       else {
-    
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);   /* ! */
-    print(1098);    /* Discretionary list is too long */
-  } 
+    print_err("Discretionary list is too long");
   {
     help_ptr = 2; 
     help_line[1]= 1099; /* Wow---I never thought anybody would tweak me here. */
@@ -1410,12 +1320,7 @@ void make_accent (void)
 void align_error (void) 
 { 
   if(abs(align_state)> 2){
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);     /* ! */
-      print(1108);      /* Misplaced  */
-    } 
+	  print_err("Misplaced ");
     print_cmd_chr(cur_cmd, cur_chr); 
     if(cur_tok == 1062) {
       {
@@ -1443,22 +1348,12 @@ void align_error (void)
   else {
     back_input (); 
     if(align_state < 0) {
-      {
-  if(interaction == 3)
- ; 
-  print_nl(262);     /* ! */
-  print(654);     /* Missing { inserted */
-      } 
+		print_err("Missing { inserted");
       incr(align_state); 
       cur_tok = 379;    /* belowdisplayshortskip ? */
     } 
     else {
-      {
-  if(interaction == 3)
- ; 
-  print_nl(262);     /* ! */
-  print(1104);    /* Missing } inserted */
-      } 
+		print_err("Missing } inserted");
       decr(align_state); 
       cur_tok = 637; 
     } 
@@ -1474,12 +1369,7 @@ void align_error (void)
 /* sec 1129 */
 void noalign_error (void) 
 {
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);     /* ! */
-    print(1108);    /* Misplaced  */
-  } 
+  print_err("Misplaced ");
   print_esc(524);    /* noalign */
   {
     help_ptr = 2; 
@@ -1492,12 +1382,7 @@ void noalign_error (void)
 /* sec 1129 */
 void omit_error (void) 
 { 
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);     /* ! */
-    print(1108);    /* Misplaced  */
-  } 
+  print_err("Misplaced ");
   print_esc(527);    /* omit */
   {
     help_ptr = 2; 
@@ -1519,12 +1404,7 @@ void do_endv (void)
 /* sec 1135 */
 void cs_error (void) 
 {
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);   /* ! */
-    print(773);   /* Extra  */
-  } 
+  print_err("Extra ");
   print_esc(502);  /* endcsname */
   {
     help_ptr = 1; 
@@ -1814,13 +1694,8 @@ void math_limit_switch (void)
   {
     mem[tail].hh.b1 = cur_chr; 
     return; 
-  } 
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);     /* ! */
-    print(1124);    /* Limit controls must follow a math operator */
-  } 
+  }
+  print_err("Limit controls must follow a math operator");
   {
     help_ptr = 1; 
     help_line[0]= 1125;   /* I'm ignoring this misplaced \limits or \nolimits command. */
@@ -1853,12 +1728,7 @@ void scan_delimiter_(halfword p, bool r)
   } 
   if(cur_val < 0)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);   /* ! */
-      print(1126);    /* Missing delimiter (. inserted) */
-    } 
+	  print_err("Missing delimiter (. inserted)");
     {
       help_ptr = 6; 
       help_line[5]= 1127; /* I was expecting to see something like `(' or `\{' or */
@@ -1901,12 +1771,7 @@ void math_ac (void)
 { 
   if(cur_cmd == 45)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);   /* ! */
-      print(1133);    /* Please use  */
-    } 
+    print_err("Please use ");
     print_esc(520);    /* mathaccent */
     print(1134);    /*  for accents in math mode */
     {
@@ -2035,25 +1900,14 @@ void sub_sup (void)
     {
       if(cur_cmd == 7)
       {
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);   /* ! */
-    print(1137);    /* Double superscript */
-  } 
+		  print_err("Double superscript");
   {
     help_ptr = 1; 
     help_line[0]= 1138; /* I treat `x^1^2' essentially like `x^1{}^2'.  */
   } 
       } 
       else {
-    
-  {
-    if(interaction == 3)
- ; 
-    print_nl(262);   /* ! */
-    print(1139);    /* Double subscript */
-  } 
+    print_err("Double subscript");
   {
     help_ptr = 1; 
     help_line[0]= 1140; /* I treat `x_1_2' essentially like `x_1{}_2'. */

@@ -103,9 +103,9 @@ void dvi_swap (void)
 { 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (trace_flag) {
-  showchar('\n');
+  show_char('\n');
   sprintf(log_line, "dvi_swap %d", dvi_gone);
-  showline(log_line, 0);
+  show_line(log_line, 0);
 }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if(dvi_limit == dvi_buf_size)   {
@@ -121,7 +121,7 @@ void dvi_swap (void)
   dvi_gone = dvi_gone + half_buf; 
 } 
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
-void zdvifour(integer x)    /* attempt at speeding up bkph - is compiler smart ? */
+void dvi_four_(integer x)    /* attempt at speeding up bkph - is compiler smart ? */
 { 
   if(x >= 0)
   {
@@ -179,7 +179,7 @@ void zdvipop(integer l)
   } 
 } 
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
-void zdvifontdef(internal_font_number f)
+void dvi_font_def_(internal_font_number f)
 { 
   pool_pointer k; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -507,7 +507,7 @@ void prune_movements_(integer l)
   } 
 } 
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
-void zspecialout(halfword p)
+void special_out_(halfword p)
 {
   char old_setting; 
   pool_pointer k; 
@@ -598,14 +598,14 @@ void zspecialout(halfword p)
         str_pool [k+1] == 'r' &&
         str_pool [k+2] == 'c' &&
         str_pool [k+3] == ':') {  /* \special{src: ... } */
-        showchar('\n');
+        show_char('\n');
         s = log_line;
         while (k < kend) {
           *s++ = str_pool[k++];
         }
         *s++ = ' ';
         *s++ = '\0';
-        showline(log_line, 0)
+        show_line(log_line, 0)
 #ifndef _WINDOWS
         fflush(stdout);
 #endif
@@ -672,12 +672,7 @@ void write_out_(halfword p)
 /*  if(cur_tok != (hash_size + 4095 + 522)) */
   if(cur_tok != (hash_size + hash_extra + 4095 + 522))
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(1291);    /* Unbalanced write command */
-    } 
+	  print_err("Unbalanced write command");
     {
       help_ptr = 2; 
       help_line[1]= 1292; /* On this page there's a \write with fewer real {'s than }'s. */
@@ -1307,7 +1302,7 @@ void vlist_out (void)
   decr(cur_s); 
 } 
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
-void zshipout(halfword p)
+void ship_out_(halfword p)
 {/* 30 */ 
   integer pageloc; 
   char j, k; 
@@ -1354,12 +1349,7 @@ void zshipout(halfword p)
      eqtb[(hash_size + 3749)].cint > 1073741823L)||
     (mem[p + 1].cint + eqtb[(hash_size + 3748)].cint > 1073741823L)) 
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(827);   /* Huge page cannot be shipped out */
-    } 
+	  print_err("Huge page cannot be shipped out");
     {
       help_ptr = 2; 
       help_line[1]= 828;  /* The page just created is more than 18 feet tall or */

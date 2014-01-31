@@ -155,8 +155,8 @@ int prepend_path_if (unsigned char *buffer, unsigned char *name, char *ext, unsi
 
 /*  Following works on null-terminated strings */
 
-/* void checkshortname(void) { */				/* 1995/Feb/20 */
-void checkshortname (unsigned char *s)
+/* void check_short_name(void) { */				/* 1995/Feb/20 */
+void check_short_name (unsigned char *s)
 {					/* 1995/Sep/26 */
 	unsigned char *star, *sdot;
 	int n;
@@ -234,7 +234,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 #ifdef MSDOS
 	if (shortenfilename) {	/* 8 + 3 file names on Windows NT 95/Feb/20 */
 /*		null_terminate (name_of_file + 1); */
-		checkshortname(name_of_file + 1);						/* 95/Sep/26 */
+		check_short_name(name_of_file + 1);						/* 95/Sep/26 */
 /*		space_terminate (name_of_file + 1); */
 	}
 #endif	/* MSDOS */
@@ -264,7 +264,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 	if (open_trace_flag) {
 /*      null_terminate (name_of_file + 1); */
 		sprintf(log_line, " Open `%s' for input ", name_of_file+1);	/* Pascal */
-		showline(log_line, 0);
+		show_line(log_line, 0);
 /*      space_terminate (name_of_file + 1); */
 	}		// debugging only
 
@@ -368,13 +368,13 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 /*			space_terminate (name_of_file + 1); */
 			if (trace_flag) {
 				sprintf(log_line, "Methinks the source %s is `%s'\n", "file", source_direct);
-				showline(log_line, 0);
+				show_line(log_line, 0);
 			}
 			if ((s = strrchr(source_direct, '/')) == NULL) *source_direct='\0';
 			else *(s+1) = '\0';
 			if (trace_flag) {
 				sprintf(log_line, "Methinks the source %s is `%s'\n", "directory", source_direct);
-				showline(log_line, 0);
+				show_line(log_line, 0);
 			}
 		}
 
@@ -474,7 +474,7 @@ bool maketexmf (void)
 #endif /* ifndef TEXONLY */
 
 
-char *getenvshroud (char *);		/* defined in texmf.c */
+char *get_env_shroud (char *);		/* defined in texmf.c */
 
 /* char outputdirectory[PATH_MAX]; */				/* defined in local.c */
 
@@ -559,7 +559,7 @@ bool extensionirrelevantp (unsigned char *base, int nlen, char *suffix)
 
 
 /* #define a_close(f) if (f) { if (ferror (f)) {perror(""); exit(1);} } if (f) (void) fclose (f) */
-/* #define a_close(f)	if (f) (void) checkfclose (f) */
+/* #define a_close(f)	if (f) (void) check_fclose (f) */
 
 /* At least check for I/O error (such as disk full) when closing */
 /* Would be better to check while writing - but this is better than nothing */
@@ -570,9 +570,9 @@ bool extensionirrelevantp (unsigned char *base, int nlen, char *suffix)
 
 void perrormod (char *s);				/* in local.c */
 
-// checkfclose not used by anything
+// check_fclose not used by anything
 
-int checkfclose (FILE *f)
+int check_fclose (FILE *f)
 {				/* 1993/Nov/20 - bkph */
 	if (f == NULL) return 0;			// sanity check
 	if (ferror(f) || fclose (f)) {
@@ -610,8 +610,8 @@ bool open_output (FILE **f, char *fopen_mode)
 #ifdef MSDOS
 	if (shortenfilename) {	/* 8 + 3 file names on Windows NT 95/Feb/20 */
 /*		null_terminate (name_of_file + 1);  */
-/*		checkshortname(); */
-		checkshortname(name_of_file + 1);					/* 95/Sep/26 */
+/*		check_short_name(); */
+		check_short_name(name_of_file + 1);					/* 95/Sep/26 */
 /*		space_terminate (name_of_file + 1); */
 	}
 #endif
@@ -628,7 +628,7 @@ bool open_output (FILE **f, char *fopen_mode)
 		prepend_path_if(name_of_file+1, name_of_file+1, ".aux", aux_directory)) {
 		if (open_trace_flag) {
 			sprintf(log_line, "After prepend %s\n", name_of_file+1);
-			showline(log_line, 0);
+			show_line(log_line, 0);
 		}
 	}
 #endif
@@ -638,7 +638,7 @@ bool open_output (FILE **f, char *fopen_mode)
 	if (open_trace_flag) {
 /*      null_terminate (name_of_file + 1); */
 		sprintf(log_line, " Open `%s' for output ", name_of_file+1); /* C string */
-		showline(log_line, 0);
+		show_line(log_line, 0);
 /*      space_terminate (name_of_file + 1); */
 	}		// debugging only
 
@@ -651,8 +651,8 @@ bool open_output (FILE **f, char *fopen_mode)
 	if (*f == NULL)    { /* Can't open as given.  Try the envvar.  */
 /*    string temp_dir = getenv ("TEXMFOUTPUT"); */	/* 93/Nov/20 */
 /*    string temp_dir = getenv ("TEXMFOUT"); */	/* 93/Nov/20 */
-/*      string temp_dir = getenvshroud ("UFYNGPVUQVU"); */
-		string temp_dir = getenvshroud ("UFYNGPVU");
+/*      string temp_dir = get_env_shroud ("UFYNGPVUQVU"); */
+		string temp_dir = get_env_shroud ("UFYNGPVU");
 
 /*		if (deslash) unixify(temp_dir); */		/* deslashify 93/Dec/28 */
 
@@ -676,7 +676,7 @@ bool open_output (FILE **f, char *fopen_mode)
 		}
 	}
 
-//	showline(name_of_file+1, 1);		// debugging only
+//	show_line(name_of_file+1, 1);		// debugging only
 //	New code to remember complete dvi_file name and log_file_name
 //	To remember for output at the end 2000 June 18
 	if (strstr(name_of_file + 1, ".dvi") != NULL) {
@@ -688,7 +688,7 @@ bool open_output (FILE **f, char *fopen_mode)
 		strcat(log_line, (char*)name_of_file+1);
 		unixify(log_line);
 		dvi_file_name = xstrdup(log_line);
-//		showline(dvi_file_name, 1);	// debugging only
+//		show_line(dvi_file_name, 1);	// debugging only
 	}
 	else if (strstr(name_of_file + 1, ".log") != NULL) {
 		if (qualified(name_of_file+1)) *log_line = '\0';
@@ -699,7 +699,7 @@ bool open_output (FILE **f, char *fopen_mode)
 		strcat(log_line, name_of_file+1);
 		unixify(log_line);
 		log_file_name = xstrdup(log_line);
-//		showline(log_file_name, 1);	// debugging only
+//		show_line(log_file_name, 1);	// debugging only
 	}
 /* Back into a Pascal string, but first get its length.  */
 	temp_length = strlen (name_of_file + 1);

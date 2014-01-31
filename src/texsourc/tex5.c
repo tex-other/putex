@@ -189,12 +189,7 @@ void fetch_(halfword a)
   cur_f = eqtb[(hash_size + 1835) + mem[a].hh.b0 + cur_size].hh.v.RH; 
   if(cur_f == 0)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(335);   /* */
-    } 
+	  print_err("");
     print_size(cur_size); 
     print_char(32);   /*   */
     print_int(mem[a].hh.b0); 
@@ -1132,12 +1127,7 @@ void init_align (void)
   if((mode == 203)&&((tail != cur_list 
  .head_field)||(cur_list.aux_field.cint != 0)))
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(677);   /* Improper */
-    } 
+	  print_err("Improper ");
     print_esc(517);   /* halign */
     print(888);     /* inside $$ */
     {
@@ -1180,13 +1170,7 @@ void init_align (void)
       if((p == mem_top - 4)&&(cur_loop == 0)&&(cur_cmd == 4)) 
       cur_loop = cur_align; 
       else {
-    
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(897);   /* Missing # inserted in alignment preamble */
-  } 
+    print_err("Missing # inserted in alignment preamble");
   {
     help_ptr = 3; 
     help_line[2]= 898;  /* There should be exactly one # between &'s, when an */
@@ -1218,12 +1202,7 @@ lab22:
       goto lab32; 
       if(cur_cmd == 6)
       {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(901);   /* Only one # is allowed per tab */
-  } 
+		  print_err("Only one # is allowed per tab");
   {
     help_ptr = 3; 
     help_line[2]= 898;  /* There should be exactly one # between &'s, when an */
@@ -1597,12 +1576,7 @@ void fin_align (void)
   {
     do_assignments (); 
     if(cur_cmd != 3) {
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* !  */
-  print(1164);  /* Missing $$ inserted */
-      } 
+		print_err("Missing $$ inserted");
       {
   help_ptr = 2; 
   help_line[1]= 889;  /* Displays can use special alignments (like \eqalignno) */
@@ -1615,12 +1589,7 @@ void fin_align (void)
       get_x_token (); 
       if(cur_cmd != 3)
       {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(1160);    /* Display math should end with $$ */
-  } 
+		  print_err("Display math should end with $$"); 
   {
     help_ptr = 2; 
     help_line[1]= 1161; /* The `$' that I just saw supposedly matches a previous `$$'. */
@@ -1731,13 +1700,7 @@ bool fin_col (void)
     mem[p].hh.v.RH = new_glue(mem[cur_loop + 1].hh.v.LH); 
   } 
   else {
-      
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(904);   /* Extra alignment tab has been changed to  */
-    } 
+      print_err("Extra alignment tab has been changed to ");
     print_esc(893);   /* cr */
     {
       help_ptr = 3; 

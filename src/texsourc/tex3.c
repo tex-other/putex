@@ -64,12 +64,7 @@ void scan_int (void)
     else cur_val = cur_tok - 4352;  /* 4095 + 257 */
     if(cur_val > 255)
     {
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* ! */
-  print(695);   /* Improper alphabetic constant */
-      } 
+		print_err("Improper alphabetic constant");
       {
   help_ptr = 2; 
   help_line[1]= 696; /* A one-character control sequence belongs after a ` mark. */
@@ -123,12 +118,7 @@ void scan_int (void)
       {
   if(OKsofar)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);  /* ! */
-      print(698);   /* Number too big */
-    } 
+	  print_err("Number too big");
     {
       help_ptr = 2; 
       help_line[1]= 699; /* I can only go up to 2147483647='17777777777="7FFFFFFF, */
@@ -145,12 +135,7 @@ void scan_int (void)
     lab30:; 
     if(vacuous)
     {
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);    /* ! */
-  print(661);     /* Missing number, treated as zero */
-      } 
+		print_err("Missing number, treated as zero");
       {
   help_ptr = 3; 
   help_line[2]= 662; /* A number should have been here; I inserted `0'. */
@@ -279,12 +264,7 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
     while(scan_keyword(108)) {  /* l */
   
       if(cur_order == 3) {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(702);   /* Illegal unit of measure(*/
-  } 
+		  print_err("Illegal unit of measure(");
   print(703);     /* replaced by filll) */
   {
     help_ptr = 1; 
@@ -341,13 +321,7 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
   if(scan_keyword(334)) /* mu */
   goto lab88; 
   else {
-      
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(702);   /* Illegal unit of measure(*/
-    } 
+      print_err("Illegal unit of measure("); 
     print(707);     /* mu inserted) */
     {
       help_ptr = 4; 
@@ -413,13 +387,7 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
   else if(scan_keyword(719))  /* sp */
   goto lab30; 
   else {
-      
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(702);   /* Illegal unit of measure(*/
-    } 
+      print_err("Illegal unit of measure(");
     print(720);     /* pt inserted) */
     {
       help_ptr = 6; 
@@ -452,12 +420,7 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
 lab89:
   if(arith_error ||(abs(cur_val)>= 1073741824L)) /* 2^30 */
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(724);   /* Dimension too large */
-    } 
+	  print_err("Dimension too large");
     {
       help_ptr = 2; 
       help_line[1]= 725; /* I can't work with sizes bigger than about 19 feet. */
@@ -817,12 +780,7 @@ halfword scan_toks_(bool macrodef, bool xpand)
   } 
   if(t == 3129)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);  /* !  */
-      print(741);   /* You already have nine parameters */
-    } 
+	  print_err("You already have nine parameters");
     {
       help_ptr = 1; 
       help_line[0]= 742; /* I'm going to ignore the # sign you just used. */
@@ -834,12 +792,7 @@ halfword scan_toks_(bool macrodef, bool xpand)
     incr(t); 
     if(cur_tok != t)
     {
-      {
-        if(interaction == 3)
-     ; 
-        print_nl(262);    /* !  */
-        print(743);   /* Parameters must be numbered consecutively */
-      } 
+		print_err("Parameters must be numbered consecutively");
       {
         help_ptr = 2; 
         help_line[1]= 744; /* I've inserted the digit you should have used after the #. */
@@ -866,12 +819,7 @@ halfword scan_toks_(bool macrodef, bool xpand)
     } 
     if(cur_cmd == 2)
     {
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* !  */
-  print(654);   /* Missing { inserted */
-      } 
+		print_err("Missing { inserted");
       incr(align_state); 
       {
   help_ptr = 2; 
@@ -924,12 +872,7 @@ lab32:
       else get_token (); 
       if(cur_cmd != 6)
       if((cur_tok <= 3120)||(cur_tok > t))   {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(746); /* Illegal parameter number in definition of */
-  } 
+		  print_err("Illegal parameter number in definition of");
   sprint_cs(warning_index); 
   {
     help_ptr = 3; 
@@ -1020,13 +963,8 @@ void read_toks_(integer n, halfword r)
         (void) a_close(read_file[m]); 
         read_open[m]= 2; 
         if(align_state != 1000000L) {
-          runaway (); 
-          {
-            if(interaction == 3)
-            ; 
-            print_nl(262);  /* !  */
-            print(751);   /* File ended within */
-          } 
+          runaway ();
+		  print_err("File ended within");
           print_esc(531); /* read */
           {
             help_ptr = 1; 
@@ -1197,13 +1135,7 @@ void conditional (void)
       if((cur_tok >= 3132)&&(cur_tok <= 3134)) 
       r = cur_tok - 3072; 
       else {
-    
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(777);   /* Missing = inserted for  */
-  } 
+    print_err("Missing = inserted for ");
   print_cmd_chr(105, thisif); /* i */
   {
     help_ptr = 1; 
@@ -1361,13 +1293,8 @@ void conditional (void)
     if(cond_ptr == savecondptr)
     {
       if(cur_chr != 4)
-      goto lab50; 
-      {
-  if(interaction == 3)
-  ; 
-  print_nl(262);  /* !  */
-  print(773);   /* Extra */
-      } 
+      goto lab50;
+	  print_err("Extra ");
       print_esc(771); /* or */
       {
   help_ptr = 1; 
@@ -1482,7 +1409,7 @@ int find_string (int start, int end)
     s = log_line + strlen(log_line);
     strncpy(s, str_pool+start, nlen);
     strcpy(s+nlen, "");
-    showline(log_line, 0);
+    show_line(log_line, 0);
   }
 
 //  avoid problems with(cur_name == flushablestring)by going only up to str_ptr-1
@@ -1496,7 +1423,7 @@ int find_string (int start, int end)
         s = log_line + strlen(log_line);
         strncpy(s, str_pool+start, nlen);
         strcpy(s+nlen, "\n");
-        showline(log_line, 0);
+        show_line(log_line, 0);
       }
       return k;     // return number of matching string
     }
@@ -1506,7 +1433,7 @@ int find_string (int start, int end)
     s = log_line + strlen(log_line);
     strncpy(s, str_pool+start, nlen);
     strcpy(s+nlen, "\n");
-    showline(log_line, 0);
+    show_line(log_line, 0);
   }
   return -1;          // no match found
 }
@@ -1516,12 +1443,12 @@ int find_string (int start, int end)
 
 void remove_string (int start, int end)
 {
-  int nlen = pool_ptr-end;  // how many bytes to move down
+  int nlen = pool_ptr - end;  // how many bytes to move down
   char *s;
   
 //  int trace_flag=1;   // debugging only
-//  if (end < start) showline("\nEND < START", 1);
-//  if (pool_ptr < end) showline("\nPOOLPTR < END", 1);
+//  if (end < start) show_line("\nEND < START", 1);
+//  if (pool_ptr < end) show_line("\nPOOLPTR < END", 1);
 
   if (trace_flag) {
     int n = end-start;
@@ -1529,7 +1456,7 @@ void remove_string (int start, int end)
     s = log_line + strlen(log_line);
     strncpy(s, str_pool+start, n);
     strcpy(s+n, "\n");
-    showline(log_line, 0);
+    show_line(log_line, 0);
   }
   if (nlen > 0) memcpy(str_pool+start, str_pool+end, nlen);
   pool_ptr = start + nlen;    // poolprt - (end-start);
@@ -1545,7 +1472,7 @@ void show_string (int k)
   s = log_line + strlen(log_line);      
   strncpy(s, str_pool+str_start[k], nlen);
   strcpy(s + nlen, "");
-  showline(log_line, 0);
+  show_line(log_line, 0);
 }
 
 void show_all_strings (void)
@@ -1584,7 +1511,7 @@ void end_name (void)
   else {
     if (save_strings_flag &&
       (cur_area = find_string(str_start[str_ptr], str_start[str_ptr]+area_delimiter)) > 0) {
-      remove_string(str_start[str_ptr], str_start[str_ptr]+area_delimiter);
+      remove_string(str_start[str_ptr], str_start[str_ptr] + area_delimiter);
       area_delimiter = 0; // area_delimiter - area_delimiter;
       if (ext_delimiter != 0) ext_delimiter = ext_delimiter - area_delimiter;
 //      str_start[str_ptr + 1]= str_start[str_ptr]+ area_delimiter; // test only
@@ -1608,8 +1535,8 @@ void end_name (void)
   } 
   else {            // did find an extension
   if (save_strings_flag &&
-      (cur_name = find_string(str_start[str_ptr], str_start[str_ptr]+ext_delimiter-area_delimiter-1)) > 0) {
-    remove_string(str_start[str_ptr], str_start[str_ptr]+ext_delimiter-area_delimiter-1);
+      (cur_name = find_string(str_start[str_ptr], str_start[str_ptr] + ext_delimiter - area_delimiter-1)) > 0) {
+    remove_string(str_start[str_ptr], str_start[str_ptr] + ext_delimiter - area_delimiter - 1);
 //    str_start[str_ptr + 1]= str_start[str_ptr]+ ext_delimiter - area_delimiter - 1;   // test only
 //    incr(str_ptr);    // test only
   }
@@ -1676,7 +1603,7 @@ void pack_file_name_(str_number n, str_number a, str_number e)
     if (trace_flag) {
       sprintf(log_line, " pack_file_name `%s' (%d) ",
           name_of_file+1, name_length); /* debugging */
-      showline(log_line, 0);
+      show_line(log_line, 0);
     }
     name_of_file [name_length+1] = ' ';
   }
@@ -1757,7 +1684,7 @@ str_number make_name_string (void)
       {
       str_pool[pool_ptr]= xord[name_of_file[k]]; 
 //      sprintf(log_line, "%d => %d ", name_of_file[k], xord[name_of_file[k]]);
-//      showline(log_line, 0);  // debugging only
+//      show_line(log_line, 0);  // debugging only
       incr(pool_ptr); 
       } 
     while(k++ < for_end); } 
@@ -1836,7 +1763,7 @@ void pack_job_name_(str_number s)
 
 /* show TEXINPUTS=... or format specific  */
 /* only show this if name was not fully qualified ? */
-void showtexinputs (void)
+void show_tex_inputs (void)
 {     /* 98/Jan/28 */
   char *s, *t, *v;
   s = "TEXINPUTS";        /* default */
@@ -1868,21 +1795,15 @@ void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e
   integer k; 
   if(interaction == 2)
   ; 
-  if(s == 781){   /* input file name */
-    if(interaction == 3); 
-    print_nl(262);  /* ! */
-    print(782);   /* I can't find file ` */
-  } 
-  else {
-    if(interaction == 3); 
-    print_nl(262);  /*  ! */
-    print(783);   /* I can't write on file ` */
-  } 
+  if(s == 781)
+    print_err("I can't find file `");
+  else 
+    print_err("I can't write on file `");
   print_file_name(cur_name, cur_area, cur_ext); 
   print(784);   /* '. */
   if(s == 781){   /* input file name */
     if (cur_area == 335) {    /* "" only if path not specified */
-      if (show_texinput_flag) showtexinputs();
+      if (show_texinput_flag) show_tex_inputs();
     }
   }
   if(e == 785)    /* .tex */
@@ -1895,10 +1816,10 @@ void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e
   }
   if (! knuth_flag)
 #ifdef _WINDOWS
-//    showline(" (or ^Z to exit)\n", 0);
-    showline(" (or ^z to exit)", 0);
+//    show_line(" (or ^Z to exit)\n", 0);
+    show_line(" (or ^z to exit)", 0);
 #else
-    showline(" (or Ctrl-Z to exit)", 0);
+    show_line(" (or Ctrl-Z to exit)", 0);
 #endif
   {
  ; 
@@ -1964,11 +1885,11 @@ void open_log_file (void)
     stamp_it(log_line);         // ??? use log_line ???
     strcat(log_line, "\n");
     (void) fputs(log_line, log_file);
-//    showline(buffer, 0);        // ??? show on screen as well
+//    show_line(buffer, 0);        // ??? show on screen as well
 //    print_ln (); 
     stampcopy(log_line);
     strcat(log_line, "\n");
-//    showline(buffer, 0);        // ??? show on screen as well
+//    show_line(buffer, 0);        // ??? show on screen as well
     (void) fputs(log_line, log_file);
 //    print_ln (); 
   }
@@ -2370,16 +2291,11 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
     if (trace_flag) {
       sprintf(log_line, "font_ptr %d font_max %d fmem_ptr %d lf %d font_mem_size %d\n",
           font_ptr, font_max, fmem_ptr, lf, font_mem_size); /* debugging */
-      showline(log_line, 0);
+      show_line(log_line, 0);
     }
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* ! */
-      print(796);   /* Font  */
-    } 
+    print_err("Font ");
     sprint_cs(u); 
     print_char(61);   /* = */
     print_file_name(nom, aire, 335); /* "" */
@@ -2780,12 +2696,7 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
   g = f; 
   goto lab30; 
 
-  lab11: {        /* error in reading font TFM */
-    if(interaction == 3)
-    ; 
-    print_nl(262);  /* !  */
-    print(796);   /* Font */
-  } 
+lab11: print_err("Font ");
   sprint_cs(u); 
   print_char(61); /* = */
   print_file_name(nom, aire, 335);  /* "" */

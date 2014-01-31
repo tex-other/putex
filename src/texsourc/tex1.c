@@ -1891,14 +1891,14 @@ halfword id_lookup_(integer j, integer l)
           if (hash_used > 65535L) {     /* debugging only 1996/Jan/20 */
             sprintf(log_line, "ERROR: %s too large %d\n",
                 "hash entry", hash_used);
-            showline(log_line, 1);
+            show_line(log_line, 1);
           }
 #endif
           hash[p].v.LH = hash_used; 
           p = hash_used; 
         } 
 #ifdef CHECKPOOL
-        if (checkpool(NULL)) showline("after hash_used\n", 0); 
+        if (checkpool(NULL)) show_line("after hash_used\n", 0); 
 #endif
         {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -1924,7 +1924,7 @@ halfword id_lookup_(integer j, integer l)
           str_pool[pool_ptr + l]= str_pool[pool_ptr]; 
         } 
 #ifdef CHECKPOOL
-        if (checkpool(NULL)) showline("after pool_ptr\n", 0);
+        if (checkpool(NULL)) show_line("after pool_ptr\n", 0);
 #endif
         {
           register integer for_end; 
@@ -1942,7 +1942,7 @@ halfword id_lookup_(integer j, integer l)
           if (tempstring > 65535L) {      /* cannot happen */
             sprintf(log_line, "ERROR: %s too large %d\n",
                 "string ptr", tempstring);
-            showline(log_line, 1);
+            show_line(log_line, 1);
           }
           hash[p].v.RH = tempstring;
         }
@@ -1950,7 +1950,7 @@ halfword id_lookup_(integer j, integer l)
         hash[p].v.RH = make_string (); 
 #endif
 #ifdef CHECKPOOL
-        if (checkpool(NULL)) showline("after make_string\n", 0); 
+        if (checkpool(NULL)) show_line("after make_string\n", 0); 
 #endif
         pool_ptr = pool_ptr + d; 
         ;
@@ -1959,19 +1959,19 @@ halfword id_lookup_(integer j, integer l)
         if (trace_flag) {
           str_pool[pool_ptr] = '\0';
           sprintf(log_line, " tex1 cs_count++ '%s' ", &str_pool[pool_ptr-l-d]);
-          showline(log_line, 0);      /* debugging */
+          show_line(log_line, 0);      /* debugging */
         }
 #endif /* STAT */
       } 
 #ifdef CHECKPOOL
-      if (checkpool(NULL)) showline("after cs_count++\n", 0); 
+      if (checkpool(NULL)) show_line("after cs_count++\n", 0); 
 #endif
       goto lab40; 
     } 
     p = hash[p].v.LH; 
   } 
 #ifdef CHECKPOOL
-  if (checkpool(NULL)) showline("before return\n", 0); 
+  if (checkpool(NULL)) show_line("before return\n", 0); 
 #endif
 lab40:
   Result = p; 

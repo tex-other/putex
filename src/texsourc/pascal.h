@@ -129,8 +129,8 @@ typedef FILE *text, *file_ptr, *alpha_file;
 /* At least for output, we SHOULD check error status !!! */
 /* Ideally should check this DURING output from time to time */
 /* #define a_close(f) if (f) { if (ferror (f)) {perror(""); exit(1);} } if (f) (void) fclose (f) */
-/* #define a_close(f)	if (f) (void) checkfclose (f) */
-#define a_close(f)	checkfclose (f)
+/* #define a_close(f)	if (f) (void) check_fclose (f) */
+#define a_close(f)	check_fclose (f)
 
 #ifdef BibTeX
 /* See bibtex.ch for why these are necessary.  */

@@ -1,7 +1,7 @@
 /* ourpaths.h: declarations for path searching.  The `...PATH' constants
    are used both as indices and just as enumeration values.  Their
    values must match the initialization of `env_var_names'.  The
-   `...PATHBIT' constants are used in the argument to `setpaths'.
+   `...PATHBIT' constants are used in the argument to `set_paths'.
 
    Copyright 1992 Karl Berry
    Copyright 2007 TeX Users Group

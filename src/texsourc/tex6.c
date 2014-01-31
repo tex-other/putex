@@ -49,13 +49,8 @@ halfword finite_shrink_(halfword p)
 {register halfword Result; 
   halfword q; 
   if(noshrinkerroryet){
-    noshrinkerroryet = false; 
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(911);   /* Infinite glue shrinkage found in a paragraph */
-    } 
+    noshrinkerroryet = false;
+	print_err("Infinite glue shrinkage found in a paragraph");
     {
       help_ptr = 5; 
       help_line[4]= 912;  /* The paragraph just ended includes some glue that has */
@@ -1452,12 +1447,7 @@ lab21: switch(cur_cmd){
     
   if(eqtb[(hash_size + 2139) + cur_chr].hh.v.RH == 0)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);  /* !  */
-      print(939);   /* Not a letter */
-    } 
+	  print_err("Not a letter");
     {
       help_ptr = 2; 
       help_line[1]= 940;  /* Letters in \hyphenation words must have \lccode>0. */
@@ -1572,12 +1562,7 @@ lab21: switch(cur_cmd){
       break; 
       default: 
       {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);  /* !  */
-    print(677); /* Improper  */
-  } 
+		  print_err("Improper ");
   print_esc(935); /* hyphenation */
   print(936);   /* will be flushed */
   {
@@ -1744,12 +1729,7 @@ halfword vert_break_(halfword p, scaled h, scaled d)
       active_width[6]= active_width[6]+ mem[q + 3].cint; 
       if((mem[q].hh.b1 != 0)&&(mem[q + 3].cint != 0)) 
       {
-  {
-    if(interaction == 3)
-  ; 
-    print_nl(262);    /* !  */
-    print(955); /* Infinite glue shrinkage found in box being split */
-  } 
+		  print_err("Infinite glue shrinkage found in box being split");
   {
     help_ptr = 4; 
     help_line[3]= 956;  /* The box you are \vsplitting contains some infinitely */
@@ -1799,13 +1779,7 @@ halfword vsplit_(eight_bits n, scaled h)
   } 
   if(mem[v].hh.b0 != 1)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(335); /*  */
-
-    } 
+	  print_err("");
     print_esc(959); /* vsplit */
     print(960);   /* needs a  */
     print_esc(961); /* vbox */
@@ -1929,12 +1903,7 @@ void ensure_vbox_(eight_bits n)
   if(p != 0) /* if p<>null then if type(p)=hlist_node then l.19324 */
   if(mem[p].hh.b0 == 0)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(983);   /* Insertions can only be added to a vbox */
-    } 
+	  print_err("Insertions can only be added to a vbox");
     {
       help_ptr = 3; 
       help_line[2]= 984;  /* Tut tut: You're trying to \insert into a */
@@ -1974,12 +1943,7 @@ void fire_up_(halfword c)
   best_page_break = 0; 
   if(eqtb[(hash_size + 1833)].hh.v.RH != 0)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(335);   /*  */
-    } 
+	  print_err("");
     print_esc(406); /* box */
     print(997);   /* 255 is not void */
     {
@@ -2151,12 +2115,7 @@ void fire_up_(halfword c)
   if(eqtb[(hash_size + 1313)].hh.v.RH != 0)
   if(dead_cycles >= eqtb[(hash_size + 3203)].cint)
   {
-    {
-      if(interaction == 3)
-   ; 
-      print_nl(262);    /* !  */
-      print(999);   /* Output loop--- */
-    } 
+	  print_err("Output loop---");
     print_int(dead_cycles); 
     print(1000);    /*  consecutive dead cycles */
     {

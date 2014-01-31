@@ -1271,7 +1271,7 @@ void tryandopen (char *);				/* in local.c - bkph */
 void check_eqtb (char *);				/* in local.c - bkph */
 void probe_memory (void);				/* in local.c - bkph */
 // void show_maximums (FILE *);			/* in local.c - bkph */
-void printcsnames (FILE *, int);		/* in local.c - bkph */
+void print_cs_names (FILE *, int);		/* in local.c - bkph */
 void perrormod(char *);					/* in local.c */
 
 char *grabenv(char *);			/* in local.c - bkph */
@@ -1286,10 +1286,10 @@ void t_open_in (void);					/* in lib/texmf.c - bkph */
 
 bool extensionirrelevantp (unsigned char *base, int nlen, char *suffix);
 
-void calledit (ASCII_code *filename, pool_pointer fnstart,
+void call_edit (ASCII_code *filename, pool_pointer fnstart,
 			   integer fnlength, integer linenumber); /* from lib/texmf.c - bkph */
 
-void addvariablespace(int);				/* in itex.c - bkph */
+void add_variable_space(int);				/* in itex.c - bkph */
 
 void get_date_and_time (integer *minutes, integer *day,
 						integer *month, integer *year);		/* in lib/texmf.c - bkph */
@@ -1300,8 +1300,8 @@ bool maketextfm (void);				/* in openinou.c */
 unsigned char *unixify (unsigned char *);				/* in pathsrch.c bkph */
 
 #ifdef _WINDOWS
-  void showline (char *, int);			/* in local.c */
-  void showchar (int);					/* in local.c */
+  void show_line (char *, int);			/* in local.c */
+  void show_char (int);					/* in local.c */
   int main(int, char *[]);				/* in lib\texmf.c */
 #endif
 

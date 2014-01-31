@@ -232,8 +232,8 @@ extern int do_undump (char *, int, int, FILE *);
 /* Declare routines in texmf.c.  */
 extern void get_date_and_time ();
 extern void t_open_in ();
-// extern void calledit ();
-// extern int calledit ();
+// extern void call_edit ();
+// extern int call_edit ();
 extern bool extensionirrelevantp ();
 extern bool input_line ();
 // extern void do_dump ();
