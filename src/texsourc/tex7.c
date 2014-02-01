@@ -187,7 +187,7 @@ void build_page (void)
             if(eqtb[(hash_size + 3196)].cint > 0)
             {
               begin_diagnostic (); 
-              print_nl(995);   /* % split */
+              print_nl("% split");   /*  */
               print_int(n); 
               print(996);   /*  to */
               print_scaled(w); 
@@ -251,7 +251,7 @@ void build_page (void)
       if(eqtb[(hash_size + 3196)].cint > 0)
       {
         begin_diagnostic (); 
-        print_nl(37);  /* % */
+        print_nl("%");  /* % */
         print(921);   /*  t= */
         print_totals (); 
         print(990);   /*  g= */
@@ -1146,7 +1146,7 @@ void build_discretionary (void)
 		help1("Discretionary lists must contain only boxes and kerns.");
       error (); 
       begin_diagnostic (); 
-      print_nl(1103);  /* The following discretionary sublist has been deleted: */
+      print_nl("The following discretionary sublist has been deleted:");  /*  */
       show_box(p); 
       end_diagnostic(true); 
       flush_node_list(p); 

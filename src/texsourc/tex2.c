@@ -124,7 +124,7 @@ void prepare_mag (void)
 	  print_err("Incompatible magnification(");
     print_int(eqtb[(hash_size + 3180)].cint); 
     print(545);     /*)*/
-    print_nl(546);    /*  the previous value will be retained */
+    print_nl(" the previous value will be retained");
 	help2("I can handle only one magnification ratio per job.",
 		"So I've reverted to the magnification you used earlier on this run.");
     int_error(mag_set); 
@@ -165,7 +165,7 @@ void print_meaning (void)
 void show_cur_cmd_chr (void) 
 { 
   begin_diagnostic (); 
-  print_nl(123);    /* { */
+  print_nl("{");    /* { */
   if(mode != shown_mode)
   {
     print_mode(mode); 
@@ -212,10 +212,10 @@ void show_context (void)
   {
     if(cur_input.name_field <= 17)
     if((cur_input.name_field == 0)) 
-      if(base_ptr == 0)print_nl(571);   /* <*> */
-      else print_nl(572); /* <insert>  */
+      if(base_ptr == 0)print_nl("<*>");   /* <*> */
+      else print_nl("<insert> "); /*  */
     else {
-      print_nl(573);    /* <read  */
+      print_nl("<read ");    /* <read  */
       if(cur_input.name_field == 17)
       print_char(42);   /* * */
       else print_int(cur_input.name_field - 1); 
@@ -237,7 +237,7 @@ void show_context (void)
         print_char(58);       /* : */
       }
       else {
-        print_nl(574);        /* l. ? 573 ????? 98/Dec/8 check ! */
+        print_nl("l.");        /* l. ? 573 ????? 98/Dec/8 check ! */
         print_int(line);      /* line number */
       }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -275,19 +275,19 @@ void show_context (void)
       
     switch(cur_input.index_field)
     {case 0 : 
-      print_nl(575); /* <argument>  */  
+      print_nl("<argument> "); /*  */  
     break; 
     case 1 : 
     case 2 : 
-      print_nl(576); /* <template>  */
+      print_nl("<template> "); /*  */
       break; 
     case 3 : 
       if(cur_input.loc_field == 0)
-      print_nl(577);  /* <recently read>  */
-      else print_nl(578); /* <to be read again>  */
+      print_nl("<recently read> ");  /*   */
+      else print_nl("<to be read again> "); /*  */
       break; 
     case 4 : 
-      print_nl(579); /* <inserted text>  */
+      print_nl("<inserted text> "); /*  */
       break; 
     case 5 : 
       {
@@ -296,37 +296,37 @@ void show_context (void)
       } 
       break; 
     case 6 : 
-      print_nl(580); /* <output>  */
+      print_nl("<output> "); /*  */
       break; 
     case 7 : 
-      print_nl(581); /* <everypar>  */
+      print_nl("<everypar> "); /*  */
       break; 
     case 8 : 
-      print_nl(582); /* <everymath>  */
+      print_nl("<everymath> "); /*  */
       break; 
     case 9 : 
-      print_nl(583); /* <everydisplay>  */
+      print_nl("<everydisplay> "); /*  */
       break; 
     case 10 : 
-      print_nl(584); /* <everyhbox>  */
+      print_nl("<everyhbox> "); /*  */
       break; 
     case 11 : 
-      print_nl(585); /* <everyvbox>  */
+      print_nl("<everyvbox> "); /*  */
       break; 
     case 12 : 
-      print_nl(586); /* <everyjob>  */
+      print_nl("<everyjob> "); /*  */
       break; 
     case 13 : 
-      print_nl(587); /* <everycr>  */
+      print_nl("<everycr> "); /*  */
       break; 
     case 14 : 
-      print_nl(588); /* <mark>  */
+      print_nl("<mark> "); /*  */
       break; 
     case 15 : 
-      print_nl(589); /* <write>  */
+      print_nl("<write> "); /*  */
       break; 
       default: 
-      print_nl(63);  /* ? */
+      print_nl("?");  /* ? */
       break; 
     } 
     {
@@ -396,7 +396,7 @@ void show_context (void)
     } 
     else if(nn == eqtb[(hash_size + 3217)].cint)
     {
-      print_nl(275);      /* ... */
+      print_nl("...");      /*  */
       incr(nn); 
     } 
     if(bottomline)
@@ -443,7 +443,7 @@ void begin_token_list_ (halfword p, quarterword t)
       if(eqtb[(hash_size + 3193)].cint > 1)
       {
   begin_diagnostic (); 
-  print_nl(335);   /* */
+  print_nl("");   /* */
   switch(t)
   {case 14 : 
     print_esc(348); /* mark */
@@ -2198,7 +2198,7 @@ lab20:
         )
           incr(cur_input.limit_field); 
         if(cur_input.limit_field == cur_input.start_field)
-          print_nl(613);    /* (Please type a command or say `\end') */
+          print_nl("(Please type a command or say `\end')");    /*  */
         print_ln (); 
         first = cur_input.start_field; 
         {

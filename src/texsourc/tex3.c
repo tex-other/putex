@@ -1732,7 +1732,7 @@ void show_tex_inputs (void)
 
   if (grabenv(s) == NULL) s = "TEXINPUT";     /* 94/May/19 */
 
-  print_nl(32);     /*   */
+  print_nl(" ");     /*   */
   print_char(32);   /*   */
   print_char(40);   /*(*/
   t = s;
@@ -1766,7 +1766,7 @@ void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e
   }
   if(e == 785)    /* .tex */
     show_context (); 
-  print_nl(786);    /* Please type another  */
+  print_nl("Please type another ");    /*  */
   print(s); 
   if(interaction < 2){
       fatal_error(787); /* *** (job aborted, file error in nonstop mode) */
@@ -1880,7 +1880,7 @@ void open_log_file (void)
     print_two(eqtb[(hash_size + 3183)].cint % 60);  /* minute */
   } 
   input_stack[input_ptr]= cur_input; 
-  print_nl(792);      /* ** */
+  print_nl("**");      /* ** */
   l = input_stack[0].limit_field; 
   if(buffer[l]== eqtb[(hash_size + 3211)].cint)
   decr(l); 
@@ -2073,7 +2073,7 @@ void show_tex_fonts(void)
       }
     }
   }
-  print_nl(32);     /*   */
+  print_nl(" ");     /*   */
   print_char(32);   /*   */
   print_char(40);   /*(*/
   t = s;

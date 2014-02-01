@@ -307,7 +307,7 @@ void close_files_and_terminate (void)
     decr(cur_s); 
   } 
 
-  if(total_pages == 0) print_nl(831);  /* No pages of output. */
+  if(total_pages == 0) print_nl("No pages of output.");  /*  */
   else {
     {
     dvi_buf[dvi_ptr]= 248;   /* post - start of postamble */
@@ -387,7 +387,7 @@ void close_files_and_terminate (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     if(dvi_limit == half_buf)writedvi(half_buf, dvi_buf_size - 1); 
     if(dvi_ptr > 0)writedvi(0, dvi_ptr - 1); 
-    print_nl(832);   /* Output written on  */
+    print_nl("Output written on ");   /*  */
   if (full_file_name_flag && dvi_file_name != NULL) 
     print_char_string((unsigned char *)dvi_file_name);
   else slow_print(output_file_name); 
@@ -405,7 +405,7 @@ void close_files_and_terminate (void)
     (void) a_close(log_file); 
     selector = selector - 2; 
     if(selector == 17) {
-    print_nl(1269);  /*  Transcript written on  */
+    print_nl("Transcript written on ");  /*   */
     if (full_file_name_flag && log_file_name != NULL) 
       print_char_string((unsigned char *)log_file_name);
     else slow_print(texmf_log_name); 
@@ -425,7 +425,7 @@ void debug_help (void)
   while(true){
       
  ; 
-    print_nl(1278);  /*  debug # (-1 to exit): */
+    print_nl(" debug # (-1 to exit):");  /*  */
 #ifndef _WINDOWS
     fflush(stdout); 
 #endif

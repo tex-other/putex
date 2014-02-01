@@ -32,7 +32,7 @@ static void winerror (char * message)
 void print_err (const char * s)
 {
   if (interaction == error_stop_mode);
-  //print_nl("! ");
+  print_nl("! ");
   print_string(s);
 }
 void tex_help (unsigned int n, ...)
@@ -231,12 +231,12 @@ void slow_print_(integer s)
 } 
 /* sec 0062 */
 // print newline followed by string number s (unless at start of line)
-void print_nl_(str_number s)
+void print_nl_(char * s)
 { 
    if(((term_offset > 0) && (odd(selector)))||
     ((file_offset > 0) && (selector >= log_only)))
 	print_ln (); 
-  print(s); 
+  print_string(s); 
 } 
 /* sec 0063 */
 // print string number s preceded by escape character
@@ -566,17 +566,17 @@ lab22:          /* loop */
       }           /* end of switch analysing response character */
       {
         print(265);   /* Type <return> to proceed, S to scroll future error messages, */
-        print_nl(266);  /* R to run without stopping, Q to run quietly, */
-        print_nl(267);  /* I to insert something,  */
-        if(base_ptr > 0)print(268); /*  E to edit your file,  */
-        if(deletions_allowed)print_nl(269); /* 1 or ... or 9 to ignore the next 1 to 9 tokens of input, */
-        print_nl(270);  /* H for help, X to quit. */
+        print_nl("R to run without stopping, Q to run quietly,");  /*  */
+        print_nl("I to insert something, ");  /*  */
+        if (base_ptr > 0) print(268); /*  E to edit your file,  */
+        if(deletions_allowed) print_nl("1 or ... or 9 to ignore the next 1 to 9 tokens of input,"); /*  */
+        print_nl("H for help, X to quit.");  /*  */
       } 
     }   /* end of while(true) loop */
 
   incr(error_count); 
   if(error_count == 100) {
-    print_nl(263);  /* (That makes 100 errors; please try again.) */
+    print_nl("(That makes 100 errors; please try again.)");
     history = 3; 
     jump_out();
 //    return;     // can drop through now 99/Oct/20   
@@ -1362,7 +1362,7 @@ void runaway (void)
   halfword p; 
   if(scanner_status > 1)
   {
-    print_nl(566);        /* Runaway  */
+    print_nl("Runaway ");        /*  */
     switch(scanner_status)
     {case 2 : 
       {
@@ -1806,7 +1806,7 @@ void check_mem_(bool printlocs)
     clobbered = true; 
     if(clobbered)
     {
-      print_nl(299);    /* AVAIL list clobbered at  */
+      print_nl("AVAIL list clobbered at ");    /*  */
       print_int(q); 
       goto lab31; 
     } 
@@ -1831,7 +1831,7 @@ void check_mem_(bool printlocs)
     clobbered = true; 
     if(clobbered)
     {
-      print_nl(300);    /* Double-AVAIL list clobbered at  */
+      print_nl("Double-AVAIL list clobbered at ");    /*  */
       print_int(q); 
       goto lab32; 
     } 
@@ -1840,7 +1840,7 @@ void check_mem_(bool printlocs)
       {
   if(freearr[q])
   {
-    print_nl(301);    /* Doubly free location at  */
+    print_nl("Doubly free location at ");    /*  */
     print_int(q); 
     goto lab32; 
   } 
@@ -1857,7 +1857,7 @@ void check_mem_(bool printlocs)
 /*    if((mem[p].hh.v.RH == 262143L))  */ /* NO! */
     if((mem[p].hh.v.RH == empty_flag)) 
     {
-      print_nl(302);      /* Bad flag at  */
+      print_nl("Bad flag at ");      /*  */
       print_int(p); 
     } 
     while((p <= lo_mem_max)&& ! freearr[p])incr(p); 
@@ -1865,7 +1865,7 @@ void check_mem_(bool printlocs)
   } 
   if(printlocs)
   {
-    print_nl(303);      /* New busy locs: */
+    print_nl("New busy locs:");      /*  */
     {register integer for_end; p = mem_min; for_end = lo_mem_max; if(p <= 
     for_end) do 
       if(! freearr[p]&&((p > waslomax)|| wasfree[p])) 
@@ -1907,13 +1907,13 @@ void search_mem_(halfword p)
     {
       if(mem[q].hh.v.RH == p)
       {
-  print_nl(304);  /* LINK(*/
+  print_nl("LINK(");  /* */
   print_int(q); 
   print_char(41); /*)*/
       } 
       if(mem[q].hh.v.LH == p)
       {
-  print_nl(305);  /* INFO(*/
+  print_nl("INFO(");  /* */
   print_int(q); 
   print_char(41); /*)*/
       } 
@@ -1924,13 +1924,13 @@ void search_mem_(halfword p)
     {
       if(mem[q].hh.v.RH == p)
       {
-  print_nl(304);  /* LINK(*/
+  print_nl("LINK(");  /* */
   print_int(q); 
   print_char(41); /*)*/
       } 
       if(mem[q].hh.v.LH == p)
       {
-  print_nl(305);  /* INFO(*/
+  print_nl("INFO(");  /* */
   print_int(q); 
   print_char(41); /*)*/
       } 
@@ -1940,7 +1940,7 @@ void search_mem_(halfword p)
     {
       if(eqtb[q].hh.v.RH == p)
       {
-  print_nl(498);    /* EQUIV(*/
+  print_nl("EQUIV(");    /* */
   print_int(q); 
   print_char(41);   /*)*/
       } 
@@ -1952,7 +1952,7 @@ void search_mem_(halfword p)
     {
       if(save_stack[q].hh.v.RH == p)
       {
-  print_nl(543);      /* SAVE(*/
+  print_nl("SAVE(");      /* */
   print_int(q); 
   print_char(41);     /*)*/
       } 
@@ -1963,7 +1963,7 @@ void search_mem_(halfword p)
     {
       if(hyph_list[q]== p)
       {
-  print_nl(934);      /* HYPH(*/
+  print_nl("HYPH(");
   print_int(q); 
   print_char(41);     /*)*/
       } 

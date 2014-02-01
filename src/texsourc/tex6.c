@@ -322,7 +322,7 @@ void try_break_ (integer pi,small_number breaktype)
 #ifdef STAT
     if(eqtb[(hash_size + 3195)].cint > 0)
     {
-      print_nl(919);      /* @@ */
+      print_nl("@@");      /* @@ */
       print_int(mem[passive].hh.v.LH); 
       print(920); /* : line  */
       print_int(mem[q + 1].hh.v.LH - 1); 
@@ -457,20 +457,20 @@ void try_break_ (integer pi,small_number breaktype)
       {
   if(printed_node != cur_p)
   {
-    print_nl(335);    /*  */
+    print_nl("");    /*  */
     if(cur_p == 0)
     short_display(mem[printed_node].hh.v.RH); 
     else {
         
       savelink = mem[cur_p].hh.v.RH; 
       mem[cur_p].hh.v.RH = 0; 
-      print_nl(335);  /*  */
+      print_nl("");  /*  */
       short_display(mem[printed_node].hh.v.RH); 
       mem[cur_p].hh.v.RH = savelink; 
     } 
     printed_node = cur_p; 
   } 
-  print_nl(64);   /* @ */
+  print_nl("@");   /* @ */
   if(cur_p == 0)
     print_esc(594); /* par */
   else if(mem[cur_p].hh.b0 != 10)
@@ -1863,7 +1863,7 @@ void freeze_page_specs_(small_number s)
   if(eqtb[(hash_size + 3196)].cint > 0)
   {
     begin_diagnostic (); 
-    print_nl(981);  /* might split */
+    print_nl("might split");  /*  */
     print_scaled(page_so_far[0]); 
     print(982);   /*, max depth= */
     print_scaled(page_max_depth); 
@@ -1875,7 +1875,7 @@ void box_error_(eight_bits n)
 {
     error (); 
   begin_diagnostic (); 
-  print_nl(830);  /* The following box has been deleted: */
+  print_nl("The following box has been deleted:");  /*  */
   show_box(eqtb[(hash_size + 1578) + n].hh.v.RH); 
   end_diagnostic(true); 
   flush_node_list(eqtb[(hash_size + 1578) + n].hh.v.RH); 

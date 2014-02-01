@@ -37,12 +37,12 @@ void char_warning_(internal_font_number f, eight_bits c)
       begin_diagnostic (); 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (show_missing) {     /* add ! before 94/June/10 */
-    print_nl(262);    /* !  */
+    print_nl("! ");    /* !  */
     print(819);     /* Missing character: there is no */
   }
   else 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  print_nl(819);      /* Missing character: there is no */
+  print_nl("Missing character: there is no");      /*  */
     print(c); 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (show_numeric) {             /* bkph 93/Dec/21 */
@@ -690,7 +690,7 @@ void write_out_(halfword p)
   else {
     if((j == 17)&&(selector == 19)) 
     selector = 18; 
-    print_nl(335);  /*  */
+    print_nl("");  /*  */
   } 
   token_show(def_ref); 
   print_ln (); 
@@ -1307,7 +1307,7 @@ void ship_out_(halfword p)
   char old_setting; 
   if(eqtb[(hash_size + 3197)].cint > 0)
   {
-    print_nl(335);    /*  */
+    print_nl("");    /*  */
     print_ln (); 
     print(823);   /* Completed box being shipped out */
   } 
@@ -1353,7 +1353,7 @@ void ship_out_(halfword p)
     if(eqtb[(hash_size + 3197)].cint <= 0)
     {
       begin_diagnostic (); 
-      print_nl(830);    /* The following box has been deleted: */
+      print_nl("The following box has been deleted:");    /*  */
       show_box(p); 
       end_diagnostic(true); 
     } 
@@ -1465,7 +1465,7 @@ void ship_out_(halfword p)
 #ifdef STAT
   if(eqtb[(hash_size + 3194)].cint > 1)
   {
-    print_nl(824);        /* Memory usage before:  */
+    print_nl("Memory usage before: ");        /*  */
     print_int(var_used); 
     print_char(38);       /* & */
     print_int(dyn_used); 
@@ -1686,8 +1686,8 @@ halfword hpack_(halfword p, scaled w, small_number m)
       {
   print_ln (); 
   if(last_badness > 100)
-    print_nl(838);    /* Underfull */
-  else print_nl(839);   /* Loose */
+    print_nl("Underfull");    /*  */
+  else print_nl("Loose");   /*  */
   print(840);       /* \hbox (badness */
   print_int(last_badness); 
   if(last_badness > 100)underfull_hbox++;   /* 1996/Feb/9 */
@@ -1733,7 +1733,7 @@ halfword hpack_(halfword p, scaled w, small_number m)
     mem[mem[q].hh.v.RH + 1].cint = eqtb[(hash_size + 3746)].cint; 
   } 
   print_ln (); 
-  print_nl(846);    /* Overfull \hbox(*/
+  print_nl("Overfull \\hbox(");    /* */
   print_scaled(- (integer) x - totalshrink[0]); 
   print(847);     /* pt too wide */
   overfull_hbox++;      /* 1996/Feb/9 */
@@ -1747,7 +1747,7 @@ halfword hpack_(halfword p, scaled w, small_number m)
       if(last_badness > eqtb[(hash_size + 3189)].cint)
       {
   print_ln (); 
-  print_nl(848);  /* Tight \hbox (badness  */
+  print_nl("Tight \\hbox (badness ");  /*  */
   print_int(last_badness); 
   goto lab50; 
       } 
@@ -1902,8 +1902,8 @@ halfword vpackage_(halfword p, scaled h, small_number m, scaled l)
       {
   print_ln (); 
   if(last_badness > 100)
-    print_nl(838);      /* Underfull */
-  else print_nl(839);     /* Loose */
+    print_nl("Underfull");      /*  */
+  else print_nl("Loose");     /*  */
   print(850);         /* \vbox (badness */
   print_int(last_badness); 
   if(last_badness > 100)underfull_vbox++; /* 1996/Feb/9 */
@@ -1940,7 +1940,7 @@ halfword vpackage_(halfword p, scaled h, small_number m, scaled l)
       eqtb[(hash_size + 3190)].cint < 100)) 
       {
   print_ln (); 
-  print_nl(851);  /* Overfull \vbox(*/
+  print_nl("Overfull \\vbox(");  /* */
   print_scaled(- (integer) x - totalshrink[0]); 
   print(852);   /* pt too high */
   overfull_vbox++;    /* 1996/Feb/9 */
@@ -1955,7 +1955,7 @@ halfword vpackage_(halfword p, scaled h, small_number m, scaled l)
       if(last_badness > eqtb[(hash_size + 3190)].cint)
       {
   print_ln (); 
-  print_nl(853);  /* Tight \vbox (badness  */
+  print_nl("Tight \\vbox (badness ");  /*  */
   print_int(last_badness); 
   goto lab50; 
       } 

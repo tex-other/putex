@@ -611,7 +611,7 @@ void line_break_ (integer finalwidowpenalty)
     if(eqtb[(hash_size + 3195)].cint > 0)
     {
       begin_diagnostic (); 
-      print_nl(927);			/* @firstpass */
+      print_nl("@firstpass");
     } 
 #endif /* STAT */
     second_pass = false; 
@@ -1093,7 +1093,7 @@ void line_break_ (integer finalwidowpenalty)
 	;
 #ifdef STAT
       if(eqtb[(hash_size + 3195)].cint > 0)
-      print_nl(928);			/* @second_pass */
+      print_nl("@second_pass");			/*  */
 #endif /* STAT */
 /* threshold:=tolerance; */
       threshold = eqtb[(hash_size + 3164)].cint; 
@@ -1107,7 +1107,7 @@ void line_break_ (integer finalwidowpenalty)
 	;
 #ifdef STAT
       if(eqtb[(hash_size + 3195)].cint > 0)	/* tracing_paragraphs */
-      print_nl(929);			/* @emergencypass */
+      print_nl("@emergencypass");			/*  */
 #endif /* STAT */
 /*     can only get here is \emergencystretch has been set positive */
 /*     background[2]:=background[2]+emergency_stretch; final_pass:=true; */
@@ -2248,7 +2248,7 @@ void final_clean_up (void)
 	  decr(open_parens); 
   } 
   if(cur_level > 1)  {
-    print_nl(40);		/*(*/
+    print_nl("(");		/*(*/
     print_esc(1271);		/* end occurred  */
     print(1272);		/* inside a group at level  */
     print_int(cur_level - 1); 
@@ -2278,7 +2278,7 @@ void final_clean_up (void)
   if(selector == 19)
   {
     selector = 17; 
-    print_nl(1276);	/* 	(see the transcript file for additional information) */
+    print_nl(" (see the transcript file for additional information)");	/* 	 */
     selector = 19; 
   } 
   if(c == 1){
@@ -2302,7 +2302,7 @@ void final_clean_up (void)
 	}
 #endif /* INITEX */
 	if (!is_initex) 			/* 2000/March/3 */
-		print_nl(1277);		/* 	(\dump is performed only by INITEX) */
+		print_nl("	(\dump is performed only by INITEX)");		/*  */
   } 
 }
 
@@ -3909,13 +3909,13 @@ void store_fmt_file (void)
   while(! w_open_out(fmt_file)) {
 	  prompt_file_name(1267, 780); /* format file name  .fmt */
   }
-  print_nl(1268);		/* 	Beginning to dump on file  */
+  print_nl(" Beginning to dump on file ");		/*  */
   slow_print(w_make_name_string(fmt_file)); 
   {
     decr(str_ptr); 
     pool_ptr = str_start[str_ptr]; 
   } 
-  print_nl(335);		/* */
+  print_nl("");		/* */
   slow_print(format_ident); 
   dump_int(BEGINFMTCHECKSUM); /* magic FMT file start 4C 20 E6 15 hex */
 /*  dump_int(0); */
@@ -4095,7 +4095,7 @@ void store_fmt_file (void)
 		if(k <= for_end) 
 			do 
       {
-	print_nl(1259);	/* \font */
+	print_nl("\\font");	/* \font */
 /*	print_esc(hash[(hash_size + 524) + k].v.RH);  */
 	print_esc(hash[(hash_size + hash_extra + 524) + k].v.RH); 
 	print_char(61); /* = */
@@ -4153,7 +4153,7 @@ void store_fmt_file (void)
 	)return;
   if (dumpthings(hyf_next[1], trie_op_ptr) 
 	)return;
-  print_nl(1261);	/* Hyphenation trie of length  */
+  print_nl("Hyphenation trie of length ");	/*  */
   print_int(trie_max); 
   print(1262);		/* has */
   print_int(trie_op_ptr); 
@@ -4169,7 +4169,7 @@ void store_fmt_file (void)
 	  if(k >= for_end) do 
 		  if(trie_used[k]> 0)
 		  {
-			  print_nl(794);		/*    */
+			  print_nl("  ");		/*    */
 			  print_int(trie_used[k]); 
 			  print(1265);		/* for language */
 			  print_int(k); 

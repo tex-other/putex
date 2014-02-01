@@ -1034,7 +1034,7 @@ void show_whatever (void)
     {
       scan_eight_bit_int (); 
       begin_diagnostic (); 
-      print_nl(1248); /* > \box */
+      print_nl("> \box"); /*  */
       print_int(cur_val); 
       print_char(61); /* = */
       if(eqtb[(hash_size + 1578) + cur_val].hh.v.RH == 0)
@@ -1047,7 +1047,7 @@ void show_whatever (void)
       get_token (); 
       if(interaction == 3)
    ; 
-      print_nl(1242); /* >  */
+      print_nl("> "); /*  */
       if(cur_cs != 0)
       {
   sprint_cs(cur_cs); 
@@ -1062,7 +1062,7 @@ void show_whatever (void)
       p = the_toks (); 
       if(interaction == 3)
    ; 
-      print_nl(1242); /*  >  */
+      print_nl(" > "); /*  */
       token_show(mem_top - 3); 
       flush_list(mem[mem_top - 3].hh.v.RH); 
       goto lab50; 

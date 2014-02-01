@@ -450,7 +450,7 @@ void show_activities (void)
   halfword q, r; 
   integer t; 
   nest[nest_ptr]= cur_list; 
-  print_nl(335);    /*  */
+  print_nl("  ");    /*  */
   print_ln (); 
   {
     register integer for_end; 
@@ -460,7 +460,7 @@ void show_activities (void)
       {
         m = nest[p].mode_field; 
         a = nest[p].aux_field; 
-        print_nl(360);    /* ###  */
+		print_nl("### ");    /* ###  */
         print_mode(m);
         print(361);   /*  entered at line  */
         print_int(abs(nest[p].ml_field)); 
@@ -490,15 +490,15 @@ void show_activities (void)
       {
   if(mem_top - 2 != page_tail)
   {
-    print_nl(974);      /* ### current page: */
+    print_nl("### current page:");      /*  */
     if(output_active)
       print(975);   /*  (held over for next output) */
     show_box(mem[mem_top - 2].hh.v.RH); 
     if(page_contents > 0)
     {
-      print_nl(976);    /* total height  */
+      print_nl("total height ");    /*  */
       print_totals (); 
-      print_nl(977);    /*  goal height  */
+      print_nl("goal height ");    /*   */
       print_scaled(page_so_far[0]); 
       r = mem[mem_top].hh.v.RH; 
       while(r != mem_top){
@@ -531,13 +531,13 @@ void show_activities (void)
   } 
 /*  if link(contrib_head)<>null then l.4393 */
   if(mem[mem_top - 1].hh.v.RH != 0)
-  print_nl(365);    /*  (\output routine) */
+  print_nl(" (\\output routine)");    /*  */
       } 
       show_box(mem[nest[p].head_field].hh.v.RH); 
       switch(abs(m)/(101)) 
       {case 0 : 
   {
-    print_nl(366);      /* ### recent contributions: */
+    print_nl("### recent contributions:");      /*  */
     if(a.cint <= ignore_depth)
     print(367);     /* ignored */
     else print_scaled(a.cint); 
@@ -553,7 +553,7 @@ void show_activities (void)
   break; 
       case 1 : 
   {
-    print_nl(370);      /* spacefactor  */
+    print_nl("spacefactor ");      /*  */
     print_int(a.hh.v.LH); 
     if(m > 0)
     if(a.hh.v.RH > 0)
@@ -757,7 +757,7 @@ void begin_diagnostic (void)
 } 
 void end_diagnostic_(bool blankline)
 { 
-    print_nl(335);    /*  */
+    print_nl("  ");    /*  */
   if(blankline)print_ln (); 
   selector = old_setting; 
 } 
