@@ -482,7 +482,7 @@ void end_token_list (void)
   else if(cur_input.index_field == 1)
   if(align_state > 500000L)align_state = 0; 
   else {
-    fatal_error(592); /* (interwoven alignment preambles are not allowed) */
+    fatal_error("(interwoven alignment preambles are not allowed)"); /*  */
     return;     // abort_flag set
   }
   {
@@ -2198,7 +2198,7 @@ lab20:
         )
           incr(cur_input.limit_field); 
         if(cur_input.limit_field == cur_input.start_field)
-          print_nl("(Please type a command or say `\end')");    /*  */
+          print_nl("(Please type a command or say `\\end')");    /*  */
         print_ln (); 
         first = cur_input.start_field; 
         {
@@ -2217,7 +2217,7 @@ lab20:
         cur_input.loc_field = cur_input.start_field; 
       } 
       else {
-        fatal_error(614); /* *** (job aborted, no legal \end found) */
+        fatal_error("*** (job aborted, no legal \\end found)"); /*  */
         return;     // abort_flag set
       }
     } 
@@ -2290,7 +2290,7 @@ lab20:
   if(align_state == 0)
   {
     if(scanner_status == 4){
-    fatal_error(592); /* (interwoven alignment preambles are not allowed) */
+    fatal_error("(interwoven alignment preambles are not allowed)"); /*  */
     return;     // abort_flag set
   }
 

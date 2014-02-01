@@ -52,7 +52,7 @@ halfword finite_shrink_(halfword p)
     noshrinkerroryet = false;
 	print_err("Infinite glue shrinkage found in a paragraph");
 	help5("The paragraph just ended includes some glue that has",
-		"infinite shrinkability, e.g., `\hskip 0pt minus 1fil'.",
+		"infinite shrinkability, e.g., `\\hskip 0pt minus 1fil'.",
 		"Such glue doesn't belong there---it allows a paragraph",
 		"of any length to fit on one line. But it's safe to proceed,",
 		"since the offensive shrinkability has been made finite."); 

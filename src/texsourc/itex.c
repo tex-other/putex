@@ -2255,7 +2255,7 @@ void final_clean_up (void)
     print_char(41);		/*)*/
   } 
   while(cond_ptr != 0){
-    print_nl(40);		/*(*/
+    print_nl("(");		/*(*/
     print_esc(1271);		/* end occurred  */
     print(1273);		/* when  */
     print_cmd_chr(105, cur_if);	/* i */
@@ -2302,7 +2302,7 @@ void final_clean_up (void)
 	}
 #endif /* INITEX */
 	if (!is_initex) 			/* 2000/March/3 */
-		print_nl("	(\dump is performed only by INITEX)");		/*  */
+		print_nl("	(\\dump is performed only by INITEX)");		/*  */
   } 
 }
 

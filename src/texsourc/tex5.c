@@ -1101,7 +1101,7 @@ void get_preamble_token (void)
     } 
   } 
   if(cur_cmd == 9){
-    fatal_error(592); /* (interwoven alignment preambles are not allowed) */
+    fatal_error("(interwoven alignment preambles are not allowed)"); /*  */
     return;     // abort_flag set
   }
   if((cur_cmd == 75)&&(cur_chr == (hash_size + 793))) 
@@ -1127,7 +1127,7 @@ void init_align (void)
 	  print_err("Improper ");
     print_esc(517);   /* halign */
     print(888);     /* inside $$ */
-	help3("Displays can use special alignments (like \eqalignno)",
+	help3("Displays can use special alignments (like \\eqalignno)",
 		"only if nothing but the alignment itself is between $$'s.",
 		"So I've deleted the formulas that preceded this alignment.");
     error (); 
@@ -1641,7 +1641,7 @@ bool fin_col (void)
     return 0;       // abort_flag set
   }
   if(align_state < 500000L) {     /* ??? */
-    fatal_error(592); /* (interwoven alignment preambles are not allowed) */
+    fatal_error("(interwoven alignment preambles are not allowed)"); /*  */
     return 0;     // abort_flag set
   }
   p = mem[q].hh.v.RH;         /* p <- link(q) p.791 */

@@ -75,8 +75,8 @@ int jump_out(void);
 int error(void); 
 #define error_regmem
 // void fatal_error_(str_number);
-int fatal_error_(str_number); 
-#define fatal_error(s) fatal_error_((str_number) (s))
+int fatal_error_(char *); 
+#define fatal_error(s) fatal_error_((char *) (s))
 #define fatalerror_regmem
 // void overflow_(str_number, integer);
 int overflow_(str_number, integer); 
@@ -917,8 +917,8 @@ void print_write_whatsit_(str_number, halfword);
 #define print_write_whatsit(s, p) print_write_whatsit_((str_number) (s), (halfword) (p))
 void jump_out(void);
 void error(void);
-void fatal_error_(str_number);
-#define fatal_error(s) fatal_error_((str_number) (s))
+void fatal_error_(char *);
+#define fatal_error(s) fatal_error_((char *) (s))
 void overflow_(str_number, integer);
 #define overflow(s, n) overflow_((str_number) (s), (integer) (n))
 void confusion_(str_number);

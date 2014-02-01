@@ -567,7 +567,7 @@ void extra_right_brace (void)
   }
   help5("I've deleted a group-closing symbol because it seems to be",
 	  "spurious, as in `$x}$'. But perhaps the } is legitimate and",
-	  "you forgot something else, as in `\hbox{$x}'. In such cases",
+	  "you forgot something else, as in `\\hbox{$x}'. In such cases",
 	  "the way to recover is to insert both the forgotten and the",
 	  "deleted material, e.g., by typing `I$}'."); 
   error (); 
@@ -1059,7 +1059,7 @@ void unpackage (void)
   {
 	  print_err("Incompatible list can't be unboxed");
 	  help3("Sorry, Pandora. (You sneaky devil.)",
-		  "I refuse to unbox an \hbox in vertical mode or vice versa.",
+		  "I refuse to unbox an \\hbox in vertical mode or vice versa.",
 		  "And I can't open any boxes in math mode.");
     error (); 
     return; 
@@ -1693,7 +1693,7 @@ void math_ac (void)
     print_err("Please use ");
     print_esc(520);    /* mathaccent */
     print(1134);    /*  for accents in math mode */
-	help2("I'm changing \accent to \mathaccent here; wish me luck.",
+	help2("I'm changing \\accent to \\mathaccent here; wish me luck.",
 		"(Accents are not the same in formulas as they are in text.)");
     error (); 
   } 

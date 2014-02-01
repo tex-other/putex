@@ -595,15 +595,11 @@ lab22:          /* loop */
   print_ln (); 
 } 
 
-void fatal_error_(str_number s)
+void fatal_error_(char * s)
 {
   normalize_selector ();
   print_err("Emergency stop");
-  //help1("");
-  {
-    help_ptr = 1; 
-    help_line[0] = ""; //s;  // given string goes into help line
-  } 
+  help1(s); 
   {
     if(interaction == 3)interaction = 2; 
     if(log_opened){
@@ -996,7 +992,7 @@ void term_input (int promptstr, int nhelplines)
   flag = input_ln(stdin, true);
 #endif
   if(! flag){
-    fatal_error(261); /* End of file on the terminal! */
+    fatal_error("End of file on the terminal!"); /*  */
     return;         // abort_flag set
   }
   term_offset = 0; 
@@ -1050,7 +1046,7 @@ void pause_for_instructions (void)
       incr(selector);
 	print_err("Interruption");
 	help3("You rang?",
-		"Try to insert some instructions for me (e.g.,`I\showlists'),",
+		"Try to insert some instructions for me (e.g.,`I\\showlists'),",
 		"unless you just want to quit by typing `X'.");
     deletions_allowed = false; 
     error (); 
