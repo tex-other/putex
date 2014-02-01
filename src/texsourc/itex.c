@@ -1174,10 +1174,7 @@ void prefixed_command (void)
       print_err("You can't use a prefix with `");
       print_cmd_chr(cur_cmd, cur_chr); 
       print_char(39);	/* ' */
-      {
-	help_ptr = 1; 
-	help_line[0]= 1174;	/* I'll pretend you didn't say \long or \outer or \global. */
-      } 
+	  help1("I'll pretend you didn't say \\long or \\outer or \\global.");
       back_error (); 
       return; 
     } 
@@ -1190,10 +1187,7 @@ void prefixed_command (void)
     print(1176);		/* ' with ` */
     print_cmd_chr(cur_cmd, cur_chr); 
     print_char(39);		/* ' */
-    {
-      help_ptr = 1; 
-      help_line[0]= 1177;	/* I'll pretend you didn't say \long or \outer here. */
-    } 
+	help1("I'll pretend you didn't say \\long or \\outer here.");
     error (); 
   } 
   if(eqtb[(hash_size + 3206)].cint != 0)
@@ -1328,11 +1322,8 @@ void prefixed_command (void)
       if(! scan_keyword(836))	/* to */
       {
       print_err("Missing `to' inserted");
-	{
-	  help_ptr = 2; 
-	  help_line[1]= 1194;	/* You should have said `\read<number> to \cs'. */
-	  help_line[0]= 1195;	/* I'm going to look for the \cs now. */
-	} 
+	  help2("You should have said `\\read<number> to \\cs'.", 
+		  "I'm going to look for the \\cs now.");
 	error (); 
       } 
       get_r_token (); 
@@ -1473,10 +1464,7 @@ void prefixed_command (void)
 		print(1197);	/*), should be in the range 0.. */
 	else print(1198);	/*), should be at most  */
 	print_int(n); 
-	{
-	  help_ptr = 1; 
-	  help_line[0]= 1199;	/* I'm going to use 0 instead of that illegal code value. */
-	} 
+	help1("I'm going to use 0 instead of that illegal code value.");
 	error (); 
 	cur_val = 0; 
       } 
@@ -1524,11 +1512,8 @@ void prefixed_command (void)
       else {
 	  print_err("Improper ");
 	print_esc(533);		/* setbox */
-	{
-	  help_ptr = 2; 
-	  help_line[1]= 1205;	/* Sorry, \setbox is not allowed after \halign in a display, */
-	  help_line[0]= 1206;	/* or between \accent and an accented character. */
-	} 
+	help2("Sorry, \\setbox is not allowed after \\halign in a display,",
+		"or between \\accent and an accented character.");
 	error (); 
       } 
     } 
@@ -3636,10 +3621,7 @@ void new_patterns (void)
 	    if(cur_chr == 0)
 	    {
 			print_err("Nonletter");
-	      {
-		help_ptr = 1; 
-		help_line[0]= 950;	/* (See Appendix H.) */
-	      } 
+			help1("(See Appendix H.)");
 	      error (); 
 	    } 
 	  } 
@@ -3710,10 +3692,7 @@ void new_patterns (void)
 	    if(trie_o[q]!= min_trie_op)
 	    {
 			print_err("Duplicate pattern");
-	      {
-		help_ptr = 1; 
-		help_line[0]= 950;	/* (See Appendix H.) */
-	      } 
+			help1("(See Appendix H.)");
 	      error (); 
 	    } 
 	    trie_o[q]= v; 
@@ -3729,10 +3708,7 @@ void new_patterns (void)
 	{
 		print_err("Bad ");
 	  print_esc(947);	/* patterns */
-	  {
-	    help_ptr = 1; 
-	    help_line[0]= 950;	/* (See Appendix H.) */
-	  } 
+	  help1("(See Appendix H.)");
 	  error (); 
 	} 
 	break; 
@@ -3743,10 +3719,7 @@ void new_patterns (void)
   else {
       print_err("Too late for ");
     print_esc(947);	/* patterns */
-    {
-      help_ptr = 1; 
-      help_line[0]= 948;	/* All patterns must be given before typesetting begins. */
-    } 
+	help1("All patterns must be given before typesetting begins.");
     error (); 
     mem[mem_top - 12].hh.v.RH = scan_toks(false, false); 
     flush_list(def_ref); 
@@ -3882,10 +3855,7 @@ void store_fmt_file (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if(save_ptr != 0) {
 	  print_err("You can't dump inside a group");
-    {
-      help_ptr = 1; 
-      help_line[0]= 1253;	/* `{...\dump}' is a no-no.. */
-    } 
+	  help1("`{...\\dump}' is a no-no..");
     {
       if(interaction == 3) interaction = 2; 
       if(log_opened){

@@ -673,11 +673,8 @@ void write_out_(halfword p)
   if(cur_tok != (hash_size + hash_extra + 4095 + 522))
   {
 	  print_err("Unbalanced write command");
-    {
-      help_ptr = 2; 
-      help_line[1]= 1292; /* On this page there's a \write with fewer real {'s than }'s. */
-      help_line[0]= 1006; /* I can't handle that very well; good luck. */
-    } 
+	  help2("On this page there's a \\write with fewer real {'s than }'s.",
+		  "I can't handle that very well; good luck.");
     error (); 
     do {
     get_token (); 
@@ -1350,11 +1347,8 @@ void ship_out_(halfword p)
     (mem[p + 1].cint + eqtb[(hash_size + 3748)].cint > 1073741823L)) 
   {
 	  print_err("Huge page cannot be shipped out");
-    {
-      help_ptr = 2; 
-      help_line[1]= 828;  /* The page just created is more than 18 feet tall or */
-      help_line[0]= 829;  /* more than 18 feet wide, so I suspect something went wrong. */
-    } 
+	  help2("The page just created is more than 18 feet tall or",
+		  "more than 18 feet wide, so I suspect something went wrong.");
     error (); 
     if(eqtb[(hash_size + 3197)].cint <= 0)
     {

@@ -35,6 +35,18 @@ void print_err (const char * s)
   //print_nl("! ");
   print_string(s);
 }
+void tex_help (unsigned int n, ...)
+{
+  unsigned int i;
+  va_list help_arg;
+
+  if (n > 6) n = 6;
+  help_ptr = n;
+  va_start(help_arg, n);
+  for (i = n - 1; i >= 0; i--)
+    help_line[i] = va_arg(help_arg, char *);
+  va_end(help_arg);
+}
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 // print newline
@@ -441,12 +453,9 @@ lab22:          /* loop */
             cur_cmd = s2; 
             cur_chr = s3; 
             align_state = s4; 
-            OK_to_interrupt = true; 
-            {
-              help_ptr = 2; 
-              help_line[1]= 277; /* I have just deleted some text, as you asked. */
-              help_line[0]= 278; /* You can now delete more, or insert, or whatever. */
-            } 
+            OK_to_interrupt = true;
+			help2("I have just deleted some text, as you asked.",
+				"You can now delete more, or insert, or whatever.");
             show_context (); 
             goto lab22;     /* loop again */
           } 
@@ -479,24 +488,18 @@ lab22:          /* loop */
           } 
           else {
             if(help_ptr == 0)
-            {
-              help_ptr = 2; 
-              help_line[1]= 279; /* Sorry, I don't know how to help in this situation. */
-              help_line[0]= 280; /* Maybe you should try asking a human? */
-            } 
+				help2("Sorry, I don't know how to help in this situation.",
+				"Maybe you should try asking a human?");
             do {
               decr(help_ptr); 
               print(help_line[help_ptr]); 
               print_ln (); 
             } while(!(help_ptr == 0)); 
-          } 
-          {
-            help_ptr = 4; 
-            help_line[3]= 281; /* Sorry, I already gave what help I could... */
-            help_line[2]= 280; /* Maybe you should try asking a human? */
-            help_line[1]= 282; /* An error might have occurred before I noticed any problems. */
-            help_line[0]= 283; /* ``If all else fails, read the instructions.'' */
-          } 
+          }
+		  help4("Sorry, I already gave what help I could...",
+			  "Maybe you should try asking a human?",
+			  "An error might have occurred before I noticed any problems.",
+			  "``If all else fails, read the instructions.''");
           goto lab22; /* loop again */
         } 
         break; 
@@ -596,9 +599,10 @@ void fatal_error_(str_number s)
 {
   normalize_selector ();
   print_err("Emergency stop");
+  //help1("");
   {
     help_ptr = 1; 
-    help_line[0]= s;  // given string goes into help line
+    help_line[0] = ""; //s;  // given string goes into help line
   } 
   {
     if(interaction == 3)interaction = 2; 
@@ -623,11 +627,8 @@ void overflow_(str_number s, integer n)
   print_char(61); /* '=' */
   print_int(n); 
   print_char(93); /* ']' */
-  {
-    help_ptr = 2; 
-    help_line[1]= 287; /* If you really absolutely need more capacity, */
-    help_line[0]= 288; /*  you can ask a wizard to enlarge me. */
-  } 
+  help2("If you really absolutely need more capacity,",
+	  "you can ask a wizard to enlarge me."); 
   if (! knuth_flag) {   /*  Additional comments 98/Jan/5 */
     if (s == 945 && n == trie_size) {
       sprintf(log_line, "\n  (Maybe use -h=... on command line in ini-TeX)\n");
@@ -658,18 +659,12 @@ void confusion_(str_number s)
 	  print_err("This can't happen(");
     print(s); 
     print_char(41); /*)*/
-    {
-      help_ptr = 1; 
-      help_line[0]= 290; /* I'm broken. Please show this to someone who can fix can fix */
-    } 
+	help1("I'm broken. Please show this to someone who can fix can fix");
   } 
   else {
     print_err("I can't go on meeting you like this");
-    {
-      help_ptr = 2; 
-      help_line[1]= 292; /* One of your faux pas seems to have wounded me deeply... */
-      help_line[0]= 293; /* in fact, I'm barely conscious. Please fix it and try again. */
-    } 
+	help2("One of your faux pas seems to have wounded me deeply...",
+		"in fact, I'm barely conscious. Please fix it and try again.");
   } 
   {
     if(interaction == 3)interaction = 2; 
@@ -900,7 +895,7 @@ char * make_up_help_string (int nhelplines)
   
 //  get length of help for this specific message
   for (k = nhelplines-1; k >= 0; k--) {
-    nlen += stringlength(help_line[ k]);
+    nlen += stringlength(help_line[k]);
   }
   nlen += 2;    // for blank line separator
   if (addextrahelp) {
@@ -1054,12 +1049,9 @@ void pause_for_instructions (void)
     if((selector == 18)||(selector == 16))
       incr(selector);
 	print_err("Interruption");
-    {
-    help_ptr = 3; 
-    help_line[2]= 295; /* You rang? */
-    help_line[1]= 296; /* Try to insert some instructions for me (e.g.,`I\showlists'), */
-    help_line[0]= 297; /* unless you just want to quit by typing `X'. */
-    } 
+	help3("You rang?",
+		"Try to insert some instructions for me (e.g.,`I\showlists'),",
+		"unless you just want to quit by typing `X'.");
     deletions_allowed = false; 
     error (); 
     deletions_allowed = true; 

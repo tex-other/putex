@@ -65,11 +65,8 @@ void scan_int (void)
     if(cur_val > 255)
     {
 		print_err("Improper alphabetic constant");
-      {
-  help_ptr = 2; 
-  help_line[1]= 696; /* A one-character control sequence belongs after a ` mark. */
-  help_line[0]= 697; /* So I'm essentially inserting \0 here. */
-      } 
+		help2("A one-character control sequence belongs after a ` mark.",
+			"So I'm essentially inserting \\0 here.");
       cur_val = 48; 
       back_error (); 
     } 
@@ -119,11 +116,8 @@ void scan_int (void)
   if(OKsofar)
   {
 	  print_err("Number too big");
-    {
-      help_ptr = 2; 
-      help_line[1]= 699; /* I can only go up to 2147483647='17777777777="7FFFFFFF, */
-      help_line[0]= 700; /* so I'm using that number instead of yours. */
-    } 
+	  help2("I can only go up to 2147483647='17777777777=\"7FFFFFFF,",
+		  "so I'm using that number instead of yours.");
     error (); 
     cur_val = 2147483647L;    /* 7FFFFFFF hex */
     OKsofar = false; 
@@ -136,12 +130,9 @@ void scan_int (void)
     if(vacuous)
     {
 		print_err("Missing number, treated as zero");
-      {
-  help_ptr = 3; 
-  help_line[2]= 662; /* A number should have been here; I inserted `0'. */
-  help_line[1]= 663; /* (If you can't figure out why I needed to see a number, */
-  help_line[0]= 664; /* look up `weird error' in the index to The TeXbook.) */
-      } 
+		help3("A number should have been here; I inserted `0'.",
+			"(If you can't figure out why I needed to see a number,",
+			"look up `weird error' in the index to The TeXbook.)"); 
       back_error (); 
     } 
     else if(cur_cmd != 10)
@@ -266,10 +257,7 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
       if(cur_order == 3) {
 		  print_err("Illegal unit of measure(");
   print(703);     /* replaced by filll) */
-  {
-    help_ptr = 1; 
-    help_line[0]= 704; /* I dddon't go any higher than filll. */
-  } 
+  help1("I dddon't go any higher than filll.");
   error (); 
     } 
       else incr(cur_order); 
@@ -323,13 +311,10 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
   else {
       print_err("Illegal unit of measure("); 
     print(707);     /* mu inserted) */
-    {
-      help_ptr = 4; 
-      help_line[3]= 708; /* The unit of measurement in math glue must be mu. */
-      help_line[2]= 709; /* To recover gracefully from this error, it's best to */
-      help_line[1]= 710; /* delete the erroneous units; e.g., type `2' to delete */
-      help_line[0]= 711; /* two letters. (See Chapter 27 of The TeXbook.) */
-    } 
+	help4("The unit of measurement in math glue must be mu.",
+		"To recover gracefully from this error, it's best to",
+		"delete the erroneous units; e.g., type `2' to delete",
+		"two letters. (See Chapter 27 of The TeXbook.)");
     error (); 
     goto lab88; 
   } 
@@ -389,15 +374,12 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
   else {
       print_err("Illegal unit of measure(");
     print(720);     /* pt inserted) */
-    {
-      help_ptr = 6; 
-      help_line[5]= 721; /* Dimensions can be in units of em, ex, in, pt, pc, */
-      help_line[4]= 722; /* cm, mm, dd, cc, bp, or sp; but yours is a new one! */
-      help_line[3]= 723; /* I'll assume that you meant to say pt, for printer's points. */
-      help_line[2]= 709; /* To recover gracefully from this error, it's best to */
-      help_line[1]= 710; /* delete the erroneous units; e.g., type `2' to delete */
-      help_line[0]= 711; /* two letters. (See Chapter 27 of The TeXbook.) */
-    } 
+	help6("Dimensions can be in units of em, ex, in, pt, pc,",
+		"cm, mm, dd, cc, bp, or sp; but yours is a new one!",
+		"I'll assume that you meant to say pt, for printer's points.",
+		"To recover gracefully from this error, it's best to",
+		"delete the erroneous units; e.g., type `2' to delete",
+		"two letters. (See Chapter 27 of The TeXbook.)");
     error (); 
     goto lab32; 
   } 
@@ -421,11 +403,8 @@ lab89:
   if(arith_error ||(abs(cur_val)>= 1073741824L)) /* 2^30 */
   {
 	  print_err("Dimension too large");
-    {
-      help_ptr = 2; 
-      help_line[1]= 725; /* I can't work with sizes bigger than about 19 feet. */
-      help_line[0]= 726; /* Continue and I'll use the largest value I can. */
-    } 
+	  help2("I can't work with sizes bigger than about 19 feet.",
+		  "Continue and I'll use the largest value I can.");
     error (); 
     cur_val = 1073741823L;  /* 2^30 - 1 */
     arith_error = false; 
@@ -781,10 +760,7 @@ halfword scan_toks_(bool macrodef, bool xpand)
   if(t == 3129)
   {
 	  print_err("You already have nine parameters");
-    {
-      help_ptr = 1; 
-      help_line[0]= 742; /* I'm going to ignore the # sign you just used. */
-    } 
+	  help1("I'm going to ignore the # sign you just used."); 
     error (); 
   } 
   else {
@@ -793,11 +769,8 @@ halfword scan_toks_(bool macrodef, bool xpand)
     if(cur_tok != t)
     {
 		print_err("Parameters must be numbered consecutively");
-      {
-        help_ptr = 2; 
-        help_line[1]= 744; /* I've inserted the digit you should have used after the #. */
-        help_line[0]= 745; /* Type `1' to delete what you did use. */
-      } 
+		help2("I've inserted the digit you should have used after the #.",
+			"Type `1' to delete what you did use."); 
       back_error (); 
     } 
     cur_tok = s; 
@@ -821,11 +794,8 @@ halfword scan_toks_(bool macrodef, bool xpand)
     {
 		print_err("Missing { inserted");
       incr(align_state); 
-      {
-  help_ptr = 2; 
-  help_line[1]= 739; /* Where was the left brace? You said something like `\def\a}', */
-  help_line[0]= 740; /* which I'm going to interpret as `\def\a{}'. */
-      } 
+	  help2("Where was the left brace? You said something like `\\def\\a}',",
+		  "which I'm going to interpret as `\\def\\a{}'.");
       error (); 
       goto lab40; 
     } 
@@ -873,13 +843,10 @@ lab32:
       if(cur_cmd != 6)
       if((cur_tok <= 3120)||(cur_tok > t))   {
 		  print_err("Illegal parameter number in definition of");
-  sprint_cs(warning_index); 
-  {
-    help_ptr = 3; 
-    help_line[2]= 747; /* You meant to type ## instead of #, right? */
-    help_line[1]= 748; /* Or maybe a } was forgotten somewhere earlier, and things */
-    help_line[0]= 749; /* are all screwed up? I'm going to assume that you meant ##. */
-  } 
+  sprint_cs(warning_index);
+  help3("You meant to type ## instead of #, right?",
+	  "Or maybe a } was forgotten somewhere earlier, and things",
+	  "are all screwed up? I'm going to assume that you meant ##.");
   back_error (); 
   cur_tok = s; 
       } 
@@ -966,10 +933,7 @@ void read_toks_(integer n, halfword r)
           runaway ();
 		  print_err("File ended within");
           print_esc(531); /* read */
-          {
-            help_ptr = 1; 
-            help_line[0]= 752; /* This \read has unbalanced braces. */
-          } 
+		  help1("This \\read has unbalanced braces.");
           align_state = 1000000L; 
           error (); 
         } 
@@ -1137,10 +1101,7 @@ void conditional (void)
       else {
     print_err("Missing = inserted for ");
   print_cmd_chr(105, thisif); /* i */
-  {
-    help_ptr = 1; 
-    help_line[0]= 778; /* I was expecting to see `<', `=', or `>'. Didn't. */
-  } 
+  help1("I was expecting to see `<', `=', or `>'. Didn't.");
   back_error (); 
   r = 61; 
       } 
@@ -1296,10 +1257,7 @@ void conditional (void)
       goto lab50;
 	  print_err("Extra ");
       print_esc(771); /* or */
-      {
-  help_ptr = 1; 
-  help_line[0]= 774; /* I'm ignoring this; it doesn't match any \if. */
-      } 
+	  help1("I'm ignoring this; it doesn't match any \\if.");
       error (); 
     } 
     else if(cur_chr == 2)
@@ -2311,13 +2269,10 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
       print_int(- (integer) s); 
     } 
     print(806);   /*  not loaded: Not enough room left */
-    {
-      help_ptr = 4; 
-      help_line[3]= 807;  /* I'm afraid I won't be able to make use of this font, */
-      help_line[2]= 808;  /* because my memory for character-size data is too small. */
-      help_line[1]= 809;  /* If you're really stuck, ask a wizard to enlarge me. */
-      help_line[0]= 810;  /* Or maybe try `I\font<same font id>=<name of loaded font>'. */
-    } 
+	help4("I'm afraid I won't be able to make use of this font,",
+		"because my memory for character-size data is too small.",
+		"If you're really stuck, ask a wizard to enlarge me.",
+		"Or maybe try `I\\font<same font id>=<name of loaded font>'.");
     error (); 
     goto lab30; 
   } 
@@ -2716,14 +2671,11 @@ lab11: print_err("Font ");
   if (aire == 335) {    /* "" only if path not specified */
     if (show_texinput_flag) show_tex_fonts();   /* 98/Jan/31 */
   }
-  {
-    help_ptr = 5; 
-    help_line[4]= 800;  /* I wasn't able to read the size data for this font, */
-    help_line[3]= 801;  /* so I will ignore the font specification. */
-    help_line[2]= 802;  /* [Wizards can fix TFM files using TFtoPL/PLtoTF.] */
-    help_line[1]= 803;  /* You might try inserting a different font spec; */
-    help_line[0]= 804;  /* e.g., type `I\font<same font id>=<substitute font name>'. */
-  } 
+  help5("I wasn't able to read the size data for this font,",
+	  "so I will ignore the font specification.",
+	  "[Wizards can fix TFM files using TFtoPL/PLtoTF.]",
+	  "You might try inserting a different font spec;",
+	  "e.g., type `I\\font<same font id>=<substitute font name>'.");
   error (); 
 
 lab30:

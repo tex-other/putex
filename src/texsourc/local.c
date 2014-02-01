@@ -2046,7 +2046,7 @@ void check_fixed_align (int flag)
   testalign ((int) &first_count, 4, "first_count");
   testalign ((int) &deletions_allowed, 4, "deletions_allowed");
   testalign ((int) &set_box_allowed, 4, "set_box_allowed");
-  testalign ((int) &help_line, sizeof(help_line[0]), "help_line");
+  testalign ((char *) &help_line, sizeof(help_line[0]), "help_line");
   testalign ((int) &use_err_help, 4, "use_err_help");
   testalign ((int) &interrupt, 4, "interrupt");
   testalign ((int) &OK_to_interrupt, 4, "OK_to_interrupt");

@@ -41,12 +41,9 @@ void math_fraction (void)
     if(c % 3 == 0)
     scan_dimen(false, false, false);
 	print_err("Ambiguous; you need another { and }");
-    {
-      help_ptr = 3; 
-      help_line[2]= 1148; /* I'm ignoring this fraction specification, since I don't */
-      help_line[1]= 1149; /* know whether a construction like `x \over y \over z' */
-      help_line[0]= 1150; /* means `{x \over y} \over z' or `x \over {y \over z}'. */
-    } 
+	help3("I'm ignoring this fraction specification, since I don't",
+		"know whether a construction like `x \\over y \\over z'",
+		"means `{x \\over y} \\over z' or `x \\over {y \\over z}'.");
     error (); 
   } 
   else {
@@ -96,10 +93,7 @@ void math_left_right (void)
       scan_delimiter(mem_top - 12, false);
 	  print_err("Extra "); 
       print_esc(871); /* right */
-      {
-  help_ptr = 1; 
-  help_line[0]= 1151;   /* I'm ignoring a \right that had no matching \left. */
-      } 
+	  help1("I'm ignoring a \\right that had no matching \\left."); 
       error (); 
     } 
     else {
@@ -155,12 +149,9 @@ void after_math (void)
     (font_params[eqtb[(hash_size + 1869)].hh.v.RH]< 22)) 
   {
 	  print_err("Math formula deleted: Insufficient symbol fonts");
-    {
-      help_ptr = 3; 
-      help_line[2]= 1153; /* Sorry, but I can't typeset math unless \textfont Sorry, but I can't typeset math unless \textfont 2 */ 
-      help_line[1]= 1154; /* and \scriptfont 2 and \scriptscriptfont 2 have and \scriptfont 2 and \scriptscriptfont 2 have all */
-      help_line[0]= 1155; /* the \fontdimen values needed in math symbol the \fontdimen values needed in math symbol fonts.. */
-    } 
+	  help3("Sorry, but I can't typeset math unless \\textfont Sorry, but I can't typeset math unless \\textfont 2",
+		  "and \\scriptfont 2 and \\scriptscriptfont 2 have and \\scriptfont 2 and \\scriptscriptfont 2 have all",
+		  "the \\fontdimen values needed in math symbol the \\fontdimen values needed in math symbol fonts.."); 
     error (); 
     flush_math (); 
     danger = true; 
@@ -170,12 +161,9 @@ void after_math (void)
       (font_params[eqtb[(hash_size + 1870)].hh.v.RH]< 13)) 
   {
 	  print_err("Math formula deleted: Insufficient extension fonts");
-    {
-      help_ptr = 3; 
-      help_line[2]= 1157; /* Sorry, but I can't typeset math unless \textfont 3 */
-      help_line[1]= 1158; /* and \scriptfont 3 and \scriptscriptfont 3 have all */
-      help_line[0]= 1159; /* the \fontdimen values needed in math extension fonts. */
-    } 
+	  help3("Sorry, but I can't typeset math unless \\textfont 3",
+		  "and \\scriptfont 3 and \\scriptscriptfont 3 have all",
+		  "the \\fontdimen values needed in math extension fonts.");
     error (); 
     flush_math (); 
     danger = true; 
@@ -190,11 +178,8 @@ void after_math (void)
       if(cur_cmd != 3)
       {
 		  print_err("Display math should end with $$");
-  {
-    help_ptr = 2; 
-    help_line[1]= 1161; /* The `$' that I just saw supposedly matches a previous `$$'. */
-    help_line[0]= 1162; /* So I shall assume that you typed `$$' both times. */
-  } 
+		  help2("The `$' that I just saw supposedly matches a previous `$$'.",
+			  "So I shall assume that you typed `$$' both times.");
   back_error (); 
       } 
     } 
@@ -213,12 +198,9 @@ void after_math (void)
     (font_params[eqtb[(hash_size + 1869)].hh.v.RH]< 22)) 
     {
 		print_err("Math formula deleted: Insufficient symbol fonts");
-      {
-  help_ptr = 3; 
-  help_line[2]= 1153;   /* Sorry, but I can't typeset math unless \textfont 2 */ 
-  help_line[1]= 1154;   /* and \scriptfont 2 and \scriptscriptfont 2 have all */
-  help_line[0]= 1155;   /* the \fontdimen values needed in math symbol fonts. */
-      } 
+		help3("Sorry, but I can't typeset math unless \\textfont 2",
+			"and \\scriptfont 2 and \\scriptscriptfont 2 have all",
+			"the \\fontdimen values needed in math symbol fonts.");
       error (); 
       flush_math (); 
       danger = true; 
@@ -228,12 +210,9 @@ void after_math (void)
        (font_params[eqtb[(hash_size + 1870)].hh.v.RH]< 13)) 
     {
 		print_err("Math formula deleted: Insufficient extension fonts");
-      {
-  help_ptr = 3; 
-  help_line[2]= 1157;   /* Sorry, but I can't typeset math unless \textfont 3 */
-  help_line[1]= 1158;   /* and \scriptfont 3 and \scriptscriptfont 3 have all */
-  help_line[0]= 1159;   /* the \fontdimen values needed in math extension fonts. */
-      } 
+		help3("Sorry, but I can't typeset math unless \\textfont 3",
+			"and \\scriptfont 3 and \\scriptscriptfont 3 have all",
+			"the \\fontdimen values needed in math extension fonts.");
       error (); 
       flush_math (); 
       danger = true; 
@@ -271,11 +250,8 @@ void after_math (void)
       get_x_token (); 
       if(cur_cmd != 3) {
 		  print_err("Display math should end with $$");
-  {
-    help_ptr = 2; 
-    help_line[1]= 1161; /* The `$' that I just saw supposedly matches a previous `$$'. */
-    help_line[0]= 1162; /* So I shall assume that you typed `$$' both times. */
-  } 
+		  help2("The `$' that I just saw supposedly matches a previous `$$'.",
+			  "So I shall assume that you typed `$$' both times.");
   back_error (); 
       } 
     } 
@@ -450,14 +426,11 @@ lab20:
 /*  if((cur_cs == 0)||(cur_cs > (hash_size + 514))) */  /* 95/Jan/10 */
   if((cur_cs == 0)||(cur_cs > (hash_size + hash_extra + 514))) {
 	  print_err("Missing control sequence inserted");
-    {
-      help_ptr = 5; 
-      help_line[4]= 1179; /* Please don't say `\def cs{...}', say `\def\cs{...}'. */
-      help_line[3]= 1180; /* I've inserted an inaccessible control sequence so that your */
-      help_line[2]= 1181; /* definition will be completed without mixing me up too badly. */
-      help_line[1]= 1182; /* You can recover graciously from this error, if you're */
-      help_line[0]= 1183; /* careful; see exercise 27.2 in The TeXbook. */
-    } 
+	  help5("Please don't say `\\def cs{...}', say `\\def\\cs{...}'.",
+		  "I've inserted an inaccessible control sequence so that your",
+		  "definition will be completed without mixing me up too badly.",
+		  "You can recover graciously from this error, if you're",
+		  "careful; see exercise 27.2 in The TeXbook.");
     if(cur_cs == 0)
     back_input (); 
 /*    cur_tok = (hash_size + 4609);  */
@@ -500,10 +473,7 @@ void do_register_command_ (small_number a)
   print_cmd_chr(cur_cmd, cur_chr); 
   print(683);     /* ' after  */
   print_cmd_chr(q, 0); 
-  {
-    help_ptr = 1; 
-    help_line[0]= 1204; /* I'm forgetting what you said and not changing anything. */
-  } 
+  help1("I'm forgetting what you said and not changing anything.");
   error (); 
   return; 
       } 
@@ -606,11 +576,8 @@ void do_register_command_ (small_number a)
   } 
   if(arith_error){
 	  print_err("Arithmetic overflow");
-    {
-      help_ptr = 2; 
-      help_line[1]= 1202; /* I can't carry out that multiplication or division, */
-      help_line[0]= 1203; /* since the result is out of range. */
-    } 
+	  help2("I can't carry out that multiplication or division,",
+		  "since the result is out of range."); 
     error (); 
     return; 
   } 
@@ -647,10 +614,7 @@ void alter_aux (void)
       if((cur_val <= 0)||(cur_val > 32767)) 
       {
 		  print_err("Bad space factor");
-  {
-    help_ptr = 1; 
-    help_line[0]= 1208; /* I allow only values in the range 1..32767 here. */
-  } 
+		  help1("I allow only values in the range 1..32767 here.");
   int_error(cur_val); 
       } 
       else space_factor = cur_val; 
@@ -670,10 +634,7 @@ void alter_prev_graf (void)
   {
 	  print_err("Bad ");
     print_esc(529); /* prevgraf */
-    {
-      help_ptr = 1; 
-      help_line[0]= 1209; /* I allow only nonnegative values here. */
-    } 
+	help1("I allow only nonnegative values here.");
     int_error(cur_val); 
   } 
   else {
@@ -774,11 +735,8 @@ void new_font_(small_number a)
 		print_err("Improper `at' size(");
       print_scaled(s); 
       print(1217);  /* pt), replaced by 10pt */
-      {
-  help_ptr = 2; 
-  help_line[1]= 1218; /* I can only handle fonts at positive sizes that are */
-  help_line[0]= 1219; /* less than 2048pt, so I've changed what you said to 10pt. */
-      } 
+	  help2("I can only handle fonts at positive sizes that are",
+		  "less than 2048pt, so I've changed what you said to 10pt.");
       error (); 
       s = 10 * 65536L;    /* 10pt */
     } 
@@ -789,10 +747,7 @@ void new_font_(small_number a)
     s = - (integer) cur_val; 
     if((cur_val <= 0)||(cur_val > 32768L))  {
 		print_err("Illegal magnification has been changed to 1000");
-      {
-  help_ptr = 1; 
-  help_line[0]= 550;  /* The magnification ratio must be between 1 and 32768. */
-      } 
+		help1("The magnification ratio must be between 1 and 32768.");
       int_error(cur_val); 
       s = -1000; 
     } 
@@ -1015,21 +970,15 @@ void issue_message (void)
     if(eqtb[(hash_size + 1321)].hh.v.RH != 0)
     use_err_help = true; 
     else if(long_help_seen)
-    {
-      help_ptr = 1; 
-      help_line[0]= 1226; /* (That was another \errmessage.) */
-    } 
+		help1("(That was another \\errmessage.)");
     else {
   
       if(interaction < 3)
       long_help_seen = true; 
-      {
-  help_ptr = 4; 
-  help_line[3]= 1227;   /* This error message was generated by an \errmessage */
-  help_line[2]= 1228;   /* command, so I can't give any explicit help. */
-  help_line[1]= 1229;   /* Pretend that you're Hercule Poirot: Examine all clues, */
-  help_line[0]= 1230;   /* and deduce the truth by order and method. */
-      } 
+	  help4("This error message was generated by an \\errmessage",
+		  "command, so I can't give any explicit help.",
+		  "Pretend that you're Hercule Poirot: Examine all clues,",
+		  "and deduce the truth by order and method."); 
     } 
     error (); 
     use_err_help = false; 
@@ -1136,23 +1085,16 @@ void show_whatever (void)
   } 
   else if(eqtb[(hash_size + 3192)].cint > 0)
   {
-    {
-      help_ptr = 3; 
-      help_line[2]= 1237; /* This isn't an error message; I'm just \showing something. */
-      help_line[1]= 1238; /* Type `I\show...' to show more (e.g., \show\cs, */
-      help_line[0]= 1239; /* \showthe\count10, \showbox255, \showlists). */
-    } 
+	  help3("This isn't an error message; I'm just \\showing something.",
+		  "Type `I\\show...' to show more (e.g., \\show\\cs,",
+		  "\\showthe\\count10, \\showbox255, \\showlists).");
   } 
   else {
-      
-    {
-      help_ptr = 5; 
-      help_line[4]= 1237; /* This isn't an error message; I'm just \showing something. */
-      help_line[3]= 1238; /* Type `I\show...' to show more (e.g., \show\cs, */
-      help_line[2]= 1239; /* \showthe\count10, \showbox255, \showlists). */
-      help_line[1]= 1240; /* And type `I\tracingonline=1\show...' to show boxes and */
-      help_line[0]= 1241; /* lists on your terminal as well as in the transcript file. */
-    } 
+      help5("This isn't an error message; I'm just \\showing something.",
+		  "Type `I\\show...' to show more (e.g., \\show\\cs,",
+		  "\\showthe\\count10, \\showbox255, \\showlists).",
+		  "And type `I\\tracingonline=1\\show...' to show boxes and",
+		  "lists on your terminal as well as in the transcript file."); 
   } 
   error (); 
 } 
@@ -1296,11 +1238,8 @@ void handle_right_brace (void)
   case 0 : 
     {
 		print_err("Too many }'s");
-      {
-  help_ptr = 2; 
-  help_line[1]= 1039;   /* You've closed more groups than you opened. */
-  help_line[0]= 1040;   /* Such booboos are generally harmless, so keep going. */
-      } 
+		help2("You've closed more groups than you opened.",
+			"Such booboos are generally harmless, so keep going.");
       error (); 
     } 
     break; 
@@ -1380,11 +1319,8 @@ void handle_right_brace (void)
       cur_input.index_field != 3)))
       {
 		  print_err("Unbalanced output routine");
-  {
-    help_ptr = 2; 
-    help_line[1]= 1005; /* Your sneaky output routine has problematic {'s and/or }'s. */
-    help_line[0]= 1006; /* I can't handle that very well; good luck. */
-  } 
+		  help2("Your sneaky output routine has problematic {'s and/or }'s.",
+			  "I can't handle that very well; good luck.");
   error (); 
   do {
       get_token (); 
@@ -1400,12 +1336,9 @@ void handle_right_brace (void)
 		  print_err("Output routine didn't use all of ");
       print_esc(406);   /* box */
       print_int(255); 
-      {
-        help_ptr = 3; 
-        help_line[2]= 1008; /* Your \output commands should empty \box255, */
-        help_line[1]= 1009; /* e.g., by saying `\ship_out\box255'. */
-        help_line[0]= 1010; /* Proceed; I'll discard its present contents. */
-      } 
+	  help3("Your \\output commands should empty \\box255,",
+		  "e.g., by saying `\\ship_out\\box255'.",
+		  "Proceed; I'll discard its present contents.");
       box_error(255); 
     }
       if(tail != head)
@@ -1439,10 +1372,7 @@ void handle_right_brace (void)
 	  print_err("Missing ");
       print_esc(893); /* cr */
       print(623);   /* inserted */
-      {
-  help_ptr = 1; 
-  help_line[0]= 1119;   /* I'm guessing that you meant to end an alignment here. */
-      } 
+	  help1("I'm guessing that you meant to end an alignment here.");
       ins_error (); 
     } 
     break; 

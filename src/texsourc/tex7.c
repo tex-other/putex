@@ -150,12 +150,9 @@ void build_page (void)
 			  print_err("Infinite glue shrinkage inserted from");
             print_esc(392);    /* skip*/
             print_int(n);
-            {
-              help_ptr = 3;
-              help_line[2]= 993;  /* The correction glue for page breaking with insertions */
-              help_line[1]= 994;  /* must have finite shrinkability. But you may proceed, */
-              help_line[0]= 916;  /* since the offensive shrinkability has been made finite. */
-            } 
+			help3("The correction glue for page breaking with insertions",
+				"must have finite shrinkability. But you may proceed,",
+				"since the offensive shrinkability has been made finite."); 
             error (); 
           } 
         } 
@@ -307,13 +304,10 @@ void build_page (void)
       if((mem[q].hh.b1 != 0)&&(mem[q + 3].cint != 0)) 
       {
 		  print_err("Infinite glue shrinkage found on current page");
-  {
-    help_ptr = 4; 
-    help_line[3]= 989;  /* The page about to be output contains some infinitely */
-    help_line[2]= 957;  /* shrinkable glue, e.g., `\vss' or `\vskip 0pt minus 1fil'. */
-    help_line[1]= 958;  /* Such glue doesn't belong there; but you can safely proceed, */
-    help_line[0]= 916;  /* since the offensive shrinkability has been made finite. */
-  } 
+		  help4("The page about to be output contains some infinitely",
+			  "shrinkable glue, e.g., `\\vss' or `\\vskip 0pt minus 1fil'.",
+			  "Such glue doesn't belong there; but you can safely proceed,",
+			  "since the offensive shrinkability has been made finite.");
   error (); 
   r = new_spec(q); 
   mem[r].hh.b1 = 0; 
@@ -383,11 +377,8 @@ void insert_dollar_sign (void)
   back_input (); 
   cur_tok = 804;
   print_err("Proceed; I'll discard its present contents.");
-  {
-    help_ptr = 2; 
-    help_line[1]= 1012;   /* I've inserted a begin-math/end-math symbol since I think */
-    help_line[0]= 1013;   /* you left one out. Proceed, with fingers crossed. */
-  } 
+  help2("I've inserted a begin-math/end-math symbol since I think",
+	  "you left one out. Proceed, with fingers crossed.");
   ins_error (); 
 } 
 /* sec 1049 */
@@ -401,14 +392,11 @@ void you_cant (void)
 /* sec 1050 */
 void report_illegal_case (void) 
 { 
-  you_cant (); 
-  {
-    help_ptr = 4; 
-    help_line[3]= 1015;   /* Sorry, but I'm not programmed to handle this case; */
-    help_line[2]= 1016;   /* I'll just pretend that you didn't ask for it. */
-    help_line[1]= 1017;   /* If you're in the wrong mode, you might be able to */
-    help_line[0]= 1018;   /* return to the right one by typing `I}' or `I$' or `I\par'. */
-  } 
+  you_cant ();
+  help4("Sorry, but I'm not programmed to handle this case;",
+	  "I'll just pretend that you didn't ask for it.",
+	  "If you're in the wrong mode, you might be able to",
+	  "return to the right one by typing `I}' or `I$' or `I\\par'.");
   error (); 
 } 
 /* sec 1051 */
@@ -508,11 +496,8 @@ void off_save (void)
   if(cur_group == 0)
   {
 	print_err("Extra ");
-    print_cmd_chr(cur_cmd, cur_chr); 
-    {
-      help_ptr = 1; 
-      help_line[0]= 1037; /* Things are pretty mixed up, but I think the worst is over. */
-    } 
+    print_cmd_chr(cur_cmd, cur_chr);
+	help1("Things are pretty mixed up, but I think the worst is over.");
     error (); 
   } 
   else {
@@ -555,15 +540,12 @@ void off_save (void)
       break; 
     } 
     print(623);   /*  inserted */
-    begin_token_list(mem[mem_top - 3].hh.v.RH, 4); 
-    {
-      help_ptr = 5; 
-      help_line[4]= 1031; /* I've inserted something that you may have forgotten. */
-      help_line[3]= 1032; /* (See the <inserted text> above.) */
-      help_line[2]= 1033; /* With luck, this will get me unwedged. But if you */
-      help_line[1]= 1034; /* really didn't forget anything, try typing `2' now; then */
-      help_line[0]= 1035; /* my insertion and my current dilemma will both disappear. */
-    } 
+    begin_token_list(mem[mem_top - 3].hh.v.RH, 4);
+	help5("I've inserted something that you may have forgotten.",
+		"(See the <inserted text> above.)",
+		"With luck, this will get me unwedged. But if you",
+		"really didn't forget anything, try typing `2' now; then",
+		"my insertion and my current dilemma will both disappear.");
     error (); 
   } 
 } 
@@ -582,15 +564,12 @@ void extra_right_brace (void)
   case 16 : 
     print_esc(871);  /* right */
     break; 
-  } 
-  {
-    help_ptr = 5; 
-    help_line[4]= 1043;   /* I've deleted a group-closing symbol because it seems to be */
-    help_line[3]= 1044;   /* spurious, as in `$x}$'. But perhaps the } is legitimate and */
-    help_line[2]= 1045;   /* you forgot something else, as in `\hbox{$x}'. In such cases */
-    help_line[1]= 1046;   /* the way to recover is to insert both the forgotten and the */
-    help_line[0]= 1047;   /* deleted material, e.g., by typing `I$}'. */
-  } 
+  }
+  help5("I've deleted a group-closing symbol because it seems to be",
+	  "spurious, as in `$x}$'. But perhaps the } is legitimate and",
+	  "you forgot something else, as in `\hbox{$x}'. In such cases",
+	  "the way to recover is to insert both the forgotten and the",
+	  "deleted material, e.g., by typing `I$}'."); 
   error (); 
   incr(align_state); 
 } 
@@ -684,12 +663,9 @@ void box_end_(integer boxcontext)
     } 
     else {
     print_err("Leaders not followed by proper glue");
-      {
-  help_ptr = 3; 
-  help_line[2]= 1061;   /* You should say `\leaders <box or rule><hskip or vskip>'. */
-  help_line[1]= 1062;   /* I found the <box or rule>, but there's no suitable */
-  help_line[0]= 1063;   /* <hskip or vskip>, so I'm ignoring these leaders. */
-      } 
+	help3("You should say `\\leaders <box or rule><hskip or vskip>'.",
+		"I found the <box or rule>, but there's no suitable",
+		"<hskip or vskip>, so I'm ignoring these leaders."); 
       back_error (); 
       flush_node_list(cur_box); 
   }
@@ -723,22 +699,16 @@ void begin_box_(integer boxcontext)
       cur_box = 0; 
       if(abs(mode)== 203)
       {
-  you_cant (); 
-  {
-    help_ptr = 1; 
-    help_line[0]= 1064; /* Sorry; this \lastbox will be void. */
-  } 
+  you_cant ();
+  help1("Sorry; this \\lastbox will be void.");
   error (); 
       } 
       else if((mode == 1)&&(head == cur_list 
      .tail_field)) 
       {
-  you_cant (); 
-  {
-    help_ptr = 2; 
-    help_line[1]= 1065; /* Sorry...I usually can't take things from the current page. */
-    help_line[0]= 1066; /* This \lastbox will therefore be void. */
-  } 
+  you_cant ();
+  help2("Sorry...I usually can't take things from the current page.",
+	  "This \\lastbox will therefore be void.");
   error (); 
       } 
       else {
@@ -781,11 +751,8 @@ void begin_box_(integer boxcontext)
       if(! scan_keyword(836))  /* to */
       {
 		  print_err("Missing `to' inserted");
-  {
-    help_ptr = 2; 
-    help_line[1]= 1068; /* I'm working on `\vsplit<box number> to <dimen>'; */
-    help_line[0]= 1069; /* will look for the <dimen> next. */
-  } 
+		  help2("I'm working on `\\vsplit<box number> to <dimen>';",
+			  "will look for the <dimen> next.");
   error (); 
       } 
       scan_dimen(false, false, false); 
@@ -850,12 +817,9 @@ void scan_box_(integer boxcontext)
   } 
   else {
       print_err("A <box> was supposed to be here");
-    {
-      help_ptr = 3; 
-      help_line[2]= 1071; /* I was expecting to see \hbox or \vbox or \copy or \box or */
-      help_line[1]= 1072; /* something like that. So you might find something missing in */
-      help_line[0]= 1073; /* your output. But keep trying; you can fix this later. */
-    } 
+	  help3("I was expecting to see \\hbox or \\vbox or \\copy or \\box or",
+		  "something like that. So you might find something missing in",
+		  "your output. But keep trying; you can fix this later.");
     back_error (); 
   }
 } 
@@ -949,11 +913,8 @@ void head_for_vmode (void)
 	  print_err("You can't use `");
     print_esc(518);  /* hrule */
     print(1076);  /* ' here except with leaders */
-    {
-      help_ptr = 2; 
-      help_line[1]= 1077; /* To put a horizontal rule in an hbox or an alignment, */
-      help_line[0]= 1078; /* you should use \leaders or \hrulefill (see The TeXbook). */
-    } 
+	help2("To put a horizontal rule in an hbox or an alignment,",
+		"you should use \\leaders or \\hrulefill (see The TeXbook).");
     error (); 
   } 
   else {
@@ -989,11 +950,8 @@ void begin_insert_or_adjust (void)
     {
 		print_err("You can't ");
       print_esc(327); /* insert */
-      print_int(255); 
-      {
-  help_ptr = 1; 
-  help_line[0]= 1080;   /* I'm changing to \insert0; box 255 is special. */
-      } 
+      print_int(255);
+	  help1("I'm changing to \\insert0; box 255 is special."); 
       error (); 
       cur_val = 0; 
     } 
@@ -1043,16 +1001,13 @@ void delete_last (void)
 /*    if((cur_chr != 10)||(last_glue != 262143L)) */
     if((cur_chr != 10)||(last_glue != empty_flag)) 
     {
-      you_cant (); 
-      {
-  help_ptr = 2; 
-  help_line[1]= 1065;   /* Sorry...I usually can't take things from the current page. */
-  help_line[0]= 1081;   /* Try `I\vskip-\lastskip' instead. */
-      } 
+      you_cant ();
+	  help2("Sorry...I usually can't take things from the current page.",
+		  "Try `I\\vskip-\\lastskip' instead."); 
       if(cur_chr == 11)
-      help_line[0]=(1082); /* Try `I\kern-\last_kern' instead. */
+      help_line[0] = "Try `I\\kern-\\last_kern' instead.";
       else if(cur_chr != 10)
-      help_line[0]=(1083); /* Perhaps you can make the output routine do it. */
+      help_line[0] = "Perhaps you can make the output routine do it.";
       error (); 
     } 
   } 
@@ -1103,12 +1058,9 @@ void unpackage (void)
   102)&&(mem[p].hh.b0 != 0)))
   {
 	  print_err("Incompatible list can't be unboxed");
-    {
-      help_ptr = 3; 
-      help_line[2]= 1092; /* Sorry, Pandora. (You sneaky devil.) */
-      help_line[1]= 1093; /* I refuse to unbox an \hbox in vertical mode or vice versa. */
-      help_line[0]= 1094; /* And I can't open any boxes in math mode. */
-    } 
+	  help3("Sorry, Pandora. (You sneaky devil.)",
+		  "I refuse to unbox an \hbox in vertical mode or vice versa.",
+		  "And I can't open any boxes in math mode.");
     error (); 
     return; 
   } 
@@ -1191,10 +1143,7 @@ void build_discretionary (void)
     if(mem[p].hh.b0 != 6)
     {
 		print_err("Improper discretionary list");
-      {
-  help_ptr = 1; 
-  help_line[0]= 1102;   /* Discretionary lists must contain only boxes and kerns. */
-      } 
+		help1("Discretionary lists must contain only boxes and kerns.");
       error (); 
       begin_diagnostic (); 
       print_nl(1103);  /* The following discretionary sublist has been deleted: */
@@ -1224,11 +1173,8 @@ void build_discretionary (void)
       {
 		  print_err("Illegal math ");
   print_esc(346);  /* discretionary */
-  {
-    help_ptr = 2; 
-    help_line[1]= 1096; /* Sorry: The third part of a discretionary break must be */
-    help_line[0]= 1097; /* empty, in math formulas. I had to delete your third part. */
-  } 
+  help2("Sorry: The third part of a discretionary break must be",
+	  "empty, in math formulas. I had to delete your third part.");
   flush_node_list(p); 
   n = 0; 
   error (); 
@@ -1240,11 +1186,8 @@ void build_discretionary (void)
       mem[tail].hh.b1 = n; 
       else {
     print_err("Discretionary list is too long");
-  {
-    help_ptr = 2; 
-    help_line[1]= 1099; /* Wow---I never thought anybody would tweak me here. */
-    help_line[0]= 1100; /* You can't seriously need such a huge discretionary list? */
-  } 
+	help2("Wow---I never thought anybody would tweak me here.",
+		"You can't seriously need such a huge discretionary list?");
   error (); 
       } 
       if(n > 0)
@@ -1323,25 +1266,19 @@ void align_error (void)
 	  print_err("Misplaced ");
     print_cmd_chr(cur_cmd, cur_chr); 
     if(cur_tok == 1062) {
-      {
-  help_ptr = 6; 
-  help_line[5]= 1109;   /* I can't figure out why you would want to use a tab mark */
-  help_line[4]= 1110;   /* here. If you just want an ampersand, the remedy is */
-  help_line[3]= 1111;   /* simple: Just type `I\&' now. But if some right brace */
-  help_line[2]= 1112;   /* up above has ended a previous alignment prematurely, */
-  help_line[1]= 1113;   /* you're probably due for more error messages, and you */
-  help_line[0]= 1114;   /* might try typing `S' now just to see what is salvageable. */
-      } 
+		help6("I can't figure out why you would want to use a tab mark",
+			"here. If you just want an ampersand, the remedy is",
+			"simple: Just type `I\\&' now. But if some right brace",
+			"up above has ended a previous alignment prematurely,",
+			"you're probably due for more error messages, and you",
+			"might try typing `S' now just to see what is salvageable.");
     } 
     else {
-      {
-  help_ptr = 5; 
-  help_line[4]= 1109;   /* I can't figure out why you would want to use a tab mark */
-  help_line[3]= 1115;   /* or \cr or \span just now. If something like a right brace */
-  help_line[2]= 1112;   /* up above has ended a previous alignment prematurely, */
-  help_line[1]= 1113;   /* you're probably due for more error messages, and you */
-  help_line[0]= 1114;   /* might try typing `S' now just to see what is salvageable. */
-      } 
+		help5("I can't figure out why you would want to use a tab mark",
+			"or \\cr or \\span just now. If something like a right brace",
+			"up above has ended a previous alignment prematurely,",
+			"you're probably due for more error messages, and you",
+			"might try typing `S' now just to see what is salvageable."); 
     } 
     error (); 
   } 
@@ -1356,13 +1293,10 @@ void align_error (void)
 		print_err("Missing } inserted");
       decr(align_state); 
       cur_tok = 637; 
-    } 
-    {
-      help_ptr = 3; 
-      help_line[2]= 1105; /* I've put in what seems to be necessary to fix */
-      help_line[1]= 1106; /* the current column of the current alignment. */
-      help_line[0]= 1107; /* Try to go on, since this might almost work. */
-    } 
+    }
+	help3("I've put in what seems to be necessary to fix",
+		"the current column of the current alignment.",
+		"Try to go on, since this might almost work.");
     ins_error (); 
   }
 } 
@@ -1371,11 +1305,8 @@ void noalign_error (void)
 {
   print_err("Misplaced ");
   print_esc(524);    /* noalign */
-  {
-    help_ptr = 2; 
-    help_line[1]= 1116;   /* I expect to see \noalign only after the \cr of */
-    help_line[0]= 1117;   /* an alignment. Proceed, and I'll ignore this case. */
-  } 
+  help2("I expect to see \\noalign only after the \\cr of",
+	  "an alignment. Proceed, and I'll ignore this case.");
   error (); 
 } 
 /* only called from tex8.c */
@@ -1384,11 +1315,8 @@ void omit_error (void)
 { 
   print_err("Misplaced ");
   print_esc(527);    /* omit */
-  {
-    help_ptr = 2; 
-    help_line[1]= 1118;   /* I expect to see \omit only after tab marks or the \cr of */
-    help_line[0]= 1117;   /* an alignment. Proceed, and I'll ignore this case. */
-  } 
+  help2("I expect to see \\omit only after tab marks or the \\cr of",
+	  "an alignment. Proceed, and I'll ignore this case.");
   error (); 
 } 
 /* sec 1131 */
@@ -1406,10 +1334,7 @@ void cs_error (void)
 {
   print_err("Extra ");
   print_esc(502);  /* endcsname */
-  {
-    help_ptr = 1; 
-    help_line[0]= 1120;   /* I'm ignoring this, since I wasn't doing a \csname. */
-  } 
+  help1("I'm ignoring this, since I wasn't doing a \\csname."); 
   error (); 
 } 
 /* sec 1136 */
@@ -1696,10 +1621,7 @@ void math_limit_switch (void)
     return; 
   }
   print_err("Limit controls must follow a math operator");
-  {
-    help_ptr = 1; 
-    help_line[0]= 1125;   /* I'm ignoring this misplaced \limits or \nolimits command. */
-  } 
+  help1("I'm ignoring this misplaced \\limits or \\nolimits command."); 
   error (); 
 } 
 /* sec 1160 */
@@ -1729,15 +1651,12 @@ void scan_delimiter_(halfword p, bool r)
   if(cur_val < 0)
   {
 	  print_err("Missing delimiter (. inserted)");
-    {
-      help_ptr = 6; 
-      help_line[5]= 1127; /* I was expecting to see something like `(' or `\{' or */
-      help_line[4]= 1128; /* `\}' here. If you typed, e.g., `{' instead of `\{', you */
-      help_line[3]= 1129; /* should probably delete the `{' by typing `1' now, so that */
-      help_line[2]= 1130; /* braces don't get unbalanced. Otherwise just proceed. */
-      help_line[1]= 1131; /* Acceptable delimiters are characters whose \delcode is */
-      help_line[0]= 1132; /* nonnegative, or you can use `\delimiter <delimiter code>'. */
-    } 
+	  help6("I was expecting to see something like `(' or `\\{' or",
+		  "`\\}' here. If you typed, e.g., `{' instead of `\\{', you",
+		  "should probably delete the `{' by typing `1' now, so that",
+		  "braces don't get unbalanced. Otherwise just proceed.",
+		  "Acceptable delimiters are characters whose \\delcode is",
+		  "nonnegative, or you can use `\\delimiter <delimiter code>'.");
     back_error (); 
     cur_val = 0; 
   }
@@ -1774,11 +1693,8 @@ void math_ac (void)
     print_err("Please use ");
     print_esc(520);    /* mathaccent */
     print(1134);    /*  for accents in math mode */
-    {
-      help_ptr = 2; 
-      help_line[1]= 1135; /* I'm changing \accent to \mathaccent here; wish me luck. */
-      help_line[0]= 1136; /* (Accents are not the same in formulas as they are in text.) */
-    } 
+	help2("I'm changing \accent to \mathaccent here; wish me luck.",
+		"(Accents are not the same in formulas as they are in text.)");
     error (); 
   } 
   {
@@ -1901,17 +1817,11 @@ void sub_sup (void)
       if(cur_cmd == 7)
       {
 		  print_err("Double superscript");
-  {
-    help_ptr = 1; 
-    help_line[0]= 1138; /* I treat `x^1^2' essentially like `x^1{}^2'.  */
-  } 
+		  help1("I treat `x^1^2' essentially like `x^1{}^2'.");
       } 
       else {
     print_err("Double subscript");
-  {
-    help_ptr = 1; 
-    help_line[0]= 1140; /* I treat `x_1_2' essentially like `x_1{}_2'. */
-  } 
+	help1("I treat `x_1_2' essentially like `x_1{}_2'.");
       } 
       error (); 
     } 

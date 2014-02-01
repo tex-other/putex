@@ -51,14 +51,11 @@ halfword finite_shrink_(halfword p)
   if(noshrinkerroryet){
     noshrinkerroryet = false;
 	print_err("Infinite glue shrinkage found in a paragraph");
-    {
-      help_ptr = 5; 
-      help_line[4]= 912;  /* The paragraph just ended includes some glue that has */
-      help_line[3]= 913;  /* infinite shrinkability, e.g., `\hskip 0pt minus 1fil'. */
-      help_line[2]= 914;  /* Such glue doesn't belong there---it allows a paragraph */
-      help_line[1]= 915;  /* of any length to fit on one line. But it's safe to proceed, */
-      help_line[0]= 916;  /* since the offensive shrinkability has been made finite. */
-    } 
+	help5("The paragraph just ended includes some glue that has",
+		"infinite shrinkability, e.g., `\hskip 0pt minus 1fil'.",
+		"Such glue doesn't belong there---it allows a paragraph",
+		"of any length to fit on one line. But it's safe to proceed,",
+		"since the offensive shrinkability has been made finite."); 
     error (); 
   } 
   q = new_spec(p); 
@@ -1448,11 +1445,8 @@ lab21: switch(cur_cmd){
   if(eqtb[(hash_size + 2139) + cur_chr].hh.v.RH == 0)
   {
 	  print_err("Not a letter");
-    {
-      help_ptr = 2; 
-      help_line[1]= 940;  /* Letters in \hyphenation words must have \lccode>0. */
-      help_line[0]= 941;  /* Proceed; I'll ignore the character I just read. */
-    } 
+	  help2("Letters in \\hyphenation words must have \\lccode>0.",
+		  "Proceed; I'll ignore the character I just read.");
     error (); 
   } 
   else if(n < 63)
@@ -1565,11 +1559,8 @@ lab21: switch(cur_cmd){
 		  print_err("Improper ");
   print_esc(935); /* hyphenation */
   print(936);   /* will be flushed */
-  {
-    help_ptr = 2; 
-    help_line[1]= 937;  /* Hyphenation exceptions must contain only letters */
-    help_line[0]= 938;  /* and hyphens. But continue; I'll forgive and forget. */
-  } 
+  help2("Hyphenation exceptions must contain only letters",
+	  "and hyphens. But continue; I'll forgive and forget.");
   error (); 
     }
       break; 
@@ -1730,13 +1721,10 @@ halfword vert_break_(halfword p, scaled h, scaled d)
       if((mem[q].hh.b1 != 0)&&(mem[q + 3].cint != 0)) 
       {
 		  print_err("Infinite glue shrinkage found in box being split");
-  {
-    help_ptr = 4; 
-    help_line[3]= 956;  /* The box you are \vsplitting contains some infinitely */
-    help_line[2]= 957;  /* shrinkable glue, e.g., `\vss' or `\vskip 0pt minus 1fil'. */
-    help_line[1]= 958;  /* Such glue doesn't belong there; but you can safely proceed, */
-    help_line[0]= 916;  /* since the offensive shrinkability has been made finite. */
-  } 
+		  help4("The box you are \\vsplitting contains some infinitely",
+			  "shrinkable glue, e.g., `\\vss' or `\\vskip 0pt minus 1fil'.",
+			  "Such glue doesn't belong there; but you can safely proceed,",
+			  "since the offensive shrinkability has been made finite.");
   error (); 
   r = new_spec(q); 
   mem[r].hh.b1 = 0; 
@@ -1783,11 +1771,8 @@ halfword vsplit_(eight_bits n, scaled h)
     print_esc(959); /* vsplit */
     print(960);   /* needs a  */
     print_esc(961); /* vbox */
-    {
-      help_ptr = 2; 
-      help_line[1]= 962;  /* The box you are trying to split is an \hbox. */
-      help_line[0]= 963;  /* I can't split such a box, so I'll leave it alone. */
-    } 
+	help2("The box you are trying to split is an \\hbox.",
+		"I can't split such a box, so I'll leave it alone.");
     error (); 
     Result = 0; 
     return(Result); 
@@ -1904,12 +1889,9 @@ void ensure_vbox_(eight_bits n)
   if(mem[p].hh.b0 == 0)
   {
 	  print_err("Insertions can only be added to a vbox");
-    {
-      help_ptr = 3; 
-      help_line[2]= 984;  /* Tut tut: You're trying to \insert into a */
-      help_line[1]= 985;  /* \box register that now contains an \hbox. */
-      help_line[0]= 986;  /* Proceed, and I'll discard its present contents. */
-    } 
+	  help3("Tut tut: You're trying to \\insert into a",
+		  "\\box register that now contains an \\hbox.",
+		  "Proceed, and I'll discard its present contents.");
     box_error(n); 
   } 
 } 
@@ -1946,11 +1928,8 @@ void fire_up_(halfword c)
 	  print_err("");
     print_esc(406); /* box */
     print(997);   /* 255 is not void */
-    {
-      help_ptr = 2; 
-      help_line[1]= 998;  /* You shouldn't use \box255 except in \output routines. */
-      help_line[0]= 986;  /* Proceed, and I'll discard its present contents. */
-    } 
+	help2("You shouldn't use \\box255 except in \\output routines.",
+		"Proceed, and I'll discard its present contents.");
     box_error(255); 
   } 
   insert_penalties = 0; 
@@ -2118,12 +2097,9 @@ void fire_up_(halfword c)
 	  print_err("Output loop---");
     print_int(dead_cycles); 
     print(1000);    /*  consecutive dead cycles */
-    {
-      help_ptr = 3; 
-      help_line[2]= 1001; /* I've concluded that your \output is awry; it never does  */
-      help_line[1]= 1002; /* \ship_out, so I'm shipping \box255 out myself. Next  */
-      help_line[0]= 1003; /* increase \maxdeadcycles if you want me to be more patient! */
-    } 
+	help3("I've concluded that your \\output is awry; it never does",
+		"\\ship_out, so I'm shipping \box255 out myself. Next ",
+		"increase \\maxdeadcycles if you want me to be more patient!");
     error (); 
   } 
   else {

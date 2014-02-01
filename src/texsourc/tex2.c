@@ -125,12 +125,8 @@ void prepare_mag (void)
     print_int(eqtb[(hash_size + 3180)].cint); 
     print(545);     /*)*/
     print_nl(546);    /*  the previous value will be retained */
-    {
-      help_ptr = 2; 
-      help_line[1]= 547; /* I can handle only one magnification ratio per job. */
-      help_line[0]= 548; /* So I've reverted to the magnification you used earlier on this run. */
-
-    } 
+	help2("I can handle only one magnification ratio per job.",
+		"So I've reverted to the magnification you used earlier on this run.");
     int_error(mag_set); 
     geq_word_define((hash_size + 3180), mag_set); 
   } 
@@ -138,10 +134,7 @@ void prepare_mag (void)
     (eqtb[(hash_size + 3180)].cint > 32768L)) 
   {
 	  print_err("Illegal magnification has been changed to 1000");
-    {
-      help_ptr = 1; 
-      help_line[0]= 550; /* The magnification ratio must be between 1 and 32768. */
-    } 
+	  help1("The magnification ratio must be between 1 and 32768.");
     int_error(eqtb[(hash_size + 3180)].cint); 
     geq_word_define((hash_size + 3180), 1000); 
   } 
@@ -695,27 +688,21 @@ void check_outer_validity (void)
       } 
       begin_token_list(p, 4); 
       print(604); /*  of  */
-      sprint_cs(warning_index); 
-      {
-  help_ptr = 4; 
-  help_line[3]= 605; /* I suspect you have forgotten a `}', causing me */
-  help_line[2]= 606; /* to read past where you wanted me to stop. */
-  help_line[1]= 607; /* I'll try to recover; but if the error is serious, */
-  help_line[0]= 608; /* you'd better type `E' or `X' now and fix your file. */
-      } 
+      sprint_cs(warning_index);
+	  help4("I suspect you have forgotten a `}', causing me",
+		  "to read past where you wanted me to stop.",
+		  "I'll try to recover; but if the error is serious,",
+		  "you'd better type `E' or `X' now and fix your file.");
       error (); 
     } 
     else {
   print_err("Incomplete ");
       print_cmd_chr(105, cur_if); /* i */
       print(596); /*; all text was ignored after line  */
-      print_int(skip_line); 
-      {
-  help_ptr = 3; 
-  help_line[2]= 597; /* A forbidden control sequence occurred in skipped text. */
-  help_line[1]= 598; /* This kind of error happens when you say `\if...' and forget */
-  help_line[0]= 599; /* the matching `\fi'. I've inserted a `\fi'; this might work. */
-      } 
+      print_int(skip_line);
+	  help3("A forbidden control sequence occurred in skipped text.",
+		  "This kind of error happens when you say `\\if...' and forget",
+		  "the matching `\\fi'. I've inserted a `\\fi'; this might work.");
       if(cur_cs != 0)
       cur_cs = 0; 
       else help_line[2]= 600; /* The file ended while I was skipping conditional text. */
@@ -842,13 +829,10 @@ void macro_call (void)
 		  print_err("Use of ");
   sprint_cs(warning_index); 
   print(648);     /*  doesn't match its definition */
-  {
-    help_ptr = 4; 
-    help_line[3]= 649; /* If you say, e.g., `\def\a1{...}', then you must always */
-    help_line[2]= 650; /* put `1' after `\a', since control sequence names are */
-    help_line[1]= 651; /* made up of letters only. The macro here has not been */
-    help_line[0]= 652; /* followed by the required stuff, so I'm ignoring it. */
-  } 
+  help4("If you say, e.g., `\\def\\a1{...}', then you must always",
+	  "put `1' after `\\a', since control sequence names are",
+	  "made up of letters only. The macro here has not been",
+	  "followed by the required stuff, so I'm ignoring it."); 
   error (); 
   goto lab10; 
       } 
@@ -892,12 +876,9 @@ void macro_call (void)
 	print_err("Paragraph ended before ");
     sprint_cs(warning_index); 
     print(643);   /* was complete */
-    {
-      help_ptr = 3; 
-      help_line[2]= 644; /* I suspect you've forgotten a `}', causing me to apply this */
-      help_line[1]= 645; /* control sequence to too much text. How can we recover? */
-      help_line[0]= 646; /* My plan is to forget the whole thing and hope for the best. */
-    } 
+	help3("I suspect you've forgotten a `}', causing me to apply this",
+		"control sequence to too much text. How can we recover?",
+		"My plan is to forget the whole thing and hope for the best."); 
     back_error (); 
   } 
   pstack[n]= mem[mem_top - 3].hh.v.RH; 
@@ -946,12 +927,9 @@ void macro_call (void)
 		print_err("Paragraph ended before ");
         sprint_cs(warning_index); 
         print(643); /*  was complete */
-        {
-    help_ptr = 3; 
-    help_line[2]= 644; /* I suspect you've forgotten a `}', causing me to apply this */
-    help_line[1]= 645; /* control sequence to too much text. How can we recover? */
-    help_line[0]= 646; /* My plan is to forget the whole thing and hope for the best. */
-        } 
+		help3("I suspect you've forgotten a `}', causing me to apply this",
+			"control sequence to too much text. How can we recover?",
+			"My plan is to forget the whole thing and hope for the best.");
         back_error (); 
       } 
       pstack[n]= mem[mem_top - 3].hh.v.RH; 
@@ -990,15 +968,12 @@ void macro_call (void)
   print_err("Argument of ");
   sprint_cs(warning_index); 
   print(635);     /*  has an extra } */
-  {
-    help_ptr = 6; 
-    help_line[5]= 636; /* I've run across a `}' that doesn't seem to match anything. */
-    help_line[4]= 637; /* For example, `\def\a#1{...}' and `\a}' would produce */
-    help_line[3]= 638; /* this error. If you simply proceed now, the `\par' that */
-    help_line[2]= 639; /* I've just inserted will cause me to report a runaway */
-    help_line[1]= 640; /* argument that might be the root of the problem. But if */
-    help_line[0]= 641; /* your `}' was spurious, just type `2' and it will go away. */
-  } 
+  help6("I've run across a `}' that doesn't seem to match anything.",
+	  "For example, `\\def\\a#1{...}' and `\\a}' would produce",
+	  "this error. If you simply proceed now, the `\\par' that",
+	  "I've just inserted will cause me to report a runaway",
+	  "argument that might be the root of the problem. But if",
+	  "your `}' was spurious, just type `2' and it will go away.");
   incr(align_state); 
   long_state = 111; 
   cur_tok = par_token; 
@@ -1190,11 +1165,8 @@ void expand (void)
 	  print_err("Missing ");
     print_esc(502); /* endcsname */
     print(623);   /*  inserted */
-    {
-      help_ptr = 2; 
-      help_line[1]= 624; /* The control sequence marked <to be read again> should */
-      help_line[0]= 625; /* not appear between \csname and \endcsname. */
-    } 
+	help2("The control sequence marked <to be read again> should",
+		"not appear between \\csname and \\endcsname.");
     back_error (); 
   } 
   j = first; 
@@ -1258,10 +1230,7 @@ void expand (void)
       else {
     print_err("Extra ");
   print_cmd_chr(106, cur_chr);  /* j */
-  {
-    help_ptr = 1; 
-    help_line[0]= 774; /* I'm ignoring this; it doesn't match any \if. */
-  } 
+  help1("I'm ignoring this; it doesn't match any \\if.");
   error (); 
       } 
       else {
@@ -1285,14 +1254,11 @@ void expand (void)
       default: 
       {
 		  print_err("Undefined control sequence");
-  {
-    help_ptr = 5; 
-    help_line[4]= 617; /* The control sequence at the end of the top line */
-    help_line[3]= 618; /* of your error message was never \def'ed. If you have */
-    help_line[2]= 619; /* misspelled it (e.g., `\hobx'), type `I' and the correct */
-    help_line[1]= 620; /* spelling (e.g., `I\hbox'). Otherwise just continue, */
-    help_line[0]= 621; /* and I'll forget about whatever was undefined. */
-  } 
+		  help5("The control sequence at the end of the top line",
+			  "of your error message was never \\def'ed. If you have",
+			  "misspelled it (e.g., `\\hobx'), type `I' and the correct",
+			  "spelling (e.g., `I\\hbox'). Otherwise just continue,",
+			  "and I'll forget about whatever was undefined."); 
   error (); 
       } 
       break; 
@@ -1356,13 +1322,10 @@ void scan_left_brace (void)
   if(cur_cmd != 1)
   {
 	print_err("Missing { inserted"); 
-    {
-      help_ptr = 4; 
-      help_line[3]= 655; /* A left brace was mandatory here, so I've put one in. */
-      help_line[2]= 656; /* You might want to delete and/or insert some corrections */
-      help_line[1]= 657; /* so that I will find a matching right brace soon. */
-      help_line[0]= 658; /* (If you're confused by all this, try typing `I}' now.) */
-    } 
+	help4("A left brace was mandatory here, so I've put one in.",
+		"You might want to delete and/or insert some corrections",
+		"so that I will find a matching right brace soon.",
+		"(If you're confused by all this, try typing `I}' now.)");
     back_error (); 
     cur_tok = 379; 
     cur_cmd = 1; 
@@ -1413,10 +1376,7 @@ bool scan_keyword_(str_number s)
 void mu_error (void) 
 { 
 	print_err("Incompatible glue units");
-  {
-    help_ptr = 1; 
-    help_line[0]= 660; /* I'm going to assume that 1mu=1pt when they're mixed. */
-  } 
+	help1("I'm going to assume that 1mu=1pt when they're mixed."); 
   error (); 
 } 
 void scan_eight_bit_int (void) 
@@ -1425,11 +1385,8 @@ void scan_eight_bit_int (void)
   if((cur_val < 0)||(cur_val > 255)) 
   {
 	  print_err("Bad register code");
-    {
-      help_ptr = 2; 
-      help_line[1]= 685; /* A register number must be between 0 and 255. */
-      help_line[0]= 686; /* I changed this one to zero. */
-    } 
+	  help2("A register number must be between 0 and 255.",
+		  "I changed this one to zero.");
     int_error(cur_val); 
     cur_val = 0; 
   } 
@@ -1440,11 +1397,8 @@ void scan_char_num (void)
   if((cur_val < 0)||(cur_val > 255)) 
   {
 	  print_err("Bad character code");
-    {
-      help_ptr = 2; 
-      help_line[1]= 688; /* A character number must be between 0 and 255. */
-      help_line[0]= 686; /* I changed this one to zero. */
-    } 
+	  help2("A character number must be between 0 and 255.",
+		  "I changed this one to zero.");
     int_error(cur_val); 
     cur_val = 0; 
   } 
@@ -1455,11 +1409,8 @@ void scan_four_bit_int (void)
   if((cur_val < 0)||(cur_val > 15)) 
   {
 	  print_err("Bad number");
-    {
-      help_ptr = 2; 
-      help_line[1]= 690; /* Since I expected to read a number between 0 and 15, */
-      help_line[0]= 686; /* I changed this one to zero. */
-    } 
+	  help2("Since I expected to read a number between 0 and 15,",
+		  "I changed this one to zero.");
     int_error(cur_val); 
     cur_val = 0; 
   } 
@@ -1470,11 +1421,8 @@ void scan_fifteen_bit_int (void)
   if((cur_val < 0)||(cur_val > 32767)) 
   {
 	  print_err("Bad mathchar");
-    {
-      help_ptr = 2; 
-      help_line[1]= 692; /* A mathchar number must be between 0 and 32767. */
-      help_line[0]= 686; /* I changed this one to zero. */
-    } 
+	  help2("A mathchar number must be between 0 and 32767.",
+		  "I changed this one to zero.");
     int_error(cur_val); 
     cur_val = 0; 
   } 
@@ -1485,11 +1433,8 @@ void scan_twenty_seven_bit_int (void)
   if((cur_val < 0)||(cur_val > 134217727L)) /* 2^27 - 1 */
   {
 	  print_err("Bad delimiter code");
-    {
-      help_ptr = 2; 
-      help_line[1]= 694; /* A numeric delimiter code must be between 0 and 2^{27}-1. */
-      help_line[0]= 686; /* I changed this one to zero. */
-    } 
+	  help2("A numeric delimiter code must be between 0 and 2^{27}-1.",
+		  "I changed this one to zero.");
     int_error(cur_val); 
     cur_val = 0; 
   } 
@@ -1513,11 +1458,8 @@ void scan_font_ident (void)
   } 
   else {
       print_err("Missing font identifier");
-    {
-      help_ptr = 2; 
-      help_line[1]= 812; /* I was looking for a control sequence whose */
-      help_line[0]= 813; /* current meaning has been defined by \font. */
-    } 
+	  help2("I was looking for a control sequence whose",
+		  "current meaning has been defined by \\font.");
     back_error (); 
     f = 0; 
   }
@@ -1584,11 +1526,8 @@ void find_font_dimen_(bool writing)
     print(814); /* has  only  */
     print_int(font_params[f]); 
     print(815); /*  fontdimen parameters */
-    {
-      help_ptr = 2; 
-      help_line[1]= 816; /* To increase the number of font parameters, you must */
-      help_line[0]= 817; /* use \fontdimen immediately after the \font is loaded. */
-    } 
+	help2("To increase the number of font parameters, you must",
+		"use \\fontdimen immediately after the \\font is loaded.");
     error (); 
   }
 } 
@@ -1632,12 +1571,9 @@ void scan_something_internal_(small_number level, bool negative)
     if(level != 5)
     {
 		print_err("Missing number, treated as zero");
-      {
-  help_ptr = 3; 
-  help_line[2]= 662; /* A number should have been here; I inserted `0'. */
-  help_line[1]= 663; /* (If you can't figure out why I needed to see a number, */
-  help_line[0]= 664; /* look up `weird error' in the index to The TeXbook.) */
-      } 
+		help3("A number should have been here; I inserted `0'.",
+			"(If you can't figure out why I needed to see a number,",
+			"look up `weird error' in the index to The TeXbook.)"); 
       back_error (); 
       {
       cur_val = 0; 
@@ -1696,13 +1632,10 @@ void scan_something_internal_(small_number level, bool negative)
     {
 		print_err("Improper ");
       print_cmd_chr(79, m); /* O */
-      {
-  help_ptr = 4; 
-  help_line[3]= 678; /* You can refer to \spacefactor only in horizontal mode; */
-  help_line[2]= 679; /* you can refer to \prevdepth only in vertical mode; and */
-  help_line[1]= 680; /* neither of these is meaningful inside \write. So */
-  help_line[0]= 681; /* I'm forgetting what you said and using zero instead. */
-      } 
+	  help4("You can refer to \\spacefactor only in horizontal mode;",
+		  "you can refer to \\prevdepth only in vertical mode; and",
+		  "neither of these is meaningful inside \\write. So",
+		  "I'm forgetting what you said and using zero instead.");
       error (); 
       if(level != 5) {
       cur_val = 0; 
@@ -1885,10 +1818,7 @@ void scan_something_internal_(small_number level, bool negative)
       print_cmd_chr(cur_cmd, cur_chr); 
       print(683); /* ' after  */
       print_esc(534); /* the */
-      {
-  help_ptr = 1; 
-  help_line[0]= 681; /* I'm forgetting what you said and using zero instead. */
-      } 
+	  help1("I'm forgetting what you said and using zero instead."); 
       error (); 
       if(level != 5){
       cur_val = 0; 
@@ -2140,12 +2070,9 @@ lab20:
       case 32 : 
       case 48 : 
   {
-	  print_err("Text line contains an invalid character"); 
-    {
-      help_ptr = 2; 
-      help_line[1]= 611; /* A funny symbol that I can't read has just been input. */
-      help_line[0]= 612; /* Continue, and I'll forget that it ever happened. */
-    } 
+	  print_err("Text line contains an invalid character");
+	  help2("A funny symbol that I can't read has just been input.",
+		  "Continue, and I'll forget that it ever happened.");
     deletions_allowed = false; 
     error (); 
     deletions_allowed = true; 

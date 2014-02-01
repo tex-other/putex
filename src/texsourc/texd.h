@@ -449,7 +449,8 @@ EXTERN int history; /* padded out */				/* 95/Jan/7 */
 /* EXTERN schar error_count;  */
 /* EXTERN integer error_count; */ /* padded out */
 EXTERN int error_count; /* padded out */			/* 95/Jan/7 */
-EXTERN str_number help_line[6]; 
+/* EXTERN str_number help_line[6]; */
+EXTERN char * help_line[6];
 /* EXTERN char help_ptr; */
 /* EXTERN integer help_ptr; */ /* padded out */
 EXTERN int help_ptr; /* padded out */				/* 95/Jan/7 */
@@ -1412,21 +1413,9 @@ unsigned char *unixify (unsigned char *);				/* in pathsrch.c bkph */
 #define level_zero min_quarterword
 #define level_one  level_zero + 1
 /* sec 79 */
-/*
+
 extern void tex_help (unsigned int n, ...);
 
-void tex_help (unsigned int n, ...)
-{
-  unsigned int i;
-  va_list help_arg;
-
-  if (n > 6) n = 6;
-  help_ptr = n;
-  va_start(help_arg, n);
-  for (i = 0; i < n; i++)
-    help_line[i] = 0; //va_arg(help_arg, char *);
-  va_end(help_arg);
-}
 #define help0()     tex_help(0)
 #define help1(...)  tex_help(1, __VA_ARGS__)
 #define help2(...)  tex_help(2, __VA_ARGS__)
@@ -1434,4 +1423,3 @@ void tex_help (unsigned int n, ...)
 #define help4(...)  tex_help(4, __VA_ARGS__)
 #define help5(...)  tex_help(5, __VA_ARGS__)
 #define help6(...)  tex_help(6, __VA_ARGS__)
-*/

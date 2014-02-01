@@ -196,13 +196,10 @@ void fetch_(halfword a)
     print(878);     /* is undefined (character  */
     print(cur_c); 
     print_char(41);   /*)*/
-    {
-      help_ptr = 4; 
-      help_line[3]= 879;  /* Somewhere in the math formula just ended, you used the */
-      help_line[2]= 880;  /* stated character from an undefined font family. For example, */
-      help_line[1]= 881;  /* plain TeX doesn't allow \it or \sl in subscripts. Proceed, */
-      help_line[0]= 882;  /* and I'll try to forget that I needed that character. */
-    } 
+	help4("Somewhere in the math formula just ended, you used the",
+		"stated character from an undefined font family. For example,",
+		"plain TeX doesn't allow \\it or \\sl in subscripts. Proceed,",
+		"and I'll try to forget that I needed that character.");
     error (); 
     cur_i = null_character; 
     mem[a].hh.v.RH = 0; 
@@ -1130,12 +1127,9 @@ void init_align (void)
 	  print_err("Improper ");
     print_esc(517);   /* halign */
     print(888);     /* inside $$ */
-    {
-      help_ptr = 3; 
-      help_line[2]= 889; /* Displays can use special alignments (like \eqalignno) */
-      help_line[1]= 890; /* only if nothing but the alignment itself is between $$'s. */
-      help_line[0]= 891; /* So I've deleted the formulas that preceded this alignment. */
-    } 
+	help3("Displays can use special alignments (like \eqalignno)",
+		"only if nothing but the alignment itself is between $$'s.",
+		"So I've deleted the formulas that preceded this alignment.");
     error (); 
     flush_math (); 
   } 
@@ -1171,12 +1165,9 @@ void init_align (void)
       cur_loop = cur_align; 
       else {
     print_err("Missing # inserted in alignment preamble");
-  {
-    help_ptr = 3; 
-    help_line[2]= 898;  /* There should be exactly one # between &'s, when an */
-    help_line[1]= 899;  /* \halign or \valign is being set up. In this case you had */
-    help_line[0]= 900;  /* none, so I've put one in; maybe that will work. */
-  } 
+	help3("There should be exactly one # between &'s, when an",
+		"\\halign or \\valign is being set up. In this case you had",
+		"none, so I've put one in; maybe that will work.");
   back_error (); 
   goto lab31; 
       } 
@@ -1203,12 +1194,9 @@ lab22:
       if(cur_cmd == 6)
       {
 		  print_err("Only one # is allowed per tab");
-  {
-    help_ptr = 3; 
-    help_line[2]= 898;  /* There should be exactly one # between &'s, when an */
-    help_line[1]= 899;  /* \halign or \valign is being set up. In this case you had */
-    help_line[0]= 902;  /* more than one, so I'm ignoring all but the first. */
-  } 
+		  help3("There should be exactly one # between &'s, when an",
+			  "\\halign or \\valign is being set up. In this case you had",
+			  "more than one, so I'm ignoring all but the first."); 
   error (); 
   goto lab22; 
       } 
@@ -1577,11 +1565,8 @@ void fin_align (void)
     do_assignments (); 
     if(cur_cmd != 3) {
 		print_err("Missing $$ inserted");
-      {
-  help_ptr = 2; 
-  help_line[1]= 889;  /* Displays can use special alignments (like \eqalignno) */
-  help_line[0]= 890;  /* only if nothing but the alignment itself is between $$'s. */
-      } 
+		help2("Displays can use special alignments (like \\eqalignno)",
+			"only if nothing but the alignment itself is between $$'s.");
       back_error (); 
     } 
     else {
@@ -1589,12 +1574,9 @@ void fin_align (void)
       get_x_token (); 
       if(cur_cmd != 3)
       {
-		  print_err("Display math should end with $$"); 
-  {
-    help_ptr = 2; 
-    help_line[1]= 1161; /* The `$' that I just saw supposedly matches a previous `$$'. */
-    help_line[0]= 1162; /* So I shall assume that you typed `$$' both times. */
-  } 
+		  print_err("Display math should end with $$");
+		  help2("The `$' that I just saw supposedly matches a previous `$$'.",
+			  "So I shall assume that you typed `$$' both times.");
   back_error (); 
       } 
   }
@@ -1702,12 +1684,9 @@ bool fin_col (void)
   else {
       print_err("Extra alignment tab has been changed to ");
     print_esc(893);   /* cr */
-    {
-      help_ptr = 3; 
-      help_line[2]= 905;  /* You have given more \span or & marks than there were */
-      help_line[1]= 906;  /* in the preamble to the \halign or \valign now in progress. */
-      help_line[0]= 907;  /* So I'll assume that you meant to type \cr instead. */
-    } 
+	help3("You have given more \\span or & marks than there were",
+		"in the preamble to the \\halign or \\valign now in progress.",
+		"So I'll assume that you meant to type \\cr instead.");
 /* extra_info(cur_align) < cr_code) ? */
     mem[cur_align + 5].hh.v.LH = 257; 
     error (); 
