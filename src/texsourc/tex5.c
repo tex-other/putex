@@ -1125,7 +1125,7 @@ void init_align (void)
  .head_field)||(cur_list.aux_field.cint != 0)))
   {
 	  print_err("Improper ");
-    print_esc(517);   /* halign */
+    print_esc("halign");
     print(888);     /* inside $$ */
 	help3("Displays can use special alignments (like \\eqalignno)",
 		"only if nothing but the alignment itself is between $$'s.",
@@ -1683,7 +1683,7 @@ bool fin_col (void)
   } 
   else {
       print_err("Extra alignment tab has been changed to ");
-    print_esc(893);   /* cr */
+    print_esc("cr");
 	help3("You have given more \\span or & marks than there were",
 		"in the preamble to the \\halign or \\valign now in progress.",
 		"So I'll assume that you meant to type \\cr instead.");

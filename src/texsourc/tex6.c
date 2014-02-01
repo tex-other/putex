@@ -472,16 +472,16 @@ void try_break_ (integer pi,small_number breaktype)
   } 
   print_nl("@");   /* @ */
   if(cur_p == 0)
-    print_esc(594); /* par */
+    print_esc("par");
   else if(mem[cur_p].hh.b0 != 10)
   {
     if(mem[cur_p].hh.b0 == 12)
-      print_esc(528); /* penalty */
+      print_esc("penalty");
     else if(mem[cur_p].hh.b0 == 7)
-      print_esc(346); /* discretionary */
+      print_esc("discretionary");
     else if(mem[cur_p].hh.b0 == 11)
-      print_esc(337); /* kern */
-    else print_esc(340);  /* math */
+      print_esc("kern");
+    else print_esc("math");
   } 
   print(923);   /* via @@ */
   if(mem[r + 1].hh.v.RH == 0)
@@ -1557,7 +1557,7 @@ lab21: switch(cur_cmd){
       default: 
       {
 		  print_err("Improper ");
-  print_esc(935); /* hyphenation */
+  print_esc("hyphenation");
   print(936);   /* will be flushed */
   help2("Hyphenation exceptions must contain only letters",
 	  "and hyphens. But continue; I'll forgive and forget.");
@@ -1768,9 +1768,9 @@ halfword vsplit_(eight_bits n, scaled h)
   if(mem[v].hh.b0 != 1)
   {
 	  print_err("");
-    print_esc(959); /* vsplit */
+    print_esc("vsplit");
     print(960);   /* needs a  */
-    print_esc(961); /* vbox */
+    print_esc("vbox");
 	help2("The box you are trying to split is an \\hbox.",
 		"I can't split such a box, so I'll leave it alone.");
     error (); 
@@ -1926,7 +1926,7 @@ void fire_up_(halfword c)
   if(eqtb[(hash_size + 1833)].hh.v.RH != 0)
   {
 	  print_err("");
-    print_esc(406); /* box */
+    print_esc("box");
     print(997);   /* 255 is not void */
 	help2("You shouldn't use \\box255 except in \\output routines.",
 		"Proceed, and I'll discard its present contents.");

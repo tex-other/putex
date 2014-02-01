@@ -148,7 +148,7 @@ void build_page (void)
           if((mem[q].hh.b1 != 0)&&(mem[q + 3].cint != 0)) 
           {
 			  print_err("Infinite glue shrinkage inserted from");
-            print_esc(392);    /* skip*/
+            print_esc("skip");
             print_int(n);
 			help3("The correction glue for page breaking with insertions",
 				"must have finite shrinkability. But you may proceed,",
@@ -512,7 +512,7 @@ void off_save (void)
 /*  mem[p].hh.v.LH = (hash_size + 4611);  */
 /*  mem[p].hh.v.LH = (hash_size + 4095 + 516);  */
   mem[p].hh.v.LH = (hash_size + hash_extra + 4095 + 516); /* 96/Jan/10 */
-  print_esc(513);  /* endgroup */
+  print_esc("endgroup");
       } 
       break; 
     case 15 : 
@@ -529,7 +529,7 @@ void off_save (void)
   mem[p].hh.v.RH = get_avail (); 
   p = mem[p].hh.v.RH; 
   mem[p].hh.v.LH = 3118; 
-  print_esc(1036);   /* right. */
+  print_esc("right.");
       } 
       break; 
       default: 
@@ -556,13 +556,13 @@ void extra_right_brace (void)
   print_err("Extra }, or forgotten");
   switch(cur_group)
   {case 14 : 
-    print_esc(513);  /* endgroup */
+    print_esc("endgroup");
     break; 
   case 15 : 
     print_char(36); /* $ */
     break; 
   case 16 : 
-    print_esc(871);  /* right */
+    print_esc("right");
     break; 
   }
   help5("I've deleted a group-closing symbol because it seems to be",
@@ -911,7 +911,7 @@ void head_for_vmode (void)
   }
   else {
 	  print_err("You can't use `");
-    print_esc(518);  /* hrule */
+    print_esc("hrule");
     print(1076);  /* ' here except with leaders */
 	help2("To put a horizontal rule in an hbox or an alignment,",
 		"you should use \\leaders or \\hrulefill (see The TeXbook).");
@@ -949,7 +949,7 @@ void begin_insert_or_adjust (void)
     if(cur_val == 255)
     {
 		print_err("You can't ");
-      print_esc(327); /* insert */
+      print_esc("insert");
       print_int(255);
 	  help1("I'm changing to \\insert0; box 255 is special."); 
       error (); 
@@ -1172,7 +1172,7 @@ void build_discretionary (void)
       if((n > 0)&&(abs(mode)== 203)) 
       {
 		  print_err("Illegal math ");
-  print_esc(346);  /* discretionary */
+  print_esc("discretionary");
   help2("Sorry: The third part of a discretionary break must be",
 	  "empty, in math formulas. I had to delete your third part.");
   flush_node_list(p); 
@@ -1304,7 +1304,7 @@ void align_error (void)
 void noalign_error (void) 
 {
   print_err("Misplaced ");
-  print_esc(524);    /* noalign */
+  print_esc("noalign");
   help2("I expect to see \\noalign only after the \\cr of",
 	  "an alignment. Proceed, and I'll ignore this case.");
   error (); 
@@ -1314,7 +1314,7 @@ void noalign_error (void)
 void omit_error (void) 
 { 
   print_err("Misplaced ");
-  print_esc(527);    /* omit */
+  print_esc("omit");
   help2("I expect to see \\omit only after tab marks or the \\cr of",
 	  "an alignment. Proceed, and I'll ignore this case.");
   error (); 
@@ -1333,7 +1333,7 @@ void do_endv (void)
 void cs_error (void) 
 {
   print_err("Extra ");
-  print_esc(502);  /* endcsname */
+  print_esc("endcsname");
   help1("I'm ignoring this, since I wasn't doing a \\csname."); 
   error (); 
 } 
@@ -1691,7 +1691,7 @@ void math_ac (void)
   if(cur_cmd == 45)
   {
     print_err("Please use ");
-    print_esc(520);    /* mathaccent */
+    print_esc("mathaccent");
     print(1134);    /*  for accents in math mode */
 	help2("I'm changing \\accent to \\mathaccent here; wish me luck.",
 		"(Accents are not the same in formulas as they are in text.)");

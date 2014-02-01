@@ -932,7 +932,7 @@ void read_toks_(integer n, halfword r)
         if(align_state != 1000000L) {
           runaway ();
 		  print_err("File ended within");
-          print_esc(531); /* read */
+          print_esc("read");
 		  help1("This \\read has unbalanced braces.");
           align_state = 1000000L; 
           error (); 
@@ -1256,7 +1256,7 @@ void conditional (void)
       if(cur_chr != 4)
       goto lab50;
 	  print_err("Extra ");
-      print_esc(771); /* or */
+      print_esc("or");
 	  help1("I'm ignoring this; it doesn't match any \\if.");
       error (); 
     } 

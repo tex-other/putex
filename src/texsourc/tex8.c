@@ -92,7 +92,7 @@ void math_left_right (void)
     {
       scan_delimiter(mem_top - 12, false);
 	  print_err("Extra "); 
-      print_esc(871); /* right */
+      print_esc("right");
 	  help1("I'm ignoring a \\right that had no matching \\left."); 
       error (); 
     } 
@@ -633,7 +633,7 @@ void alter_prev_graf (void)
   if(cur_val < 0)
   {
 	  print_err("Bad ");
-    print_esc(529); /* prevgraf */
+    print_esc("prevgraf");
 	help1("I allow only nonnegative values here.");
     int_error(cur_val); 
   } 
@@ -1334,7 +1334,7 @@ void handle_right_brace (void)
       if(eqtb[(hash_size + 1833)].hh.v.RH != 0)
       {
 		  print_err("Output routine didn't use all of ");
-      print_esc(406);   /* box */
+      print_esc("box");
       print_int(255); 
 	  help3("Your \\output commands should empty \\box255,",
 		  "e.g., by saying `\\ship_out\\box255'.",
@@ -1370,7 +1370,7 @@ void handle_right_brace (void)
 /*      cur_tok = (hash_size + 4095 + 515);  */
       cur_tok = (hash_size + hash_extra + 4095 + 515);
 	  print_err("Missing ");
-      print_esc(893); /* cr */
+      print_esc("cr");
       print(623);   /* inserted */
 	  help1("I'm guessing that you meant to end an alignment here.");
       ins_error (); 

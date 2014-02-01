@@ -1181,9 +1181,9 @@ void prefixed_command (void)
   } 
   if((cur_cmd != 97)&&(a % 4 != 0)) {
     print_err("You can't use `");
-    print_esc(1165);		/* long */
+    print_esc("long");		/*  */
     print(1175);		/* ' or ` */
-    print_esc(1166);		/* outer */
+    print_esc("outer");		/*  */
     print(1176);		/* ' with ` */
     print_cmd_chr(cur_cmd, cur_chr); 
     print_char(39);		/* ' */
@@ -1511,7 +1511,7 @@ void prefixed_command (void)
 	  }
       else {
 	  print_err("Improper ");
-	print_esc(533);		/* setbox */
+	print_esc("setbox");		/*  */
 	help2("Sorry, \\setbox is not allowed after \\halign in a display,",
 		"or between \\accent and an accented character.");
 	error (); 
@@ -2249,14 +2249,14 @@ void final_clean_up (void)
   } 
   if(cur_level > 1)  {
     print_nl("(");		/*(*/
-    print_esc(1271);		/* end occurred  */
+    print_esc("end occurred ");		/*  */
     print(1272);		/* inside a group at level  */
     print_int(cur_level - 1); 
     print_char(41);		/*)*/
   } 
   while(cond_ptr != 0){
     print_nl("(");		/*(*/
-    print_esc(1271);		/* end occurred  */
+    print_esc("end occurred ");		/*  */
     print(1273);		/* when  */
     print_cmd_chr(105, cur_if);	/* i */
     if(if_line != 0)
@@ -3707,7 +3707,7 @@ void new_patterns (void)
 	default: 
 	{
 		print_err("Bad ");
-	  print_esc(947);	/* patterns */
+	  print_esc("patterns");
 	  help1("(See Appendix H.)");
 	  error (); 
 	} 
@@ -3718,7 +3718,7 @@ void new_patterns (void)
   } 
   else {
       print_err("Too late for ");
-    print_esc(947);	/* patterns */
+    print_esc("patterns");
 	help1("All patterns must be given before typesetting begins.");
     error (); 
     mem[mem_top - 12].hh.v.RH = scan_toks(false, false); 
@@ -4097,7 +4097,8 @@ void store_fmt_file (void)
       {
 	print_nl("\\font");	/* \font */
 /*	print_esc(hash[(hash_size + 524) + k].v.RH);  */
-	print_esc(hash[(hash_size + hash_extra + 524) + k].v.RH); 
+	//print_esc(hash[(hash_size + hash_extra + 524) + k].v.RH);
+	print_esc("");print(hash[(hash_size + hash_extra + 524) + k].v.RH);
 	print_char(61); /* = */
 	print_file_name(font_name[k], font_area[k], 335); 
 	if(font_size[k]!= font_dsize[k])

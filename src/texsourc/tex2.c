@@ -446,10 +446,10 @@ void begin_token_list_ (halfword p, quarterword t)
   print_nl("");   /* */
   switch(t)
   {case 14 : 
-    print_esc(348); /* mark */
+    print_esc("mark");
     break; 
   case 15 : 
-    print_esc(591); /* write */
+    print_esc("write");
     break; 
     default: 
     print_cmd_chr(72, t + (hash_size + 1307));  /* H */
@@ -1163,7 +1163,7 @@ void expand (void)
   if(cur_cmd != 67)
   {
 	  print_err("Missing ");
-    print_esc(502); /* endcsname */
+    print_esc("endcsname");
     print(623);   /*  inserted */
 	help2("The control sequence marked <to be read again> should",
 		"not appear between \\csname and \\endcsname.");
@@ -1522,7 +1522,8 @@ void find_font_dimen_(bool writing)
   if(cur_val == fmem_ptr){
 	  print_err("Font ");
 /*    print_esc(hash[(hash_size + 524) + f].v.RH); */
-    print_esc(hash[(hash_size + hash_extra + 524) + f].v.RH); /*96/Jan/10*/
+    //print_esc(hash[(hash_size + hash_extra + 524) + f].v.RH); /*96/Jan/10*/
+	  print_esc("");print(hash[(hash_size + hash_extra + 524) + f].v.RH);
     print(814); /* has  only  */
     print_int(font_params[f]); 
     print(815); /*  fontdimen parameters */
@@ -1817,7 +1818,7 @@ void scan_something_internal_(small_number level, bool negative)
 		print_err("You can't use `");
       print_cmd_chr(cur_cmd, cur_chr); 
       print(683); /* ' after  */
-      print_esc(534); /* the */
+      print_esc("the");
 	  help1("I'm forgetting what you said and using zero instead."); 
       error (); 
       if(level != 5){

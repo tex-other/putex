@@ -44,8 +44,8 @@ void slow_print_(integer);
 void print_nl_(str_number); 
 #define print_nl(s) print_nl_((str_number) (s))
 #define printnl_regmem
-void print_esc_(str_number); 
-#define print_esc(s) print_esc_((str_number) (s))
+void print_esc_(char *); 
+#define print_esc(s) print_esc_((char *) (s))
 #define printesc_regmem register memory_word *eqtb=zeqtb;
 void print_the_digs_(eight_bits); 
 #define print_the_digs(k) print_the_digs_((eight_bits) (k))
@@ -899,8 +899,8 @@ void slow_print_(integer);
 #define slow_print(s) slow_print_((integer) (s))
 void print_nl_(char *);
 #define print_nl(s) print_nl_((char *) (s))
-void print_esc_(str_number);
-#define print_esc(s) print_esc_((str_number) (s))
+void print_esc_(char *);
+#define print_esc(s) print_esc_((char *) (s))
 void print_the_digs_(eight_bits);
 #define print_the_digs(k) print_the_digs_((eight_bits) (k))
 void print_int_(integer);
