@@ -1047,7 +1047,7 @@ EXTERN bool smallop;
 
 #ifdef INITEX
   #ifdef ALLOCATEINI
-    /* EXTERN bool *trie_taken; */	/* save (4 - 1) * trie_size = 90,000 byte */
+    /* EXTERN bool *trie_taken; */ /* save (4 - 1) * trie_size = 90,000 byte */
     EXTERN char *trie_taken; 
   #else
     EXTERN bool trie_taken[trie_size + 1]; 
@@ -1412,6 +1412,112 @@ unsigned char *unixify (unsigned char *);				/* in pathsrch.c bkph */
 /* sec 0221 */
 #define level_zero min_quarterword
 #define level_one  level_zero + 1
+/* sec 0222 */
+#define active_base                   1
+#define single_base                   active_base + 256
+#define null_cs                       single_base + 256
+#define hash_base                     null_cs + 1
+#define frozen_control_sequence       hash_base + hash_size
+#define frozen_protection             frozen_control_sequence
+#define frozen_cr                     frozen_control_sequence + 1
+#define frozen_end_group              frozen_control_sequence + 2
+#define frozen_right                  frozen_control_sequence + 3
+#define frozen_fi                     frozen_control_sequence + 4
+#define frozen_end_template           frozen_control_sequence + 5
+#define frozen_endv                   frozen_control_sequence + 6
+#define frozen_relax                  frozen_control_sequence + 7
+#define end_write                     frozen_control_sequence + 8
+#define frozen_dont_expand            frozen_control_sequence + 9
+#define frozen_null_font              frozen_control_sequence + 10
+#define font_id_base                  frozen_null_font - font_base
+#define undefined_control_sequence    frozen_null_font + 257
+#define glue_base                     undefined_control_sequence + 1
+/* sec 0224 */
+#define line_skip_code                0
+#define baseline_skip_code            1
+#define par_skip_code                 2
+#define above_display_skip_code       3
+#define below_display_skip_code       4
+#define above_display_short_skip_code 5
+#define below_display_short_skip_code 6
+#define left_skip_code                7
+#define right_skip_code               8
+#define top_skip_code                 9
+#define split_top_skip_code           10
+#define tab_skip_code                 11
+#define space_skip_code               12
+#define xspace_skip_code              13
+#define par_fill_skip_code            14
+#define thin_mu_skip_code             15
+#define med_mu_skip_code              16
+#define thick_mu_skip_code            17
+#define glue_pars                     18
+#define skip_base                     glue_base + glue_pars
+#define mu_skip_base                  skip_base + 256
+#define local_base                    mu_skip_base + 256
+// #
+#define skip(a)                       equiv(skip_base + a)
+#define mu_skip(a)                    equiv(mu_skip_base + a)
+#define glue_par(a)                   equiv(glue_base + a)
+#define line_skip                     glue_par(line_skip_code)
+#define baseline_skip                 glue_par(baseline_skip_code)
+#define par_skip                      glue_par(par_skip_code)
+#define above_display_skip            glue_par(above_display_skip_code)
+#define below_display_skip            glue_par(below_display_skip_code)
+#define above_display_short_skip      glue_par(above_display_short_skip_code)
+#define below_display_short_skip      glue_par(below_display_short_skip_code)
+#define left_skip                     glue_par(left_skip_code)
+#define right_skip                    glue_par(right_skip_code)
+#define top_skip                      glue_par(top_skip_code)
+#define split_top_skip                glue_par(split_top_skip_code)
+#define tab_skip                      glue_par(tab_skip_code)
+#define space_skip                    glue_par(space_skip_code)
+#define xspace_skip                   glue_par(xspace_skip_code)
+#define par_fill_skip                 glue_par(par_fill_skip_code)
+#define thin_mu_skip                  glue_par(thin_mu_skip_code)
+#define med_mu_skip                   glue_par(med_mu_skip_code)
+#define thick_mu_skip                 glue_par(thick_mu_skip_code)
+/* sec 0230 */
+#define par_shape_loc                 local_base
+#define output_routine_loc            local_base + 1
+#define every_par_loc                 local_base + 2
+#define every_math_loc                local_base + 3
+#define every_display_loc             local_base + 4
+#define every_hbox_loc                local_base + 5
+#define every_vbox_loc                local_base + 6
+#define every_job_loc                 local_base + 7
+#define every_cr_loc                  local_base + 8
+#define err_help_loc                  local_base + 9
+#define toks_base                     local_base + 10
+#define box_base                      toks_base + 256
+#define cur_font_loc                  box_base + 256
+#define math_font_base                cur_font_loc + 1
+#define cat_code_base                 math_font_base + 48
+#define lc_code_base                  cat_code_base + 256
+#define uc_code_base                  lc_code_base + 256
+#define sf_code_base                  uc_code_base + 256
+#define math_code_base                sf_code_base + 256
+#define int_base                      math_code_base + 256
+// #
+#define par_shape_ptr                 equiv(par_shape_loc)
+#define output_routine                equiv(output_routine_loc)
+#define every_par                     equiv(every_par_loc)
+#define every_math                    equiv(every_math_loc)
+#define every_display                 equiv(every_display_loc)
+#define every_hbox                    equiv(every_hbox_loc)
+#define every_vbox                    equiv(every_vbox_loc)
+#define every_job                     equiv(every_job_loc)
+#define every_cr                      equiv(every_cr_loc)
+#define err_help                      equiv(err_help_code)
+#define toks(a)                       equiv(toks_base + a)
+#define box(a)                        equiv(box_base + a)
+#define cur_font                      equiv(cur_font_loc)
+#define fam_fnt(a)                    equiv(math_font_base + a)
+#define cat_code(a)                   equiv(cat_code_base + a)
+#define lc_code(a)                    equiv(lc_code_base + a)
+#define uc_code(a)                    equiv(uc_code_base +a)
+#define sf_code(a)                    equiv(sf_code_bas + a)
+#define math_code(a)                  equiv(math_code_base + a)
 /* sec 79 */
 
 extern void tex_help (unsigned int n, ...);
