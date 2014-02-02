@@ -705,7 +705,7 @@ void check_outer_validity (void)
 		  "the matching `\\fi'. I've inserted a `\\fi'; this might work.");
       if(cur_cs != 0)
       cur_cs = 0; 
-      else help_line[2]= 600; /* The file ended while I was skipping conditional text. */
+      else help_line[2]= "The file ended while I was skipping conditional text.";
 /*      cur_tok = (hash_size + 4613);  */
 /*      cur_tok = (hash_size + 4095 + 518);  */
       cur_tok = (hash_size + hash_extra + 4095 + 518); /* 96/Jan/10 */

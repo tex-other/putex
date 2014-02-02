@@ -283,7 +283,7 @@ catch_interrupt (int err)
    ``Get the first line of input and prepare to start''), this is as
    good a place as any.  */
 
-void get_date_and_time (integer *minutes, integer *day, integer *month, integer *year)
+void get_date_and_time (integer *minutes, integer *pday, integer *pmonth, integer *pyear)
 {
 /*	int sig=0; */
 	time_t clock;
@@ -305,13 +305,13 @@ void get_date_and_time (integer *minutes, integer *day, integer *month, integer 
 	if (tmptr == NULL) {						/* debugging 95/Dec/30*/
 		sprintf(log_line, "Cannot convert time (%0ld)!\n", clock);
 		show_line(log_line, 1);
-		*year=2038; *month=1; *day=18; *minutes=22 * 60 + 14;
+		*pyear=2038; *pmonth=1; *pday=18; *minutes=22 * 60 + 14;
 	}
 	else {
 		*minutes = tmptr->tm_hour * 60 + tmptr->tm_min;
-		*day = tmptr->tm_mday;
-		*month = tmptr->tm_mon + 1;
-		*year = tmptr->tm_year + 1900;
+		*pday = tmptr->tm_mday;
+		*pmonth = tmptr->tm_mon + 1;
+		*pyear = tmptr->tm_year + 1900;
 		if (trace_flag) {
 			sprintf(log_line, "%d-%d-%d %d:%d\n",
 			tmptr->tm_year + 1900, tmptr->tm_mon + 1, tmptr->tm_mday,

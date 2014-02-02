@@ -206,10 +206,10 @@ void show_usage (char *program) {
 void scivilize (char *date)
 {
   int k;
-  char year[6];
-  strcpy (year, date + 7);
+  char pyear[6];
+  strcpy (pyear, date + 7);
   for (k = 5; k >= 0; k--) date[k+5] = date[k];
-  for (k = 0; k < 4; k++) date[k] = year[k];
+  for (k = 0; k < 4; k++) date[k] = pyear[k];
   date[4] = ' ';
   return;
 }
@@ -219,14 +219,14 @@ void scivilize (char *date)
 void lcivilize (char *date)
 {
   int k;
-  char year[6];
+  char pyear[6];
 
-  strcpy (year, date + 20);
+  strcpy (pyear, date + 20);
   for (k = 18; k >= 0; k--) date[k+1] = date[k];
 /*  date[20] = '\n'; */
 /*  date[21] = '\0'; */
   date[20] = '\0'; 
-  for (k = 0; k < 4; k++) date[k] = year[k];
+  for (k = 0; k < 4; k++) date[k] = pyear[k];
   date[4] = ' ';
   return;
 }
@@ -3470,11 +3470,10 @@ void print_cs_names (FILE *output, int pass)
 {
   int h, k, ccount, repeatflag;
   int *cnumtable;
-  int hash_base = 514;  /* 1 act base + 256 act char + 256 single char + 1 */
   int nfcs = hash_base + hash_size + hash_extra;  /* frozen_control_sequence */
 
   if (pass == 0 && csused == NULL) {
-    csused = malloc (nfcs);
+    csused = (char *) malloc (nfcs);
     if (csused == NULL) return; 
 #ifdef USEMEMSET
     memset(csused, 0, nfcs); 
@@ -3484,10 +3483,10 @@ void print_cs_names (FILE *output, int pass)
   }
 
   ccount=0;
-  for (h = hash_base+1; h < nfcs; h++) {
-    if (pass == 1 && csused[ h]) continue;
+  for (h = hash_base + 1; h < nfcs; h++) {
+    if (pass == 1 && csused[h]) continue;
     if(hash[h].v.RH != 0) {
-      if (pass == 0) csused[ h] = 1;
+      if (pass == 0) csused[h] = 1;
       ccount++;
     }
   }
@@ -3571,10 +3570,8 @@ int comparefnt (const void *fp1, const void *fp2)
   int f1, f2, l1, l2, k1, k2, s;
   f1 = *(short *)fp1;
   f2 = *(short *)fp2;
-  l1 =(str_start[font_name[f1]+ 1]-
-       str_start[font_name[f1]]); 
-  l2 =(str_start[font_name[f2]+ 1]-
-       str_start[font_name[f2]]); 
+  l1 =(str_start[font_name[f1]+ 1] - str_start[font_name[f1]]); 
+  l2 =(str_start[font_name[f2]+ 1] - str_start[font_name[f2]]); 
   k1 = str_start[font_name[f1]]; 
   k2 = str_start[font_name[f2]]; 
 /*  showstring (k1, l1); */
@@ -3592,10 +3589,8 @@ int comparefnt (const void *fp1, const void *fp2)
 int comparefntname (int f1, int f2)
 {
   int l1, l2, k1, k2, s;
-  l1 =(str_start[font_name[f1]+ 1]-
-       str_start[font_name[f1]]); 
-  l2 =(str_start[font_name[f2]+ 1]-
-       str_start[font_name[f2]]); 
+  l1 =(str_start[font_name[f1]+ 1] - str_start[font_name[f1]]); 
+  l2 =(str_start[font_name[f2]+ 1] - str_start[font_name[f2]]); 
   k1 = str_start[font_name[f1]]; 
   k2 = str_start[font_name[f2]]; 
 /*  showstring (k1, l1); */

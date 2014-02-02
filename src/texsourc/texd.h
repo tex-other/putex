@@ -1,5 +1,4 @@
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-
 #ifdef MSDOS
   /* allocate iniTeX (550 k) trie_c, trie_o, trie_l, trie_r, trie_hash, trie_taken */
   #define ALLOCATEINI
@@ -46,7 +45,7 @@
   /* make font_info array fmemoryword == 32 bit instead of memory_word = 64 bit */
   #define SHORTFONTINFO
   /* make hash table htwohalves == 32 bit instead of twohalves == 64 bit */
-  // #define SHORTHASH	--- changed 2000/Feb/22 increase max_strings from 64K to 512M
+  // #define SHORTHASH  --- changed 2000/Feb/22 increase max_strings from 64K to 512M
   #undef SHORTHASH
   /* increase trie_op_size from 751 to 3001 96/Oct/12 */
   #define INCREASETRIEOP
@@ -58,20 +57,20 @@
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-#undef	TRIP
-#undef	TRAP
-#define	STAT
-#undef	DEBUG
+#undef  TRIP
+#undef  TRAP
+#define STAT
+#undef  DEBUG
 #include "texmf.h"
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-#define MAXLINE 256					// for log_line buffer
+#define MAXLINE 256         // for log_line buffer
 
 /* #define max_halfword 65535L  */ /* for 32 bit memory word */
 /* #define max_halfword 262143L */ /* for 36 bit memory word */
 #define min_halfword -2147483647L  /* for 64 bit memory word (signed) */
-#define max_halfword 2147483647L   /* for 64 bit memory word (signed) */
+#define max_halfword  2147483647L   /* for 64 bit memory word (signed) */
 
 #define block_size 1000 /* block_size for variable length node alloc */
 
@@ -85,7 +84,7 @@
 
 /* #define default_mem_top 262140L */ /* usual big TeX allocation 2 Meg bytes */
 /* #define default_mem_top 131070L */ /* usual big TeX allocation 1 Meg bytes */
-#define default_mem_top 65534L 		  /* usual small TeX allocation 0.5 Meg   */
+#define default_mem_top 65534L      /* usual small TeX allocation 0.5 Meg   */
 
 /* mem_bot smallest index in mem array dumped by iniTeX mem_top >= mem_min */
 #define mem_bot 0
@@ -124,7 +123,7 @@
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-#define poolname TEXPOOLNAME 
+#define poolname TEXPOOLNAME
 
 /* #define mem_top 262140L */
 
@@ -145,57 +144,57 @@ typedef char small_number;
 /* want to increase this so it can handle whole paragraph imported from WP */
 #ifdef INCREASEFIXED
 /* #define buf_size 8192 */
-/* #define buf_size 12000 */ 		/* 1996/Jan/17 */
-/* #define buf_size 16384 */			/* 1998/June/30 */
-/* #define buf_size 20000 */			/* 1999/Jan/7 */
+/* #define buf_size 12000 */    /* 1996/Jan/17 */
+/* #define buf_size 16384 */      /* 1998/June/30 */
+/* #define buf_size 20000 */      /* 1999/Jan/7 */
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* #define buf_size 3000  */
 #endif
 
 #ifdef ALLOCATEBUFFER
-  #define initial_buf_size 1000
+  #define initial_buf_size   1000
   #define increment_buf_size 2000
-  #define buf_size 2000000L				/* arbitrary limit <= max_halfword */
-  EXTERN ASCII_code *buffer; 
+  #define buf_size           2000000L /* arbitrary limit <= max_halfword */
+  EXTERN ASCII_code *        buffer;
 #else
-  #define buf_size 20000					/* 1999/Jan/7 */
-  EXTERN ASCII_code buffer[buf_size + 4]; /* padded out to ...  + 4 */
+  #define buf_size           20000 /* 1999/Jan/7 */
+  EXTERN ASCII_code          buffer[buf_size + 4]; /* padded out to ...  + 4 */
 #endif
 EXTERN integer first; 
 EXTERN integer last; 
 EXTERN integer max_buf_stack; 
 
-#define error_line 79 
-#define half_error_line 50 
-#define max_print_line 79 
+#define error_line      79
+#define half_error_line 50
+#define max_print_line  79
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef INCREASEFIXED
 /* maximum number of simultaneous input sources (?) */
-/* #define stack_size 600 */		/* expanded again 1999/Jan/21 */
+/* #define stack_size 600 */    /* expanded again 1999/Jan/21 */
 /* #define stack_size 800 */
 /* maximum number of input files and insertions that can be going on */
-/* #define max_in_open 15 */		/* for Y&Y TeX 1.2 */
-/* #define max_in_open 31 */		/* 1996/Jan/17 */
-/* #define max_in_open 63 */		/* 1996/Jan/18 */
-  #define max_in_open 127			/* 1996/Jan/20 - really ? */
+/* #define max_in_open 15 */    /* for Y&Y TeX 1.2 */
+/* #define max_in_open 31 */    /* 1996/Jan/17 */
+/* #define max_in_open 63 */    /* 1996/Jan/18 */
+  #define max_in_open 127     /* 1996/Jan/20 - really ? */
 /* save_size space for saving values outside of current group */
 /* #define save_size 6000 */
-/* #define save_size 8000 */ 			/* 1999/Jan/6 */
+/* #define save_size 8000 */      /* 1999/Jan/6 */
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/* #define stack_size 300 */		/* Unix C version default */
-#define max_in_open 15
-/* #define save_size 1000 */		/* 3.14159 C version */
-/* #define save_size 4000 */		/* 3.14159 C version */
+/* #define stack_size 300 */    /* Unix C version default */
+  #define max_in_open 15
+/* #define save_size 1000 */    /* 3.14159 C version */
+/* #define save_size 4000 */    /* 3.14159 C version */
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* maximum internal font number - cannot be greated than max_quarter_word ! */
 #ifdef INCREASEFONTS
 /* #define font_max 511 */
-  #define font_max 1023			/* 1996/Jan/17 */
+  #define font_max 1023     /* 1996/Jan/17 */
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   #define font_max 255 
@@ -208,19 +207,19 @@ EXTERN integer max_buf_stack;
   #define font_mem_size (max_halfword / sizeof(memory_word) -1)
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-#define font_mem_size 100000L
+  #define font_mem_size 100000L
 #endif
 
 /* our real font_mem_size is 268435456 --- ridiculously large, of course */
 
-/* #define non_address font_mem_size */		/* 3.141 */
-#define non_address 0						/* 3.14159 96/Jan/16 */
+/* #define non_address font_mem_size */   /* 3.141 */
+#define non_address 0           /* 3.14159 96/Jan/16 */
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-/* below is new dynamic allocation - bkph 93/Nov/28 */	/* enough for lplain */
+/* below is new dynamic allocation - bkph 93/Nov/28 */  /* enough for lplain */
 #ifdef ALLOCATEFONT
-  #define initial_font_mem_size 20000
+  #define initial_font_mem_size   20000
   #define increment_font_mem_size 40000
 #endif
 
@@ -228,21 +227,21 @@ EXTERN integer max_buf_stack;
 /* param_size maximum number of simultaneous macro parameters */
 /* nest_size  maximum number of semantic levels simultaneously active */
 #ifdef INCREASEFIXED
-/* #define param_size 60 */			/* 3.14159 C version */
+/* #define param_size 60 */     /* 3.14159 C version */
 /* #define param_size 120 */
-/* #define param_size 200 */			/* 1994/Oct/11 */
-/* #define param_size 300 */			/* 1995/May/15 */
-/* #define param_size 500 */			/* 1997/Jan/17 */
-/* #define nest_size 40 */			/* 3.14159 C version */
+/* #define param_size 200 */      /* 1994/Oct/11 */
+/* #define param_size 300 */      /* 1995/May/15 */
+/* #define param_size 500 */      /* 1997/Jan/17 */
+/* #define nest_size 40 */      /* 3.14159 C version */
 /* #define nest_size 80 */
-/* #define nest_size 100	*/			/* 1994/Oct/11 */
-/* #define nest_size 120 */			/* 1995/May/15 */
-/* #define nest_size 200 */			/* 1999/Jan/7 */
+/* #define nest_size 100  */      /* 1994/Oct/11 */
+/* #define nest_size 120 */     /* 1995/May/15 */
+/* #define nest_size 200 */     /* 1999/Jan/7 */
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/* #define param_size 60 */			/* Unix C default */
-/* #define nest_size 40 */			/* Unix C default */
-/* #define nest_size 100 */			/* Unix C default */
+/* #define param_size 60 */     /* Unix C default */
+/* #define nest_size 40 */      /* Unix C default */
+/* #define nest_size 100 */     /* Unix C default */
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -270,55 +269,55 @@ EXTERN integer max_buf_stack;
   #define default_trie_size 60000
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #else
-  #define trie_size 30000			/* 3.14159 C version */
+  #define trie_size 30000     /* 3.14159 C version */
 #endif
 
 /* increase trieop to accomadate more hyphenation patterns 96/OCt/12 */
 
 #ifdef INCREASETRIEOP
-  #define trie_op_size 3001 
+  #define trie_op_size      3001
   #define neg_trie_op_size -3001
-  #define min_trie_op 0 
-  #define max_trie_op 1000
+  #define min_trie_op       0
+  #define max_trie_op       1000
 #else
-  #define trie_op_size 751 
-  #define neg_trie_op_size -751 
-  #define min_trie_op 0 
-  #define max_trie_op 500
+  #define trie_op_size      751
+  #define neg_trie_op_size  -751
+  #define min_trie_op       0
+  #define max_trie_op       500
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* dvi_buf_size must be multiple of 8 - half is written out at a time */
 #ifdef ALLOCATEDVIBUF
   #define default_dvi_buf_size 16384 
-/* #define default_dvi_buf_size 32768 */ 		/* ? */
+/* #define default_dvi_buf_size 32768 */    /* ? */
   EXTERN int dvi_buf_size;
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-#define dvi_buf_size 16384  		/* 3.14159 C version */
-/* #define dvi_buf_size 32768 */				/* ? */
+  #define dvi_buf_size 16384      /* 3.14159 C version */
+/* #define dvi_buf_size 32768 */        /* ? */
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* WARNING: increasing hash table for cs names is not trivial */
 /* size of hash table for control sequence name  < (mem_max - mem_min) / 10 */
 /* #define hash_size 9500 */
-/* #define hash_size 25000 */		/* 96/Jan/10 */
-#define hash_size 32768				/* 96/Jan/17 */
+/* #define hash_size 25000 */   /* 96/Jan/10 */
+#define hash_size 32768       /* 96/Jan/17 */
 /* trick to try and get around eqtb_extra problem */
 /* #define hash_extra -256 */
 #define hash_extra (255 - font_max) 
 /* hash prime about 85% of hash_size (+ hash_extra) */
 /* #define hashprime 7919  */
-/* #define hash_prime 21247 */		/* 96/Jan/10 */
-#define hash_prime 27197			/* 96/Jan/17 */
+/* #define hash_prime 21247 */    /* 96/Jan/10 */
+#define hash_prime 27197      /* 96/Jan/17 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 /* CONSTRAINT: reconcile increase font use by stealing from hash table ... */
 
 /* Probably require eqtb_extra to be zero, so hash_extra = 255 - font_max */
 #if (hash_extra != 255 - font_max)
-#error ERROR: hash_extra not equal to (255 - font_max)
+  #error ERROR: hash_extra not equal to (255 - font_max)
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -350,18 +349,18 @@ EXTERN integer max_buf_stack;
 /* NOTE: if you define/undefine SHORTFONT have to redo formats */
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-#ifdef INCREASEFONTS 
-  typedef unsigned short quarterword; 
+#ifdef INCREASEFONTS
+  typedef unsigned short quarterword;
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  typedef unsigned char quarterword; 
+  typedef unsigned char quarterword;
 #endif
 
 /* possible alternative ? */ /* min_halfword = 0 and double max_halfword ? */
 /* typedef unsigned long halfword; NO NO: since mem_min may be < 0 */
-typedef integer halfword; 
+typedef integer halfword;
 typedef char twochoices;
-typedef char fourchoices; 
+typedef char fourchoices;
 
 #include "texmfmem.h"
 
@@ -373,7 +372,6 @@ typedef struct {
   halfword head_field, tail_field; 
   integer pg_field, ml_field; 
   memory_word aux_field; 
-/*  quarterword lhmfield, rhmfield; */	/* was in TeX 3.141 ... */
 } list_state_record; 
 
 typedef char group_code; 
@@ -389,15 +387,15 @@ typedef integer dvi_index;
 typedef integer trie_op_code; 
 typedef integer trie_pointer; 
 
-/* typedef short hyph_pointer; */		/* increased 1996/Oct/20 ??? */
+/* typedef short hyph_pointer; */   /* increased 1996/Oct/20 ??? */
 typedef integer hyph_pointer; 
 
 EXTERN integer bad; 
 EXTERN ASCII_code xord[256]; 
 EXTERN ASCII_code xchr[256]; 
 /* EXTERN char name_of_file[PATHMAX + 1]; */
-// EXTERN char name_of_file[PATHMAX + 4];	/* padded out 512 + 4 */
-EXTERN unsigned char name_of_file[PATHMAX + 4];	// fix 2000 June 18 
+// EXTERN char name_of_file[PATHMAX + 4]; /* padded out 512 + 4 */
+EXTERN unsigned char name_of_file[PATHMAX + 4]; // fix 2000 June 18 
 EXTERN integer name_length; 
 
 /* EXTERN ASCII_code buffer[buf_size + 1]; */
@@ -405,22 +403,22 @@ EXTERN integer name_length;
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATESTRING
-  #define initial_pool_size 40000
-  #define increment_pool_size 80000
-  EXTERN packed_ASCII_code *str_pool; 
-  #define initial_max_strings 5000
-  #define increment_max_strings 10000	
-  EXTERN pool_pointer *str_start; 
+  #define initial_pool_size     40000
+  #define increment_pool_size   80000
+  EXTERN packed_ASCII_code *    str_pool;
+  #define initial_max_strings   5000
+  #define increment_max_strings 10000
+  EXTERN pool_pointer *         str_start;
 #else
-  /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  EXTERN packed_ASCII_code str_pool[pool_size + 1]; 
-  EXTERN pool_pointer str_start[max_strings + 1]; 
+  EXTERN packed_ASCII_code      str_pool[pool_size + 1]; 
+  EXTERN pool_pointer           str_start[max_strings + 1]; 
 #endif
+/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-EXTERN pool_pointer pool_ptr; 
-EXTERN str_number str_ptr; 
-EXTERN pool_pointer init_pool_ptr; 
-EXTERN str_number init_str_ptr; 
+EXTERN pool_pointer pool_ptr;
+EXTERN str_number   str_ptr;
+EXTERN pool_pointer init_pool_ptr;
+EXTERN str_number   init_str_ptr;
 
 #ifdef INITEX
   EXTERN alpha_file pool_file; 
@@ -429,9 +427,9 @@ EXTERN str_number init_str_ptr;
 EXTERN alpha_file log_file; 
 /* EXTERN char selector; */
 /* EXTERN integer selector; */ /* padded out */
-EXTERN int selector;			/* padded out */ /* 95/Jan/7 */
+EXTERN int selector;      /* padded out */ /* 95/Jan/7 */
 /* EXTERN char dig[23]; */
-EXTERN char dig[23 + 1];	/* padded out */
+EXTERN char dig[23 + 1];  /* padded out */
 EXTERN integer tally; 
 EXTERN integer term_offset; 
 EXTERN integer file_offset; 
@@ -440,23 +438,23 @@ EXTERN integer trick_count;
 EXTERN integer first_count; 
 /* EXTERN char interaction;  */
 /* EXTERN integer interaction; */ /* padded out */
-EXTERN int interaction; /* padded out */			/* 95/Jan/7 */
+EXTERN int interaction; /* padded out */      /* 95/Jan/7 */
 EXTERN bool deletions_allowed; 
 EXTERN bool set_box_allowed; 
 /* EXTERN char history; */
 /* EXTERN integer history; */ /* padded out */
-EXTERN int history; /* padded out */				/* 95/Jan/7 */
+EXTERN int history; /* padded out */        /* 95/Jan/7 */
 /* EXTERN schar error_count;  */
 /* EXTERN integer error_count; */ /* padded out */
-EXTERN int error_count; /* padded out */			/* 95/Jan/7 */
+EXTERN int error_count; /* padded out */      /* 95/Jan/7 */
 /* EXTERN str_number help_line[6]; */
 EXTERN char * help_line[6];
 /* EXTERN char help_ptr; */
 /* EXTERN integer help_ptr; */ /* padded out */
-EXTERN int help_ptr; /* padded out */				/* 95/Jan/7 */
+EXTERN int help_ptr; /* padded out */       /* 95/Jan/7 */
 EXTERN bool use_err_help; 
 /* EXTERN integer interrupt;  */
-EXTERN volatile integer interrupt;	/* bkph - do avoid compiler optimization */
+EXTERN volatile integer interrupt;  /* bkph - do avoid compiler optimization */
 EXTERN bool OK_to_interrupt; 
 EXTERN bool arith_error; 
 EXTERN scaled tex_remainder; 
@@ -464,8 +462,8 @@ EXTERN halfword temp_ptr;
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATEMAIN
-  EXTERN memory_word *mainmemory;		/* remembered so can be free() later */
-  EXTERN memory_word *zzzaa;
+  EXTERN memory_word * mainmemory;   /* remembered so can be free() later */
+  EXTERN memory_word * zzzaa;
   #define zmem zzzaa
 #else
   /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -476,22 +474,22 @@ EXTERN halfword temp_ptr;
   zzzaa[mem_max - mem_bot + 1];
 #endif
 
-EXTERN halfword lo_mem_max; 
-EXTERN halfword hi_mem_min; 
-EXTERN integer var_used, dyn_used; 
+EXTERN halfword lo_mem_max;
+EXTERN halfword hi_mem_min;
+EXTERN integer var_used, dyn_used;
 EXTERN halfword avail; 
 EXTERN halfword mem_end; 
-EXTERN halfword mem_start;			/* new in 3.14159 ??? */
+EXTERN halfword mem_start;      /* new in 3.14159 ??? */
 EXTERN halfword rover; 
 
 /* NOTE: the following really also need to be dynamically allocated */
 #ifdef DEBUG
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATEMAIN
-EXTERN char *zzzab;
+  EXTERN char * zzzab;
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/* EXTERN bool  */		/* save (4 - 1) * mem_max - mem_min */
+/* EXTERN bool  */    /* save (4 - 1) * mem_max - mem_min */
 EXTERN char
 /* #define freearr (zzzab - (int)(mem_min)) */
 /*  zzzab[mem_max - mem_min + 1];  */
@@ -500,9 +498,9 @@ EXTERN char
 #endif
 
 #ifdef ALLOCATEMAIN
-EXTERN char *zzzac;
+  EXTERN char *zzzac;
 #else
-/* EXTERN bool */		/* save (4 - 1) * mem_max - mem_min */
+/* EXTERN bool */   /* save (4 - 1) * mem_max - mem_min */
 EXTERN char
 /* #define wasfree (zzzac - (int)(mem_min)) */
 #define wasfree (zzzac - (int)(mem_bot))
@@ -520,10 +518,10 @@ EXTERN integer breadth_max;
 /* EXTERN list_state_record nest[nest_size + 1];  */
 /* EXTERN short shown_mode; */
 /* EXTERN integer shown_mode; */ /* padded out */
-EXTERN int shown_mode; /* padded out */		/* 95/Jan/7 */
+EXTERN int shown_mode; /* padded out */   /* 95/Jan/7 */
 /* EXTERN char old_setting; */
 /* EXTERN integer old_setting; */ /* padded out */
-EXTERN int old_setting; /* padded out */		/* 95/Jan/7 */
+EXTERN int old_setting; /* padded out */    /* 95/Jan/7 */
 
 /* eqtn_extra is no longer used --- it should be 0 96/Jan/10 */
 #ifdef INCREASEFONTS
@@ -534,12 +532,12 @@ EXTERN int old_setting; /* padded out */		/* 95/Jan/7 */
 
 /* Probably require eqtb_extra to be zero, so hash_extra = 255 - font_max */
 #if (eqtb_extra != 0)
-#error ERROR: eqtb_extra is not zero (need hash_extra equal 255 - font_max)
+  #error ERROR: eqtb_extra is not zero (need hash_extra equal 255 - font_max)
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATEZEQTB
-EXTERN memory_word *zeqtb; 
+EXTERN memory_word * zeqtb; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #else
 #ifdef INCREASEFONTS
@@ -554,8 +552,8 @@ EXTERN memory_word zeqtb[(hash_size + 4007)];
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* EXTERN quarterword 
-#define xeq_level (zzzad -12663)		hash_size =  9500
-#define xeq_level (zzzad -28163)		hash_size = 25000
+#define xeq_level (zzzad -12663)    hash_size =  9500
+#define xeq_level (zzzad -28163)    hash_size = 25000
   zzzad[844]; */
 
 #ifdef INCREASEFONTS
@@ -608,12 +606,12 @@ EXTERN integer cs_count;
 /* despite reallocation, we still limit it to something finite */
 /* to avoid soaking up all of machine memory in case of infinite loop */
 #ifdef ALLOCATESAVESTACK
-  #define save_size 65536			/* arbitrary - ridiculously large */
+  #define save_size 65536     /* arbitrary - ridiculously large */
   #define initial_save_size 1000
   #define increment_save_size 2000
   EXTERN memory_word *save_stack; 
 #else
-  #define save_size 8000  			/* 1999/Jan/6 enough for even CRC */
+  #define save_size 8000        /* 1999/Jan/6 enough for even CRC */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   EXTERN memory_word save_stack[save_size + 1]; 
 #endif
@@ -623,33 +621,33 @@ EXTERN integer max_save_stack;
 
 /* The following could really be char instead of quarterword ... */
 /* EXTERN quarterword cur_level;  */
-/* EXTERN integer cur_level; */	/* padded out */
-EXTERN int cur_level;	/* padded out */		/* 95/Jan/7 */
+/* EXTERN integer cur_level; */ /* padded out */
+EXTERN int cur_level; /* padded out */    /* 95/Jan/7 */
 
 /* EXTERN group_code cur_group;  */
 /* EXTERN integer cur_group;  */ /* padded out */
-EXTERN int cur_group; /* padded out */			/* 95/Jan/7 */
+EXTERN int cur_group; /* padded out */      /* 95/Jan/7 */
 
 EXTERN integer cur_boundary; 
 EXTERN integer mag_set; 
 
 /* EXTERN eight_bits cur_cmd;  */
 /* EXTERN integer cur_cmd;  */ /* padded out */
-EXTERN int cur_cmd; /* padded out */			/* 95/Jan/7 */
+EXTERN int cur_cmd; /* padded out */      /* 95/Jan/7 */
 
 /* EXTERN halfword cur_chr;  */ /* itex, tex0, tex, tex3, tex5, tex6, tex7, tex8 */
-EXTERN int cur_chr;							/* 95/Jan/7 */
+EXTERN int cur_chr;             /* 95/Jan/7 */
 
 EXTERN halfword cur_cs; 
 EXTERN halfword cur_tok; 
 
 #ifdef ALLOCATENESTSTACK
-  #define nest_size 65536					/* arbitrary - ridiculously large */
+  #define nest_size 65536         /* arbitrary - ridiculously large */
   #define initial_nest_size 100
   #define increment_nest_size 200
   EXTERN list_state_record * nest; 
 #else
-  #define nest_size 200				/* 1999/Jan/7 */
+  #define nest_size 200       /* 1999/Jan/7 */
   EXTERN list_state_record nest[nest_size + 1]; 
 #endif
 EXTERN integer nest_ptr; 
@@ -657,19 +655,19 @@ EXTERN integer max_nest_stack;
 EXTERN list_state_record cur_list; 
 
 #ifdef ALLOCATEPARAMSTACK
-  #define param_size 65536				/* arbitrary - ridiculously large */
+  #define param_size 65536        /* arbitrary - ridiculously large */
   #define initial_param_size 100
   #define increment_param_size 200
   EXTERN halfword * param_stack; 
 #else
-#define param_size 500				/* 1997/Jan/17 */
+#define param_size 500        /* 1997/Jan/17 */
 EXTERN halfword param_stack[param_size + 1]; 
 #endif
 EXTERN integer param_ptr; 
 EXTERN integer max_param_stack; 
 
 #ifdef ALLOCATEINPUTSTACK
-  #define stack_size 65536					/* arbitrary - ridiculously large */
+  #define stack_size 65536          /* arbitrary - ridiculously large */
   #define initial_stack_size 100
   #define increment_stack_size 200
   EXTERN in_state_record *input_stack; 
@@ -680,11 +678,11 @@ EXTERN integer max_param_stack;
 EXTERN integer input_ptr; 
 EXTERN integer max_in_stack; 
 
-EXTERN integer high_in_open;			/* 1997/Jan/17 */
+EXTERN integer high_in_open;      /* 1997/Jan/17 */
 EXTERN in_state_record cur_input; 
 
-/* EXTERN integer in_open;  */			/* used in itex, tex2, texmf */
-EXTERN int in_open;					/* 95/Jan/7 */
+/* EXTERN integer in_open;  */      /* used in itex, tex2, texmf */
+EXTERN int in_open;         /* 95/Jan/7 */
 
 EXTERN integer open_parens;
 EXTERN integer max_open_parens; 
@@ -709,13 +707,13 @@ EXTERN halfword cur_mark[6];
 
 /* EXTERN char long_state; */
 /* EXTERN integer long_state; */ /* padded out */
-EXTERN int long_state; /* padded out */	/* 95/Jan/7 */
+EXTERN int long_state; /* padded out */ /* 95/Jan/7 */
 
 /* EXTERN halfword pstack[9];  */
 EXTERN halfword pstack[10]; 
 
 /* EXTERN integer cur_val; */
-EXTERN int cur_val;						/* 95/Jan/7 */
+EXTERN int cur_val;           /* 95/Jan/7 */
 
 /* EXTERN char cur_val_level;  */
 /* EXTERN integer cur_val_level; */ /* padded out */
@@ -723,13 +721,13 @@ EXTERN int cur_val_level; /* padded out */ /* 95/Jan/7 */
 
 /* EXTERN small_number radix;  */
 /* EXTERN integer radix;  */ /* padded out */
-EXTERN int radix; /* padded out */		/* 95/Jan/7 */
+EXTERN int radix; /* padded out */    /* 95/Jan/7 */
 
 /* EXTERN glue_ord cur_order;  */
 /* EXTERN integer cur_order;  */ /* padded out */
-EXTERN int cur_order; /* padded out */		/* 95/Jan/7 */
+EXTERN int cur_order; /* padded out */    /* 95/Jan/7 */
 
-EXTERN alpha_file read_file[16]; 	/* hard wired limit in TeX */
+EXTERN alpha_file read_file[16];  /* hard wired limit in TeX */
 /* EXTERN char read_open[17];  */
 EXTERN char read_open[20]; /* padded out */
 
@@ -737,11 +735,11 @@ EXTERN halfword cond_ptr;
 
 /* EXTERN char if_limit; */
 /* EXTERN integer if_limit; */ /* padded out */
-EXTERN int if_limit; /* padded out */		/* 95/Jan/7 */
+EXTERN int if_limit; /* padded out */   /* 95/Jan/7 */
 
 /* EXTERN small_number cur_if; */
 /* EXTERN integer cur_if; */ /* padded out */
-EXTERN int cur_if; /* padded out */		/* 95/Jan/7 */
+EXTERN int cur_if; /* padded out */   /* 95/Jan/7 */
 
 EXTERN integer if_line; 
 EXTERN integer skip_line; 
@@ -756,8 +754,8 @@ EXTERN bool name_in_progress;
 EXTERN bool log_opened; 
 EXTERN bool quoted_file_name;
 EXTERN str_number job_name; 
-EXTERN str_number output_file_name;		// DVI file
-EXTERN str_number texmf_log_name;		// LOG file
+EXTERN str_number output_file_name;   // DVI file
+EXTERN str_number texmf_log_name;   // LOG file
 EXTERN byte_file dvi_file; 
 EXTERN byte_file tfm_file;
 EXTERN char * dvi_file_name;
@@ -795,13 +793,13 @@ EXTERN char * log_file_name;
 
 EXTERN font_index fmem_ptr; 
 EXTERN internal_font_number font_ptr;
-EXTERN internal_font_number frozenfontptr;				/* 99/Mar/26 */
+EXTERN internal_font_number frozenfontptr;        /* 99/Mar/26 */
 /* There are about 24 integer size items per font, or about 100 bytes */
 EXTERN ffourquarters font_check[font_max + 1]; 
 
 EXTERN scaled font_size[font_max + 1]; 
 EXTERN scaled font_dsize[font_max + 1]; 
-EXTERN font_index font_params[font_max + 1];		/* in 3.14159 */
+EXTERN font_index font_params[font_max + 1];    /* in 3.14159 */
 EXTERN str_number font_name[font_max + 1]; 
 EXTERN str_number font_area[font_max + 1]; 
 EXTERN eight_bits font_bc[font_max + 1]; /* already padded 511 + 1 = 512 */
@@ -817,7 +815,7 @@ EXTERN bool font_used[font_max + 1];
 EXTERN integer hyphen_char[font_max + 1]; 
 EXTERN integer skew_char[font_max + 1]; 
 EXTERN font_index bchar_label[font_max + 1]; 
-EXTERN short font_bchar[font_max + 1]; 	/* already padded 1023 + 1 = 1024 */
+EXTERN short font_bchar[font_max + 1];  /* already padded 1023 + 1 = 1024 */
 /* don't change above to int or format file will be incompatible */
 EXTERN short font_false_bchar[font_max + 1];  /* already padded 1023 + 1 = 1024 */
 /* don't change above to int or format file will be incompatible */
@@ -843,7 +841,7 @@ EXTERN bool doing_leaders;
 
 /* EXTERN quarterword c, f;  */
 /* EXTERN integer c, f */; /* padded out */
-EXTERN int c, f; /* padded out */				/* 95/Jan/7 */
+EXTERN int c, f; /* padded out */       /* 95/Jan/7 */
 
 EXTERN scaled rule_ht, rule_dp, rule_wd; 
 EXTERN halfword g; 
@@ -876,12 +874,12 @@ EXTERN fourquarters null_delimiter;
 EXTERN halfword cur_mlist; 
 
 /* EXTERN small_number cur_style; */
-/* EXTERN integer cur_style; */  /* padded out */	/* tex5.c, tex7.c */
-EXTERN int cur_style;  /* padded out */			/* 95/Jan/7 */
+/* EXTERN integer cur_style; */  /* padded out */ /* tex5.c, tex7.c */
+EXTERN int cur_style;  /* padded out */     /* 95/Jan/7 */
 
 /* EXTERN small_number cur_size; */
 /* EXTERN integer cur_size;  */ /* padded out */
-EXTERN int cur_size;  /* padded out */				/* 95/Jan/7 */
+EXTERN int cur_size;  /* padded out */        /* 95/Jan/7 */
 
 EXTERN scaled cur_mu; 
 EXTERN bool mlist_penalties; 
@@ -889,7 +887,7 @@ EXTERN internal_font_number cur_f;
 
 /* EXTERN quarterword cur_c; */
 /* EXTERN integer cur_c; */  /* padded out */
-EXTERN int cur_c;  /* padded out */			/* 95/Jan/7 */
+EXTERN int cur_c;  /* padded out */     /* 95/Jan/7 */
 
 EXTERN ffourquarters cur_i; 
 
@@ -932,32 +930,32 @@ EXTERN integer fewest_demerits;
 EXTERN halfword best_line; 
 EXTERN integer actual_looseness; 
 EXTERN integer line_diff; 
-/* EXTERN short hc[64+2]; */	/* padded OK 66 * 2 = 132 which is divisible by 4 */
-EXTERN int hc[66];	/* padded OK 66 * 2 = 132 which is divisible by 4 */
+/* EXTERN short hc[64+2]; */  /* padded OK 66 * 2 = 132 which is divisible by 4 */
+EXTERN int hc[66];  /* padded OK 66 * 2 = 132 which is divisible by 4 */
 
 /* EXTERN small_number hn; */
 /* EXTERN integer hn; */  /* padded out */
-EXTERN int hn;  /* padded out */			/* 95/Jan/7 */
+EXTERN int hn;  /* padded out */      /* 95/Jan/7 */
 
 EXTERN halfword ha, hb; 
 
 /* EXTERN internal_font_number hf;  */
-EXTERN int hf;							/* 95/Jan/7 */
+EXTERN int hf;              /* 95/Jan/7 */
 
-/* EXTERN short hu[64+2]; */		/* padded OK */
-EXTERN int hu[66];		/* padded OK */ 
+/* EXTERN short hu[64+2]; */    /* padded OK */
+EXTERN int hu[66];    /* padded OK */ 
 
 /* EXTERN integer hyf_char;  */
-EXTERN int hyf_char;						/* 95/Jan/7 */
+EXTERN int hyf_char;            /* 95/Jan/7 */
 
 /* init_cur_lang new in 3.14159 */
 /* EXTERN ASCII_code cur_lang, init_cur_lang; */
 /* EXTERN integer cur_lang, init_cur_lang; */ /* padded out */
-EXTERN int cur_lang, init_cur_lang; /* padded out */		/* 95/Jan/7 */
+EXTERN int cur_lang, init_cur_lang; /* padded out */    /* 95/Jan/7 */
 
 EXTERN integer lhyf, rhyf;
-/* EXTERN init_l_hyf, init_r_hyf;	*/ /* new in 3.14159 */
-EXTERN integer init_l_hyf, init_r_hyf;	/* new in 3.14159 */
+/* EXTERN init_l_hyf, init_r_hyf; */ /* new in 3.14159 */
+EXTERN integer init_l_hyf, init_r_hyf;  /* new in 3.14159 */
 
 EXTERN halfword hyfbchar; 
 /* EXTERN char hyf[65];  */
@@ -968,10 +966,10 @@ EXTERN bool init_lft;
 
 /* EXTERN small_number hyphen_passed; */
 /* EXTERN integer hyphen_passed; */  /* padded out */
-EXTERN int hyphen_passed;  /* padded out */			/* 95/Jan/7 */
+EXTERN int hyphen_passed;  /* padded out */     /* 95/Jan/7 */
 
-/* EXTERN halfword cur_l, cur_r; */		/* make int's ? 95/Jan/7 */
-EXTERN int cur_l, cur_r;		/* make int's ? 95/Jan/7 */
+/* EXTERN halfword cur_l, cur_r; */   /* make int's ? 95/Jan/7 */
+EXTERN int cur_l, cur_r;    /* make int's ? 95/Jan/7 */
 
 EXTERN halfword cur_q; 
 EXTERN halfword lig_stack; 
@@ -991,7 +989,7 @@ EXTERN bool lft_hit, rt_hit;
   EXTERN quarterword trietrc[trie_size + 1]; 
 #endif
 EXTERN small_number hyf_distance[trie_op_size + 1]; /* already padded 751 + 1 */
-EXTERN small_number hyf_num[trie_op_size + 1];	  /* already padded 751 + 1 */
+EXTERN small_number hyf_num[trie_op_size + 1];    /* already padded 751 + 1 */
 EXTERN trie_op_code hyf_next[trie_op_size + 1]; 
 EXTERN integer op_start[256]; 
 
@@ -1013,7 +1011,7 @@ EXTERN integer op_start[256];
 
 /* EXTERN hyph_pointer hyph_count;  */
 /* EXTERN integer hyph_count; */  /* padded out */
-EXTERN int hyph_count;  /* padded out */		/* 95/Jan/7 */
+EXTERN int hyph_count;  /* padded out */    /* 95/Jan/7 */
 
 #ifdef INITEX
 EXTERN integer 
@@ -1062,9 +1060,9 @@ EXTERN halfword page_tail;
 
 /* EXTERN char page_contents; */
 /* EXTERN integer page_contents; */ /* padded out */
-EXTERN int page_contents; /* padded out */			/* 95/Jan/7 */
+EXTERN int page_contents; /* padded out */      /* 95/Jan/7 */
 
-#define cs_token_flag 4095		/* if we should want to use this ... */
+#define cs_token_flag 4095    /* if we should want to use this ... */
 
 /* ********************************************************************* */
 
@@ -1146,15 +1144,15 @@ EXTERN str_number format_ident;
 EXTERN word_file fmt_file; 
 EXTERN integer ready_already; 
 
-EXTERN alpha_file write_file[16];	/* hard wired limit in TeX */
+EXTERN alpha_file write_file[16]; /* hard wired limit in TeX */
 EXTERN bool write_open[18]; 
 
 EXTERN halfword write_loc; 
 EXTERN pool_pointer edit_name_start; 
 /* EXTERN integer edit_name_length, edit_line, tfm_temp;  */
 EXTERN integer edit_name_length, edit_line; 
-/* EXTERN integer tfm_temp; */		/* only used in tex3.c */
-EXTERN int tfm_temp; 				/* only used in tex3.c 95/Jan/7 */
+/* EXTERN integer tfm_temp; */    /* only used in tex3.c */
+EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 
 /* new stuff defined in local.c - bkph */
 
@@ -1200,114 +1198,114 @@ EXTERN int tfm_temp; 				/* only used in tex3.c 95/Jan/7 */
   /* EXTERN int waitflush; */
   EXTERN int show_fmt_flag;
   EXTERN int show_tfm_flag;
-  EXTERN bool show_texinput_flag;	/* 1998/Jan/28 */
-  EXTERN bool truncate_long_lines;	/* 1998/Feb/2 */
-  EXTERN bool show_cs_names;			/* 1998/Mar/31 */
+  EXTERN bool show_texinput_flag; /* 1998/Jan/28 */
+  EXTERN bool truncate_long_lines;  /* 1998/Feb/2 */
+  EXTERN bool show_cs_names;      /* 1998/Mar/31 */
   EXTERN int tab_step;
   EXTERN int pseudo_tilde;
   EXTERN int pseudo_space;
   EXTERN int allow_quoted_names;
   EXTERN int default_rule;
   EXTERN char *format_file;
-  EXTERN char *source_direct;			/* 1998/Sep/29 */
+  EXTERN char *source_direct;     /* 1998/Sep/29 */
   EXTERN char *string_file;
   EXTERN int share_flag;
   EXTERN char *format_name;
   EXTERN char *encoding_name;
   EXTERN bool format_specific;
   EXTERN bool encoding_specific;
-  EXTERN bool show_line_break_stats;	/* 1996/Feb/9 */
-  EXTERN int first_pass_count;			/* 1996/Feb/9 */
-  EXTERN int second_pass_count;			/* 1996/Feb/9 */
-  EXTERN int final_pass_count;			/* 1996/Feb/9 */
-  EXTERN int underfull_hbox;			/* 1996/Feb/9 */
-  EXTERN int overfull_hbox;			/* 1996/Feb/9 */
-  EXTERN int underfull_vbox;			/* 1996/Feb/9 */
-  EXTERN int overfull_vbox;			/* 1996/Feb/9 */
-  EXTERN int paragraph_failed;			/* 1996/Feb/9 */
-  EXTERN int singleline;				/* 1996/Feb/15 */
+  EXTERN bool show_line_break_stats;  /* 1996/Feb/9 */
+  EXTERN int first_pass_count;      /* 1996/Feb/9 */
+  EXTERN int second_pass_count;     /* 1996/Feb/9 */
+  EXTERN int final_pass_count;      /* 1996/Feb/9 */
+  EXTERN int underfull_hbox;      /* 1996/Feb/9 */
+  EXTERN int overfull_hbox;     /* 1996/Feb/9 */
+  EXTERN int underfull_vbox;      /* 1996/Feb/9 */
+  EXTERN int overfull_vbox;     /* 1996/Feb/9 */
+  EXTERN int paragraph_failed;      /* 1996/Feb/9 */
+  EXTERN int singleline;        /* 1996/Feb/15 */
   EXTERN FILE *errout;
-  EXTERN int font_dimen_zero;			/* 1998/Oct/5 */
-  EXTERN int ignore_frozen;			/* 1998/Oct/5 */
-  EXTERN bool suppress_f_ligs;		/* 1999/Jan/5 */
-  EXTERN int abort_flag;			// not yet hooked up ???
-  EXTERN int err_level;			// not yet hooked up ???
-  EXTERN int jump_used;				/* 1999/Nov/28 */
-  EXTERN jmp_buf jumpbuffer;			/* 1999/Nov/7 */
+  EXTERN int font_dimen_zero;     /* 1998/Oct/5 */
+  EXTERN int ignore_frozen;     /* 1998/Oct/5 */
+  EXTERN bool suppress_f_ligs;    /* 1999/Jan/5 */
+  EXTERN int abort_flag;      // not yet hooked up ???
+  EXTERN int err_level;     // not yet hooked up ???
+  EXTERN int jump_used;       /* 1999/Nov/28 */
+  EXTERN jmp_buf jumpbuffer;      /* 1999/Nov/7 */
  #endif /* DOS */
 
 #ifdef MSDOS
-  extern int current_pool_size;				/* in local.c - bkph */
-  extern int current_max_strings;			/* in local.c - bkph */
-  extern int current_mem_size;				/* in local.c - bkph */
-  extern int current_font_mem_size;			/* in local.c - bkph */
-  extern int current_save_size;				/* in local.c - bkph */
-  extern int current_stack_size;			/* in local.c - bkph */
-  extern int current_nest_size;				/* in local.c - bkph */
-  extern int current_param_size;			/* in local.c - bkph */
-  extern int current_buf_size;				/* in local.c - bkph */
-  extern char *tex_version;				/* in local.c - bkph */
-  extern char *application;				/* in local.c - bkph */
-  extern char *yandyversion;				/* in local.c - bkph */
-  unsigned char wintodos[128];				/* in local.c - bkph */
-  extern char last_filename[PATH_MAX];		/* in ourpaths.c */
-  extern char log_line[MAXLINE];				/* in local.c */
-  extern char *texpath;						/* in local.c */
+  extern int current_pool_size;       /* in local.c - bkph */
+  extern int current_max_strings;     /* in local.c - bkph */
+  extern int current_mem_size;        /* in local.c - bkph */
+  extern int current_font_mem_size;     /* in local.c - bkph */
+  extern int current_save_size;       /* in local.c - bkph */
+  extern int current_stack_size;      /* in local.c - bkph */
+  extern int current_nest_size;       /* in local.c - bkph */
+  extern int current_param_size;      /* in local.c - bkph */
+  extern int current_buf_size;        /* in local.c - bkph */
+  extern char *tex_version;       /* in local.c - bkph */
+  extern char *application;       /* in local.c - bkph */
+  extern char *yandyversion;        /* in local.c - bkph */
+  unsigned char wintodos[128];        /* in local.c - bkph */
+  extern char last_filename[PATH_MAX];    /* in ourpaths.c */
+  extern char log_line[MAXLINE];        /* in local.c */
+  extern char *texpath;           /* in local.c */
 
-  memory_word * allocate_main_memory (int);		/* in local.c - bkph */
-  memory_word * realloc_main (int, int);			/* in local.c - bkph */
-  packed_ASCII_code * realloc_str_pool (int);		/* in local.c - bkph */
-  pool_pointer * realloc_str_start (int);			/* in local.c - bkph */
-  memory_word * realloc_save_stack (int);			/* in local.c - bkph */
-  list_state_record * realloc_nest_stack (int);	/* in local.c - bkph */
-  in_state_record * realloc_input_stack (int);		/* in local.c - bkph */
-  halfword * realloc_param_stack (int);			/* in local.c - bkph */
-  ASCII_code * realloc_buffer (int);				/* in local.c - bkph */
-  fmemoryword * realloc_font_info (int);			/* in local.c - bkph */
+  memory_word * allocate_main_memory (int);   /* in local.c - bkph */
+  memory_word * realloc_main (int, int);      /* in local.c - bkph */
+  packed_ASCII_code * realloc_str_pool (int);   /* in local.c - bkph */
+  pool_pointer * realloc_str_start (int);     /* in local.c - bkph */
+  memory_word * realloc_save_stack (int);     /* in local.c - bkph */
+  list_state_record * realloc_nest_stack (int); /* in local.c - bkph */
+  in_state_record * realloc_input_stack (int);    /* in local.c - bkph */
+  halfword * realloc_param_stack (int);     /* in local.c - bkph */
+  ASCII_code * realloc_buffer (int);        /* in local.c - bkph */
+  fmemoryword * realloc_font_info (int);      /* in local.c - bkph */
 
-  int realloc_hyphen (int);				/* in local.c - bkph */
-  int allocate_tries (int);				/* in local.c - bkph */
+  int realloc_hyphen (int);       /* in local.c - bkph */
+  int allocate_tries (int);       /* in local.c - bkph */
 
-void tryandopen (char *);				/* in local.c - bkph */
-void check_eqtb (char *);				/* in local.c - bkph */
-void probe_memory (void);				/* in local.c - bkph */
-// void show_maximums (FILE *);			/* in local.c - bkph */
-void print_cs_names (FILE *, int);		/* in local.c - bkph */
-void perrormod(char *);					/* in local.c */
+void tryandopen (char *);       /* in local.c - bkph */
+void check_eqtb (char *);       /* in local.c - bkph */
+void probe_memory (void);       /* in local.c - bkph */
+// void show_maximums (FILE *);     /* in local.c - bkph */
+void print_cs_names (FILE *, int);    /* in local.c - bkph */
+void perrormod(char *);         /* in local.c */
 
-char *grabenv(char *);			/* in local.c - bkph */
-// void showversion (FILE *);			/* in local.c - bkph */
-void stamp_it (char *);					/* in local.c - bkph */
-void stampcopy (char *);				/* in local.c - bkph */
-bool prime (int);					/* in local.c - bkph */
-int endit (int);						/* in local.c - bkph */
+char *grabenv(char *);      /* in local.c - bkph */
+// void showversion (FILE *);     /* in local.c - bkph */
+void stamp_it (char *);         /* in local.c - bkph */
+void stampcopy (char *);        /* in local.c - bkph */
+bool prime (int);         /* in local.c - bkph */
+int endit (int);            /* in local.c - bkph */
 
-void uexit (int unix_code);			/* in lib/uexit.c - bkph */
-void t_open_in (void);					/* in lib/texmf.c - bkph */
+void uexit (int unix_code);     /* in lib/uexit.c - bkph */
+void t_open_in (void);          /* in lib/texmf.c - bkph */
 
 bool extensionirrelevantp (unsigned char *base, int nlen, char *suffix);
 
 void call_edit (ASCII_code *filename, pool_pointer fnstart,
-			   integer fnlength, integer linenumber); /* from lib/texmf.c - bkph */
+         integer fnlength, integer linenumber); /* from lib/texmf.c - bkph */
 
-void add_variable_space(int);				/* in itex.c - bkph */
+void add_variable_space(int);       /* in itex.c - bkph */
 
 void get_date_and_time (integer *minutes, integer *day,
-						integer *month, integer *year);		/* in lib/texmf.c - bkph */
+            integer *month, integer *year);   /* in lib/texmf.c - bkph */
 
-bool maketextex (void);				/* in openinou.c */
-bool maketextfm (void);				/* in openinou.c */
+bool maketextex (void);       /* in openinou.c */
+bool maketextfm (void);       /* in openinou.c */
 
-unsigned char *unixify (unsigned char *);				/* in pathsrch.c bkph */
+unsigned char *unixify (unsigned char *);       /* in pathsrch.c bkph */
 
 #ifdef _WINDOWS
-  void show_line (char *, int);			/* in local.c */
-  void show_char (int);					/* in local.c */
-  int main(int, char *[]);				/* in lib\texmf.c */
+  void show_line (char *, int);     /* in local.c */
+  void show_char (int);         /* in local.c */
+  int main(int, char *[]);        /* in lib\texmf.c */
 #endif
 
 #ifdef CHECKPOOL
-  int checkpool (char *);					/* in itex.c - debugging */
+  int checkpool (char *);         /* in itex.c - debugging */
 #endif
 
 #endif /* ifdef MSDOS */
@@ -1518,6 +1516,174 @@ unsigned char *unixify (unsigned char *);				/* in pathsrch.c bkph */
 #define uc_code(a)                    equiv(uc_code_base +a)
 #define sf_code(a)                    equiv(sf_code_bas + a)
 #define math_code(a)                  equiv(math_code_base + a)
+/* sec 0236 */
+#define pretolerance_code             0
+#define tolerance_code                1
+#define line_penalty_code             2
+#define hyphen_penalty_code           3
+#define ex_hyphen_penalty_code        4
+#define club_penalty_code             5
+#define widow_penalty_code            6
+#define display_widow_penalty_code    7
+#define broken_penalty_code           8
+#define bin_op_penalty_code           9
+#define rel_penalty_code              10
+#define pre_display_penalty_code      11
+#define post_display_penalty_code     12
+#define inter_line_penalty_code       13
+#define double_hyphen_demerits_code   14
+#define final_hyphen_demerits_code    15
+#define adj_demerits_code             16
+#define mag_code                      17
+#define delimiter_factor_code         18
+#define looseness_code                19
+#define time_code                     20
+#define day_code                      21
+#define month_code                    22
+#define year_code                     23
+#define show_box_breadth_code         24
+#define show_box_depth_code           25
+#define hbadness_code                 26
+#define vbadness_code                 27
+#define pausing_code                  28
+#define tracing_online_code           29
+#define tracing_macros_code           30
+#define tracing_stats_code            31
+#define tracing_paragraphs_code       32
+#define tracing_pages_code            33
+#define tracing_output_code           34
+#define tracing_lost_chars_code       35
+#define tracing_commands_code         36
+#define tracing_restores_code         37
+#define uc_hyph_code                  38
+#define output_penalty_code           39
+#define max_dead_cycles_code          40
+#define hang_after_code               41
+#define floating_penalty_code         42
+#define global_defs_code              43
+#define cur_fam_code                  44
+#define escape_char_code              45
+#define default_hyphen_char_code      46
+#define default_skew_char_code        47
+#define end_line_char_code            48
+#define new_line_char_code            49
+#define language_code                 50
+#define left_hyphen_min_code          51
+#define right_hyphen_min_code         52
+#define holding_inserts_code          53
+#define error_context_lines_code      54
+#define int_pars                      55
+#define count_base                    int_base + int_pars
+#define del_code_base                 count_base + 256
+#define dimen_base                    del_code_base + 256
+// #
+#define del_code(a)                   eqtb[del_code_base + a].cint
+#define count(a)                      eqtb[count_base + a].cint
+#define int_par(a)                    eqtb[int_base + a].cint
+#define pretolerance                  int_par(pretolerance_code)
+#define tolerance                     int_par(tolerance_code)
+#define line_penalty                  int_par(line_penalty_code)
+#define hyphen_penalty                int_par(hyphen_penalty_code)
+#define ex_hyphen_penalty             int_par(ex_hyphen_penalty_code)
+#define club_penalty                  int_par(club_penalty_code)
+#define widow_penalty                 int_par(widow_penalty_code)
+#define display_widow_penalty         int_par(display_widow_penalty_code)
+#define broken_penalty                int_par(broken_penalty_code)
+#define bin_op_penalty                int_par(bin_op_penalty_code)
+#define rel_penalty                   int_par(rel_penalty_code)
+#define pre_display_penalty           int_par(pre_display_penalty_code)
+#define post_display_penalty          int_par(post_display_penalty_code)
+#define inter_line_penalty            int_par(inter_line_penalty_code)
+#define double_hyphen_demerits        int_par(double_hyphen_demerits_code)
+#define final_hyphen_demerits         int_par(final_hyphen_demerits_code)
+#define adj_demerits                  int_par(adj_demerits_code)
+#define mag                           int_par(mag_code)
+#define delimiter_factor              int_par(delimiter_factor_code)
+#define looseness                     int_par(looseness_code)
+#define tex_time                      int_par(time_code)
+#define day                           int_par(day_code)
+#define month                         int_par(month_code)
+#define year                          int_par(year_code)
+#define show_box_breadth              int_par(show_box_breadth_code)
+#define show_box_depth                int_par(show_box_depth_code)
+#define hbadness                      int_par(hbadness_code)
+#define vbadness                      int_par(vbadness_code)
+#define pausing                       int_par(pausing_code)
+#define tracing_online                int_par(tracing_online_code)
+#define tracing_macros                int_par(tracing_macros_code)
+#define tracing_stats                 int_par(tracing_stats_code)
+#define tracing_paragraphs            int_par(tracing_paragraphs_code)
+#define tracing_pages                 int_par(tracing_pages_code)
+#define tracing_output                int_par(tracing_output_code)
+#define tracing_lost_chars            int_par(tracing_lost_chars_code)
+#define tracing_commands              int_par(tracing_commands_code)
+#define tracing_restores              int_par(tracing_restores_code)
+#define uc_hyph                       int_par(uc_hyph_code)
+#define output_penalty                int_par(output_penalty_code)
+#define max_dead_cycles               int_par(max_dead_cycles_code)
+#define hang_after                    int_par(hang_after_code)
+#define floating_penalty              int_par(floating_penalty_code)
+#define global_defs                   int_par(global_defs_code)
+#define cur_fam                       int_par(cur_fam_code)
+#define escape_char                   int_par(escape_char_code)
+#define default_hyphen_char           int_par(default_hyphen_char_code)
+#define default_skew_char             int_par(default_skew_char_code)
+#define end_line_char                 int_par(end_line_char_code)
+#define new_line_char                 int_par(new_line_char_code)
+#define language                      int_par(language_code)
+#define left_hyphen_min               int_par(left_hyphen_min_code)
+#define right_hyphen_min              int_par(right_hyphen_min_code)
+#define holding_inserts               int_par(holding_inserts_code)
+#define error_context_lines           int_par(error_context_lines_code)
+/* sec 0247 */
+#define par_indent_code               0
+#define math_surround_code            1
+#define line_skip_limit_code          2
+#define hsize_code                    3
+#define vsize_code                    4
+#define max_depth_code                5
+#define split_max_depth_code          6
+#define box_max_depth_code            7
+#define hfuzz_code                    8
+#define vfuzz_code                    9
+#define delimiter_shortfall_code      10
+#define null_delimiter_space_code     11
+#define script_space_code             12
+#define pre_display_size_code         13
+#define display_width_code            14
+#define display_indent_code           15
+#define overfull_rule_code            16
+#define hang_indent_code              17
+#define h_offset_code                 18
+#define v_offset_code                 19
+#define emergency_stretch_code        20
+#define dimen_pars                    21
+#define scaled_base                   dimen_base + dimen_pars
+#define eqtb_size                     scaled_base + 255
+// #
+#define dimen(a)                      eqtb[scaled_base + a].sc
+#define dimen_par(a)                  eqtb[dimen_base + a].sc
+#define par_indent                    dimen_par(par_indent_code)
+#define math_surround                 dimen_par(math_surround_code)
+#define line_skip_limit               dimen_par(line_skip_limit_code)
+#define hsize                         dimen_par(hsize_code)
+#define vsize                         dimen_par(vsize_code)
+#define max_depth                     dimen_par(max_depth_code)
+#define split_max_depth               dimen_par(split_max_depth_code)
+#define box_max_depth                 dimen_par(box_max_depth_code)
+#define hfuzz                         dimen_par(hfuzz_code)
+#define vfuzz                         dimen_par(vfuzz_code)
+#define delimiter_shortfall           dimen_par(delimiter_shortfall_code)
+#define null_delimiter_space          dimen_par(null_delimiter_space_code)
+#define script_space                  dimen_par(script_space_code)
+#define pre_display_size              dimen_par(pre_display_size_code)
+#define display_width                 dimen_par(display_width_code)
+#define display_indent                dimen_par(display_indent_code)
+#define overfull_rule                 dimen_par(overfull_rule_code)
+#define hang_indent                   dimen_par(hang_indent_code)
+#define h_offset                      dimen_par(h_offset_code)
+#define v_offset                      dimen_par(v_offset_code)
+#define emergency_stretch             dimen_par(emergency_stretch_code)
 /* sec 79 */
 
 extern void tex_help (unsigned int n, ...);
