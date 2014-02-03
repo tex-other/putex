@@ -189,11 +189,11 @@ void build_page (void)
               begin_diagnostic (); 
               print_nl("% split");   /*  */
               print_int(n); 
-              print(996);   /*  to */
+              print_string(" to");
               print_scaled(w); 
               print_char(44);  /*, */
               print_scaled(best_height_plus_depth); 
-              print(925);   /*  p= */
+              print_string(" p=");
               if(q == 0)    /* if q=null l.19614 */
                 print_int(-10000); 
               else if(mem[q].hh.b0 == 12)
@@ -252,18 +252,18 @@ void build_page (void)
       {
         begin_diagnostic (); 
         print_nl("%");  /* % */
-        print(921);   /*  t= */
+        print_string(" t=");
         print_totals (); 
-        print(990);   /*  g= */
+        print_string(" g=");
         print_scaled(page_so_far[0]); 
-        print(924);   /*  b= */
+        print_string(" b=");
         if(b == 1073741823L) /* 2^30 - 1 */
           print_char(42);  /* * */
         else
           print_int(b); 
-        print(925);   /*  p= */
+        print_string(" p=");
         print_int(pi); 
-        print(991);   /*  c= */
+        print_string(" c=");
         if(c == 1073741823L) /* 2^30 - 1 */
           print_char(42);  /* * */
         else print_int(c); 
@@ -386,7 +386,7 @@ void you_cant (void)
 {
   print_err("You can't use `");
   print_cmd_chr(cur_cmd, cur_chr); 
-  print(1014);    /* ' in  */
+  print_string("' in ");
   print_mode(mode); 
 } 
 /* sec 1050 */
@@ -539,7 +539,7 @@ void off_save (void)
       } 
       break; 
     } 
-    print(623);   /*  inserted */
+    print_string(" inserted");
     begin_token_list(mem[mem_top - 3].hh.v.RH, 4);
 	help5("I've inserted something that you may have forgotten.",
 		"(See the <inserted text> above.)",
@@ -912,7 +912,7 @@ void head_for_vmode (void)
   else {
 	  print_err("You can't use `");
     print_esc("hrule");
-    print(1076);  /* ' here except with leaders */
+    print_string("' here except with leaders");
 	help2("To put a horizontal rule in an hbox or an alignment,",
 		"you should use \\leaders or \\hrulefill (see The TeXbook).");
     error (); 
@@ -1692,7 +1692,7 @@ void math_ac (void)
   {
     print_err("Please use ");
     print_esc("mathaccent");
-    print(1134);    /*  for accents in math mode */
+    print_string(" for accents in math mode");
 	help2("I'm changing \\accent to \\mathaccent here; wish me luck.",
 		"(Accents are not the same in formulas as they are in text.)");
     error (); 

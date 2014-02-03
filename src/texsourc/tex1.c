@@ -379,29 +379,29 @@ void print_mode_(integer m)
   if(m > 0)
   switch(m /(101)) 
   {case 0 : 
-    print(352);   /* vertical */
+    print_string("vertical");
     break; 
   case 1 : 
-    print(353);   /* horizontal */
+    print_string("horizontal");
     break; 
   case 2 : 
-    print(354);   /* display math */
+    print_string("display math");
     break; 
   } 
   else if(m == 0)
-  print(355);   /* no */
+  print_string("no");
   else switch((- (integer) m)/(101)) 
   {case 0 : 
-    print(356);   /* internal vertical */
+    print_string("internal vertical");
     break; 
   case 1 : 
-    print(357);   /* restricted horizontal */
+    print_string("restricted horizontal");
     break; 
   case 2 : 
-    print(340);   /* math */
+    print_string("math");
     break; 
   } 
-  print(358);   /*  mode */
+  print_string(" mode");
 } 
 void push_nest (void) 
 { 
@@ -459,10 +459,10 @@ void show_activities (void)
     if(p >= for_end) do 
       {
         m = nest[p].mode_field; 
-        a = nest[p].aux_field; 
-		print_nl("### ");    /* ###  */
+        a = nest[p].aux_field;
+        print_nl("### ");
         print_mode(m);
-        print(361);   /*  entered at line  */
+        print_string(" entered at line ");
         print_int(abs(nest[p].ml_field)); 
         if(m == 102)
 /* ************************************************************************ */
@@ -471,10 +471,10 @@ void show_activities (void)
 /* WAS if((nest[p].lhmfield != 2)||(nest[p].rhmfield != 3)) */
       if(nest[p].pg_field != 8585216L)  /* 830000 hex ??? */
       {
-  print(362);   /*  (language */
+  print_string(" (language");
   print_int(nest[p].pg_field % 65536L);   /* last 16 bits */
 /*  print_int(nest[p].pg_field & 65535L);  */
-  print(363);   /* :hyphenmin */
+  print_string(":hyphenmin");
   print_int(nest[p].pg_field / 4194304L);   /* 400000 hex ??? */
 /*  print_int(nest[p].pg_field >> 22); */ /* top 10 bits */
   print_char(44); /*, */
@@ -485,29 +485,28 @@ void show_activities (void)
   print_char(41); /*)*/
       } 
       if(nest[p].ml_field < 0)
-      print(364);     /*  (\output routine) */
+      print_string(" (\\output routine)");
       if(p == 0)
       {
   if(mem_top - 2 != page_tail)
   {
-    print_nl("### current page:");      /*  */
+    print_nl("### current page:");
     if(output_active)
-      print(975);   /*  (held over for next output) */
+      print_string(" (held over for next output)");
     show_box(mem[mem_top - 2].hh.v.RH); 
     if(page_contents > 0)
     {
-      print_nl("total height ");    /*  */
+      print_nl("total height ");
       print_totals (); 
-      print_nl("goal height ");    /*   */
+      print_nl("goal height ");
       print_scaled(page_so_far[0]); 
       r = mem[mem_top].hh.v.RH; 
       while(r != mem_top){
-    
         print_ln (); 
         print_esc("insert");
         t = mem[r].hh.b1; 
         print_int(t); 
-        print(978);   /*  adds  */
+        print_string(" adds ");
         t = x_over_n(mem[r + 3].cint, 1000)*
         eqtb[(hash_size + 3218) + t].cint; 
         print_scaled(t); 
@@ -521,9 +520,9 @@ void show_activities (void)
      [r].hh.b1)) 
       incr(t); 
     } while(!(q == mem[r + 1].hh.v.LH)); 
-    print(979);     /*, # */
+    print_string(", #");
     print_int(t); 
-    print(980);     /*  might split */
+    print_string(" might split");
         } 
         r = mem[r].hh.v.RH; 
       } 
@@ -531,21 +530,21 @@ void show_activities (void)
   } 
 /*  if link(contrib_head)<>null then l.4393 */
   if(mem[mem_top - 1].hh.v.RH != 0)
-  print_nl(" (\\output routine)");    /*  */
+  print_nl(" (\\output routine)");
       } 
       show_box(mem[nest[p].head_field].hh.v.RH); 
       switch(abs(m)/(101)) 
       {case 0 : 
   {
-    print_nl("### recent contributions:");      /*  */
+    print_nl("### recent contributions:");
     if(a.cint <= ignore_depth)
-    print(367);     /* ignored */
+    print_string("ignored");
     else print_scaled(a.cint); 
     if(nest[p].pg_field != 0)
     {
-      print(368);     /*, prevgraf  */
+      print_string(", prevgraf ");
       print_int(nest[p].pg_field); 
-      print(369);     /*  line */
+      print_string(" line");
       if(nest[p].pg_field != 1)
       print_char(115);    /* s */
     } 
@@ -558,7 +557,7 @@ void show_activities (void)
     if(m > 0)
     if(a.hh.v.RH > 0)
     {
-      print(371);     /*, current language  */
+      print_string(", current language ");
       print_int(a.hh.v.RH); 
     } 
   } 
@@ -566,185 +565,187 @@ void show_activities (void)
       case 2 : 
   if(a.cint != 0)
   {
-    print(372);     /* this will be denominator of: */
+    print_string("this will be denominator of:");
     show_box(a.cint); 
   } 
   break; 
       } 
     } 
   while(p-- > for_end); } 
-} 
+}
+/* sec 0237 */
 void print_param_(integer n)
 {
   switch(n)
-  {case 0 : 
-    print_esc("pretolerance");
-    break; 
-  case 1 : 
-    print_esc("tolerance");
-    break; 
-  case 2 : 
-    print_esc("linepenalty");
-    break; 
-  case 3 : 
-    print_esc("hyphenpenalty");
-    break; 
-  case 4 : 
-    print_esc("exhyphenpenalty");
-    break; 
-  case 5 : 
-    print_esc("clubpenalty");
-    break; 
-  case 6 : 
-    print_esc("widowpenalty");
-    break; 
-  case 7 : 
-    print_esc("displaywidowpenalty");
-    break; 
-  case 8 : 
-    print_esc("brokenpenalty");
-    break; 
-  case 9 : 
-    print_esc("binoppenalty");
-    break; 
-  case 10 : 
-    print_esc("relpenalty");
-    break; 
-  case 11 : 
-    print_esc("predisplaypenalty");
-    break; 
-  case 12 : 
-    print_esc("postdisplaypenalty");
-    break; 
-  case 13 : 
-    print_esc("interlinepenalty");
-    break; 
-  case 14 : 
-    print_esc("doublehyphendemerits");
-    break; 
-  case 15 : 
-    print_esc("finalhyphendemerits");
-    break; 
-  case 16 : 
-    print_esc("adjdemerits");
-    break; 
-  case 17 : 
-    print_esc("mag");
-    break; 
-  case 18 : 
-    print_esc("delimiterfactor");
-    break; 
-  case 19 : 
-    print_esc("looseness");
-    break; 
-  case 20 : 
-    print_esc("time");
-    break; 
-  case 21 : 
-    print_esc("day");
-    break; 
-  case 22 : 
-    print_esc("month");
-    break; 
-  case 23 : 
-    print_esc("year");
-    break; 
-  case 24 : 
-    print_esc("showboxbreadth");
-    break; 
-  case 25 : 
-    print_esc("showboxdepth");
-    break; 
-  case 26 : 
-    print_esc("hbadness");
-    break; 
-  case 27 : 
-    print_esc("vbadness");
-    break; 
-  case 28 : 
-    print_esc("pausing");
-    break; 
-  case 29 : 
-    print_esc("tracingonline");
-    break; 
-  case 30 : 
-    print_esc("tracingmacros");
-    break; 
-  case 31 : 
-    print_esc("tracingstats");
-    break; 
-  case 32 : 
-    print_esc("tracingparagraphs");
-    break; 
-  case 33 : 
-    print_esc("tracingpages");
-    break; 
-  case 34 : 
-    print_esc("tracingoutput");
-    break; 
-  case 35 : 
-    print_esc("tracinglostchars");
-    break; 
-  case 36 : 
-    print_esc("tracingcommands");
-    break; 
-  case 37 : 
-    print_esc("tracingrestores");
-    break; 
-  case 38 : 
-    print_esc("uchyph");
-    break; 
-  case 39 : 
-    print_esc("outputpenalty");
-    break; 
-  case 40 : 
-    print_esc("maxdeadcycles");
-    break; 
-  case 41 : 
-    print_esc("hangafter");
-    break; 
-  case 42 : 
-    print_esc("floatingpenalty");
-    break; 
-  case 43 : 
-    print_esc("globaldefs");
-    break; 
-  case 44 : 
-    print_esc("fam");
-    break; 
-  case 45 : 
-    print_esc("escapechar");
-    break; 
-  case 46 : 
-    print_esc("defaulthyphenchar");
-    break; 
-  case 47 : 
-    print_esc("defaultskewchar");
-    break; 
-  case 48 : 
-    print_esc("endlinechar");
-    break; 
-  case 49 : 
-    print_esc("newlinechar");
-    break; 
-  case 50 : 
-    print_esc("language");
-    break; 
-  case 51 : 
-    print_esc("lefthyphenmin");
-    break; 
-  case 52 : 
-    print_esc("righthyphenmin");
-    break; 
-  case 53 : 
-    print_esc("holdinginserts");
-    break; 
-  case 54 : 
-    print_esc("errorcontextlines");
-    break; 
-  default: 
-    print(472);     /* [unknown integer parameter!] */
-    break; 
+  {
+    case pretolerance_code:
+      print_esc("pretolerance");
+      break;
+    case tolerance_code:
+      print_esc("tolerance");
+      break;
+    case line_penalty_code:
+      print_esc("linepenalty");
+      break;
+    case hyphen_penalty_code:
+      print_esc("hyphenpenalty");
+      break;
+    case ex_hyphen_penalty_code:
+      print_esc("exhyphenpenalty");
+      break;
+    case club_penalty_code:
+      print_esc("clubpenalty");
+      break;
+    case widow_penalty_code:
+      print_esc("widowpenalty");
+      break;
+    case display_widow_penalty_code:
+      print_esc("displaywidowpenalty");
+      break;
+    case broken_penalty_code:
+      print_esc("brokenpenalty");
+      break;
+    case bin_op_penalty_code:
+      print_esc("binoppenalty");
+      break;
+    case rel_penalty_code:
+      print_esc("relpenalty");
+      break;
+    case pre_display_penalty_code:
+      print_esc("predisplaypenalty");
+      break;
+    case post_display_penalty_code:
+      print_esc("postdisplaypenalty");
+      break;
+    case inter_line_penalty_code:
+      print_esc("interlinepenalty");
+      break;
+    case double_hyphen_demerits_code:
+      print_esc("doublehyphendemerits");
+      break;
+    case final_hyphen_demerits_code:
+      print_esc("finalhyphendemerits");
+      break;
+    case adj_demerits_code:
+      print_esc("adjdemerits");
+      break;
+    case mag_code:
+      print_esc("mag");
+      break;
+    case delimiter_factor_code:
+      print_esc("delimiterfactor");
+      break;
+    case looseness_code:
+      print_esc("looseness");
+      break;
+    case time_code:
+      print_esc("time");
+      break;
+    case day_code:
+      print_esc("day");
+      break;
+    case month_code:
+      print_esc("month");
+      break;
+    case year_code:
+      print_esc("year");
+      break;
+    case show_box_breadth_code:
+      print_esc("showboxbreadth");
+      break;
+    case show_box_depth_code:
+      print_esc("showboxdepth");
+      break;
+    case hbadness_code:
+      print_esc("hbadness");
+      break;
+    case vbadness_code:
+      print_esc("vbadness");
+      break;
+    case pausing_code:
+      print_esc("pausing");
+      break;
+    case tracing_online_code:
+      print_esc("tracingonline");
+      break;
+    case tracing_macros_code:
+      print_esc("tracingmacros");
+      break;
+    case tracing_stats_code:
+      print_esc("tracingstats");
+      break;
+    case tracing_paragraphs_code:
+      print_esc("tracingparagraphs");
+      break;
+    case tracing_pages_code:
+      print_esc("tracingpages");
+      break;
+    case tracing_output_code:
+      print_esc("tracingoutput");
+      break;
+    case tracing_lost_chars_code:
+      print_esc("tracinglostchars");
+      break;
+    case tracing_commands_code:
+      print_esc("tracingcommands");
+      break;
+    case tracing_restores_code:
+      print_esc("tracingrestores");
+      break;
+    case uc_hyph_code:
+      print_esc("uchyph");
+      break;
+    case output_penalty_code:
+      print_esc("outputpenalty");
+      break;
+    case max_dead_cycles_code:
+      print_esc("maxdeadcycles");
+      break;
+    case hang_after_code:
+      print_esc("hangafter");
+      break;
+    case floating_penalty_code:
+      print_esc("floatingpenalty");
+      break;
+    case global_defs_code:
+      print_esc("globaldefs");
+      break;
+    case cur_fam_code:
+      print_esc("fam");
+      break;
+    case escape_char_code:
+      print_esc("escapechar");
+      break;
+    case default_hyphen_char_code:
+      print_esc("defaulthyphenchar");
+      break;
+    case default_skew_char_code:
+      print_esc("defaultskewchar");
+      break;
+    case end_line_char_code:
+      print_esc("endlinechar");
+      break;
+    case new_line_char_code:
+      print_esc("newlinechar");
+      break;
+    case language_code:
+      print_esc("language");
+      break;
+    case left_hyphen_min_code:
+      print_esc("lefthyphenmin");
+      break;
+    case right_hyphen_min_code:
+      print_esc("righthyphenmin");
+      break;
+    case holding_inserts_code:
+      print_esc("holdinginserts");
+      break;
+    case error_context_lines_code:
+      print_esc("errorcontextlines");
+      break;
+    default:
+      print_string("[unknown integer parameter!]");
+      break; 
   } 
 } 
 void begin_diagnostic (void) 
@@ -757,79 +758,80 @@ void begin_diagnostic (void)
 } 
 void end_diagnostic_(bool blankline)
 { 
-    print_nl("  ");    /*  */
+    print_nl("  ");
   if(blankline)print_ln (); 
   selector = old_setting; 
 } 
 void print_length_param_ (integer n)
 { 
   switch(n)
-  {case 0 : 
-    print_esc("parindent");
-    break; 
-  case 1 : 
-    print_esc("mathsurround");
-    break; 
-  case 2 : 
-    print_esc("lineskiplimit");
-    break; 
-  case 3 : 
-    print_esc("hsize");
-    break; 
-  case 4 : 
-    print_esc("vsize");
-    break; 
-  case 5 : 
-    print_esc("maxdepth");
-    break; 
-  case 6 : 
-    print_esc("splitmaxdepth");
-    break; 
-  case 7 : 
-    print_esc("boxmaxdepth");
-    break; 
-  case 8 : 
-    print_esc("hfuzz");
-    break; 
-  case 9 : 
-    print_esc("vfuzz");
-    break; 
-  case 10 : 
-    print_esc("delimitershortfall");
-    break; 
-  case 11 : 
-    print_esc("nulldelimiterspace");
-    break; 
-  case 12 : 
-    print_esc("scriptspace");
-    break; 
-  case 13 : 
-    print_esc("predisplaysize");
-    break; 
-  case 14 : 
-    print_esc("displaywidth");
-    break; 
-  case 15 : 
-    print_esc("displayindent");
-    break; 
-  case 16 : 
-    print_esc("overfullrule");
-    break; 
-  case 17 : 
-    print_esc("hangindent");
-    break; 
-  case 18 : 
-    print_esc("hoffset");
-    break; 
-  case 19 : 
-    print_esc("voffset");
-    break; 
-  case 20 : 
-    print_esc("emergencystretch");
-    break; 
-  default: 
-    print(496);     /* [unknown dimen parameter!] */
-    break; 
+  {
+    case par_indent_code:
+      print_esc("parindent");
+      break;
+    case math_surround_code:
+      print_esc("mathsurround");
+      break;
+    case line_skip_limit_code:
+      print_esc("lineskiplimit");
+      break;
+    case hsize_code:
+      print_esc("hsize");
+      break;
+    case vsize_code:
+      print_esc("vsize");
+      break;
+    case max_depth_code:
+      print_esc("maxdepth");
+      break;
+    case split_max_depth_code:
+      print_esc("splitmaxdepth");
+      break;
+    case box_max_depth_code:
+      print_esc("boxmaxdepth");
+      break;
+    case hfuzz_code:
+      print_esc("hfuzz");
+      break;
+    case vfuzz_code:
+      print_esc("vfuzz");
+      break;
+    case delimiter_shortfall_code:
+      print_esc("delimitershortfall");
+      break;
+    case null_delimiter_space_code:
+      print_esc("nulldelimiterspace");
+      break;
+    case script_space_code:
+      print_esc("scriptspace");
+      break;
+    case pre_display_size_code:
+      print_esc("predisplaysize");
+      break;
+    case display_width_code:
+      print_esc("displaywidth");
+      break;
+    case display_indent_code:
+      print_esc("displayindent");
+      break;
+    case overfull_rule_code:
+      print_esc("overfullrule");
+      break;
+    case hang_indent_code:
+      print_esc("hangindent");
+      break;
+    case h_offset_code:
+      print_esc("hoffset");
+      break;
+    case v_offset_code:
+      print_esc("voffset");
+      break;
+    case emergency_stretch_code:
+      print_esc("emergencystretch");
+      break;
+    default:
+      print_string("[unknown dimen parameter!]");
+      break; 
   } 
 } 
 void print_cmd_chr_ (quarterword cmd, halfword chrcode)
@@ -837,58 +839,58 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
   switch(cmd)
   {case 1 : 
     {
-      print(554);   /* begin-group character  */
+      print_string("begin-group character ");
       print(chrcode); 
     } 
     break; 
   case 2 : 
     {
-      print(555);   /* end-group character  */
+      print_string("end-group character ");
       print(chrcode); 
     } 
     break; 
   case 3 : 
     {
-      print(556);   /* math shift character  */
+      print_string("math shift character ");
       print(chrcode); 
     } 
     break; 
   case 6 : 
     {
-      print(557);   /* macro parameter character  */
+      print_string("macro parameter character ");
       print(chrcode); 
     } 
     break; 
   case 7 : 
     {
-      print(558);   /* superscript character  */
+      print_string("superscript character ");
       print(chrcode); 
     } 
     break; 
   case 8 : 
     {
-      print(559);   /* subscript character  */
+      print_string("subscript character ");
       print(chrcode); 
     } 
     break; 
   case 9 : 
-    print(560);     /* end of alignment template */
+    print_string("end of alignment template");
     break; 
   case 10 : 
     {
-      print(561);   /* blank space  */
+      print_string("blank space ");
       print(chrcode); 
     } 
     break; 
   case 11 : 
     {
-      print(562);   /* the letter  */
+      print_string("the letter ");
       print(chrcode); 
     } 
     break; 
   case 12 : 
     {
-      print(563);   /* the character  */
+      print_string("the character ");
       print(chrcode); 
     } 
     break; 
@@ -1253,7 +1255,7 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
     if(chrcode == 256)  /* pool size */ /* max_quarterword + 1 ? */
     print_esc("span");
     else {
-      print(896);   /* alignment tab character  */
+      print_string("alignment tab character ");
       print(chrcode); 
     } 
     break; 
@@ -1575,13 +1577,13 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
     break; 
   case 87 : 
     {
-      print(1220);    /* select font  */
+      print_string("select font ");
       slow_print(font_name[chrcode]); 
       if(font_size[chrcode]!= font_dsize[chrcode])
       {
-      print(738);     /*  at  */
+      print_string(" at ");
       print_scaled(font_size[chrcode]); 
-      print(394);     /* pt */
+      print_string("pt");
       } 
     } 
     break; 
@@ -1633,10 +1635,10 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
     } 
     break; 
   case 101 : 
-    print("undefined");
+    print_string("undefined");
   break;
   case 111 : 
-    print("macro");
+    print_string("macro");
     break; 
   case 112 : 
     print_esc("long macro");
@@ -1674,15 +1676,15 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
       print_esc("setlanguage");
       break; 
     default: 
-      print(1284);      /* [unknown extension!] */
+      print_string("[unknown extension!]");
       break; 
     } 
     break; 
   default: 
-    print(564);     /* [unknown command code!] */
+    print_string("[unknown command code!]");
     break; 
-  } 
-} 
+  }
+}
 
 #ifdef STAT
 void show_eqtb_(halfword n)
@@ -1752,7 +1754,7 @@ void show_eqtb_(halfword n)
     print_int(n - (hash_size + 1578)); 
     print_char(61);   /* = */
     if(eqtb[n].hh.v.RH == 0)
-    print(407);     /* void */
+    print_string("void");
     else {
   
       depth_threshold = 0; 
@@ -1763,7 +1765,7 @@ void show_eqtb_(halfword n)
   else if(n < (hash_size + 1883))   /* cat_code_base ... */
   {
     if(n == (hash_size + 1834))
-    print(408);     /* current font */
+    print_string("current font");
     else if(n < (hash_size + 1851))
     {
       print_esc("textfont"); 
@@ -1781,7 +1783,7 @@ void show_eqtb_(halfword n)
     print_char(61);   /* = */
 /*    print_esc(hash[(hash_size + 524) + eqtb[n].hh.v.RH].v.RH); */
     //print_esc(hash[(hash_size + hash_extra + 524) + eqtb[n].hh.v.RH].v.RH);
-	print_esc("");print(hash[(hash_size + hash_extra + 524) + eqtb[n].hh.v.RH].v.RH);
+    print_esc("");print(hash[(hash_size + hash_extra + 524) + eqtb[n].hh.v.RH].v.RH);
                 /* 96/Jan/10 */
   } 
   else if(n < (hash_size + 2907))
@@ -1810,7 +1812,6 @@ void show_eqtb_(halfword n)
     print_int(eqtb[n].hh.v.RH); 
   } 
   else {
-      
     print_esc("mathcode");
     print_int(n - (hash_size + 2907)); 
     print_char(61);     /* = */
@@ -1842,7 +1843,7 @@ void show_eqtb_(halfword n)
     } 
     print_char(61);     /* = */
     print_scaled(eqtb[n].cint); 
-    print(394);       /* pt */
+    print_string("pt");
   } 
   else print_char(63);    /* = */
 } 

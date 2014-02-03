@@ -471,7 +471,7 @@ void do_register_command_ (small_number a)
       {
 		  print_err("You can't use `");
   print_cmd_chr(cur_cmd, cur_chr); 
-  print(683);     /* ' after  */
+  print_string("' after ");
   print_cmd_chr(q, 0); 
   help1("I'm forgetting what you said and not changing anything.");
   error (); 
@@ -697,7 +697,7 @@ void new_font_(small_number a)
   else {
     old_setting = selector; 
     selector = 21; 
-    print(1213);    /* FONT */
+    print_string("FONT");
     print(u - 1); 
     selector = old_setting; 
     {
@@ -734,7 +734,7 @@ void new_font_(small_number a)
     {
 		print_err("Improper `at' size(");
       print_scaled(s); 
-      print(1217);  /* pt), replaced by 10pt */
+      print_string("pt), replaced by 10pt");
 	  help2("I can only handle fonts at positive sizes that are",
 		  "less than 2048pt, so I've changed what you said to 10pt.");
       error (); 
@@ -1038,7 +1038,7 @@ void show_whatever (void)
       print_int(cur_val); 
       print_char(61); /* = */
       if(eqtb[(hash_size + 1578) + cur_val].hh.v.RH == 0)
-      print(407);   /* void */
+      print_string("void");
       else show_box(eqtb[(hash_size + 1578) + cur_val].hh.v.RH); 
     } 
     break; 
@@ -1075,7 +1075,7 @@ void show_whatever (void)
   if(eqtb[(hash_size + 3192)].cint <= 0)
   {
     selector = 17; 
-    print(1250);  /*  (see the transcript file) */
+    print_string(" (see the transcript file)");
     selector = 19; 
   } 
   lab50: if(interaction < 3)
@@ -1371,7 +1371,7 @@ void handle_right_brace (void)
       cur_tok = (hash_size + hash_extra + 4095 + 515);
 	  print_err("Missing ");
       print_esc("cr");
-      print(623);   /* inserted */
+      print_string("inserted");
 	  help1("I'm guessing that you meant to end an alignment here.");
       ins_error (); 
     } 

@@ -193,7 +193,7 @@ void fetch_(halfword a)
     print_size(cur_size); 
     print_char(32);   /*   */
     print_int(mem[a].hh.b0); 
-    print(878);     /* is undefined (character  */
+    print_string("is undefined (character ");
     print(cur_c); 
     print_char(41);   /*)*/
 	help4("Somewhere in the math formula just ended, you used the",
@@ -1126,7 +1126,7 @@ void init_align (void)
   {
 	  print_err("Improper ");
     print_esc("halign");
-    print(888);     /* inside $$ */
+    print_string("inside $$");
 	help3("Displays can use special alignments (like \\eqalignno)",
 		"only if nothing but the alignment itself is between $$'s.",
 		"So I've deleted the formulas that preceded this alignment.");

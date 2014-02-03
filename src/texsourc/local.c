@@ -2201,27 +2201,17 @@ void showaddresses (void)
 /* grab `env var' from `dviwindo.ini' - or from DOS environment 94/May/19 */
 /* controlled by USEDVIWINDOINI environment variable 94/June/19 */
 
-bool usedviwindo = true;  /* use [Environment] section in `dviwindo.ini' */
-
-bool backwardflag = false;  /* don't cripple all advanced features */
-
-bool shortenfilename = false;  /* don't shorten file names to 8+3 for DOS */
-
+bool usedviwindo = true;    /* use [Environment] section in `dviwindo.ini' */
+bool backwardflag = false;           /* don't cripple all advanced features */
+bool shortenfilename = false;        /* don't shorten file names to 8+3 for DOS */
 char *inifilename = "dviwindo.ini";   /* name of ini file we look for */
-
 char *dviwindo = "";      /* full file name for dviwindo.ini with path */
-
 char *envsection = "[Environment]";   /* Env var section in `dviwindo.ini' */
-
 char *wndsection = "[Window]";      /* Window section in `dviwindo.ini' */
-
 char *workdirect = "WorkingDirectory";  /* key in [Window] section */
-
 bool usesourcedirectory = true;   /* use source file directory as local */
                     /* when WorkingDirectory is set */
-
 bool workingdirectory = false;    /* if working directory set in ini */
-
 /* set up full file name for dviwindo.ini and check for [Environment] */
 
 bool setupdviwindo (void)
@@ -2313,7 +2303,6 @@ char *lastname=NULL, *lastvalue=NULL;
 /* get value of env var - try first in dviwindo.ini then DOS env */
 /* returns allocated string -- these strings are not freed again */
 /* is it safe to do that now ? 98/Jan/31 */
-
 char *grabenv (char *varname)
 {
   char line[PATH_MAX];
@@ -2419,12 +2408,12 @@ void knuthify (void)
 /*  return_flag = false; */ /* don't allow just ^^M termination */
 /*  trimeof = false; */ /* don't trim ^^Z Ctrl-Z at end of file */
   restrict_to_ascii = false; /* don't complain non ASCII */
-  allow_patterns  = false; /* don't allow pattern redefinition */
+  allow_patterns    = false; /* don't allow pattern redefinition */
   show_in_hex       = true;  /* show character code in hex */
   show_in_dos       = false; /* redundant with previous */
-  show_numeric     = false; /* don't show character code decimal */
-  show_missing     = false; /* don't show missing characters */
-  civilize_flag    = false; /* don't reorder date fields */
+  show_numeric      = false; /* don't show character code decimal */
+  show_missing      = false; /* don't show missing characters */
+  civilize_flag     = false; /* don't reorder date fields */
   c_style_flag      = false; /* don't add file name to error msg */
   show_fmt_flag     = false; /* don't show format file in log */
   show_tfm_flag     = false; /* don't show metric file in log */
@@ -2759,7 +2748,6 @@ int read_commands (char *filename)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 /* try and read commands on command line */
-
 int read_command_line (int ac, char **av)
 { 
   int c;
@@ -2834,16 +2822,19 @@ int initcommands (int ac, char **av)
 /*  NOTE: some defaults changed 1993/Nov/18 */
 /*  want_version = show_use = switchflag = return_flag = false;
   is_initex = trace_flag = deslash = non_ascii = false; */
-  is_initex       = false; /* check for dumping format file */
-  allow_patterns   = false; /* using \pattern after format file loaded */
-  reset_exceptions = false; /*  */
-  non_ascii = key_replace = false;
-  want_version = false;
-  open_trace_flag = trace_flag = verbose_flag = heap_flag = false;
+  is_initex         = false; /* check for dumping format file */
+  allow_patterns    = false; /* using \pattern after format file loaded */
+  reset_exceptions  = false; 
+  non_ascii         = false;
+  key_replace       = false;
+  want_version      = false;
+  open_trace_flag   = false;
+  trace_flag        = false;
+  verbose_flag      = false;
+  heap_flag         = false;
   restrict_to_ascii = false;
-//  show_in_hex = true;   /* default is to show as hex code ^^ */
-  show_in_hex = false;    /* default is not to show as hex code ^^ 00/Jun/18 */
-  show_in_dos = false;    /* default is not to translate to DOS 850 */ 
+  show_in_hex       = false;    /* default is not to show as hex code ^^ 00/Jun/18 */
+  show_in_dos       = false;    /* default is not to translate to DOS 850 */ 
   return_flag = trimeof = true;  // hard wired now
   deslash = true;
   pseudo_tilde = 254;    /* default '~' replace 95/Sep/26 filledbox DOS 850 */
@@ -2894,7 +2885,6 @@ int initcommands (int ac, char **av)
   programpath = xstrdup(av[0]);       /* extract path executable */
   stripname(programpath);         /* strip off yandytex.exe */
 
-/*  format_name = "PLAIN"; */  /* format name if specified on command line */
   format_name = "plain"; /* format name if specified on command line */
 
   encoding_name = "";
@@ -2929,7 +2919,7 @@ int initcommands (int ac, char **av)
 
 /* E sets environment variable ? */
 
-void initialmemory (void)
+void initial_memory (void)
 {   /* set initial memory allocations */
     if (mem_extra_high < 0) mem_extra_high = 0;
     if (mem_extra_low < 0) mem_extra_low = 0;
@@ -3023,16 +3013,15 @@ void pause (void)
 void checkpause (int flag)
 {            /* 95/Oct/28 */
   char *s;
-  int debugpause=0;
+  int debug_pause = 0;
 /*  don't stop if in Q (quiet) or R (run) mode */
 /*  stop only in S (scroll) and T (TeX) mode */
   if (interaction >= 0 && interaction < 2) flag = 0;    /* 98/Jun/30 */
   s = grabenv("DEBUGPAUSE");
-  if (s != NULL) sscanf(s, "%d", &debugpause);
+  if (s != NULL) sscanf(s, "%d", &debug_pause);
   if (flag < 0) return;
-  if (debugpause) {
-//    if ((debugpause > 1) || flag) {
-    if (debugpause || flag > 0) {
+  if (debug_pause) {
+    if (debug_pause || flag > 0) {
       show_line("\n", 0);
 #ifndef _WINDOWS
       show_line("Press any key to continue . . .\n", 0);
@@ -3042,20 +3031,18 @@ void checkpause (int flag)
   }
 }
 
-void checkenter (int argc, char *argv[])
-{      /* 95/Oct/28 */
+void check_enter (int argc, char *argv[])
+{/* 95/Oct/28 */
   int m;
   char current[FILENAME_MAX];
-  if (grabenv ("DEBUGPAUSE") != NULL) {
+  if (grabenv("DEBUGPAUSE") != NULL) {
     (void) _getcwd(current, sizeof(current));
     sprintf(log_line, "Current directory: `%s'\n", current);
     show_line(log_line, 0);
     for (m = 0; m < argc; m++) {
-//      sprintf(log_line, "%2d:\t`%s'\n", m, argv[m]); 
       sprintf(log_line, "%2d: `%s'\n", m, argv[m]); 
       show_line(log_line, 0);
     }
-//    checkpause(0);
     checkpause(-1);
   }
 }
@@ -3100,7 +3087,7 @@ void hidetwiddle (char *name)
 #endif
 }
 
-void deslashall (int ac, char **av)
+void deslash_all (int ac, char **av)
 {
   char buffer[PATH_MAX];  
   char *s;
@@ -3110,15 +3097,12 @@ void deslashall (int ac, char **av)
 
   if (usedviwindo) setupdviwindo();   // moved to yandytex ?
 
-  checkenter(ac, av);           /* 95/Oct/28 */
+  check_enter(ac, av);           /* 95/Oct/28 */
 
 /*  environment variables for output directories (as in PC TeX) */
 
-/*  if ((s = getenv("TEXDVI")) != NULL) dvi_directory = s; */
   if ((s = grabenv("TEXDVI")) != NULL) dvi_directory = s;
-/*  if ((s = getenv("TEXLOG")) != NULL) log_directory = s; */
   if ((s = grabenv("TEXLOG")) != NULL) log_directory = s;
-/*  if ((s = getenv("TEXAUX")) != NULL) aux_directory = s; */
   if ((s = grabenv("TEXAUX")) != NULL) aux_directory = s;
 
   strcpy(buffer, av[0]);            /* get path to executable */
@@ -3292,9 +3276,9 @@ int init (int ac, char **av)
   if (heap_flag) (void) heap_dump(stdout, 1);
 #endif
 
-  initialmemory();
+  initial_memory();
 
-  deslashall (ac, av);    /* deslash and note if format specified */
+  deslash_all(ac, av);    /* deslash and note if format specified */
 
 /*  sprintf(log_line, "%s\n", initbuffer); */    /* debugging, remove later */
 

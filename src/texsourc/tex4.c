@@ -38,7 +38,7 @@ void char_warning_(internal_font_number f, eight_bits c)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (show_missing) {     /* add ! before 94/June/10 */
     print_nl("! ");    /* !  */
-    print(819);     /* Missing character: there is no */
+    print_string("Missing character: there is no");
   }
   else 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -64,7 +64,7 @@ void char_warning_(internal_font_number f, eight_bits c)
 /*    print_char(32); */
   }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    print(820);               /* in font */
+    print_string("in font");
     slow_print(font_name[f]); 
     print_char(33);     /* ! */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -1309,7 +1309,7 @@ void ship_out_(halfword p)
   {
     print_nl("");    /*  */
     print_ln (); 
-    print(823);   /* Completed box being shipped out */
+    print_string("Completed box being shipped out");
   } 
   if(term_offset > max_print_line - 9)
   print_ln (); 
@@ -1396,7 +1396,7 @@ void ship_out_(halfword p)
     dvi_four(eqtb[(hash_size + 3180)].cint); 
     old_setting = selector; 
     selector = 21; 
-    print(821);   /* TeX output  */
+    print_string("TeX output ");
     print_int(eqtb[(hash_size + 3186)].cint); 
     print_char(46); /* . */
     print_two(eqtb[(hash_size + 3185)].cint); 
@@ -1477,11 +1477,11 @@ void ship_out_(halfword p)
 #ifdef STAT
   if(eqtb[(hash_size + 3194)].cint > 1)
   {
-    print(825);         /* after */
+    print_string("after");
     print_int(var_used); 
     print_char(38);         /* & */
     print_int(dyn_used); 
-    print(826);         /* still utouched */
+    print_string("still utouched");
     print_int(hi_mem_min - lo_mem_max - 1); /* somewhat inaccurate free mem */
     print_ln (); 
   } 
@@ -1688,7 +1688,7 @@ halfword hpack_(halfword p, scaled w, small_number m)
   if(last_badness > 100)
     print_nl("Underfull");    /*  */
   else print_nl("Loose");   /*  */
-  print(840);       /* \hbox (badness */
+  print_string("\\hbox (badness");
   print_int(last_badness); 
   if(last_badness > 100)underfull_hbox++;   /* 1996/Feb/9 */
   goto lab50; 
@@ -1735,7 +1735,7 @@ halfword hpack_(halfword p, scaled w, small_number m)
   print_ln (); 
   print_nl("Overfull \\hbox(");    /* */
   print_scaled(- (integer) x - totalshrink[0]); 
-  print(847);     /* pt too wide */
+  print_string("pt too wide");
   overfull_hbox++;      /* 1996/Feb/9 */
   goto lab50; 
       } 
@@ -1755,18 +1755,18 @@ halfword hpack_(halfword p, scaled w, small_number m)
     goto lab10; 
   } 
   lab50: if(output_active)
-  print(841); /*)has occurred while \output is active */
+  print_string(")has occurred while \\output is active");
   else {
       
     if(pack_begin_line != 0)
     {
       if(pack_begin_line > 0)
-      print(842); /*)in paragraph at lines  */
-      else print(843);  /*)in alignment at lines  */
+      print_string(")in paragraph at lines ");
+      else print_string(")in alignment at lines ");
       print_int(abs(pack_begin_line)); 
-      print(844); /* -- */
+      print_string("--");
     } 
-    else print(845);  /*)detected at line  */
+    else print_string(")detected at line ");
     print_int(line); 
   } 
   print_ln (); 
@@ -1904,7 +1904,7 @@ halfword vpackage_(halfword p, scaled h, small_number m, scaled l)
   if(last_badness > 100)
     print_nl("Underfull");      /*  */
   else print_nl("Loose");     /*  */
-  print(850);         /* \vbox (badness */
+  print_string("\\vbox (badness");
   print_int(last_badness); 
   if(last_badness > 100)underfull_vbox++; /* 1996/Feb/9 */
   goto lab50; 
@@ -1942,7 +1942,7 @@ halfword vpackage_(halfword p, scaled h, small_number m, scaled l)
   print_ln (); 
   print_nl("Overfull \\vbox(");  /* */
   print_scaled(- (integer) x - totalshrink[0]); 
-  print(852);   /* pt too high */
+  print_string("pt too high");
   overfull_vbox++;    /* 1996/Feb/9 */
   goto lab50; 
       } 
@@ -1963,16 +1963,16 @@ halfword vpackage_(halfword p, scaled h, small_number m, scaled l)
     goto lab10; 
   } 
   lab50: if(output_active)
-  print(841); /*)has occurred while \output is active */
+  print_string(")has occurred while \\output is active");
   else {
       
     if(pack_begin_line != 0)
     {
-      print(843); /*)in alignment at lines  */
+      print_string(")in alignment at lines ");
       print_int(abs(pack_begin_line)); 
-      print(844); /* -- */
+      print_string("--");
     } 
-    else print(845);  /*)detected at line  */
+    else print_string(")detected at line ");
     print_int(line); 
     print_ln (); 
   } 

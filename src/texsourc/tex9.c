@@ -391,13 +391,13 @@ void close_files_and_terminate (void)
   if (full_file_name_flag && dvi_file_name != NULL) 
     print_char_string((unsigned char *)dvi_file_name);
   else slow_print(output_file_name); 
-    print(284);     /* (*/
+    print_string(" (");
     print_int(total_pages); 
-    print(833);     /*  page */
+    print_string(" page");
     if(total_pages != 1) print_char(115);   /* s */
-    print(834);     /*,  */
+    print_string(", ");
     print_int(dvi_offset + dvi_ptr); 
-    print(835);     /* bytes). */
+    print_string("bytes).");
     b_close(dvi_file); 
   } 
   if(log_opened) {

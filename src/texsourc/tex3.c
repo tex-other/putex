@@ -256,7 +256,7 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
   
       if(cur_order == 3) {
 		  print_err("Illegal unit of measure(");
-  print(703);     /* replaced by filll) */
+  print_string("replaced by filll)");
   help1("I dddon't go any higher than filll.");
   error (); 
     } 
@@ -310,7 +310,7 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
   goto lab88; 
   else {
       print_err("Illegal unit of measure("); 
-    print(707);     /* mu inserted) */
+    print_string("mu inserted)");
 	help4("The unit of measurement in math glue must be mu.",
 		"To recover gracefully from this error, it's best to",
 		"delete the erroneous units; e.g., type `2' to delete",
@@ -373,7 +373,7 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
   goto lab30; 
   else {
       print_err("Illegal unit of measure(");
-    print(720);     /* pt inserted) */
+    print_string("pt inserted)");
 	help6("Dimensions can be in units of em, ex, in, pt, pc,",
 		"cm, mm, dd, cc, bp, or sp; but yours is a new one!",
 		"I'll assume that you meant to say pt, for printer's points.",
@@ -620,7 +620,7 @@ halfword the_toks (void)
     case 1 : 
       {
   print_scaled(cur_val); 
-  print(394);       /* pt */
+  print_string("pt");
       } 
       break; 
     case 2 : 
@@ -699,9 +699,9 @@ void conv_toks (void)
       print(font_name[cur_val]); 
       if(font_size[cur_val]!= font_dsize[cur_val])
       {
-      print(738);   /* at  */
+      print_string("at ");
       print_scaled(font_size[cur_val]); 
-      print(394);   /* pt */
+      print_string("pt");
       } 
     } 
     break; 
@@ -900,7 +900,7 @@ void read_toks_(integer n, halfword r)
       if(interaction > 1)
         if(n < 0) {
         ; 
-          print(335); /* "" */
+          print_string("");
           term_input(335, 0); 
         } 
         else {
@@ -909,7 +909,7 @@ void read_toks_(integer n, halfword r)
           sprint_cs(r); 
           {
           ; 
-            print(61);    /* = */
+            print_string("=");
             term_input(61, 0); 
           } 
           n = -1; 
@@ -1209,7 +1209,7 @@ void conditional (void)
       if(eqtb[(hash_size + 3199)].cint > 1)
       {
   begin_diagnostic (); 
-  print(779); /* {case */
+  print_string("{case ");
   print_int(n); 
   print_char(125);    /* } */
   end_diagnostic(false); 
@@ -1240,8 +1240,8 @@ void conditional (void)
   {
     begin_diagnostic (); 
     if(b)
-    print(775);   /* {true}*/
-    else print(776);  /* {false}*/
+    print_string("{true}");
+    else print_string("{false}");
     end_diagnostic(false); 
   } 
   if(b)     /* b may be used without ... */
@@ -1758,7 +1758,7 @@ void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e
   else 
     print_err("I can't write on file `");
   print_file_name(cur_name, cur_area, cur_ext); 
-  print(784);   /* '. */
+  print_string("'.");
   if(s == 781){   /* input file name */
     if (cur_area == 335) {    /* "" only if path not specified */
       if (show_texinput_flag) show_tex_inputs();
@@ -1781,8 +1781,8 @@ void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e
 #endif
   {
  ; 
-    print(565);   /* : */
-    term_input(565, 0); 
+    print_string(": ");
+    term_input(565, 0);
   } 
 /*  should we deal with tilde and space in file name here ??? */
   {
@@ -1856,7 +1856,7 @@ void open_log_file (void)
   (void) fputs(tex_version,  log_file); 
   (void) fprintf(log_file, " (%s %s)", application, yandyversion);
   if (format_ident > 0) slow_print(format_ident);     /* bkph */
-    print(794); /* '  ' (i.e. two spaces) */
+    print_string("  ");
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (civilize_flag) print_int(eqtb[(hash_size + 3186)].cint); /* year */
     else 
@@ -2259,16 +2259,16 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
     print_file_name(nom, aire, 335); /* "" */
     if(s >= 0)
     {
-      print(738); /*  at  */
+      print_string(" at ");
       print_scaled(s); 
-      print(394); /* pt */
+      print_string("pt");
     } 
     else if(s != -1000)
     {
-      print(797); /*  scaled  */
+      print_string(" scaled ");
       print_int(- (integer) s); 
     } 
-    print(806);   /*  not loaded: Not enough room left */
+    print_string(" not loaded: Not enough room left");
 	help4("I'm afraid I won't be able to make use of this font,",
 		"because my memory for character-size data is too small.",
 		"If you're really stuck, ask a wizard to enlarge me.",
@@ -2657,17 +2657,17 @@ lab11: print_err("Font ");
   print_file_name(nom, aire, 335);  /* "" */
   if(s >= 0)
   {
-    print(738);   /* at */
+    print_string("at");
     print_scaled(s); 
-    print(394);   /* pt */
+    print_string("pt");
   } 
   else if(s != -1000)
   {
-    print(797);   /* scaled */
+    print_string("scaled");
     print_int(- (integer) s); 
   } 
-  if(fileopened)print(798); /* not loadable: Bad metric (TFM) file */
-  else print(799);  /* not loadable: Metric (TFM) file not found */
+  if(fileopened)print_string("not loadable: Bad metric (TFM) file");
+  else print_string("not loadable: Metric (TFM) file not found");
   if (aire == 335) {    /* "" only if path not specified */
     if (show_texinput_flag) show_tex_fonts();   /* 98/Jan/31 */
   }

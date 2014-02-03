@@ -121,20 +121,20 @@ void prepare_mag (void)
 {
   if((mag_set > 0)&&(eqtb[(hash_size + 3180)].cint != mag_set)) 
   {
-	  print_err("Incompatible magnification(");
+    print_err("Incompatible magnification(");
     print_int(eqtb[(hash_size + 3180)].cint); 
-    print(545);     /*)*/
+    print_string(");");
     print_nl(" the previous value will be retained");
-	help2("I can handle only one magnification ratio per job.",
-		"So I've reverted to the magnification you used earlier on this run.");
+    help2("I can handle only one magnification ratio per job.",
+        "So I've reverted to the magnification you used earlier on this run.");
     int_error(mag_set); 
     geq_word_define((hash_size + 3180), mag_set); 
   } 
   if((eqtb[(hash_size + 3180)].cint <= 0)||
     (eqtb[(hash_size + 3180)].cint > 32768L)) 
   {
-	  print_err("Illegal magnification has been changed to 1000");
-	  help1("The magnification ratio must be between 1 and 32768.");
+    print_err("Illegal magnification has been changed to 1000");
+    help1("The magnification ratio must be between 1 and 32768.");
     int_error(eqtb[(hash_size + 3180)].cint); 
     geq_word_define((hash_size + 3180), 1000); 
   } 
@@ -165,11 +165,11 @@ void print_meaning (void)
 void show_cur_cmd_chr (void) 
 { 
   begin_diagnostic (); 
-  print_nl("{");    /* { */
+  print_nl("{");
   if(mode != shown_mode)
   {
     print_mode(mode); 
-    print(565); /* :  */
+    print_string(": ");
     shown_mode = mode; 
   } 
   print_cmd_chr(cur_cmd, cur_chr); 
@@ -357,7 +357,7 @@ void show_context (void)
     n = l + first_count; 
   } 
   else {
-    print(275);       /* ... */
+    print_string("...");
     p = l + first_count - half_error_line + 3; 
     n = half_error_line; 
   } 
@@ -390,7 +390,7 @@ void show_context (void)
     while(q++ < for_end);
   } 
   if(m + n > error_line)
-    print(275);       /* ... */
+    print_string("...");
   incr(nn); 
       } 
     } 
@@ -455,7 +455,7 @@ void begin_token_list_ (halfword p, quarterword t)
     print_cmd_chr(72, t + (hash_size + 1307));  /* H */
     break; 
   } 
-  print(553); /* -> */
+  print_string("->");
   token_show(p); 
   end_diagnostic(false); 
       } 
@@ -644,31 +644,30 @@ void check_outer_validity (void)
     {
       runaway (); 
       if(cur_cs == 0)
-		  print_err("File ended");
+        print_err("File ended");
       else {
-    
   cur_cs = 0;
   print_err("Forbidden control sequence found");
       } 
-      print(603); /*  while scanning  */
+      print_string(" while scanning ");
       p = get_avail (); 
       switch(scanner_status)
       {case 2 : 
   {
-    print(567); /* definition */
+    print_string("definition");
     mem[p].hh.v.LH = 637; 
   } 
   break; 
       case 3 : 
   {
-    print(609); /* use */
+    print_string("use");
     mem[p].hh.v.LH = par_token; 
     long_state = 113; 
   } 
   break; 
       case 4 : 
   {
-    print(569); /* preamble */
+    print_string("preamble");
     mem[p].hh.v.LH = 637; 
     q = p; 
     p = get_avail (); 
@@ -681,28 +680,28 @@ void check_outer_validity (void)
   break; 
       case 5 : 
   {
-    print(570); /* text */
+    print_string("text");
     mem[p].hh.v.LH = 637; 
   } 
   break; 
       } 
       begin_token_list(p, 4); 
-      print(604); /*  of  */
+      print_string(" of ");
       sprint_cs(warning_index);
-	  help4("I suspect you have forgotten a `}', causing me",
-		  "to read past where you wanted me to stop.",
-		  "I'll try to recover; but if the error is serious,",
-		  "you'd better type `E' or `X' now and fix your file.");
+      help4("I suspect you have forgotten a `}', causing me",
+          "to read past where you wanted me to stop.",
+          "I'll try to recover; but if the error is serious,",
+          "you'd better type `E' or `X' now and fix your file.");
       error (); 
     } 
     else {
   print_err("Incomplete ");
       print_cmd_chr(105, cur_if); /* i */
-      print(596); /*; all text was ignored after line  */
+      print_string("; all text was ignored after line ");
       print_int(skip_line);
-	  help3("A forbidden control sequence occurred in skipped text.",
-		  "This kind of error happens when you say `\\if...' and forget",
-		  "the matching `\\fi'. I've inserted a `\\fi'; this might work.");
+      help3("A forbidden control sequence occurred in skipped text.",
+          "This kind of error happens when you say `\\if...' and forget",
+          "the matching `\\fi'. I've inserted a `\\fi'; this might work.");
       if(cur_cs != 0)
       cur_cs = 0; 
       else help_line[2]= "The file ended while I was skipping conditional text.";
@@ -736,7 +735,7 @@ void firm_up_the_line (void)
       first = cur_input.limit_field; 
       {
       ; 
-        print(615); /* => */
+        print_string("=>");
         term_input(615, 0); 
       } 
       if(last > first){
@@ -828,11 +827,11 @@ void macro_call (void)
       {
 		  print_err("Use of ");
   sprint_cs(warning_index); 
-  print(648);     /*  doesn't match its definition */
+  print_string(" doesn't match its definition");
   help4("If you say, e.g., `\\def\\a1{...}', then you must always",
-	  "put `1' after `\\a', since control sequence names are",
-	  "made up of letters only. The macro here has not been",
-	  "followed by the required stuff, so I'm ignoring it."); 
+      "put `1' after `\\a', since control sequence names are",
+      "made up of letters only. The macro here has not been",
+      "followed by the required stuff, so I'm ignoring it."); 
   error (); 
   goto lab10; 
       } 
@@ -875,10 +874,10 @@ void macro_call (void)
     runaway ();
 	print_err("Paragraph ended before ");
     sprint_cs(warning_index); 
-    print(643);   /* was complete */
-	help3("I suspect you've forgotten a `}', causing me to apply this",
-		"control sequence to too much text. How can we recover?",
-		"My plan is to forget the whole thing and hope for the best."); 
+    print_string("was complete");
+    help3("I suspect you've forgotten a `}', causing me to apply this",
+        "control sequence to too much text. How can we recover?",
+        "My plan is to forget the whole thing and hope for the best."); 
     back_error (); 
   } 
   pstack[n]= mem[mem_top - 3].hh.v.RH; 
@@ -924,12 +923,12 @@ void macro_call (void)
       if(long_state == 111)
       {
         runaway ();
-		print_err("Paragraph ended before ");
+        print_err("Paragraph ended before ");
         sprint_cs(warning_index); 
-        print(643); /*  was complete */
-		help3("I suspect you've forgotten a `}', causing me to apply this",
-			"control sequence to too much text. How can we recover?",
-			"My plan is to forget the whole thing and hope for the best.");
+        print_string(" was complete");
+        help3("I suspect you've forgotten a `}', causing me to apply this",
+            "control sequence to too much text. How can we recover?",
+            "My plan is to forget the whole thing and hope for the best.");
         back_error (); 
       } 
       pstack[n]= mem[mem_top - 3].hh.v.RH; 
@@ -967,7 +966,7 @@ void macro_call (void)
   back_input ();
   print_err("Argument of ");
   sprint_cs(warning_index); 
-  print(635);     /*  has an extra } */
+  print_string(" has an extra }");
   help6("I've run across a `}' that doesn't seem to match anything.",
 	  "For example, `\\def\\a#1{...}' and `\\a}' would produce",
 	  "this error. If you simply proceed now, the `\\par' that",
@@ -1029,7 +1028,7 @@ void macro_call (void)
     begin_diagnostic (); 
     print_nl(matchchr); /* matchchar may be used without ... */
     print_int(n); 
-    print(653); /* <- */
+    print_string("<-");
     show_token_list(pstack[n - 1], 0, 1000); 
     end_diagnostic(false); 
   } 
@@ -1164,9 +1163,9 @@ void expand (void)
   {
 	  print_err("Missing ");
     print_esc("endcsname");
-    print(623);   /*  inserted */
-	help2("The control sequence marked <to be read again> should",
-		"not appear between \\csname and \\endcsname.");
+    print_string(" inserted");
+    help2("The control sequence marked <to be read again> should",
+        "not appear between \\csname and \\endcsname.");
     back_error (); 
   } 
   j = first; 
@@ -1524,9 +1523,9 @@ void find_font_dimen_(bool writing)
 /*    print_esc(hash[(hash_size + 524) + f].v.RH); */
     //print_esc(hash[(hash_size + hash_extra + 524) + f].v.RH); /*96/Jan/10*/
 	  print_esc("");print(hash[(hash_size + hash_extra + 524) + f].v.RH);
-    print(814); /* has  only  */
+    print_string(" has only ");
     print_int(font_params[f]); 
-    print(815); /*  fontdimen parameters */
+    print_string(" fontdimen parameters");
 	help2("To increase the number of font parameters, you must",
 		"use \\fontdimen immediately after the \\font is loaded.");
     error (); 
@@ -1817,7 +1816,7 @@ void scan_something_internal_(small_number level, bool negative)
     {
 		print_err("You can't use `");
       print_cmd_chr(cur_cmd, cur_chr); 
-      print(683); /* ' after  */
+      print_string("' after ");
       print_esc("the");
 	  help1("I'm forgetting what you said and using zero instead."); 
       error (); 
@@ -2204,7 +2203,7 @@ lab20:
         first = cur_input.start_field; 
         {
         ; 
-          print(42);    /* * */
+          print_string("*");    /* * */
           term_input(42, 0); 
         } 
         cur_input.limit_field = last; 

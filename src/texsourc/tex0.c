@@ -423,7 +423,7 @@ lab22:          /* loop */
       clear_for_error_prompt (); 
       {
         ; 
-        print(264);   /* ?  */
+        print_string("? ");
         term_input(264, help_ptr); 
       } 
       if(last == first)return;    // no input
@@ -500,7 +500,8 @@ lab22:          /* loop */
 				"Maybe you should try asking a human?");
             do {
               decr(help_ptr); 
-              print(help_line[help_ptr]); 
+              //print(help_line[help_ptr]);
+              print_string(help_line[help_ptr]);
               print_ln (); 
             } while(!(help_ptr == 0)); 
           }
@@ -522,7 +523,7 @@ lab22:          /* loop */
           else {
             {
               ; 
-              print(276); /* insert> */
+              print_string("insert>");
               term_input(276, 0); 
             } 
             cur_input.loc_field = first; 
@@ -538,7 +539,7 @@ lab22:          /* loop */
         {
           error_count = 0; 
           interaction = 0 + c - 81; /* Q = 0, R = 1, S = 2, T = 3 */
-          print(271);     /* OK, entering  */
+          print_string("OK, entering ");
           switch(c){
             case 81 :       /* Q */
             {
@@ -553,7 +554,7 @@ lab22:          /* loop */
               print_esc("scrollmode"); /*   */
               break; 
           } 
-          print(275);     /* ... */
+          print_string("...");
           print_ln (); 
 #ifndef _WINDOWS
           fflush(stdout); 
@@ -573,10 +574,10 @@ lab22:          /* loop */
           break; 
       }           /* end of switch analysing response character */
       {
-        print(265);   /* Type <return> to proceed, S to scroll future error messages, */
+        print_string("Type <return> to proceed, S to scroll future error messages,");
         print_nl("R to run without stopping, Q to run quietly,");  /*  */
         print_nl("I to insert something, ");  /*  */
-        if (base_ptr > 0) print(268); /*  E to edit your file,  */
+        if (base_ptr > 0) print_string("E to edit your file,");
         if(deletions_allowed) print_nl("1 or ... or 9 to ignore the next 1 to 9 tokens of input,"); /*  */
         print_nl("H for help, X to quit.");  /*  */
       } 
@@ -628,11 +629,11 @@ void overflow_(str_number s, integer n)
    normalize_selector ();
    print_err("TeX capacity exceeded, sorry[");
   print(s); 
-  print_char(61); /* '=' */
+  print_char('=');
   print_int(n); 
-  print_char(93); /* ']' */
+  print_char(']');
   help2("If you really absolutely need more capacity,",
-	  "you can ask a wizard to enlarge me."); 
+      "you can ask a wizard to enlarge me."); 
   if (! knuth_flag) {   /*  Additional comments 98/Jan/5 */
     if (s == 945 && n == trie_size) {
       sprintf(log_line, "\n  (Maybe use -h=... on command line in ini-TeX)\n");
@@ -660,15 +661,15 @@ void confusion_(str_number s)
 {
   normalize_selector (); 
   if(history < 2) {
-	  print_err("This can't happen(");
+    print_err("This can't happen(");
     print(s); 
     print_char(41); /*)*/
-	help1("I'm broken. Please show this to someone who can fix can fix");
+    help1("I'm broken. Please show this to someone who can fix can fix");
   } 
   else {
     print_err("I can't go on meeting you like this");
-	help2("One of your faux pas seems to have wounded me deeply...",
-		"in fact, I'm barely conscious. Please fix it and try again.");
+    help2("One of your faux pas seems to have wounded me deeply...",
+        "in fact, I'm barely conscious. Please fix it and try again.");
   } 
   {
     if(interaction == 3)interaction = 2; 
@@ -705,8 +706,7 @@ bool init_terminal (void)
   while(true){
     ; 
 #ifdef _WINDOWS
-    flag = ConsoleInput("**",
-              "Please type a file name or a control sequence\r\n(or ^z to exit)",
+    flag = ConsoleInput("**", "Please type a file name or a control sequence\r\n(or ^z to exit)",
               (char *) &buffer[first]);
     last = first + strlen((char *) &buffer[first]); /* -1 ? */
 //    may need to be more elaborate see input_line in texmf.c
@@ -1028,10 +1028,10 @@ void term_input (int promptstr, int nhelplines)
 
 void int_error_ (integer n) 
 {
-  print(284);  /* (*/
+  print(" (");
   print_int(n); 
   print_char(41); /*)*/
-  error (); 
+  error(); 
 } 
 
 void normalize_selector (void) 
@@ -1052,10 +1052,10 @@ void pause_for_instructions (void)
     interaction = 3; 
     if((selector == 18)||(selector == 16))
       incr(selector);
-	print_err("Interruption");
-	help3("You rang?",
-		"Try to insert some instructions for me (e.g.,`I\\showlists'),",
-		"unless you just want to quit by typing `X'.");
+    print_err("Interruption");
+    help3("You rang?",
+        "Try to insert some instructions for me (e.g.,`I\\showlists'),",
+        "unless you just want to quit by typing `X'.");
     deletions_allowed = false; 
     error (); 
     deletions_allowed = true; 
@@ -1347,10 +1347,10 @@ void show_token_list_(integer p, integer q, integer l)
   } 
   break; 
       case 14 : 
-  print(553);     /* -> */
+  print_string("->");
   break; 
   default: 
-  print_esc("BAD. ");   /*  */
+  print_esc("BAD. ");
   break; 
       } 
     } 
@@ -1358,7 +1358,7 @@ void show_token_list_(integer p, integer q, integer l)
   } 
 /* if p<>null then print_esc("ETC."); l.6244 */
   if(p != 0)
-  print_esc("ETC.");     /*  */
+    print_esc("ETC.");     /*  */
 } 
 
 void runaway (void) 
@@ -1370,25 +1370,25 @@ void runaway (void)
     switch(scanner_status)
     {case 2 : 
       {
-  print(567);         /* definition */
+  print_string("definition");
   p = def_ref; 
       } 
       break; 
     case 3 : 
       {
-  print(568);         /* argument */
+  print_string("argument");
   p = mem_top - 3; 
       } 
       break; 
     case 4 : 
       {
-  print(569);         /* preamble */
+  print_string("preamble");
   p = mem_top - 4; 
       } 
       break; 
     case 5 : 
       {
-  print(570);         /* text */
+  print("text");
   p = def_ref; 
       } 
       break; 
@@ -1803,7 +1803,6 @@ void check_mem_(bool printlocs)
   q = 0; 
   clobbered = false; 
   while(p != 0){    /* while p<>null do */
-      
     if((p > mem_end)||(p < hi_mem_min)) 
     clobbered = true; 
     else if(freearr[p])
@@ -1825,14 +1824,14 @@ void check_mem_(bool printlocs)
   do {
       if((p >= lo_mem_max)||(p < mem_min)) 
     clobbered = true; 
-    else if((mem[p + 1].hh.v.RH >= lo_mem_max)||(mem[p + 1].hh 
-   .v.RH < mem_min)) 
+    else if((mem[p + 1].hh.v.RH >= lo_mem_max)||(mem[p + 1].hh.v.RH < mem_min)) 
     clobbered = true; 
 /*    else if(!((mem[p].hh.v.RH == 262143L)) ||(mem[p].hh *//*NO!*/
-    else if(!((mem[p].hh.v.RH == empty_flag)) ||(mem[p].hh 
-   .v.LH < 2)||(p + mem[p].hh.v.LH > lo_mem_max)||(mem[mem[p + 
-    1].hh.v.RH + 1].hh.v.LH != p)) 
-    clobbered = true; 
+    else if(!((mem[p].hh.v.RH == empty_flag)) ||
+        (mem[p].hh .v.LH < 2) || 
+        (p + mem[p].hh.v.LH > lo_mem_max) ||
+        (mem[mem[p + 1].hh.v.RH + 1].hh.v.LH != p))
+      clobbered = true;
     if(clobbered)
     {
       print_nl("Double-AVAIL list clobbered at ");    /*  */
@@ -1856,8 +1855,7 @@ void check_mem_(bool printlocs)
   } while(!(p == rover)); 
   lab32:; 
   p = mem_min; 
-  while(p <= lo_mem_max){
-      
+  while(p <= lo_mem_max){sss      
 /*    if((mem[p].hh.v.RH == 262143L))  */ /* NO! */
     if((mem[p].hh.v.RH == empty_flag)) 
     {
@@ -1992,7 +1990,7 @@ void short_display_(integer p)
     print_char(42);   /* * */
 /*    else print_esc(hash[(hash_size + 524) + mem[p].hh.b0].v.RH); */
     else //print_esc(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH);
-		print_esc("");print(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH);
+    {print_esc("");print(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH);}
                             /* 96/Jan/10 */
     print_char(32);   /*   */
     font_in_short_display = mem[p].hh.b0; 
@@ -2008,7 +2006,7 @@ void short_display_(integer p)
     case 4 : 
     case 5 : 
     case 13 : 
-      print(306);   /* [] */
+      print_string("[]");
       break; 
     case 2 : 
       print_char(124);  /* | */
@@ -2029,7 +2027,6 @@ void short_display_(integer p)
   short_display(mem[p + 1].hh.v.RH); 
   n = mem[p].hh.b1; 
   while(n > 0){
-      
     if(mem[p].hh.v.RH != 0) /* if link(p)<>null then */
     p = mem[p].hh.v.RH; 
     decr(n); 
@@ -2054,7 +2051,7 @@ void print_font_and_char_ (integer p)
 /*    else print_esc(hash[(hash_size + 524) + mem[p].hh.b0].v.RH); */
     else
       //print_esc(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH); /* 96/Jan/10 */
-	{print_esc("");print(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH);}
+      {print_esc("");print(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH);}
     print_char(32);   /*   */
     print(mem[p].hh.b1);      /* character(p) */
   } 
@@ -2081,18 +2078,17 @@ void print_glue_(scaled d, integer order, str_number s)
 {
   print_scaled(d); 
   if((order < 0)||(order > 3)) 
-    print(308); /* foul */
+    print_string("foul");
   else if(order > 0)
   {
-    print(309); /* fil */
+    print_string("fil");
     while(order > 1){
-  
       print_char(108); /* l */
       decr(order); 
     } 
   } 
   else if(s != 0)
-  print(s); 
+  print(s);
 } 
 
 void print_spec_(integer p, str_number s)
@@ -2105,12 +2101,12 @@ void print_spec_(integer p, str_number s)
     print(s); 
     if(mem[p + 2].cint != 0)
     {
-      print(310); /*  plus */
+      print_string("plus");
       print_glue(mem[p + 2].cint, mem[p].hh.b0, s); 
     } 
     if(mem[p + 3].cint != 0)
     {
-      print(311); /*  minus */
+      print_string("minus");
       print_glue(mem[p + 3].cint, mem[p].hh.b1, s); 
     } 
   } 
@@ -2139,10 +2135,9 @@ void print_subsidiary_data_(halfword p, ASCII_code c)
   if((pool_ptr - str_start[str_ptr]) >= depth_threshold)
   {
     if(mem[p].hh.v.RH != 0)
-    print(312); /* [] */
+    print_string("[]");
   } 
   else {
-      
     {
       str_pool[pool_ptr]= c; 
       incr(pool_ptr); 
@@ -2164,7 +2159,7 @@ void print_subsidiary_data_(halfword p, ASCII_code c)
       {
   print_ln (); 
   print_current_string (); 
-  print(854);       /* {} */
+  print_string("{}");
       } 
       else show_info (); 
       break; 
@@ -2175,11 +2170,12 @@ void print_subsidiary_data_(halfword p, ASCII_code c)
     decr(pool_ptr); 
   } 
 } 
-
+/* sec 0694 */
 void print_style_(integer c)
 {
   switch(c / 2)
-  {case 0 : 
+  {
+ case 0 : 
     print_esc("displaystyle");
     break; 
   case 1 : 
@@ -2192,71 +2188,72 @@ void print_style_(integer c)
     print_esc("scriptscriptstyle");
     break; 
     default: 
-    print(859);     /*  */
+    print_string("Unknown style!");
     break; 
   } 
 } 
-
+/* sec 0225 */
 void print_skip_param_(integer n)
 {
   switch(n)
-  {case 0 : 
-    print_esc("lineskip");
-    break; 
-  case 1 : 
-    print_esc("baselineskip");
-    break; 
-  case 2 : 
-    print_esc("parskip");
-    break; 
-  case 3 : 
-    print_esc("abovedisplayskip");
-    break; 
-  case 4 : 
-    print_esc("belowdisplayskip");
-    break; 
-  case 5 : 
-    print_esc("abovedisplayshortskip");
-    break; 
-  case 6 : 
-    print_esc("belowdisplayshortskip");
-    break; 
-  case 7 : 
-    print_esc("leftskip");
-    break; 
-  case 8 : 
-    print_esc("rightskip");
-    break; 
-  case 9 : 
-    print_esc("topskip");
-    break; 
-  case 10 : 
-    print_esc("splittopskip");
-    break; 
-  case 11 : 
-    print_esc("tabskip");
-    break; 
-  case 12 : 
-    print_esc("spaceskip");
-    break; 
-  case 13 : 
-    print_esc("xspaceskip");
-    break; 
-  case 14 : 
-    print_esc("parfillskip");
-    break; 
-  case 15 : 
-    print_esc("thinmuskip");
-    break; 
-  case 16 : 
-    print_esc("medmuskip");
-    break; 
-  case 17 : 
-    print_esc("thickmuskip");
-    break; 
-    default: 
-    print(391);     /* [unknown glue parameter!] */
-    break; 
+  {
+    case line_skip_code:
+      print_esc("lineskip");
+      break;
+    case baseline_skip_code:
+      print_esc("baselineskip");
+      break; 
+    case par_skip_code:
+      print_esc("parskip");
+      break;
+    case above_display_skip_code:
+      print_esc("abovedisplayskip");
+      break;
+    case below_display_skip_code:
+      print_esc("belowdisplayskip");
+      break;
+    case above_display_short_skip_code:
+      print_esc("abovedisplayshortskip");
+      break;
+    case below_display_short_skip_code:
+      print_esc("belowdisplayshortskip");
+      break;
+    case left_skip_code:
+      print_esc("leftskip");
+      break;
+    case right_skip_code:
+      print_esc("rightskip");
+      break;
+    case top_skip_code:
+      print_esc("topskip");
+      break;
+    case split_top_skip_code:
+      print_esc("splittopskip");
+      break;
+    case tab_skip_code:
+      print_esc("tabskip");
+      break;
+    case space_skip_code:
+      print_esc("spaceskip");
+      break;
+    case xspace_skip_code:
+      print_esc("xspaceskip");
+      break;
+    case par_fill_skip_code:
+      print_esc("parfillskip");
+      break;
+    case thin_mu_skip_code:
+      print_esc("thinmuskip");
+      break;
+    case med_mu_skip_code:
+      print_esc("medmuskip");
+      break; 
+    case thick_mu_skip_code:
+      print_esc("thickmuskip");
+      break;
+    default:
+      print_string("[unknown glue parameter!]");
+      break; 
   } 
 } 
 
@@ -2270,7 +2267,7 @@ void show_node_list_(integer p)
 /*    if(p > 0) */  /* was p>null !!! line 3662 in tex.web */
     if(p != 0)    /* fixed 94/Mar/23 BUG FIX */
             /* NOTE: still not fixed in 3.14159 ! */
-    print(312);   /* [] */
+    print_string("[]");
     return; 
   } 
   n = 0; 
@@ -2281,13 +2278,13 @@ void show_node_list_(integer p)
     print_current_string (); 
     if(p > mem_end)
     {
-      print(313); /* Bad link, display aborted. */
+      print_string("Bad link, display aborted.");
       return; 
     } 
     incr(n); 
     if(n > breadth_max)
     {
-      print(314); /* etc. */
+      print_string("etc.");
       return; 
     } 
     if((p >= hi_mem_min)) 
@@ -2302,28 +2299,28 @@ void show_node_list_(integer p)
   else if(mem[p].hh.b0 == 1)
     print_esc("v");
   else print_esc("unset");
-  print(317);       /* box(*/
+  print_string("box(");
   print_scaled(mem[p + 3].cint); 
   print_char(43);     /* + */
   print_scaled(mem[p + 2].cint); 
-  print(318);       /*, shifted  */
+  print_string(", shifted ");
   print_scaled(mem[p + 1].cint); 
   if(mem[p].hh.b0 == 13)
   {
     if(mem[p].hh.b1 != 0)
     {
-      print(284);     /* (*/
+      print_string(" (");
       print_int(mem[p].hh.b1 + 1); 
-      print(320);     /*  columns) */
+      print_string(" columns)");
     } 
     if(mem[p + 6].cint != 0)
     {
-      print(321);     /*, stretch */
+      print_string(", stretch");
       print_glue(mem[p + 6].cint, mem[p + 5].hh.b1, 0); 
     } 
     if(mem[p + 4].cint != 0)
     {
-      print(322);     /*, shrink */
+      print_string(", shrink");
       print_glue(mem[p + 4].cint, mem[p + 5].hh.b0, 0); 
     } 
   } 
@@ -2332,14 +2329,14 @@ void show_node_list_(integer p)
     g = mem[p + 6].gr; 
     if((g != 0.0)&&(mem[p + 5].hh.b0 != 0)) 
     {
-      print(323);   /*, glue set */
+      print_string(", glue set");
       if(mem[p + 5].hh.b0 == 2)
-      print(324);   /* -  */
+      print_string("- ");
       if(fabs(g)> 20000.0)
       {
         if(g > 0.0)
         print_char(62); /* '>' */
-        else print(325);  /* < - */
+        else print_string("< -");
         print_glue(20000 * 65536L, mem[p + 5].hh.b1, 0); 
       } 
       else print_glue(round(65536L * g), mem[p + 5].hh.b1, 0)
@@ -2347,7 +2344,7 @@ void show_node_list_(integer p)
     } 
     if(mem[p + 4].cint != 0)
     {
-      print(319);   /* shifted */
+      print_string("shifted");
       print_scaled(mem[p + 4].cint); 
     } 
   } 
@@ -2367,7 +2364,7 @@ void show_node_list_(integer p)
   print_rule_dimen(mem[p + 3].cint); 
   print_char(43); /* '+' */
   print_rule_dimen(mem[p + 2].cint); 
-  print(318);   /*)x */
+  print_string(")x");
   print_rule_dimen(mem[p + 1].cint); 
       } 
       break; 
@@ -2375,13 +2372,13 @@ void show_node_list_(integer p)
       {
   print_esc("insert");
   print_int(mem[p].hh.b1); 
-  print(328);   /*, natural size */
+  print_string(",natural size ");
   print_scaled(mem[p + 3].cint); 
-  print(329);   /*; split(*/
+  print_string("; split(");
   print_spec(mem[p + 4].hh.v.RH, 0); 
   print_char(44); /* ',' */
   print_scaled(mem[p + 2].cint); 
-  print(330);   /* (; float cost */
+  print_string("(; float cost");
   print_int(mem[p + 1].cint); 
   {
     {
@@ -2422,7 +2419,7 @@ void show_node_list_(integer p)
   {
     print_esc("setlanguage");
     print_int(mem[p + 1].hh.v.RH); 
-    print(1286);      /*  (hyphenmin */
+    print_string(" (hyphenmin");
     print_int(mem[p + 1].hh.b0); 
     print_char(44);   /*, */
     print_int(mem[p + 1].hh.b1); 
@@ -2430,7 +2427,7 @@ void show_node_list_(integer p)
   } 
   break; 
   default: 
-  print(1287);    /* whatsit */
+  print_string("whatsit");
   break; 
       } 
       break; 
@@ -2442,7 +2439,7 @@ void show_node_list_(integer p)
   print_char(99); /* c */
   else if(mem[p].hh.b1 == 102)
   print_char(120); /* x */
-  print(336);   /* leaders  */
+  print_string("leaders ");
   print_spec(mem[p + 1].hh.v.LH, 0); 
   {
     {
@@ -2483,23 +2480,23 @@ void show_node_list_(integer p)
   print_char(32);   /*   */
   print_scaled(mem[p + 1].cint); 
   if(mem[p].hh.b1 == 2)
-  print(338);   /*  (for accent) */
+  print_string(" (for accent)");
       } 
       else {
   print_esc("mkern");
   print_scaled(mem[p + 1].cint); 
-  print(334);   /* mu */
+  print_string("mu");
       } 
       break; 
     case 9 : 
       {
   print_esc("math");
   if(mem[p].hh.b1 == 0)
-    print(341);   /* on */
-  else print(342);  /* off */ 
+    print_string("on");
+  else print_string("off");
   if(mem[p + 1].cint != 0)
   {
-    print(343); /*, surrounded */
+    print_string(", surrounded");
     print_scaled(mem[p + 1].cint); 
   } 
       } 
@@ -2507,7 +2504,7 @@ void show_node_list_(integer p)
     case 6 : 
       {
   print_font_and_char(p + 1); 
-  print(344);   /* (ligature */
+  print_string("(ligature");
   if(mem[p].hh.b1 > 1)
   print_char(124); /* | */
   font_in_short_display = mem[p + 1].hh.b0; 
@@ -2528,7 +2525,7 @@ void show_node_list_(integer p)
   print_esc("discretionary");
   if(mem[p].hh.b1 > 0)
   {
-    print(347); /*  replacing  */
+    print_string(" replacing ");
     print_int(mem[p].hh.b1); 
   } 
   {
@@ -2687,20 +2684,20 @@ void show_node_list_(integer p)
       {
   print_esc("fraction");
   if(mem[p + 1].cint == 1073741824L)  /* 2^30 */
-  print(875);     /* = default */
+  print_string("= default");
   else print_scaled(mem[p + 1].cint); 
   if((mem[p + 4].qqqq.b0 != 0)||(mem[p + 4].qqqq.b1 != 
   0)||(mem[p + 4].qqqq.b2 != 0)||(mem[p + 4].qqqq.b3 
   != 0)) 
   {
-    print(876);   /*, left */
+    print_string(", left");
     print_delimiter(p + 4); 
   } 
   if((mem[p + 5].qqqq.b0 != 0)||(mem[p + 5].qqqq.b1 != 
   0)||(mem[p + 5].qqqq.b2 != 0)||(mem[p + 5].qqqq.b3 
   != 0)) 
   {
-    print(877);   /*, right */
+    print_string(", right");
     print_delimiter(p + 5); 
   } 
   print_subsidiary_data(p + 2, 92); 
@@ -2708,7 +2705,7 @@ void show_node_list_(integer p)
       } 
       break; 
       default: 
-      print(315); /* Unknown node type! */
+      print_string("Unknown node type!");
       break; 
     } 
     p = mem[p].hh.v.RH; 
