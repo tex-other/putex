@@ -649,7 +649,7 @@ void set_paths (int path_bits)
 /*	changed to take C string 97/June/5 - used to take Pascal strings */
 /*  now expects null terminated strings */
 
-bool testreadaccess (unsigned char *name, int path_index)
+bool test_read_access (unsigned char *name, int path_index)
 { 
 #ifdef BUILDNAMEDIRECT
 	char buffer[PATH_MAX];			/* for constructing name 1996/Jan/20 */
@@ -1193,7 +1193,7 @@ bool dir_p (string fn)
 
 /* xfind_path_filename is used now */
 
-/* Called only from testreadaccess(...) in ourpaths.c */
+/* Called only from test_read_access(...) in ourpaths.c */
 
 #ifdef BUILDNAMEDIRECT
 
@@ -2020,14 +2020,12 @@ string *find_dir_list (string path)
 
 /* Unixify filename and path (turn \ into /) --- assumes null terminated */
 
-unsigned char *unixify (unsigned char * t)
+char *unixify (char * t)
 {
-	unsigned char * s = t;
+	char * s = t;
 	if (s == NULL) return s;		/* paranoia -- 1993/Apr/10 */
 #ifdef MSDOS
 	if (t != '\0') {
-/*		while (*s) { */
-/*		while (*s != 0 && *s != ' ') { */	/* paranoia -- 1994/Mar/22 */
 		while (*s != '\0') {				/* paranoia -- 1997/Oct/23 */
 /*			if (*s == '\\') *s = '/'; */
 			if (*s == '\\') *s = PATH_SEP;

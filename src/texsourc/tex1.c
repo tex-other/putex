@@ -412,12 +412,12 @@ void push_nest (void)
   if(nest_ptr == current_nest_size)
     nest = realloc_nest_stack (increment_nest_size);
   if(nest_ptr == current_nest_size){  /* check again after allocation */
-    overflow(359, current_nest_size);
+    overflow("semantic nest size", current_nest_size);
     return;     // abort_flag set
   }
 #else
   if(nest_ptr == nest_size){
-    overflow(359, nest_size); /* semantic next size - not dynamic */
+    overflow("semantic nest size", nest_size); /* semantic next size - not dynamic */
     return;     // abort_flag set
   }
 #endif
@@ -1881,8 +1881,8 @@ halfword id_lookup_(integer j, integer l)
           do {
             if((hash_used == 514)) {  /* if hash_used = hashbase ... */ 
 /*        we can't expand the hash table ... */
-/*        overflow(500, hash_size); */ /* hash size - NOT DYNAMIC */
-              overflow(500, hash_size + hash_extra); /* 96/Jan/10 */
+/*        overflow("hash size", hash_size); */ /* hash size - NOT DYNAMIC */
+              overflow("hash size", hash_size + hash_extra); /* 96/Jan/10 */
               return 0;     // abort_flag set
             }
             decr(hash_used); 
@@ -1907,13 +1907,13 @@ halfword id_lookup_(integer j, integer l)
 /*        str_pool = realloc_str_pool (increment_pool_size); */
       str_pool = realloc_str_pool (increment_pool_size + 1);
     if(pool_ptr + l > current_pool_size){ /* in case it failed 97/Mar/7 */
-      overflow(257, current_pool_size - init_pool_ptr); /* pool size */
+      overflow("pool size", current_pool_size - init_pool_ptr); /* pool size */
       return 0;     // abort_flag set
     }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     if(pool_ptr + l > pool_size){
-      overflow(257, pool_size - init_pool_ptr); /* pool size - not dynamic */
+      overflow("pool size", pool_size - init_pool_ptr); /* pool size - not dynamic */
       return;     // abort_flag set
     }
 #endif
@@ -1986,12 +1986,12 @@ void new_save_level_(group_code c)
   if(max_save_stack > current_save_size - 6)
     save_stack = realloc_save_stack (increment_save_size);
   if(max_save_stack > current_save_size - 6){ /* check again after allocation */
-    overflow(538, current_save_size);
+    overflow("save size", current_save_size);
     return;     // abort_flag set
   }
 #else
   if(max_save_stack > save_size - 6){ /* save size - not dynamic */
-    overflow(538, save_size);
+    overflow("save size", save_size);
     return;     // abort_flag set
   }
 #endif
@@ -2007,8 +2007,8 @@ void new_save_level_(group_code c)
   if(cur_level == max_quarterword)  {
 /* { quit if (cur_level + 1) is too large to store in eqtb } */
 /*  overflow("grouping levels", max_quarterword - min_quarterword); */
-/*  overflow(539, 255); */      /* grouping levels - not dynamic */
-    overflow(539, max_quarterword - min_quarterword); /* 96/Oct/12 ??? */
+/*  overflow("grouping levels", 255); */      /* grouping levels - not dynamic */
+    overflow("grouping levels", max_quarterword - min_quarterword); /* 96/Oct/12 ??? */
     return;     // abort_flag set
   }
 /* cur_boundary <- save_ptr */
@@ -2054,12 +2054,12 @@ void eq_save_(halfword p, quarterword l)
   if(max_save_stack > current_save_size - 6)
     save_stack = realloc_save_stack (increment_save_size);
   if(max_save_stack > current_save_size - 6){ /* check again after allocation */
-    overflow(538, current_save_size);
+    overflow("save size", current_save_size);
     return;     // abort_flag set
   }
 #else
   if(max_save_stack > save_size - 6){ /* save size not dynamic */
-    overflow(538, save_size);
+    overflow("save size", save_size);
     return;     // abort_flag set
   }
 #endif
@@ -2120,12 +2120,12 @@ void save_for_after_(halfword t)
     if(max_save_stack > current_save_size - 6)
       save_stack = realloc_save_stack (increment_save_size);
     if(max_save_stack > current_save_size - 6){ /* check again after allocation */
-      overflow(538, current_save_size);
+      overflow("save size", current_save_size);
       return;     // abort_flag set
     }
 #else
     if(max_save_stack > save_size - 6){   /* save satck - not dynamic */
-      overflow(538, save_size);
+      overflow("save size", save_size);
       return;     // abort_flag set
     }
 #endif

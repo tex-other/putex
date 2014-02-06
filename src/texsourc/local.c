@@ -60,8 +60,6 @@
 
 /* #define SHOWHEAPERROR */   /* debugging 96/Jan/10 */
 
-#define ALLOWDEMO         /* demo model - limited lifetime - DANGER ! */
-
 #ifndef _WINDOWS
 /* #define HEAPWALK */      /* debugging 96/Oct/22 */
 #endif
@@ -72,13 +70,9 @@
   #define REALLOC realloc
 #endif
 
-// #include <stdio.h>
-#include <time.h>           // needed for clock_t etc.
-/* #include <string.h> */       /* for islower ? */
-// #include <process.h>
-#include <malloc.h>           /* _msize, _expand, HEAPOK et.c */
-// #include <share.h>         /* SH_DENYNO */
-#include <direct.h>           /* for _getcwd() */
+#include <time.h>
+#include <malloc.h> /* _msize, _expand, HEAPOK et.c */
+#include <direct.h> /* for _getcwd() */
 
 #pragma warning(disable:4032) // different type when promoted
 #ifndef _WINDOWS
@@ -86,9 +80,6 @@
 #endif
 #pragma warning(default:4032) // different type when promoted`
 
-// #include "getopt.h"
-
-// #include "texd.h"
 
 /* Argument handling, etc.  */ /* from common.h - setup `main' in texmf.c */
 /* extern int gargc; */
@@ -100,11 +91,11 @@ int wantcopyrght=1;
 
 char *compiletime  =  __TIME__;
 char *compiledate  =  __DATE__;
-char *www          = "http://www.tug.org/yandy";          /* not used ? */
-char *rights       = "All Rights Reserved.";        /* not used ? */
+char *www          = "http://www.tug.org/yandy";
+char *rights       = "All Rights Reserved.";
 char *copyright    = "Copyright (C) 2007--2014 TeX Users Group.";
-char *yandyversion = "2.2.3";       /* 00/Jun/18 */
-char *application  = "Y & Y TeX";       /* 96/Jan/17 */
+char *yandyversion = "2.2.3"; /* 00/Jun/18 */
+char *application  = "Y & Y TeX"; /* 96/Jan/17 */
 char *tex_version   = "This is TeX, Version 3.14159265"; /* change with upgrade */
 
 /* #define COPYHASH 1890382 */
@@ -117,9 +108,9 @@ char *tex_version   = "This is TeX, Version 3.14159265"; /* change with upgrade 
 
 clock_t start_time, main_time, finish_time;
 
-char *dvi_directory = "";  /* user specified directory for dvi file */
-char *log_directory = "";  /* user specified directory for log file */
-char *aux_directory = "";  /* user specified directory for aux file */
+char *dvi_directory = ""; /* user specified directory for dvi file */
+char *log_directory = ""; /* user specified directory for log file */
+char *aux_directory = ""; /* user specified directory for aux file */
 
 char *texpath = "";   /* path to executable - used if env vars not set */
 
@@ -127,15 +118,13 @@ char *texpath = "";   /* path to executable - used if env vars not set */
 
 char log_line[MAXLINE];  // used also in tex9.c
 
-int mem_spec_flag=0;    /* non-zero if `-m=...' was used */ 
-int format_spec=0;   /* non-zero if a format specified on command line */
-
-int closed_already=0;  // make sure we don't try this more than once
-
+int mem_spec_flag     = 0;    /* non-zero if `-m=...' was used */ 
+int format_spec       = 0;    /* non-zero if a format specified on command line */
+int closed_already    = 0;    /* make sure we don't try this more than once */
 bool reorder_arg_flag = true; /* put command line flags/arguments first */
 
 /* Mapping from Windows ANSI to DOS code page 850 96/Jan/20 */
-/* Used in tex0.c with wintodos[c-128] */
+/* Used in tex0.c with wintodos[c-128]                      */
 
 unsigned char wintodos[128] = {
     0,   0,   0, 159,   0,   0,   0,   0, 
@@ -291,15 +280,13 @@ void read_xchr_sub (FILE *input)
       if (xchr[from]== (unsigned char) NOTDEF)
         xchr[from]= (unsigned char) to;
       else {
-        sprintf(log_line, "NOTE: %s collision: %d => %d, %d\n",
-            "xchr", from, xchr[from], to);
+        sprintf(log_line, "NOTE: %s collision: %d => %d, %d\n", "xchr", from, xchr[from], to);
         show_line(log_line, 0);
       }
       if (xord[to]== NOTDEF)
         xord[to]= (unsigned char) from;
       else {
-        sprintf(log_line, "NOTE: %s collision: %d => %d, %d\n",
-            "xord", to, xord[to], from);
+        sprintf(log_line, "NOTE: %s collision: %d => %d, %d\n", "xord", to, xord[to], from);
         show_line(log_line, 0);
       }
       count++;
@@ -637,9 +624,7 @@ void show_maximums (FILE *output)
   unsigned heaptotal=0;           /* no longer used */
   heaptotal = heap_dump(stdout, 0);      /* 94/Apr/3 */
 #endif
-  sprintf(log_line,
-    "Max allocated %d --- max address %d\n", 
-      total_allocated, max_address); 
+  sprintf(log_line, "Max allocated %d --- max address %d\n", total_allocated, max_address); 
 //  if (output != NULL) fputs(log_line, output); // log file
 //  else if (flag == 0) show_line(log_line, 0); // informative
 //  else if (flag == 1) show_line(log_line, 1); // error
@@ -654,7 +639,7 @@ void show_maximums (FILE *output)
 #ifdef USEOUREALLOC 
 void *ourrealloc (void *old, size_t new_size)
 {
-  void * new;
+  void * mnew;
   size_t old_size, overlap;
 
 /*  round up to nearest multiple of four bytes *//* avoid unlikely alignment */
@@ -673,18 +658,18 @@ void *ourrealloc (void *old, size_t new_size)
 #endif
   }
 #endif
-  new = _expand (old, new_size);      /* first try and expand in place */
-  if (new != NULL) {
+  mnew = _expand (old, new_size);      /* first try and expand in place */
+  if (mnew != NULL) {
     if (trace_flag) {
       sprintf(log_line, "EXPANDED! %d (%d) == %d (%d)\n",
-        new, new_size, old, old_size);
+        mnew, new_size, old, old_size);
       show_line(log_line, 0);
     }
-    return new;
+    return mnew;
   }
 /*  *********************************************************************** */
 /*  do this if you want to call the real realloc next -  */
-  new = realloc (old, new_size);
+  mnew = realloc (old, new_size);
 #ifdef HEAPSHOW
   if (trace_flag) {
     show_line("AFTER REALLOC: \n", 0);
@@ -693,24 +678,23 @@ void *ourrealloc (void *old, size_t new_size)
 #endif
   }
 #endif
-  if (new != NULL) return new;
+  if (mnew != NULL) return mnew;
 /*  we are screwed typically if we ever drop through here - no more space */
 /*  *********************************************************************** */
-  new = malloc (new_size);          /* otherwise find new space */
-  if (new == NULL) return new;        /* if unable to allocate */
+  mnew = malloc (new_size);          /* otherwise find new space */
+  if (mnew == NULL) return mnew;        /* if unable to allocate */
   if (old_size < new_size) overlap = old_size;
   else overlap = new_size;
-  memcpy (new, old, overlap);         /* copy old data to new area */
+  memcpy (mnew, old, overlap);         /* copy old data to new area */
   free(old);                  /* free the old area */
-  return new;
+  return mnew;
 }
 #endif
 
 void memory_error (char *s, int n)
 {
   if (log_opened) {
-    fprintf(log_file,
-      "\n! Unable to allocate %d bytes for %s\n", n, s);
+    fprintf(log_file, "\n! Unable to allocate %d bytes for %s\n", n, s);
     show_maximums(log_file);
 #ifdef HEAPWALK
     if (heap_flag) (void) heap_dump(log_file, 1);
@@ -742,9 +726,9 @@ void update_statistics (int address, int size, int oldsize)
 void probe_memory (void)
 {
   char *s;
-  s = (char *) malloc (4);        /* get current top address */
+  s = (char *) malloc (4); /* get current top address */
   free(s);
-  update_statistics ((int) s, 0, 0);   /* show where we are */
+  update_statistics ((int) s, 0, 0); /* show where we are */
 }
 
 void probe_show (void)
@@ -768,9 +752,9 @@ size_t roundup (size_t n)
 /* NOTE: it's safe to allocate based on the trie_max read from fmt file      */
 /* since hyphenation trie cannot be extended (after iniTeX)                  */
 /* for iniTeX, however, we need to allocate the full trie_size ahead of time */
-
-/* NOTE: we don't ever reallocate these */
-/* returns -1 if it fails               */
+/*                                                                           */
+/* NOTE: we don't ever reallocate these                                      */
+/* returns -1 if it fails                                                    */
 
 int allocate_tries (int trie_max)
 {
@@ -794,11 +778,9 @@ int allocate_tries (int trie_max)
   if (trie_trl == NULL || trie_tro == NULL || trie_trc == NULL) {
     memory_error("hyphen trie", n);
     return -1;
-//    exit (1);             /* serious error */
   }
   if (trace_flag) {
-    sprintf(log_line, "Addresses trie_trl %d trie_tro %d trie_trc %d\n", 
-        trie_trl, trie_tro, trie_trc);
+    sprintf(log_line, "Addresses trie_trl %d trie_tro %d trie_trc %d\n", trie_trl, trie_tro, trie_trc);
     show_line(log_line, 0);
   }
   update_statistics ((int) trie_trl, nl, 0);
@@ -824,8 +806,7 @@ int realloc_hyphen (int hyphen_prime)
 {
   int n, nw, nl;
   if (!prime(hyphen_prime)) {
-    sprintf(log_line, "ERROR: non-prime hyphen exception number (%d)\n",
-      hyphen_prime); 
+    sprintf(log_line, "ERROR: non-prime hyphen exception number (%d)\n", hyphen_prime); 
     show_line(log_line, 1);
 //    exit (1);
     return -1;
@@ -846,7 +827,6 @@ int realloc_hyphen (int hyphen_prime)
   hyph_list = (halfword *) REALLOC (hyph_list, nl);   /* 94/Mar/24 */
   if (hyph_word == NULL || hyph_list == NULL) {
     memory_error("hyphen exception", n);
-//    exit (1);             /* serious error */
     return -1;
   }
   if (trace_flag) {
@@ -891,13 +871,13 @@ int current_mem_size=0;   /* current total words in main mem allocated -1 */
 /* returns NULL if it fails */
 
 #ifdef ALLOCATEMAIN   
-/* void allocate_main_memory (int size) { */ /* initial main memory alloc - mem_top */
+/* initial main memory alloc - mem_top */
 memory_word *allocate_main_memory (int size)
-{  /* initial main memory alloc - mem_top */
+{
   int n;
   
 /*  Using -i *and* pre-loading format */ /* in this case get called twice */
-/*  Get rid of initial blank memory again */    /* or use realloc ... */
+/*  Get rid of initial blank memory again or use realloc ... */
 /*  Could we avoid this by detecting presence of & before allocating ? */
 /*  Also, if its already large enough, maybe we can avoid this ? */
 /*  don't bother if current_mem_size == mem_max - mem_start ? */
@@ -968,15 +948,13 @@ memory_word *realloc_main (int losize, int hisize)
   else runawayflag = 0; */ /* 94/Jan/22 */
 
   if (trace_flag) {
-    sprintf(log_line, "WARNING: Entering realloc_main lo %d hi %d\n",
-      losize, hisize);
+    sprintf(log_line, "WARNING: Entering realloc_main lo %d hi %d\n", losize, hisize);
     show_line(log_line, 0);
   }
   if (is_initex) {
     show_line("ERROR: Cannot extent main memory in iniTeX\n", 1);
     if (! knuth_flag) 
       show_line("Please use `-m=...' on command line\n", 0);
-//    exit (1);
 //    abort_flag++;  // ???
     return NULL;
   }
@@ -986,7 +964,6 @@ memory_word *realloc_main (int losize, int hisize)
   }
   if (current_mem_size + 1 == max_mem_size) {/* if we REALLY run up to limit ! */
     memory_error("main memory", (max_mem_size + 1) * sizeof(memory_word));
-//    exit (1);             /* serious error */
 //    abort_flag++;  // ???
     return NULL;
   }
@@ -1065,7 +1042,6 @@ memory_word *realloc_main (int losize, int hisize)
 int current_font_mem_size=0;
 
 /* fmemoryword can be either halfword or memory_word */
-
 fmemoryword *realloc_font_info (int size)
 { /* number of memorywords */
   fmemoryword *newfontinfo=NULL;
@@ -1077,11 +1053,10 @@ fmemoryword *realloc_font_info (int size)
     sprintf(log_line, "Old Address %s == %d\n",  "font_info", font_info);
     show_line(log_line, 0);
   }
-/*  during initial allocation, font_info == NULL  - realloc acts like malloc */
+/*  during initial allocation, font_info == NULL - realloc acts like malloc */
 /*  during initial allocation current_font_mem_size == 0 */
   if (current_font_mem_size == font_mem_size) { /* if we REALLY run up to limit */
 /*    memory_error("font", (font_mem_size + 1) * sizeof(memory_word)); */
-/*    exit (1); */
     return font_info;    /* pass it back to TeX 99/Fabe/4 */
   }
 /*  try and prevent excessive frequent reallocations */
@@ -2130,7 +2105,7 @@ void check_fixed_align (int flag)
   testalign ((int) &hyf_next, sizeof(hyf_next[0]), "hyf_next");
   testalign ((int) &op_start, sizeof(op_start[0]), "op_start");
 
-/*  testalign ((int) &trieophash, sizeof(trieophash[0]), "trieophash"); */
+/*  testalign ((int) &trie_op_hash, sizeof(trie_op_hash[0]), "trie_op_hash"); */
   testalign ((int) &zzzaf, sizeof(zzzaf[0]), "zzzaf");
   testalign ((int) &trie_used, sizeof(trie_used[0]), "trie_used");
 /*  testalign ((int) &trie_op_lang, sizeof(trie_op_lang[0]), "trie_op_lang");*/
@@ -2203,7 +2178,7 @@ void showaddresses (void)
 
 bool usedviwindo = true;    /* use [Environment] section in `dviwindo.ini' */
 bool backwardflag = false;           /* don't cripple all advanced features */
-bool shortenfilename = false;        /* don't shorten file names to 8+3 for DOS */
+bool shorten_file_name = false;        /* don't shorten file names to 8+3 for DOS */
 char *inifilename = "dviwindo.ini";   /* name of ini file we look for */
 char *dviwindo = "";      /* full file name for dviwindo.ini with path */
 char *envsection = "[Environment]";   /* Env var section in `dviwindo.ini' */
@@ -2273,8 +2248,7 @@ bool setupdviwindo (void)
 /*          fclose(input); */
 /*          return true; */
           envflag++;
-        }
-        else if (wndflag && _strnicmp(line, workdirect, dm) == 0) {
+        } else if (wndflag && _strnicmp(line, workdirect, dm) == 0) {
           if (trace_flag) {
             sprintf(log_line, "Found %s", line);  /* DEBUGGING */
             show_line(log_line, 0);
@@ -2391,7 +2365,7 @@ char *grabenv (char *varname)
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-void flushtrailingslash (char *directory){
+void flush_trailing_slash (char *directory){
   char *s;
 /*  flush trailing \ or / in directory, if any 1993/Dec/12 */
   if (strcmp(directory, "") != 0) {
@@ -2513,7 +2487,7 @@ int analyze_flag (int c, char *optarg)
               break;
     case 'f': show_fonts_used = false; /* 97/Dec/24 */
               break;
-    case '8': shortenfilename = true; /* 95/Feb/20 */
+    case '8': shorten_file_name = true; /* 95/Feb/20 */
               break;
     case '9': show_cs_names = true; /* 98/Mar/31 */
               break;
@@ -2638,9 +2612,7 @@ int analyze_flag (int c, char *optarg)
 }
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-
-/* char *yytexcmd="Y&YTEX.CMD"; */  /* name of command line file */
-
+//char *yytexcmd="yandytex.cmd";
 char *yytexcmd="YANDYTEX.CMD";    /* name of command line file */
 
 /* Try and read default command file - YANDYTEX.CMD */
@@ -2652,8 +2624,9 @@ char *yytexcmd="YANDYTEX.CMD";    /* name of command line file */
 /* used both for yytex.cmd and @ indirect command line files */
 /* can this be reentered ? */
 
+/* supply extension if none */
 void extension (char *fname, char *ext)
-{ /* supply extension if none */
+{
   char *s, *t;
     if ((s = strrchr(fname, '.')) == NULL ||
     ((t = strrchr(fname, '\\')) != NULL && s < t)) {
@@ -2664,7 +2637,7 @@ void extension (char *fname, char *ext)
 
 /* remove file name - keep only path - inserts '\0' to terminate */
 
-void stripname (char *pathname)
+void strip_name (char *pathname)
 {
   char *s;
   if ((s=strrchr(pathname, '\\')) != NULL);
@@ -2674,9 +2647,9 @@ void stripname (char *pathname)
   *s = '\0';
 }
 
-/* char commandfile[PATH_MAX]; */   /* keep around so can open later */
+/* char commandfile[PATH_MAX]; */ /* keep around so can open later */
 
-char *programpath = "";         /* pathname of program */
+char *programpath = ""; /* pathname of program */
                     /* redundant with texpath ? */
 
 /* The following does not deslashify arguments ? Do we need to ? */
@@ -2837,58 +2810,65 @@ int init_commands (int ac, char **av)
   verbose_flag      = false;
   heap_flag         = false;
   restrict_to_ascii = false;
-  show_in_hex       = false;    /* default is not to show as hex code ^^ 00/Jun/18 */
-  show_in_dos       = false;    /* default is not to translate to DOS 850 */ 
-  return_flag = trimeof = true;  // hard wired now
-  deslash = true;
-  pseudo_tilde = 254;    /* default '~' replace 95/Sep/26 filledbox DOS 850 */
-  pseudo_space = 255;    /* default ' ' replace 97/June/5 nbspace DOS 850 */
-  default_rule = 26214;  /* default rule variable 95/Oct/9 */
-  show_current = civilize_flag = show_numeric = show_missing = true;
-  current_flag = true;
-  current_tfm = true;    /* search for TFMs in current dir as well */
-  test_dir_access = true; /* test if readable item is perhaps a sub-dir */
-  dir_method = true;   /* in dir_p: _findfirst instead of use fopen (nul) */
-  file_method = true;    /* use file_p (_findfirst) not readable (access) */
+  show_in_hex       = false; /* default is not to show as hex code ^^ 00/Jun/18 */
+  show_in_dos       = false; /* default is not to translate to DOS 850 */ 
+  return_flag       = true;  // hard wired now
+  trimeof           = true;  // hard wired now
+  deslash           = true;
+  pseudo_tilde      = 254;   /* default '~' replace 95/Sep/26 filledbox DOS 850 */
+  pseudo_space      = 255;   /* default ' ' replace 97/June/5 nbspace DOS 850 */
+  default_rule      = 26214; /* default rule variable 95/Oct/9 */
+  show_current      = true;
+  civilize_flag     = true;
+  show_numeric      = true;
+  show_missing      = true;
+  current_flag      = true;
+  current_tfm       = true;  /* search for TFMs in current dir as well */
+  test_dir_access   = true;  /* test if readable item is perhaps a sub-dir */
+  dir_method        = true;  /* in dir_p: _findfirst instead of use fopen (nul) */
+  file_method       = true;  /* use file_p (_findfirst) not readable (access) */
 /*  waitflush = true; */  /* flushed 97/Dec/24 */
-  c_style_flag = false;   /* use c-style error output */
-  show_fmt_flag = true;   /* show format file in log */
-  show_tfm_flag = false;  /* don't show metric file in log */
-  shortenfilename = false; /* don't shorten file names to 8+3 */
-  show_texinput_flag = true;  /* show TEXINPUTS and TEXFONTS */
-  truncate_long_lines = true; /* truncate long lines */
-  tab_step = 0;      /* do not replace tabs with spaces */
-  format_specific = true;  /* do format specific TEXINPUTS 95/Jan/7 */
-  encoding_specific = true;  /* do encoding specific TEXFONTS 98/Jan/31 */
+  c_style_flag      = false; /* use c-style error output */
+  show_fmt_flag     = true;  /* show format file in log */
+  show_tfm_flag     = false; /* don't show metric file in log */
+  shorten_file_name     = false; /* don't shorten file names to 8+3 */
+  show_texinput_flag    = true;  /* show TEXINPUTS and TEXFONTS */
+  truncate_long_lines   = true; /* truncate long lines */
+  tab_step              = 0;      /* do not replace tabs with spaces */
+  format_specific       = true;  /* do format specific TEXINPUTS 95/Jan/7 */
+  encoding_specific     = true;  /* do encoding specific TEXFONTS 98/Jan/31 */
   show_line_break_stats = true;  /* show line break statistics 96/Feb/8 */
-  show_fonts_used = true; /* show fonts used in LOG file 97/Dec/24 */
-  allow_quoted_names = true;  /* allow quoted names with spaces 98/Mar/15 */
-  show_cs_names = false;  /* don't show csnames on start 98/Mar/31 */
-  knuth_flag = false;    /* allow extensions to TeX */
-  cache_file_flag = true; /* default is to cache full file names 96/Nov/16 */
-  full_file_name_flag = true;  /* new default 2000 June 18 */
-  save_strings_flag = true; // 2000 Aug 15
-  errout = stdout;    /* as opposed to stderr say --- used ??? */
-  abort_flag = 0;      // not yet hooked up ???
-  err_level = 0;     // not yet hooked up ???
+  show_fonts_used       = true; /* show fonts used in LOG file 97/Dec/24 */
+  allow_quoted_names    = true;  /* allow quoted names with spaces 98/Mar/15 */
+  show_cs_names         = false;  /* don't show csnames on start 98/Mar/31 */
+  knuth_flag            = false;    /* allow extensions to TeX */
+  cache_file_flag       = true; /* default is to cache full file names 96/Nov/16 */
+  full_file_name_flag   = true;  /* new default 2000 June 18 */
+  save_strings_flag     = true; // 2000 Aug 15
+  errout                = stdout;    /* as opposed to stderr say --- used ??? */
+  abort_flag            = 0;      // not yet hooked up ???
+  err_level             = 0;     // not yet hooked up ???
 
   new_hyphen_prime = 0;
 #ifdef VARIABLETRIESIZE
 /*  trie_size = default_trie_size; */
   trie_size = 0;
 #endif
-  mem_extra_high = 0; mem_extra_low = 0; mem_initex = 0;
+  mem_extra_high = 0;
+  mem_extra_low  = 0;
+  mem_initex     = 0;
 #ifdef ALLOCATEDVIBUF
   dvi_buf_size = 0;
 #endif
-/*  share_flag = _SH_DENYNO; */        /* 0x40 - deny none mode */
-/*  share_flag = _SH_COMPAT; */        /* 0x00 - compatability mode */
-  share_flag = 0;              /* revert to fopen for now */
+/*  share_flag = _SH_DENYNO; */ /* 0x40 - deny none mode */
+/*  share_flag = _SH_COMPAT; */ /* 0x00 - compatability mode */
+  share_flag = 0; /* revert to fopen for now */
 
 /*  strncpy(programpath, argv[0], PATH_MAX); */ /* 94/July/12 */
-  programpath = xstrdup(av[0]);       /* extract path executable */
-  stripname(programpath);         /* strip off yandytex.exe */
+  programpath = xstrdup(av[0]); /* extract path executable */
+  strip_name(programpath); /* strip off yandytex.exe */
 
+  //format_name = "yandytex";
   format_name = "plain"; /* format name if specified on command line */
 
   encoding_name = "";
@@ -2903,8 +2883,8 @@ int init_commands (int ac, char **av)
 
 /*  Print version *after* banner ? */ /* does this get in log file ? */
   if (want_version) {
-//    showversion (stdout);
-//    showversion (log_line);
+//  showversion (stdout);
+//  showversion (log_line);
     stamp_it(log_line);
     strcat(log_line, "\n");
     show_line(log_line, 0);
@@ -2948,7 +2928,7 @@ void initial_memory (void)
     }
     if (mem_initex == 0) mem_initex = default_mem_top;
     if (trie_size == 0) trie_size = default_trie_size;
-/*    Just in case user mistakenly specified words instead of kilo words */
+/* Just in case user mistakenly specified words instead of kilo words */
     if (mem_extra_high > 10000L * 1024L) mem_extra_high = mem_extra_high / 1024;
     if (mem_extra_low > 10000L * 1024L) mem_extra_low = mem_extra_low / 1024;
     if (mem_initex > 10000L * 1024L) mem_initex = mem_initex / 1024;
@@ -3103,7 +3083,7 @@ void deslash_all (int ac, char **av)
 
   check_enter(ac, av);           /* 95/Oct/28 */
 
-/*  environment variables for output directories (as in PC TeX) */
+/* environment variables for output directories (as in PC TeX) */
 
   if ((s = grabenv("TEXDVI")) != NULL) dvi_directory = s;
   if ((s = grabenv("TEXLOG")) != NULL) log_directory = s;
@@ -3119,9 +3099,9 @@ void deslash_all (int ac, char **av)
 
 /*  Hmm, we may be operating on DOS environment variables here !!! */
 
-  if (strcmp(dvi_directory, "") != 0) flushtrailingslash (dvi_directory);
-  if (strcmp(log_directory, "") != 0) flushtrailingslash (log_directory);
-  if (strcmp(aux_directory, "") != 0) flushtrailingslash (aux_directory);
+  if (strcmp(dvi_directory, "") != 0) flush_trailing_slash (dvi_directory);
+  if (strcmp(log_directory, "") != 0) flush_trailing_slash (log_directory);
+  if (strcmp(aux_directory, "") != 0) flush_trailing_slash (aux_directory);
 
   if (deslash) {
       unixify (texpath);          /* 94/Jan/25 */
@@ -3134,7 +3114,7 @@ void deslash_all (int ac, char **av)
 /*  deslash TeX source file (and format, if format specified) */
 /*  and check args to see whether format was specified */
 
-  format_spec=0;
+  format_spec = 0;
 /*  NOTE: assuming that command line arguments are in writable memory ! */
 /*  if (trace_flag || debug_flag)
     sprintf(log_line, "optind %d ac %d\n", optind, ac); */   /* debugging */ 
@@ -3150,11 +3130,10 @@ void deslash_all (int ac, char **av)
     }
     if (pseudo_tilde != 0 || pseudo_space != 0)
       hidetwiddle (av[optind]);     /* 95/Sep/25 */
-/*    if (*av[optind] == '&') { */          /* 95/Jan/22 */
-/*    For Windows NT, lets allow + instead of & for format specification */
+/* For Windows NT, lets allow + instead of & for format specification */
     if (*av[optind] == '&' || *av[optind] == '+') {
-      format_spec = 1;       /* format file specified */
-      format_name = xstrdup(av[optind]+1);     /* 94/Oct/25 */
+      format_spec = 1; /* format file specified */
+      format_name = xstrdup(av[optind]+1); /* 94/Oct/25 */
 /*      uppercase (format_name); */    /* why ? 98/Jan/31 */
       if (optind + 1 < ac) {
         if (deslash) {
@@ -3178,9 +3157,9 @@ void deslash_all (int ac, char **av)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /* interaction == 0 => batch mode (omit all stops and omit terminal output) */
-/* interaction == 1 => nonstop mode (omit all stops) */
-/* interaction == 2 => scroll mode (omit error stops) */
-/* interaction == 3 => error_stop mode (stops at every opportunity) */
+/* interaction == 1 => nonstop mode (omit all stops)                        */
+/* interaction == 2 => scroll mode (omit error stops)                       */
+/* interaction == 3 => error_stop mode (stops at every opportunity)         */
 
 /* main entry point follows */
 
@@ -3195,8 +3174,11 @@ int init (int ac, char **av)
   int k;
   
   debugfile = getenv("TEXDEBUG");     /* 94/March/28 */
-  if (debugfile) debug_flag = 1;
-  else debug_flag = 0;
+  if (debugfile)
+    debug_flag = 1;
+  else
+    debug_flag = 0;
+
   if (debug_flag) {
     show_line("TEXDEBUG\n", 0);
     trace_flag = 1;            /* 94/April/14 */
@@ -3242,7 +3224,7 @@ int init (int ac, char **av)
 
   log_opened = false;       /* so can tell whether opened */
   interaction = -1;       /* default state => 3 */
-  missing_characters=0;      /* none yet! */
+  missing_characters = 0;      /* none yet! */
   workingdirectory = false;   /* set from dviwindo.ini & command line */
   font_dimen_zero = true;     /* \fontdimen0 for checksum 98/Oct/5 */
   ignore_frozen = false;     /* default is not to ignore 98/Oct/5 */
@@ -3263,9 +3245,15 @@ int init (int ac, char **av)
   dvi_file_name = NULL;       /* to be set in openinou.c 00/Jun/18 */
   log_file_name = NULL;       /* to be set in openinou.c 00/Jun/18 */
 
-  first_pass_count = second_pass_count = final_pass_count = 0;  /* 96/Feb/9 */
-  paragraph_failed = singleline = 0;           /* 96/Feb/9 */
-  overfull_hbox = underfull_hbox = overfull_vbox = underfull_vbox = 0;
+  first_pass_count  = 0;
+  second_pass_count = 0;
+  final_pass_count  = 0;
+  paragraph_failed  = 0;
+  singleline        = 0;
+  overfull_hbox     = 0;
+  underfull_hbox    = 0;
+  overfull_vbox     = 0;
+  underfull_vbox    = 0;
 
   closed_already=0;        // so can only do once
 
@@ -3405,7 +3393,7 @@ void print_cs_name (FILE *output, int h)
   
   textof = hash[h].v.RH;
   if (textof == 0) return;  /* ignore if text() == 0 */
-  n = str_start[textof+1] - str_start[textof];
+  n = str_start[textof + 1] - str_start[textof];
   if (textcolumn != 0) {
     sprintf(log_line, ", ");
     if (output != NULL) fprintf(output, log_line);

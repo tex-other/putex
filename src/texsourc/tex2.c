@@ -416,12 +416,12 @@ void begin_token_list_ (halfword p, quarterword t)
     if(input_ptr == current_stack_size)
       input_stack = realloc_input_stack (increment_stack_size);
     if(input_ptr == current_stack_size){    /* check again after allocation */
-      overflow(590, current_stack_size);
+      overflow("input stack size", current_stack_size);
       return;     // abort_flag set
     }
 #else
     if(input_ptr == stack_size) { /* input stack - not dynamic */
-      overflow(590, stack_size);
+      overflow("input stack size", stack_size);
       return;     // abort_flag set
     }
 #endif
@@ -515,12 +515,12 @@ void back_input (void)
       if(input_ptr == current_stack_size)
         input_stack = realloc_input_stack (increment_stack_size);
       if(input_ptr == current_stack_size){  /* check again after allocation */
-        overflow(590, current_stack_size);
+        overflow("input stack size", current_stack_size);
         return;     // abort_flag set
       }
 #else
       if(input_ptr == stack_size) { /* stack size - not dynamic */
-        overflow(590, stack_size);
+        overflow("input stack size", stack_size);
         return;     // abort_flag set
       }
 #endif
@@ -551,19 +551,19 @@ void ins_error (void)
 void begin_file_reading (void) 
 { 
     if(in_open == max_in_open){
-      overflow(593, max_in_open); /* text input levels - NOT DYNAMIC */
+      overflow("text input levels", max_in_open); /* text input levels - NOT DYNAMIC */
     return;     // abort_flag set
   }
 #ifdef ALLOCATEBUFFER
     if(first == current_buf_size)
     buffer = realloc_buffer (increment_buf_size);
   if(first == current_buf_size) {   /* check again after allocation */
-    overflow(256, current_buf_size);
+    overflow("buffer size", current_buf_size);
     return;     // abort_flag set
   }
 #else
   if(first == buf_size){
-    overflow(256, buf_size);  /* buffer size - not dynamic */
+    overflow("buffer size", buf_size);  /* buffer size - not dynamic */
     return;     // abort_flag set
   }
 #endif
@@ -579,12 +579,12 @@ void begin_file_reading (void)
     if(input_ptr == current_stack_size)
       input_stack = realloc_input_stack (increment_stack_size);
     if(input_ptr == current_stack_size){
-      overflow(590, current_stack_size);  /* check again after allocation */
+      overflow("input stack size", current_stack_size);  /* check again after allocation */
       return;     // abort_flag set
     }
 #else
     if(input_ptr == stack_size){
-      overflow(590, stack_size);    /* input stack - not dynamic */
+      overflow("input stack size", stack_size);    /* input stack - not dynamic */
       return;     // abort_flag set
     }
 #endif
@@ -1050,12 +1050,12 @@ void macro_call (void)
     if(max_param_stack > current_param_size)
       param_stack = realloc_param_stack (increment_param_size);
     if(max_param_stack > current_param_size){ /* check again after allocation */
-      overflow(633, current_param_size);
+      overflow("parameter stack size", current_param_size);
       return;     // abort_flag set
     }
 #else
     if(max_param_stack > param_size){
-      overflow(633, param_size); /* parameter stack - not dynamic */
+      overflow("parameter stack size", param_size); /* parameter stack - not dynamic */
       return;     // abort_flag set
     }
 #endif
@@ -1179,12 +1179,12 @@ void expand (void)
     if(max_buf_stack == current_buf_size)
       buffer = realloc_buffer (increment_buf_size);
     if(max_buf_stack == current_buf_size){  /* check again after allocation */
-      overflow(256, current_buf_size);
+      overflow("buffer size", current_buf_size);
       return;     // abort_flag set
     }
 #else
     if(max_buf_stack == buf_size){
-      overflow(256, buf_size); /* buffer size - not dynamic */
+      overflow("buffer size", buf_size); /* buffer size - not dynamic */
       return;     // abort_flag set
     }
 #endif
@@ -1495,13 +1495,13 @@ void find_font_dimen_(bool writing)
           font_info = realloc_font_info(increment_font_mem_size);
         }
         if(fmem_ptr == current_font_mem_size){    /* 94/Jan/24 */
-          overflow(818, current_font_mem_size); /* font memory */
+          overflow("font memory", current_font_mem_size); /* font memory */
           return;     // abort_flag set
         }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
         if(fmem_ptr == font_mem_size){
-          overflow(818, font_mem_size); /* font memory */
+          overflow("font memory", font_mem_size); /* font memory */
           return;     // abort_flag set
         }
 #endif

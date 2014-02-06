@@ -123,7 +123,7 @@
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-#define poolname TEXPOOLNAME
+#define pool_name TEXPOOLNAME
 
 /* #define mem_top 262140L */
 
@@ -1015,7 +1015,7 @@ EXTERN int hyph_count;  /* padded out */    /* 95/Jan/7 */
 
 #ifdef INITEX
 EXTERN integer 
-#define trieophash (zzzaf - (int)(neg_trie_op_size))
+#define trie_op_hash (zzzaf - (int)(neg_trie_op_size))
   zzzaf[trie_op_size - neg_trie_op_size + 1]; 
 EXTERN trie_op_code trie_used[256]; 
 EXTERN ASCII_code trie_op_lang[trie_op_size + 1];   /* already padded 751 + 1 */
@@ -1266,7 +1266,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   int realloc_hyphen (int);       /* in local.c - bkph */
   int allocate_tries (int);       /* in local.c - bkph */
 
-void tryandopen (char *);       /* in local.c - bkph */
+void try_and_open (char *);       /* in local.c - bkph */
 void check_eqtb (char *);       /* in local.c - bkph */
 void probe_memory (void);       /* in local.c - bkph */
 // void show_maximums (FILE *);     /* in local.c - bkph */
@@ -1296,7 +1296,7 @@ void get_date_and_time (integer *minutes, integer *day,
 bool maketextex (void);       /* in openinou.c */
 bool maketextfm (void);       /* in openinou.c */
 
-unsigned char *unixify (unsigned char *);       /* in pathsrch.c bkph */
+char *unixify (char *);       /* in pathsrch.c bkph */
 
 #ifdef _WINDOWS
   void show_line (char *, int);     /* in local.c */
@@ -1357,8 +1357,8 @@ unsigned char *unixify (unsigned char *);       /* in pathsrch.c bkph */
 #define llink(a)    info(a+1)
 #define rlink(a)    link(a+1)
 /* sec 0133 */
-#define type(a)    mem[a].hh.B0
-#define subtype(a) mem[a].hh.B1
+#define type(a)    mem[a].hh.b0
+#define subtype(a) mem[a].hh.b1
 /* sec 0134 */
 #define is_char_node(a) (a >= hi_mem_min)
 #define font            type

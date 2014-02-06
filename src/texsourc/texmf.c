@@ -89,7 +89,7 @@ extern char *replacement[];		/* pointers to replacement strings */
 
 // extern char *grabenv(char *);				/* in local.c - bkph */
 
-/* extern void tryandopen(char *); */	/* inb local.c */
+/* extern void try_and_open(char *); */	/* inb local.c */
 
 #ifdef FUNNY_CORE_DUMP
   void funny_core_dump (void);

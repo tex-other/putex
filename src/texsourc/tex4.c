@@ -553,13 +553,13 @@ void special_out_(halfword p)
   if(pool_ptr + 1 > current_pool_size)
     str_pool = realloc_str_pool (increment_pool_size);
   if(pool_ptr + 1 > current_pool_size)  { /* in case it failed 94/Jan/24 */
-    overflow(257, current_pool_size - init_pool_ptr); /* 97/Mar/7 */
+    overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
     return;     // abort_flag set
   }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     if(pool_ptr + 1 > pool_size){
-    overflow(257, pool_size - init_pool_ptr); /* pool size */
+    overflow("pool size", pool_size - init_pool_ptr); /* pool size */
     return;     // abort_flag set
   }
 #endif

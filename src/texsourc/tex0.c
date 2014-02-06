@@ -624,27 +624,29 @@ void fatal_error_(char * s)
   } 
 }
 /* sec 0094 */
-void overflow_(str_number s, integer n)
+void overflow_(char * s, integer n)
 {
-   normalize_selector ();
-   print_err("TeX capacity exceeded, sorry[");
-  print(s); 
+  normalize_selector ();
+  print_err("TeX capacity exceeded, sorry[");
+  print_string(s); 
   print_char('=');
   print_int(n); 
   print_char(']');
   help2("If you really absolutely need more capacity,",
       "you can ask a wizard to enlarge me."); 
   if (! knuth_flag) {   /*  Additional comments 98/Jan/5 */
-    if (s == 945 && n == trie_size) {
+    //if (s == 945 && n == trie_size) {
+	if (!strcmp(s, "pattern memory") && n == trie_size) {
       sprintf(log_line, "\n  (Maybe use -h=... on command line in ini-TeX)\n");
       show_line(log_line, 0);
     }
-    else if (s == 942 && n == hyphen_prime) {
+    //else if (s == 942 && n == hyphen_prime) {
+    else if (!strcmp(s, "exception dictionary") && n == hyphen_prime) {
       sprintf(log_line, "\n  (Maybe use -e=... on command line in ini-TeX)\n");
       show_line(log_line, 0);
     }
   }
-  if(interaction == 3)interaction = 2; 
+  if (interaction == 3) interaction = 2; 
   if(log_opened){
     error ();
   }
@@ -746,13 +748,13 @@ str_number make_string (void)
     str_start = realloc_str_start(increment_max_strings);
   if(str_ptr == current_max_strings){       /* 94/Jan/24 */
 //    printf("**********MAKESTRING**********");   // debugging only
-    overflow(258, current_max_strings - init_str_ptr); /* 97/Mar/9 */
+    overflow("number of strings", current_max_strings - init_str_ptr); /* 97/Mar/9 */
     return 0;     // abort_flag set
   }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if(str_ptr == max_strings){
-    overflow(258, max_strings - init_str_ptr); /* number of strings */
+    overflow("number of strings", max_strings - init_str_ptr); /* number of strings */
     return 0;     // abort_flag set
   }
 #endif
@@ -1028,7 +1030,7 @@ void term_input (int promptstr, int nhelplines)
 
 void int_error_ (integer n) 
 {
-  print(" (");
+  print_string(" (");
   print_int(n); 
   print_char(41); /*)*/
   error(); 
@@ -1388,7 +1390,7 @@ void runaway (void)
       break; 
     case 5 : 
       {
-  print("text");
+  print_string("text");
   p = def_ref; 
       } 
       break; 
@@ -1433,7 +1435,7 @@ halfword get_avail (void)
 /* presumably now mem_end < mem_max - but need test in case allocation fails */
     if (mem_end >= mem_max)    {
       runaway (); 
-      overflow(298, mem_max + 1 - mem_min); /* main memory size */
+      overflow("main memory size", mem_max + 1 - mem_min); /* main memory size */
       return 0;           // abort_flag set
     } 
     incr(mem_end);        /* then grab from new area */
@@ -1556,7 +1558,7 @@ halfword get_node_(integer s)
     rover = q; 
     goto lab20; 
   } 
-/*  overflow(298, mem_max + 1 - mem_min);  */ /* what used to happen! */
+/*  overflow("main memory size", mem_max + 1 - mem_min);  */ /* what used to happen! */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* we've run out of space in the middle for variable length blocks */
 /* try and add new block from below mem_bot *//* first check if space ! */
@@ -1573,7 +1575,7 @@ halfword get_node_(integer s)
       sprintf(log_line, "mem_min %d, mem_start %d, block_size %d\n", mem_min, mem_start, block_size);
       show_line(log_line, 0);
     }
-    overflow(298, mem_max + 1 - mem_min); /* darn: allocation failed ! */
+    overflow("main memory size", mem_max + 1 - mem_min); /* darn: allocation failed ! */
     return 0;     // abort_flag set
   }
 /* avoid function call in following ? */

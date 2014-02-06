@@ -516,13 +516,13 @@ halfword str_toks_(pool_pointer b)
   if(pool_ptr + 1 > current_pool_size)
     str_pool = realloc_str_pool (increment_pool_size);
   if(pool_ptr + 1 > current_pool_size)  { /* in case it failed 94/Jan/22 */
-    overflow(257, current_pool_size - init_pool_ptr); /* 97/Mar/7 */
+    overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
     return 0;     // abort_flag set
   }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     if(pool_ptr + 1 > pool_size){
-    overflow(257, pool_size - init_pool_ptr); /* pool size */
+    overflow("pool size", pool_size - init_pool_ptr); /* pool size */
     return;     // abort_flag set
   }
 #endif
@@ -1314,13 +1314,13 @@ bool more_name_(ASCII_code c)
       if(pool_ptr + 1 > current_pool_size)
      str_pool = realloc_str_pool (increment_pool_size);
       if(pool_ptr + 1 > current_pool_size) {  /* in case it failed 94/Jan/24 */
-      overflow(257, current_pool_size - init_pool_ptr); /* 97/Mar/7 */
+      overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
       return 0;     // abort_flag set
     }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
       if(pool_ptr + 1 > pool_size){
-      overflow(257, pool_size - init_pool_ptr); /* pool size */
+      overflow("pool size", pool_size - init_pool_ptr); /* pool size */
       return 0;     // abort_flag set
     }
 #endif
@@ -1451,13 +1451,13 @@ void end_name (void)
 /*    str_start = realloc_str_start(increment_max_strings); */
     str_start = realloc_str_start(increment_max_strings + 3);
   if(str_ptr + 3 > current_max_strings){  /* in case it failed 94/Jan/24 */
-    overflow(258, current_max_strings - init_str_ptr);  /* 97/Mar/7 */
+    overflow("number of strings", current_max_strings - init_str_ptr);  /* 97/Mar/7 */
     return;     // abort_flag set
   }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if(str_ptr + 3 > max_strings){
-    overflow(258, max_strings - init_str_ptr); /* number of strings */
+    overflow("number of strings", max_strings - init_str_ptr); /* number of strings */
     return;     // abort_flag set
   }
 #endif
@@ -1917,12 +1917,12 @@ void morenamecopy(ASCII_code c)
   if(pool_ptr + 1 > current_pool_size)
     str_pool = realloc_str_pool (increment_pool_size);
   if(pool_ptr + 1 > current_pool_size)   { /* in case it failed 94/Jan/24 */
-    overflow(257, current_pool_size - init_pool_ptr); /* 97/Mar/7 */
+    overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
     return;     // abort_flag set
   }
 #else
   if(pool_ptr + 1 > pool_size){
-    overflow(257, pool_size - init_pool_ptr); /* pool size */
+    overflow("pool size", pool_size - init_pool_ptr); /* pool size */
     return;     // abort_flag set
   }
 #endif
@@ -1936,12 +1936,12 @@ int endnamecopy(void)
     if(str_ptr + 1 > current_max_strings)
       str_start = realloc_str_start(increment_max_strings + 1);
     if(str_ptr + 1 > current_max_strings) { /* in case it failed 94/Jan/24 */
-      overflow(258, current_max_strings - init_str_ptr);  /* 97/Mar/7 */
+      overflow("number of strings", current_max_strings - init_str_ptr);  /* 97/Mar/7 */
       return 0;     // abort_flag set
     }
 #else
     if(str_ptr + 1 > max_strings){
-      overflow(258, max_strings - init_str_ptr); /* number of strings */
+      overflow("number of strings", max_strings - init_str_ptr); /* number of strings */
       return 0;     // abort_flag set
     }
 #endif

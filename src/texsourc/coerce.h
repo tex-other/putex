@@ -79,8 +79,8 @@ int fatal_error_(char *);
 #define fatal_error(s) fatal_error_((char *) (s))
 #define fatalerror_regmem
 // void overflow_(str_number, integer);
-int overflow_(str_number, integer); 
-#define overflow(s, n) overflow_((str_number) (s), (integer) (n))
+int overflow_(char *, integer); 
+#define overflow(s, n) overflow_((char *) (s), (integer) (n))
 #define overflow_regmem
 // void confusion_(str_number);
 int confusion_(str_number); 
@@ -853,8 +853,8 @@ bool load_fmt_file(void); /* bool load_fmt_file(); */
 #define loadfmtfile_regmem register memory_word *mem=zmem, *eqtb=zeqtb;
 void close_files_and_terminate(void); /* void close_files_and_terminate(); */
 #define closefilesandterminate_regmem register memory_word *eqtb=zeqtb;
-// void final_clean_up(void); /* void final_clean_up(); */
-int final_clean_up(void); /* void final_clean_up(); */
+// void final_cleanup(void); /* void final_cleanup(); */
+int final_cleanup(void); /* void final_cleanup(); */
 #define finalcleanup_regmem register memory_word *mem=zmem;
 void init_prim(void); /* void init_prim(); */
 #define initprim_regmem register memory_word *eqtb=zeqtb;
@@ -919,8 +919,8 @@ void jump_out(void);
 void error(void);
 void fatal_error_(char *);
 #define fatal_error(s) fatal_error_((char *) (s))
-void overflow_(str_number, integer);
-#define overflow(s, n) overflow_((str_number) (s), (integer) (n))
+void overflow_(char *, integer);
+#define overflow(s, n) overflow_((char *) (s), (integer) (n))
 void confusion_(str_number);
 #define confusion(s) confusion_((str_number) (s))
 bool init_terminal(void);
@@ -1401,7 +1401,7 @@ void close_files_and_terminate(void);
 #else
 #define closefilesandterminate_regmem  /* register memory_word *eqtb=zeqtb; */
 #endif
-void final_clean_up(void);
+void final_cleanup(void);
 void init_prim(void);
 void debug_help(void);
 int texbody(void);          /* 1993/Dec/16 bkph */

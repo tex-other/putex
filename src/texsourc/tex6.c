@@ -1478,13 +1478,13 @@ lab21: switch(cur_cmd){
 /*      str_pool = realloc_str_pool (increment_pool_size); */
       str_pool = realloc_str_pool (increment_pool_size + n);
       if(pool_ptr + n > current_pool_size){ /* in case it failed 94/Jan/24 */
-      overflow(257, current_pool_size - init_pool_ptr); /* 97/Mar/7 */
+      overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
       return;     // abort_flag set
     }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
       if(pool_ptr + n > pool_size){
-      overflow(257, pool_size - init_pool_ptr); /* pool size */
+      overflow("pool size", pool_size - init_pool_ptr); /* pool size */
       return;     // abort_flag set
     }
 #endif
@@ -1509,7 +1509,7 @@ lab21: switch(cur_cmd){
 /*    if(hyph_count == 607)*/
     if(hyph_count == hyphen_prime){
 /*      overflow(942, 607);  */ 
-      overflow(942, hyphen_prime); /* exception dictionary - NOT DYNAMIC */
+      overflow("exception dictionary", hyphen_prime); /* exception dictionary - NOT DYNAMIC */
 /*    not dynamic ---- but can be set -e=... from command line in ini-TeX */
       return;     // abort_flag set
     }
