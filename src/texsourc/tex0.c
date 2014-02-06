@@ -43,7 +43,7 @@ void tex_help (unsigned int n, ...)
   if (n > 6) n = 6;
   help_ptr = n;
   va_start(help_arg, n);
-  for (i = n - 1; i >= 0; i--)
+  for (i = 0; i <= n - 1; i++)
     help_line[i] = va_arg(help_arg, char *);
   va_end(help_arg);
 }

@@ -44,7 +44,7 @@
 /* Note int main (int ac, char *av[]) is in texmf.c */
 /* and that calls main_program = texbody in itex.c => initialize */
 /* which in turn calls init here in local.c */
-/* which then calls initcommands here in local.c */ 
+/* which then calls init_commands here in local.c */ 
 
 #define USEOUREALLOC      /* 96/Jan/20 */
 
@@ -782,28 +782,28 @@ int allocate_tries (int trie_max)
     exit (1);
   } */ /* ??? removed 1993/dec/17 */
   if (trie_max > 1000000) trie_max = 1000000; /* some sort of sanity limit */
-/*  important + 1 because original was halfword trietrl[trie_size + 1] etc. */
-  nl = (trie_max + 1) * sizeof(halfword);    /* trietrl[trie_size + 1] */
-  no = (trie_max + 1) * sizeof(halfword);    /* trietro[trie_size + 1] */
-  nc = (trie_max + 1) * sizeof(quarterword); /* trietrc[trie_size + 1] */
+/*  important + 1 because original was halfword trie_trl[trie_size + 1] etc. */
+  nl = (trie_max + 1) * sizeof(halfword);    /* trie_trl[trie_size + 1] */
+  no = (trie_max + 1) * sizeof(halfword);    /* trie_tro[trie_size + 1] */
+  nc = (trie_max + 1) * sizeof(quarterword); /* trie_trc[trie_size + 1] */
   n = nl + no + nc;
   if (trace_flag) trace_memory("hyphen trie", n);
-  trietrl = (halfword *) malloc (roundup(nl));
-  trietro = (halfword *) malloc (roundup(no));
-  trietrc = (quarterword *) malloc (roundup(nc));
-  if (trietrl == NULL || trietro == NULL || trietrc == NULL) {
+  trie_trl = (halfword *) malloc (roundup(nl));
+  trie_tro = (halfword *) malloc (roundup(no));
+  trie_trc = (quarterword *) malloc (roundup(nc));
+  if (trie_trl == NULL || trie_tro == NULL || trie_trc == NULL) {
     memory_error("hyphen trie", n);
     return -1;
 //    exit (1);             /* serious error */
   }
   if (trace_flag) {
-    sprintf(log_line, "Addresses trietrl %d trietro %d trietrc %d\n", 
-        trietrl, trietro, trietrc);
+    sprintf(log_line, "Addresses trie_trl %d trie_tro %d trie_trc %d\n", 
+        trie_trl, trie_tro, trie_trc);
     show_line(log_line, 0);
   }
-  update_statistics ((int) trietrl, nl, 0);
-  update_statistics ((int) trietro, no, 0);
-  update_statistics ((int) trietrc, nc, 0);
+  update_statistics ((int) trie_trl, nl, 0);
+  update_statistics ((int) trie_tro, no, 0);
+  update_statistics ((int) trie_trc, nc, 0);
 /*  sprintf(log_line, "trie_size %d trie_max %d\n", trie_size, trie_max); */ /* debug */
   trie_size = trie_max;           /* BUG FIX 98/Jan/5 */
   if (trace_flag)  probe_show ();     /* 94/Mar/25 */
@@ -1830,11 +1830,11 @@ int free_memory (void)
   }
 #endif  
 #ifdef ALLOCATETRIES
-  if (trietrc != NULL) free (trietrc);
-  if (trietro != NULL) free (trietro);
-  if (trietrl != NULL) free (trietrl);
-  trietrc = NULL;
-  trietro = trietrl = NULL;
+  if (trie_trc != NULL) free (trie_trc);
+  if (trie_tro != NULL) free (trie_tro);
+  if (trie_trl != NULL) free (trie_trl);
+  trie_trc = NULL;
+  trie_tro = trie_trl = NULL;
 #endif
 #ifdef ALLOCATEHYPHEN
   if (hyph_list != NULL) free(hyph_list);
@@ -2158,9 +2158,9 @@ void check_alloc_align (int flag) {
   testalign ((int) str_start, sizeof(str_start[0]), "str_start");
   testalign ((int) zmem, sizeof(zmem[0]), "main memory");
   testalign ((int) font_info, sizeof(font_info[0]), "font memory");
-  testalign ((int) trietrl, sizeof(trietrl[0]), "trietrl");
-  testalign ((int) trietro, sizeof(trietro[0]), "trietro");
-  testalign ((int) trietrc, sizeof(trietrc[0]), "trietrc");
+  testalign ((int) trie_trl, sizeof(trie_trl[0]), "trie_trl");
+  testalign ((int) trie_tro, sizeof(trie_tro[0]), "trie_tro");
+  testalign ((int) trie_trc, sizeof(trie_trc[0]), "trie_trc");
   testalign ((int) hyph_word, sizeof(hyph_word[0]), "hyph_word");
   testalign ((int) hyph_list, sizeof(hyph_list[0]), "hyph_list");
 /*  testalign ((int) trie_c, sizeof(trie_c[0]), "trie_c"); *//* no op */
@@ -2676,7 +2676,7 @@ void stripname (char *pathname)
 
 /* char commandfile[PATH_MAX]; */   /* keep around so can open later */
 
-char *programpath="";         /* pathname of program */
+char *programpath = "";         /* pathname of program */
                     /* redundant with texpath ? */
 
 /* The following does not deslashify arguments ? Do we need to ? */
@@ -2695,8 +2695,10 @@ int read_commands (char *filename)
 /*  Try first in current directory (or use full name as specified) */
   strcpy(commandfile, filename);
   extension(commandfile, "cmd");
-  if (share_flag == 0) command = fopen(commandfile, "r");
-  else command = _fsopen(commandfile, "r", share_flag);
+  if (share_flag == 0)
+	  command = fopen(commandfile, "r");
+  else
+	  command = _fsopen(commandfile, "r", share_flag);
   if (command == NULL) {
 /*    If that fails, try in YANDYTeX program directory */
     strcpy(commandfile, programpath);
@@ -2704,8 +2706,10 @@ int read_commands (char *filename)
     strcat(commandfile, "\\");
     strcat(commandfile, filename);
     extension(commandfile, "cmd");
-    if (share_flag == 0) command = fopen(commandfile, "r");
-    else command = _fsopen(commandfile, "r", share_flag);
+    if (share_flag == 0)
+		command = fopen(commandfile, "r");
+    else
+		command = _fsopen(commandfile, "r", share_flag);
     if (command == NULL) {
 /*      perrormod(commandfile); */      /* debugging only */
 /*      strcpy(commandfile, ""); */   /* indicate failed */
@@ -2751,19 +2755,21 @@ int read_commands (char *filename)
 int read_command_line (int ac, char **av)
 { 
   int c;
-  char *optargnew;  /* equal to optarg, unless that starts with `=' */
-            /* in which case it is optarg+1 to step over the `=' */
-            /* if optarg = 0, then optargnew = 0 also */
+  char *optargnew;  /* equal to optarg, unless that starts with `='      */
+                    /* in which case it is optarg+1 to step over the `=' */
+                    /* if optarg = 0, then optargnew = 0 also            */
 
 //  show_line("read_command_line\n", 0);
   if (ac < 2) return 0;     /* no args to analyze ? 94/Apr/10 */
 
-/*  while ((c = getopt(ac, av, "+vitrdczp?m:h:x:E:")) != EOF) {  */
-/*  NOTE: keep `Y' in there for `do not reorder arguments ! */
+/*  while ((c = getopt(ac, av, "+vitrdczp?m:h:x:E:")) != EOF) {              */
+/*  NOTE: keep `Y' in there for `do not reorder arguments !                  */
 /*  WARNING: if adding flags, change also `allowedargs' and  `takeargs' !!!! */
   while ((c = getopt(ac, av, allowedargs)) != EOF) {
-    if (optarg != 0 && *optarg == '=') optargnew = optarg+1;
-    else optargnew = optarg;
+    if (optarg != 0 && *optarg == '=')
+		optargnew = optarg+1;
+    else
+		optargnew = optarg;
     analyze_flag (c, optargnew);
   }
   if (show_use || quitflag == 3) {
@@ -2782,7 +2788,6 @@ int read_command_line (int ac, char **av)
 //    exit (0);
     return -1;        // failure
   } 
-
 #ifdef DEBUG
   if (floating) testfloating();   /* debugging */
 #endif
@@ -2794,7 +2799,6 @@ int read_command_line (int ac, char **av)
     }
   } 
 /*  key_replace used in texmf.c (input_line) */
-
   if (xchrfile != NULL && *xchrfile != '\0') {  /* read user defined xchr[] */
     if (read_xchr_file(xchrfile, 0, av)) {
       if (trace_flag) show_line("NON ASCII ON\n", 0);
@@ -2817,7 +2821,7 @@ void uppercase (char *s) {
 }
 #endif
 
-int initcommands (int ac, char **av)
+int init_commands (int ac, char **av)
 {
 /*  NOTE: some defaults changed 1993/Nov/18 */
 /*  want_version = show_use = switchflag = return_flag = false;
@@ -3234,7 +3238,7 @@ int init (int ac, char **av)
   hyph_list = NULL;  hyph_word = NULL;
   trie_taken = NULL; trie_hash = NULL;
   trie_r = NULL; trie_c = NULL; trie_o = NULL; trie_l = NULL;
-  trietrc = NULL; trietro = NULL; trietrl = NULL;
+  trie_trc = NULL; trie_tro = NULL; trie_trl = NULL;
 
   log_opened = false;       /* so can tell whether opened */
   interaction = -1;       /* default state => 3 */
@@ -3248,7 +3252,7 @@ int init (int ac, char **av)
 
   if (reorder_arg_flag) reorderargs(ac, av);  
 
-  if (initcommands(ac, av))
+  if (init_commands(ac, av))
     return -1;          // failure
 
   check_fixed_align(trace_flag);       /* sanity check 1994/Jan/8 */

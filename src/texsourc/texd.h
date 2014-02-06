@@ -10,7 +10,7 @@
   #undef ALLOCATELOW  
   /* allocate font_info (800 k) (dynamically now) */
   #define ALLOCATEFONT 
-  /* allocate hyphenation trie stuff (270 k) trietrl, trietro, trietrc */
+  /* allocate hyphenation trie stuff (270 k) trie_trl, trie_tro, trie_trc */
   #define ALLOCATETRIES
   /* allocate hyphenation exception tables */
   #define ALLOCATEHYPHEN 
@@ -38,7 +38,7 @@
   /* increase number of fonts - quarterword 16 bit - max_quarterword limit */
   /* there may still be some bugs with this however ... also may slow down */
   /* also: should split use of quarterword for (i) font from (ii) char */
-  /* for example, xeq_level ? hyphenation trietrc ? */
+  /* for example, xeq_level ? hyphenation trie_trc ? */
   #define INCREASEFONTS 
   /* NOT NOT *//* allocate eqtb (108k) */ /* changed in 1.3 1996/Jan/18 */
   #undef ALLOCATEZEQTB
@@ -977,16 +977,16 @@ EXTERN bool ligature_present;
 EXTERN bool lft_hit, rt_hit; 
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/* could perhaps use packed_ASCII_code for trietrc ? */
+/* could perhaps use packed_ASCII_code for trie_trc ? */
 #ifdef ALLOCATETRIES
-  EXTERN halfword *trietrl; 
-  EXTERN halfword *trietro; 
-  EXTERN quarterword *trietrc; 
+  EXTERN halfword *trie_trl; 
+  EXTERN halfword *trie_tro; 
+  EXTERN quarterword *trie_trc; 
 #else
   /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  EXTERN halfword trietrl[trie_size + 1]; 
-  EXTERN halfword trietro[trie_size + 1]; 
-  EXTERN quarterword trietrc[trie_size + 1]; 
+  EXTERN halfword trie_trl[trie_size + 1]; 
+  EXTERN halfword trie_tro[trie_size + 1]; 
+  EXTERN quarterword trie_trc[trie_size + 1]; 
 #endif
 EXTERN small_number hyf_distance[trie_op_size + 1]; /* already padded 751 + 1 */
 EXTERN small_number hyf_num[trie_op_size + 1];    /* already padded 751 + 1 */

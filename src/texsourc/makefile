@@ -49,7 +49,7 @@ texmf.exe: $(objs)
 	$(LINK) $(LFLAGS) texmf itex openinou subroute local \
 	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9
 	copy texmf.exe yandytex.exe
-
+	copy texmf.exe ..\newyy\bin\texmf.exe
 # ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
 
 texmf.obj: texmf.c \

@@ -223,7 +223,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 #endif /* MSDOS */
 
 /*	null_terminate (name_of_file + 1);  */	/* moved here 97/June/5 */
-	name_of_file[name_length+1] = '\0';	/* null terminate */
+	name_of_file[name_length + 1] = '\0';	/* null terminate */
 
 /* reinsert '~' and ' ' in file names -  95/June/5 */
 /* done late to prevent problems with  null_terminate / space_terminate */  
@@ -316,7 +316,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 #ifdef MSDOS
 /*		code added 94/June/21 to show 'fmt' file opening in log */
 /*		if (show_fmt_flag && strstr(name_of_file+1, ".fmt") != NULL) { */
-		if (strstr(name_of_file+1, ".fmt") != NULL) {
+		if (strstr(name_of_file + 1, ".fmt") != NULL) {
 			if (format_file == NULL) {
 /*				null_terminate (name_of_file + 1); */
 				format_file = xstrdup(name_of_file + 1);
@@ -395,7 +395,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 /* For one thing, MakeTeXTFM etc is more than 8 characters ! */
 
 #ifdef MSDOS
-#define NO_MAKETEX
+  #define NO_MAKETEX
 #endif
 
 /* the string program is unreferenced in DOS NO_MAKETEX */

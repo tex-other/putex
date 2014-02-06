@@ -634,9 +634,9 @@ void set_paths (int path_bits)
 }
 
 #ifdef CACHEFILENAME
-char last_filename[PATH_MAX]="";	/* last full path / file name found C */
-char last_name[PATH_MAX]="";		/* last file name searched for C */
-int last_path_index=-1;				/* last path_index */
+  char last_filename[PATH_MAX]="";  /* last full path / file name found C */
+  char last_name[PATH_MAX]="";      /* last file name searched for C */
+  int last_path_index=-1;           /* last path_index */
 #endif
 
 /* Look for NAME, a C string (no longer Pascal), in the colon-separated list 
@@ -886,7 +886,7 @@ void map_insert (map_type map, char *key, char *value)
 /* Modified 97/May/17 to avoid malloc for each line read */
 
 #ifndef MALLOCLINE
-#define MAXLINE 256
+  #define MAXLINE 256
 #endif
 
 int map_file_parse (map_type map, char *map_filename)
@@ -1248,7 +1248,7 @@ int xfind_path_filename (string buffer, string filename,  string * dir_list)
 #ifdef MSDOS
 /*	is this always safe?  That is, is filename writable and its OK to modify */
 /*	unixify(filename);   */ /* done `in place' */
-	if (deslash)  unixify(filename);		/* made conditional 94/Feb/24 */
+	if (deslash) unixify(filename);		/* made conditional 94/Feb/24 */
 #endif
 
 /*	following addded in attempt to catch `nul' */		/* 94/Jan/6 bkph */

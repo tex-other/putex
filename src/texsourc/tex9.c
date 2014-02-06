@@ -40,17 +40,17 @@ bool open_fmt_file (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* For Windows NT, lets allow + instead of & for format specification */
 /* if(buffer[cur_input.loc_field]== 38) */  /* 95/Jan/22 */
-  if(buffer[cur_input.loc_field]== '&' || buffer[cur_input.loc_field]== '+')
+  if (buffer[cur_input.loc_field]== '&' || buffer[cur_input.loc_field]== '+')
   {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /*  User specified a format name on the command line */
     incr(cur_input.loc_field); 
     j = cur_input.loc_field; 
     buffer[last]= 32; 
-    while(buffer[j]!= 32)incr(j); 
-    pack_buffered_name(0, cur_input.loc_field, j - 1); 
+    while (buffer[j]!= 32) incr(j); 
+    pack_buffered_name(0, cur_input.loc_field, j - 1);
     if(w_open_in(fmt_file)) 
-    goto lab40;  // format file opened OK
+      goto lab40;  // format file opened OK
   
 //  format file open failed
   if (knuth_flag) {
@@ -71,8 +71,7 @@ bool open_fmt_file (void)
       char *t;            /* extra info 97/June/13 */
       if ((t = grabenv("TEXFORMATS")) != NULL) {
           sprintf(s, "(%s=%s)\n", "TEXFORMATS", t);
-      }
-      else {
+      } else {
         sprintf(s, "%s environment variable not set\n", "TEXFORMATS");
       }
     }
@@ -90,8 +89,7 @@ bool open_fmt_file (void)
   if (knuth_flag) {
       (void) sprintf(log_line, "%s!\n", "I can't find the default format file");
       show_line(log_line, 1);
-  }
-  else {
+  } else {
     char *s=log_line;
 /*    null_terminate (name_of_file + 1); */
     name_of_file[name_length + 1] = '\0';  /* null terminate */
@@ -105,8 +103,7 @@ bool open_fmt_file (void)
       char *t;            /* extra info 97/June/13 */
       if ((t = grabenv("TEXFORMATS")) != NULL) {
         sprintf(s, "(%s=%s)\n", "TEXFORMATS", t);
-      }
-      else {
+      } else {
         sprintf(s, "%s environment variable not set\n", "TEXFORMATS");
       }
     }

@@ -900,12 +900,11 @@ static int swap_items (char *p, int nitems, int size) {
    The pointer to the stuff to write is P, and we write to the file
    OUT_FILE.  */
 
-int do_dump (char *p, int item_size, int nitems, FILE *out_file) {
-
+int do_dump (char *p, int item_size, int nitems, FILE *out_file)
+{
 #if !defined (WORDS_BIGENDIAN) && !defined (NO_FMTBASE_SWAP)
 	swap_items (p, nitems, item_size);
 #endif
-
 /*  if (fwrite (p, item_size, nitems, out_file) != nitems) */ /* bkph */
 	if ((int) fwrite (p, item_size, nitems, out_file) != nitems){
 		show_line("\n", 0);
@@ -926,7 +925,6 @@ int do_dump (char *p, int item_size, int nitems, FILE *out_file) {
 /* Hmm, this could benefit from some on the fly decompression - bkph */
 
 /* Here is the dual of the writing routine.  */
-
 int do_undump (char *p, int item_size, int nitems, FILE *in_file)
 {
 /*  if (fread(p, item_size, nitems, in_file) != nitems) */ /* bkph */
@@ -942,7 +940,7 @@ int do_undump (char *p, int item_size, int nitems, FILE *in_file)
 		uexit(1);
     }
 #else
-    if ((int) fread(p, item_size, nitems, in_file) != nitems) {
+    if ((int) fread((void *) p, item_size, nitems, in_file) != nitems) {
 		show_line("\n", 0);
 		sprintf(log_line, "! Could not read %d %d-byte item%s.\n",
                nitems, item_size, (nitems > 1) ? "s" : "");

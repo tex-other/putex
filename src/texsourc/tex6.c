@@ -1147,7 +1147,7 @@ void hyphenate (void)
     else h = hyphen_prime; 
   } 
   lab45: decr(hn); 
-  if(trietrc[cur_lang + 1]!= cur_lang)
+  if(trie_trc[cur_lang + 1]!= cur_lang)
   return; 
   hc[0]= 0; 
   hc[hn + 1]= 0; 
@@ -1158,12 +1158,12 @@ void hyphenate (void)
     for_end = hn - rhyf + 1; 
     if(j <= for_end) do 
     {
-      z = trietrl[cur_lang + 1]+ hc[j]; 
+      z = trie_trl[cur_lang + 1]+ hc[j]; 
       l = j; 
-      while(hc[l]== trietrc[z]){
-      if(trietro[z]!= min_trie_op)
+      while(hc[l]== trie_trc[z]){
+      if(trie_tro[z]!= min_trie_op)
   {
-    v = trietro[z]; 
+    v = trie_tro[z]; 
     do {
         v = v + op_start[cur_lang]; 
       i = l - hyf_distance[v]; 
@@ -1173,7 +1173,7 @@ void hyphenate (void)
     } while(!(v == min_trie_op)); 
   } 
   incr(l); 
-  z = trietrl[z]+ hc[l]; 
+  z = trie_trl[z]+ hc[l]; 
       } 
     } 
   while(j++ < for_end); } 
