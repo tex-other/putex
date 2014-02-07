@@ -802,7 +802,6 @@ void macro_call (void)
       if((mem[r].hh.v.LH > 3583)||(mem[r].hh.v.LH < 3328)) 
       s = 0; /* s:=null l.7984 */
       else {
-    
   matchchr = mem[r].hh.v.LH - 3328; 
   s = mem[r].hh.v.RH; 
   r = s; 
@@ -836,7 +835,6 @@ void macro_call (void)
   goto lab10; 
       } 
       else {
-    
   t = s; 
   do {
       { 
@@ -962,7 +960,6 @@ void macro_call (void)
   } 
       } 
       else {
-    
   back_input ();
   print_err("Argument of ");
   sprint_cs(warning_index); 
@@ -976,10 +973,11 @@ void macro_call (void)
   incr(align_state); 
   long_state = 111; 
   cur_tok = par_token; 
-  ins_error (); 
+/* 420 in tex82.bug */
+  ins_error ();
+  goto lab22;
       } 
       else {
-    
   if(cur_tok == 2592)
   if(mem[r].hh.v.LH <= 3584)
   if(mem[r].hh.v.LH >= 3328)

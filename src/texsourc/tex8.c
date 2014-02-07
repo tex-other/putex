@@ -577,7 +577,9 @@ void do_register_command_ (small_number a)
   if(arith_error){
 	  print_err("Arithmetic overflow");
 	  help2("I can't carry out that multiplication or division,",
-		  "since the result is out of range."); 
+		  "since the result is out of range.");
+/* 423 in tex82.bug */
+	  if (p >= 2) delete_glue_ref(cur_val);
     error (); 
     return; 
   } 
@@ -2162,8 +2164,8 @@ lab92: if((cur_chr < font_bc[main_f])||(cur_chr > font_ec[main_f]))
     goto lab60; 
   } 
   {
-    mem[tail].hh.v.RH = lig_stack; 
-    tail = mem[tail].hh.v.RH; 
+    link(tail) = lig_stack; 
+    tail = lig_stack; 
   } 
 
 /*  main_loop_lookahead */
@@ -2220,8 +2222,11 @@ lab101: main_s = eqtb[(hash_size + 2651) + cur_chr].hh.v.RH;
 //  |cur_r|, adjust the text appropriately; exit to |main_loop_wrapup|@>;
 lab110:
 /*  if char_tag(main_i)<>lig_tag then goto main_loop_wrapup; */
-  if(((main_i.b2)% 4)!= 1)
-    goto lab80; 
+  if(((main_i.b2) % 4)!= 1)
+    goto lab80;
+/* 425 in tex82.bug */
+  if (cur_r == 256)
+	  goto lab80;
 /*  main_k:=lig_kern_start(main_f)(main_i); */
   main_k = lig_kern_base[main_f]+ main_i.b3; 
 /*  main_j:=font_info[main_k].qqqq; */

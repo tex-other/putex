@@ -302,21 +302,22 @@ void print_cs_(integer p)
   {
     print_esc("csname");
     print_esc("endcsname");
+	print_char(' ');
   } 
   else {
     //print_esc(p - 257);   /* p - single_base */
-	  print_esc("");print(p-257);
+	  print_esc("");print(p - 257);
 /*  if cat_code(p - single_base) = letter then ... p.262 */
     if(eqtb[(hash_size + 1883) + p - 257].hh.v.RH == 11)
-    print_char(32);     /*   */
+    print_char(' ');
   } 
   else if(p < 1)
-    print_esc("IMPOSSIBLE");
+    print_esc("IMPOSSIBLE.");
   else print(p - 1); 
   else if(p >= (hash_size + 781)) /* undefined_control_sequence */
-    print_esc("IMPOSSIBLE");
+    print_esc("IMPOSSIBLE.");
   else if((hash[p].v.RH >= str_ptr)) 
-    print_esc("NONEXISTENT");
+    print_esc("NONEXISTENT.");
   else {
     //print_esc(hash[p].v.RH); 
 	  print_esc(""); print(hash[p].v.RH);

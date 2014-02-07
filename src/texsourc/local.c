@@ -96,7 +96,7 @@ char *rights       = "All Rights Reserved.";
 char *copyright    = "Copyright (C) 2007--2014 TeX Users Group.";
 char *yandyversion = "2.2.3"; /* 00/Jun/18 */
 char *application  = "Y & Y TeX"; /* 96/Jan/17 */
-char *tex_version   = "This is TeX, Version 3.14159265"; /* change with upgrade */
+char *tex_version  = "This is TeX, Version 3.14159265"; /* change with upgrade */
 
 /* #define COPYHASH 1890382 */
 /* #define COPYHASH 13862905 */
@@ -145,12 +145,12 @@ unsigned char wintodos[128] = {
   155, 151, 163, 150, 129, 236, 231, 152
 };  
 
-void show_usage (char *program) {
-  char *s = log_line;
+void show_usage (char * program) {
+  char * s = log_line;
   sprintf (s, "\n\
 %s [-?ivnwdrzpK] [-m=ini_mem] [-e=hyph_size] [-h=trie_size]\n\
 \t[-x=xchr_file] [-k=key_file] [-o=dvi_dir] [-l=log_dir] [-a=aux_dir]\n\
-\t\t[&format_file] [tex_file]\n\
+\t[+format_file] [tex_file]\n\
 ", program);
   s += strlen(s);
   sprintf (s, "\
@@ -170,10 +170,9 @@ void show_usage (char *program) {
     -k    use `key replacement' defined in file\n\
     -o    write DVI file in specified directory (default current directory)\n\
     -l    write LOG file in specified directory (default current directory)\n\
-    -a    write AUX file in specified directory (default current directory)\n\
-");
+    -a    write AUX file in specified directory (default current directory)");
   strcat(s, "\n");
-  show_line(s, 1);
+  show_line(log_line, 1);
 #ifndef _WINDOWS
   uexit(1);     // has this been setup yet ???
 #endif
@@ -191,21 +190,23 @@ void show_usage (char *program) {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 /* Sep 27 1990 => 1990 Sep 27 */
+/* 012456789      0123456789  */
 
-void scivilize (char *date)
+void scivilize (char * date)
 {
   int k;
   char pyear[6];
   strcpy (pyear, date + 7);
-  for (k = 5; k >= 0; k--) date[k+5] = date[k];
+  for (k = 5; k >= 0; k--) date[k + 5] = date[k];
   for (k = 0; k < 4; k++) date[k] = pyear[k];
   date[4] = ' ';
+  if (date[9] == ' ') date[9] = '0'; /* replace space by '0' */
   return;
 }
 
 /* Thu Sep 27 06:26:35 1990 => 1990 Sep 27 06:26:35 */
 
-void lcivilize (char *date)
+void lcivilize (char * date)
 {
   int k;
   char pyear[6];
@@ -230,7 +231,6 @@ void stamp_it (char *s)
   scivilize(date);   
   sprintf(s, "%s %s ", application, yandyversion);
   s += strlen(s);
-
   sprintf(s, "(compiled time: %s %s)", date, compiletime);
   s += strlen(s);
 }

@@ -2249,6 +2249,8 @@ void final_cleanup (void)
 		while(c++ < for_end);
 	} 
 /* *********************************************************************** */
+/* 422. Amendment to bugfix 414 (reported by David Fuchs, September 2007) */
+		if (last_glue != max_halfword) delete_glue_ref(last_glue);
 		store_fmt_file ();	// returns a value ?
 	}
 #endif /* INITEX */

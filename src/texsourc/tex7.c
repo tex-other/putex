@@ -614,7 +614,6 @@ void box_end_(integer boxcontext)
   }
       } 
       else {
-    
   if(abs(mode)== 102)
   space_factor = 1000; 
   else {
@@ -651,9 +650,9 @@ void box_end_(integer boxcontext)
     do {
     get_x_token (); 
     } while(!((cur_cmd != 10)&&(cur_cmd != 0))); 
-    if(((cur_cmd == 26)&&(abs(mode)!= 1)) ||((
-    cur_cmd == 27)&&(abs(mode)== 1)) ||((cur_cmd == 
-    28)&&(abs(mode)== 203)))
+/* 424 in tex82.bug */
+    if(((cur_cmd == 26) && (abs(mode)!= 1)) ||
+		((cur_cmd == 27) && (abs(mode)== 1)))
     {
 /*   begin append_glue; subtype(tail):=box_context-(leader_flag-a_leaders); */
       append_glue (); 

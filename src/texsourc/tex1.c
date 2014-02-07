@@ -507,8 +507,11 @@ void show_activities (void)
         t = mem[r].hh.b1; 
         print_int(t); 
         print_string(" adds ");
-        t = x_over_n(mem[r + 3].cint, 1000)*
-        eqtb[(hash_size + 3218) + t].cint; 
+/* 427. Tell more precisely the effective size of 1:1 insertions (DEK, 27 Feb 08) */
+		if (eqtb[(hash_size + 3218) + t].cint == 1000)
+			t = mem[r + 3].cint;
+		else
+			t = x_over_n(mem[r + 3].cint, 1000) * eqtb[(hash_size + 3218) + t].cint; 
         print_scaled(t); 
         if(mem[r].hh.b0 == 1)
         {

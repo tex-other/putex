@@ -20,7 +20,7 @@
   #define NOSOUND
   #define NODRIVERS
   #define STRICT
-  #pragma warning(disable:4115)	// kill rpcasync.h complaint
+  #pragma warning(disable:4115) // kill rpcasync.h complaint
   #include <windows.h>
   #define MYLIBAPI __declspec(dllexport)
 #endif
@@ -28,9 +28,9 @@
 #include "texwin.h"
 
 #pragma warning(disable:4996)
-#pragma warning(disable:4131)	// old style declarator
-#pragma warning(disable:4135)	// conversion between different integral types 
-#pragma warning(disable:4127)	// conditional expression is constant
+#pragma warning(disable:4131) // old style declarator
+#pragma warning(disable:4135) // conversion between different integral types 
+#pragma warning(disable:4127) // conditional expression is constant
 
 #include <setjmp.h>
 
@@ -40,43 +40,43 @@
 
 #include "texd.h"
 
-#include <io.h>					// needed for _finddata_t 
-#include <ctype.h>				// needed for isascii and isalpha
+#include <io.h>    // needed for _finddata_t 
+#include <ctype.h> // needed for isascii and isalpha
 
 //////////////////////////////////////////////////////////////////////////////////
 
-#define NAME_MAX 255			// max size of name component
+#define NAME_MAX 255      // max size of name component
 
 #define ISALPHA(c) (isascii (c) && isalpha(c))
 
-#define PATH_SEP '/'
-#define PATH_SEP_STRING "/"
-#define PATH_DELIMITER ';'
+#define PATH_SEP              '/'
+#define PATH_SEP_STRING       "/"
+#define PATH_DELIMITER        ';'
 #define PATH_DELIMITER_STRING ";"
 
 // default paths to look for things
 
-#define TEXPATH "c:/yandy/yandytex/"
+#define TEXPATH    "C:/yandy/yandytex/"
 
 #define TEXFORMATS TEXPATH "fmt"
-#define TEXPOOL TEXPATH "fmt"
-#define TEXFONTS TEXPATH "tfm"
-#define TEXINPUTS TEXPATH "tex//;" "c:/tex;" "c:/texinput"
+#define TEXPOOL    TEXPATH "pool"
+#define TEXFONTS   TEXPATH "tfm"
+#define TEXINPUTS  TEXPATH "tex//;" "C:/tex;" "C:/texinput"
 
 // structure used by fontmap
 
 typedef struct map_element_struct
 {
-	char *key;
-	char *value;
-	struct map_element_struct *next;
+  char *key;
+  char *value;
+  struct map_element_struct *next;
 } map_element_type;
 
 typedef map_element_type **map_type;
 
-extern bool usesourcedirectory;			/* in local.c */
+extern bool usesourcedirectory;     /* in local.c */
 
-extern bool workingdirectory;			/* in local.c */
+extern bool workingdirectory;     /* in local.c */
 
 bool absolute_p (string filename);
 string readable (string name);
@@ -86,7 +86,7 @@ bool dir_p(string fn);
 string *find_dir_list (string path);
 void add_directory (string **dir_list_ptr, unsigned *dir_count_ptr, string dir);
 void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirname,
-					struct _finddata_t findt, integer recurseflag);
+          struct _finddata_t findt, integer recurseflag);
 void save_dir_list (string path,  string *dir_list);
 string *initialize_path_list (string env_name,  string default_path);
 int xfind_path_filename (string buffer, string filename,  string * dir_list);
@@ -96,8 +96,8 @@ char *map_lookup (map_type map, char *key);
 
 // the following do *not* use MALLOC
 
-extern char * xconcat (char *buffer, char *s1, char *s2);				/* openinou.c */
-extern char * xconcat3 (char *buffer, char *s1, char *s2, char *s3);		/* openinou.c */
+extern char * xconcat (char *buffer, char *s1, char *s2);            /* openinou.c */
+extern char * xconcat3 (char *buffer, char *s1, char *s2, char *s3); /* openinou.c */
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -106,44 +106,46 @@ extern char * xconcat3 (char *buffer, char *s1, char *s2, char *s3);		/* openino
 
 void uexit (int unix_code)
 {
-	int final_code;
+  int final_code;
 
 #ifndef _WINDOWS
-	fflush(stdout);
+  fflush(stdout);
 #endif
-	if (unix_code == 0)
-		final_code = EXIT_SUCCESS;
-	else if (unix_code == 1)
-		final_code = EXIT_FAILURE;
-	else
-		final_code = unix_code;
-	if (jump_used) {
-		show_line("Jump Buffer already used\n", 1);
-		exit(1);
-	}
-	jump_used++;
-	//longjmp(jumpbuffer, code+1);		// 1999/Nov/7
-	exit(final_code);
+  if (unix_code == 0)
+    final_code = EXIT_SUCCESS;
+  else if (unix_code == 1)
+    final_code = EXIT_FAILURE;
+  else
+    final_code = unix_code;
+  if (jump_used) {
+    show_line("Jump Buffer already used\n", 1);
+    exit(1);
+  }
+  jump_used++;
+  // I removed the longjmp.
+  //longjmp(jumpbuffer, code+1);    // 1999/Nov/7
+  exit(final_code);
 }
 
 // round a double being careful about very large and very small values
-
-// used only in tex0.c
+// used only in tex0.c, a Pascal function
 
 integer zround (double r)
 {
-	integer i;
-
-/*	R can be outside the range of an integer if glue is stretching or
-	shrinking a lot.  We can't do any better than returning the largest
-	or smallest integer possible in that case.  It doesn't seem to make
-	any practical difference. */
-
-	if (r > LONG_MAX) i = LONG_MAX;
-	else if (r < LONG_MIN) i = LONG_MIN;
-	else if (r >= 0.0) i = (int) (r + 0.5);
-	else i = (int) (r - 0.5);
-	return i;
+  integer i;
+/*  R can be outside the range of an integer if glue is stretching or
+  shrinking a lot.  We can't do any better than returning the largest
+  or smallest integer possible in that case.  It doesn't seem to make
+  any practical difference. */
+  if (r > LONG_MAX)
+    i = LONG_MAX;
+  else if (r < LONG_MIN)
+    i = LONG_MIN;
+  else if (r >= 0.0)
+    i = (int) (r + 0.5);
+  else
+    i = (int) (r - 0.5);
+  return i;
 }
 
 /****************************************************************************/
@@ -152,113 +154,111 @@ integer zround (double r)
 
 address xmalloc (unsigned size)
 {
-	address new_mem = (address) malloc (size);
-	if (new_mem == NULL) {
-		sprintf(log_line, "malloc: Unable to honor request for %u bytes.\n", size);
-		show_line(log_line, 1);
-		abort ();					// ???
-	}
+  address new_mem = (address) malloc (size);
+  if (new_mem == NULL) {
+    sprintf(log_line, "malloc: Unable to honor request for %u bytes.\n", size);
+    show_line(log_line, 1);
+    abort ();         // ???
+  }
 #ifdef MYDEBUG
-	if (trace_flag) {
-		sprintf(log_line, "XMALLOC %d\n", size);		/* 1996/Jan/20 */
-		show_line(log_line, 0);
-	}
+  if (trace_flag) {
+    sprintf(log_line, "XMALLOC %d\n", size);    /* 1996/Jan/20 */
+    show_line(log_line, 0);
+  }
 #endif
-	return new_mem;
+  return new_mem;
 }
 
 // calloc with error checking - used by map_create
 
 address xcalloc (unsigned nelem, unsigned elsize)
 {
-	address new_mem = (address) calloc (nelem, elsize);
-	if (new_mem == NULL) {
-		sprintf(log_line,
-				"Unable to honor request for %u elements of size %u.\n",
-				nelem, elsize);
-		show_line(log_line, 1);
-		abort ();
-	}
-	return new_mem;
+  address new_mem = (address) calloc (nelem, elsize);
+  if (new_mem == NULL) {
+    sprintf(log_line, "Unable to honor request for %u elements of size %u.\n", nelem, elsize);
+    show_line(log_line, 1);
+    abort ();
+  }
+  return new_mem;
 }
 
 /* Return a copy of s in new storage.  */ /* xmalloc does error checking */
 
 string xstrdup (string s)
 {
-	string pnew_string = (string) xmalloc (strlen (s) + 1);
+  string pnew_string = (string) xmalloc (strlen (s) + 1);
 #ifdef MYDEBUG
-	if (trace_flag) {
-		sprintf(log_line, "XSTRDUP %d %s\n", strlen(s)+1, s);
-		show_line(log_line, 0);
-	}
+  if (trace_flag) {
+    sprintf(log_line, "XSTRDUP %d %s\n", strlen(s)+1, s);
+    show_line(log_line, 0);
+  }
 #endif
-	return strcpy (pnew_string, s);
+  return strcpy (pnew_string, s);
 }
 
 /* only used by line.c (which in turn is only used by  fontmap.c) */
 
 address xrealloc (address old_ptr, unsigned size)
 {
-	address new_mem;
+  address new_mem;
 
-	if (old_ptr == NULL) new_mem = xmalloc (size);
-	else {
-		new_mem = (address) realloc (old_ptr, size);
-		if (new_mem == NULL) {
-			sprintf(log_line, "Unable to honor request for %u bytes.\n", size);
-			show_line(log_line, 1);
-			abort ();
-		}
-	}
-	return new_mem;
+  if (old_ptr == NULL) new_mem = xmalloc (size);
+  else {
+    new_mem = (address) realloc (old_ptr, size);
+    if (new_mem == NULL) {
+      sprintf(log_line, "Unable to honor request for %u bytes.\n", size);
+      show_line(log_line, 1);
+      abort ();
+    }
+  }
+  return new_mem;
 }
 
 // returns newly allocated string
 
 string concat (string s1, string s2)
 {
-	string answer;
+  string answer;
 #ifdef MYDEBUG
-	if (trace_flag) {
-		sprintf(log_line, "CONCAT %s and %s ", s1, s2);
-		show_line(log_line, 0);
-	}
+  if (trace_flag) {
+    sprintf(log_line, "CONCAT %s and %s ", s1, s2);
+    show_line(log_line, 0);
+  }
 #endif
-	answer = (string) xmalloc (strlen (s1) + strlen (s2) + 1);
-	strcpy (answer, s1);
-	strcat (answer, s2);
+  answer = (string) xmalloc (strlen (s1) + strlen (s2) + 1);
+  strcpy (answer, s1);
+  strcat (answer, s2);
 #ifdef MYDEBUG
-	if (trace_flag) {
-		sprintf(log_line, "=> %s\n", answer);
-		show_line(log_line, 0);
-	}
+  if (trace_flag) {
+    sprintf(log_line, "=> %s\n", answer);
+    show_line(log_line, 0);
+  }
 #endif
-	return answer;
+  return answer;
 }
 
 // returns newly allocated string
 
 string concat3 (string s1, string s2, string s3)
 {
-	string answer;
+  string answer;
 #ifdef MYDEBUG
-	if (trace_flag) {
-		sprintf(log_line, "CONCAT3 %s, %s, and %s ", s1, s2, s3);
-		show_line(log_line, 0);
-	}
+  if (trace_flag) {
+    sprintf(log_line, "CONCAT3 %s, %s, and %s ", s1, s2, s3);
+    show_line(log_line, 0);
+  }
 #endif
-	answer = (string) xmalloc (strlen (s1) + strlen (s2) + strlen (s3) + 1);
-	strcpy (answer, s1);
-	strcat (answer, s2);
-	strcat (answer, s3);
+  answer = (string) xmalloc (strlen (s1) + strlen (s2) + strlen (s3) + 1);
+  strcpy (answer, s1);
+  strcat (answer, s2);
+  strcat (answer, s3);
 #ifdef MYDEBUG
-	if (trace_flag) {
-		sprintf(log_line, "=> %s\n", answer);
-		show_line(log_line, 0);
-	}
+  if (trace_flag) {
+    sprintf(log_line, "=> %s\n", answer);
+    show_line(log_line, 0);
+  }
 #endif
-	return answer;
+  return answer;
 }
 
 /***********************************************************************/
@@ -272,25 +272,29 @@ string concat3 (string s1, string s2, string s3)
 
 bool test_eof (FILE *file)
 {
-	int c;
+  int c;
 /* Maybe we're already at the end?  */
-	if (feof (file)) return true;
-	if ((c = getc (file)) == EOF) return true;
+  if (feof (file))
+    return true;
+  if ((c = getc (file)) == EOF)
+    return true;
 /* We weren't at the end.  Back up.  */
-	(void) ungetc (c, file);
-	return false;
+  (void) ungetc (c, file);
+  return false;
 }
 
 /* Return true on end-of-line in FILE or at the end of FILE, else false.  */
 
 bool eoln (FILE *file)
 {
-	int c;
-	if (feof (file)) return true;
-	c = getc (file);
-	if (c != EOF) (void) ungetc (c, file);
-//	return c == '\n' || c == EOF;
-	return c == '\n' || c == '\r' || c == EOF; // ???
+  int c;
+  if (feof (file))
+    return true;
+  c = getc (file);
+  if (c != EOF)
+    (void) ungetc (c, file);
+//  return c == '\n' || c == EOF;
+  return c == '\n' || c == '\r' || c == EOF; // ???
 /* Type mismatch (return) (int/enum) ? */
 }
 
@@ -307,31 +311,33 @@ bool eoln (FILE *file)
 
 // xfopen used in open_input in openinou.c
 
-FILE *xfopen (char *filename, char * fmode)
+FILE * xfopen (char *filename, char * fmode)
 {
-	FILE *f;
-/*  if share_flag is non-zero and we are opening for reading use fsopen */
-/*  f = fopen (filename, mode); */
-	if (share_flag == 0 || *fmode != 'r') f = fopen (filename, fmode);
-	else f = _fsopen (filename, fmode, share_flag);
-	if (f == NULL) {
-//		FATAL_PERROR (filename);
-		perrormod(filename);
-		uexit(1);		// ???
-	}
-	return f;
+  FILE *f;
+/* if share_flag is non-zero and we are opening for reading use fsopen */
+/* f = fopen (filename, mode); */
+  if (share_flag == 0 || *fmode != 'r')
+    f = fopen (filename, fmode);
+  else
+    f = _fsopen (filename, fmode, share_flag);
+  if (f == NULL) {
+//    FATAL_PERROR (filename);
+    perrormod(filename);
+    uexit(1);   // ???
+  }
+  return f;
 }
 
 // xfclose not used ...
 
 int xfclose (FILE *f, char *filename)
 {
-	if (ferror(f) != 0 || fclose(f) != 0) {
-//		FATAL_PERROR (filename);
-		perrormod(filename);
-		uexit(1);		// ???
-	}
-	return 0;
+  if (ferror(f) != 0 || fclose(f) != 0) {
+//    FATAL_PERROR (filename);
+    perrormod(filename);
+    uexit(1);   // ???
+  }
+  return 0;
 }
 
 /********************************************************************************/
@@ -342,39 +348,39 @@ int xfclose (FILE *f, char *filename)
 
 string find_suffix (string name)
 {
-	string dot_pos; 
-	string slash_pos; 
+  string dot_pos;
+  string slash_pos;
 
-	dot_pos = strrchr (name, '.');
+  dot_pos = strrchr (name, '.');
 #ifdef MSDOS
-	if ((slash_pos = strrchr (name, PATH_SEP)) != NULL);
-	else if ((slash_pos = strrchr (name, '\\')) != NULL);  
-	else if ((slash_pos = strrchr (name, ':')) != NULL);
-	else slash_pos = name;
+  if ((slash_pos = strrchr (name, PATH_SEP)) != NULL);
+  else if ((slash_pos = strrchr (name, '\\')) != NULL);  
+  else if ((slash_pos = strrchr (name, ':')) != NULL);
+  else slash_pos = name;
 #else
-	slash_pos = strrchr (name, PATH_SEP);
+  slash_pos = strrchr (name, PATH_SEP);
 #endif
 
 /* If the name is `foo' or `/foo.bar/baz', we have no extension.  */
-	return dot_pos == NULL || dot_pos < slash_pos ? NULL : dot_pos + 1;
+  return dot_pos == NULL || dot_pos < slash_pos ? NULL : dot_pos + 1;
 }
 
 // remove extension of file name - returns copy or NULL
 
 string remove_suffix (string s)
 {
-	string ret;
-	string suffix = find_suffix (s);
+  string ret;
+  string suffix = find_suffix (s);
 
-	if (suffix)	{
-		suffix--;	  /* Back up to before the dot.  */
-		ret = (char *) xmalloc (suffix - s + 1);
-		strncpy (ret, s, suffix - s);
-		ret[suffix - s] = '\0';
-	}
-	else ret = NULL;
+  if (suffix) {
+    suffix--;   /* Back up to before the dot.  */
+    ret = (char *) xmalloc (suffix - s + 1);
+    strncpy (ret, s, suffix - s);
+    ret[suffix - s] = '\0';
+  }
+  else ret = NULL;
 
-	return ret;
+  return ret;
 }
 
 // add extension to file name unless it already has one
@@ -382,12 +388,11 @@ string remove_suffix (string s)
 
 string extend_filename (string name, string default_suffix)
 {
-	string new_s;
-	string suffix = find_suffix (name);
+  string new_s;
+  string suffix = find_suffix (name);
 
-	new_s = suffix == NULL 
-			? concat3 (name, ".", default_suffix) : name;
-	return new_s;
+  new_s = (suffix == NULL ? concat3 (name, ".", default_suffix) : name);
+  return new_s;
 }
 
 /****************************************************************************************/
@@ -400,84 +405,83 @@ string extend_filename (string name, string default_suffix)
 
 char *read_line (FILE *f)
 {
-	int c;
-	unsigned limit = BLOCK_SIZE;
-	unsigned loc = 0;
-	char *line = (char *) xmalloc (limit);
+  int c;
+  unsigned int limit = BLOCK_SIZE;
+  unsigned int loc = 0;
+  char * line = (char *) xmalloc (limit);
 
 /*  while ((c = getc (f)) != EOF && c != '\n')  */
-	while ((c = getc (f)) != EOF && c != '\n' && c != '\r') {
-		line[loc] = (char) c;
-		loc++;
+  while ((c = getc (f)) != EOF && c != '\n' && c != '\r') {
+    line[loc] = (char) c;
+    loc++;
+/* By testing after the assignment, we guarantee that we'll always
+   have space for the null we append below.  We know we always
+   have room for the first char, since we start with BLOCK_SIZE.  */
+    if (loc == limit) {
+      limit += BLOCK_SIZE;
+      line = (char *) xrealloc (line, limit);
+    }
+  }
 
-	  /* By testing after the assignment, we guarantee that we'll always
-         have space for the null we append below.  We know we always
-         have room for the first char, since we start with BLOCK_SIZE.  */
-		if (loc == limit) {
-			limit += BLOCK_SIZE;
-			line = (char *) xrealloc (line, limit);
-		}
-	}
+/* If we read anything, return it.  This can't represent a last
+   ``line'' which doesn't end in a newline, but so what.  */
+/* This is Tom Rokicki's mistake -- lets fix it ! 1994/March/18 */
+  if (c != EOF)  {
+/* Terminate the string.  We can't represent nulls in the file,
+   either.  Again, it doesn't matter.  */
+    line[loc] = 0;
+  }
+  else if (loc > 0) { /* c == EOF, but line not empty 1994/March/18 */
+    line[loc] = 0;
+  }
+  else { /* Real EOF --- at end of file.  */
+    free (line);
+    line = NULL;
+  }
 
-  /* If we read anything, return it.  This can't represent a last
-     ``line'' which doesn't end in a newline, but so what.  */
-  /* This is Tom Rokicki's mistake -- lets fix it ! 1994/March/18 */
-	if (c != EOF)  {
-	  /* Terminate the string.  We can't represent nulls in the file,
-         either.  Again, it doesn't matter.  */
-		line[loc] = 0;
-	}
-	else if (loc > 0) {	/* c == EOF, but line not empty 1994/March/18 */
-		line[loc] = 0;
-	}
-	else { /* Real EOF --- at end of file.  */
-		free (line);
-		line = NULL;
-	}
-
-	return line;
+  return line;
 }
 #endif
 
 /* Modified version 97/May/17 to avoid malloc for every line read ... */
 
-char *read_a_line (FILE *f,  char *line, int limit)
+char * read_a_line (FILE *f,  char *line, int limit)
 {
-	int c;
-	int loc = 0;
+  int c;
+  int loc = 0;
 
-/*	while ((c = getc (f)) != EOF && c != '\n')  */
-	while ((c = getc (f)) != EOF) {
-		if (c == '\n' || c == '\r') {
-			if (loc > 0) break;
-			else continue;				/* ignore \r\n and blank lines */
-		}
-		line[loc] = (char) c;
-		loc++;
-		if (loc == limit-1) {			/* very unlikely */
-			sprintf(log_line, " ERROR: line too long\n");
-			show_line(log_line, 1);
-			show_line(line, 0);
-			show_line("\n", 0);
-			break;
-		}
-	}
+/*  while ((c = getc (f)) != EOF && c != '\n')  */
+  while ((c = getc (f)) != EOF) {
+    if (c == '\n' || c == '\r') {
+      if (loc > 0) break;
+      else continue;        /* ignore \r\n and blank lines */
+    }
+    line[loc] = (char) c;
+    loc++;
+    if (loc == limit-1) {     /* very unlikely */
+      sprintf(log_line, " ERROR: line too long\n");
+      show_line(log_line, 1);
+      show_line(line, 0);
+      show_line("\n", 0);
+      break;
+    }
+  }
 
-	if (c != EOF || loc > 0) {			/* normal line or EOF at end of line */
-		line[loc] = '\0';				/* terminate */
-		return line;					/* and return */
-	}
-	else return(NULL);					/* true EOF */
+  if (c != EOF || loc > 0) {      /* normal line or EOF at end of line */
+    line[loc] = '\0';       /* terminate */
+    return line;          /* and return */
+  }
+  else return(NULL);          /* true EOF */
 }
 
 /****************************************************************************************/
 
 /* from ourpaths.c */
 
-#define BUILDNAMEDIRECT		/* avoid malloc for string concat */
+#define BUILDNAMEDIRECT   /* avoid malloc for string concat */
 
-#define CACHEFILENAME		/* cache last full path/file name 96/Nov/16 */
-							/* to speed up LaTeX 2e which opens files twice */
+#define CACHEFILENAME   /* cache last full path/file name 96/Nov/16 */
+              /* to speed up LaTeX 2e which opens files twice */
 
 /* `path_dirs' is initialized in `set_paths', to a null-terminated array
    of directories to search for.  */
@@ -491,146 +495,139 @@ static string *path_dirs[LAST_PATH];
 
 void set_paths (int path_bits)
 {
-	int n;											/* 97/Apr/2 */
-	char *s, *t, *u;								/* 94/Jan/6 */
-	char buffer[PATH_MAX];
+  int n;                      /* 97/Apr/2 */
+  char *s, *t, *u;                /* 94/Jan/6 */
+  char buffer[PATH_MAX];
 
-/*	eliminated lots of junk not needed for TeX itself 93/Nov/20 bkph */
+/*  eliminated lots of junk not needed for TeX itself 93/Nov/20 bkph */
 
-/*	added code to look for pool file in format directory also */
-/*	added code to look for fmt directory in tex directory also */
-/*	added code to look for tfm directory in tex directory also */
-/*	added code to look for some PC TeX flavour environment names 94/Jan/6 */
-/*	which, in case of formats, could lead to I'm stymied errors ... */
+/*  added code to look for pool file in format directory also */
+/*  added code to look for fmt directory in tex directory also */
+/*  added code to look for tfm directory in tex directory also */
+/*  added code to look for some PC TeX flavour environment names 94/Jan/6 */
+/*  which, in case of formats, could lead to I'm stymied errors ... */
 
-	if (path_bits & TEXFORMATPATHBIT) {
-		s = "TEXFORMATS";
-		t = TEXFORMATS;
-/*	  if (getenv(s) == NULL) {	*/	/* see if env var defined */
-		if (grabenv(s) == NULL) {		/* see if env var defined 94/May/19*/
-			strcpy(buffer, texpath);	/* not, see if texpath\fmt is directory */
-			strcat(buffer, PATH_SEP_STRING); 
-			strcat(buffer, "fmt");
-			if (trace_flag) {
-				sprintf(log_line, "Checking `%s' = %s %s %s\n",
-						buffer, texpath, PATH_SEP_STRING, "fmt");	/* 95/Jan/25 */
-				show_line(log_line, 0);
-			}
-/*			if (dir_p(buffer)) t = _strdup(buffer); */
-			if (dir_p(buffer)) t = xstrdup(buffer);	/* 96/Jan/20 */
-			else {
-				s = "TEXFMTS";			/* added PC-TeX version 94/Jan/6 */
-				if (getenv(s) == NULL)  s = "TEXFMT";	/* em-TeX ... */
-			}
-			if (trace_flag) {
-				sprintf(log_line, "\nSetting up %s (default %s) ", "TEXFORMATS", t);
-				show_line(log_line, 0);
-			}
-		}
-/*		path_dirs[TEXFORMATPATH] = initialize_path_list ("TEXFORMATS", TEXFORMATS); */
-/*		path_dirs[TEXFORMATPATH] = initialize_path_list (s, TEXFORMATS); */
-		path_dirs[TEXFORMATPATH] = initialize_path_list (s, t);
-/*		if (t != TEXFORMATS) free (t); */
-	}
+  if (path_bits & TEXFORMATPATHBIT) {
+    s = "TEXFORMATS";
+    t = TEXFORMATS;
+    if (grabenv(s) == NULL) {   /* see if env var defined 94/May/19*/
+      strcpy(buffer, texpath);  /* not, see if texpath\fmt is directory */
+      strcat(buffer, PATH_SEP_STRING); 
+      strcat(buffer, "fmt");
+      if (trace_flag) {
+        sprintf(log_line, "Checking `%s' = %s %s %s\n", buffer, texpath, PATH_SEP_STRING, "fmt"); /* 95/Jan/25 */
+        show_line(log_line, 0);
+      }
+      if (dir_p(buffer)) t = xstrdup(buffer); /* 96/Jan/20 */
+      else {
+        s = "TEXFMTS";      /* added PC-TeX version 94/Jan/6 */
+        if (getenv(s) == NULL)  s = "TEXFMT"; /* em-TeX ... */
+      }
+      if (trace_flag) {
+        sprintf(log_line, "\nSetting up %s (default %s) ", "TEXFORMATS", t);
+        show_line(log_line, 0);
+      }
+    }
+/* path_dirs[TEXFORMATPATH] = initialize_path_list ("TEXFORMATS", TEXFORMATS); */
+/* path_dirs[TEXFORMATPATH] = initialize_path_list (s, TEXFORMATS); */
+    path_dirs[TEXFORMATPATH] = initialize_path_list (s, t);
+/* if (t != TEXFORMATS) free (t); */
+  }
 
-	if (path_bits & TEXPOOLPATHBIT) {
-		s = "TEXPOOL";
-		t = TEXPOOL;
-/*		if (getenv(s) == NULL) { */
-		if (grabenv(s) == NULL) {			/* 1994/May/19 */
-			s = "TEXFORMATS";				/* try in format directory next */
-/*			if (getenv(s) == NULL) { */	/* see if environment var defined */
-			if (grabenv(s) == NULL) {		/* see if environment var defined */
-				strcpy(buffer, texpath);	/* no, see if texpath\fmt is direct */
-				strcat(buffer, PATH_SEP_STRING); 
-				strcat(buffer, "fmt");
-				if (trace_flag) {
-					sprintf(log_line, "Checking `%s' = %s %s %s\n",
-							buffer, texpath, PATH_SEP_STRING, "fmt");	/* 95/Jan/25 */
-					show_line(log_line, 0);
-				}
-/*				if (dir_p(buffer)) t = _strdup(buffer); */
-				if (dir_p(buffer)) t = xstrdup(buffer);		/* 96/Jan/20 */
-				else {
-					s = "TEXFMTS";			/* added PC-TeX version 94/Jan/6 */
-					if (getenv(s) == NULL)  s = "TEXFMT";	/* em-TeX ... */
-				}
-				if (trace_flag) {
-					sprintf(log_line, "\nSetting up %s (default %s) ", "TEXPOOL", t);
-					show_line(log_line, 0);
-				}
-			}
-		}
-/*		path_dirs[TEXPOOLPATH] = initialize_path_list ("TEXPOOL", TEXPOOL); */
-/*		path_dirs[TEXPOOLPATH] = initialize_path_list (s, TEXPOOL); */
-		path_dirs[TEXPOOLPATH] = initialize_path_list (s, t);
-/*		if (t != TEXPOOL) free (t); */
-	}
+  if (path_bits & TEXPOOLPATHBIT) {
+    s = "TEXPOOL";
+    t = TEXPOOL;
+    if (grabenv(s) == NULL) {     /* 1994/May/19 */
+      s = "TEXFORMATS";       /* try in format directory next */
+      if (grabenv(s) == NULL) {   /* see if environment var defined */
+        strcpy(buffer, texpath);  /* no, see if texpath\fmt is direct */
+        strcat(buffer, PATH_SEP_STRING); 
+        strcat(buffer, "fmt");
+        if (trace_flag) {
+          sprintf(log_line, "Checking `%s' = %s %s %s\n", buffer, texpath, PATH_SEP_STRING, "fmt"); /* 95/Jan/25 */
+          show_line(log_line, 0);
+        }
+        if (dir_p(buffer)) t = xstrdup(buffer);   /* 96/Jan/20 */
+        else {
+          s = "TEXFMTS";      /* added PC-TeX version 94/Jan/6 */
+          if (getenv(s) == NULL)  s = "TEXFMT"; /* em-TeX ... */
+        }
+        if (trace_flag) {
+          sprintf(log_line, "\nSetting up %s (default %s) ", "TEXPOOL", t);
+          show_line(log_line, 0);
+        }
+      }
+    }
+/*    path_dirs[TEXPOOLPATH] = initialize_path_list ("TEXPOOL", TEXPOOL); */
+/*    path_dirs[TEXPOOLPATH] = initialize_path_list (s, TEXPOOL); */
+    path_dirs[TEXPOOLPATH] = initialize_path_list (s, t);
+/*    if (t != TEXPOOL) free (t); */
+  }
 
-	if (path_bits & TFMFILEPATHBIT) {
-		s = "TEXFONTS";
-/*		Introduce encoding specific TEXFONTS env variable 97/April/2 */
-		if ((u = grabenv("ENCODING")) != NULL) {	/* get ENCODING=... */
-			encoding_name = u;				/* remember for error mess */
-/*			sprintf(log_line, "\nENCODING=%s\n", u); */
-/*			ENCODING is defined, now see if matching env variable */
-			if ((t = grabenv(u)) != NULL) {	/* get TEXNANSI=c:\yandy\tfm; ... */
-/*				sprintf(loglein, "\nset %s=%s\n", u, t); */
-/*				prevent problems with TEXNANSI=1 and such mistakes! */
-/*				should have a drive letter and not be a number */
-				if (strchr(t, ':') != NULL &&
-					  sscanf(t, "%d", &n) == 0) {
-					s = u;				/* look here instead of TEXFONTS=... */
-/*				  sprintf(log_line, "\nUSE %s\n", u); */
-				}
-			}
-		}
+  if (path_bits & TFMFILEPATHBIT) {
+    s = "TEXFONTS";
+/* Introduce encoding specific TEXFONTS env variable 97/April/2 */
+    if ((u = grabenv("ENCODING")) != NULL) {  /* get ENCODING=... */
+      encoding_name = u;        /* remember for error mess */
+/*      sprintf(log_line, "\nENCODING=%s\n", u); */
+/*      ENCODING is defined, now see if matching env variable */
+      if ((t = grabenv(u)) != NULL) { /* get TEXNANSI=c:\yandy\tfm; ... */
+/*        sprintf(loglein, "\nset %s=%s\n", u, t); */
+/*        prevent problems with TEXNANSI=1 and such mistakes! */
+/*        should have a drive letter and not be a number */
+        if (strchr(t, ':') != NULL &&
+            sscanf(t, "%d", &n) == 0) {
+          s = u;        /* look here instead of TEXFONTS=... */
+/*          sprintf(log_line, "\nUSE %s\n", u); */
+        }
+      }
+    }
 
-		t = TEXFONTS;					/* #define TEXFONTS TEXPATH "tfm" */
-/*		if (getenv(s) == NULL) { */
-		if (grabenv(s) == NULL) {		/* 1994/May/19 */
-			strcpy(buffer, texpath);	/* see if texpath\tfm is directory */
-			strcat(buffer, PATH_SEP_STRING); 
-			strcat(buffer, "tfm");
-			if (trace_flag) {
-				sprintf(log_line, "Checking `%s' = %s %s %s\n",
-						buffer, texpath, PATH_SEP_STRING, "tfm");	/* 95/Jan/25 */
-				show_line(log_line, 0);
-			}
-/*		  if (dir_p(buffer)) t = _strdup(buffer); */
-			if (dir_p(buffer)) t = xstrdup(buffer);			/* 96/Jan/20 */
-			else {
-				s = "TEXTFMS";			/* added PC-TeX version 94/Jan/6 */
-				if (getenv(s) == NULL) s = "TEXTFM"; /* em-TeX uses TEXTFM ... */
-			}
-			if (trace_flag) {
-				sprintf(log_line, "\nSetting up %s (default %s) ", "TEXFONTS", t);
-				show_line(log_line, 0);
-			}
-		}
-/*		path_dirs[TFMFILEPATH] = initialize_path_list ("TEXFONTS", TEXFONTS); */
-/*		path_dirs[TFMFILEPATH] = initialize_path_list (s, TEXFONTS); */
-		path_dirs[TFMFILEPATH] = initialize_path_list (s, t);
-/*		if (t != TEXFONTS) free (t); */
-	}
+    t = TEXFONTS;         /* #define TEXFONTS TEXPATH "tfm" */
+/*    if (getenv(s) == NULL) { */
+    if (grabenv(s) == NULL) {   /* 1994/May/19 */
+      strcpy(buffer, texpath);  /* see if texpath\tfm is directory */
+      strcat(buffer, PATH_SEP_STRING); 
+      strcat(buffer, "tfm");
+      if (trace_flag) {
+        sprintf(log_line, "Checking `%s' = %s %s %s\n",
+            buffer, texpath, PATH_SEP_STRING, "tfm"); /* 95/Jan/25 */
+        show_line(log_line, 0);
+      }
+/*      if (dir_p(buffer)) t = _strdup(buffer); */
+      if (dir_p(buffer)) t = xstrdup(buffer);     /* 96/Jan/20 */
+      else {
+        s = "TEXTFMS";      /* added PC-TeX version 94/Jan/6 */
+        if (getenv(s) == NULL) s = "TEXTFM"; /* em-TeX uses TEXTFM ... */
+      }
+      if (trace_flag) {
+        sprintf(log_line, "\nSetting up %s (default %s) ", "TEXFONTS", t);
+        show_line(log_line, 0);
+      }
+    }
+/*    path_dirs[TFMFILEPATH] = initialize_path_list ("TEXFONTS", TEXFONTS); */
+/*    path_dirs[TFMFILEPATH] = initialize_path_list (s, TEXFONTS); */
+    path_dirs[TFMFILEPATH] = initialize_path_list (s, t);
+/*    if (t != TEXFONTS) free (t); */
+  }
 
-	if (path_bits & TEXINPUTPATHBIT) {
-		if (format_specific) {								/* 1994/Oct/25 */
-			s = format_name;								/* try specific */
-			if (grabenv(s) == NULL) s = "TEXINPUTS";		/* no format specific */
-		}
-		else s = "TEXINPUTS";								/* normal case */
-/*		if (getenv(s) == NULL) */
-		if (grabenv(s) == NULL) {							/* 1994/May/19 */
-			s = "TEXINPUT"; /* added PC-TeX vers 94/Jan/6 */
-			if (trace_flag) {
-				sprintf(log_line, "\nSetting up %s ", "TEXINPUTS");
-				show_line(log_line, 0);
-			}
-		}
-/*		path_dirs[TEXINPUTPATH] = initialize_path_list ("TEXINPUTS", TEXINPUTS); */
-		path_dirs[TEXINPUTPATH]  = initialize_path_list (s, TEXINPUTS);
-	}
+  if (path_bits & TEXINPUTPATHBIT) {
+    if (format_specific) {                /* 1994/Oct/25 */
+      s = format_name;                /* try specific */
+      if (grabenv(s) == NULL) s = "TEXINPUTS";    /* no format specific */
+    }
+    else s = "TEXINPUTS";               /* normal case */
+/*    if (getenv(s) == NULL) */
+    if (grabenv(s) == NULL) {             /* 1994/May/19 */
+      s = "TEXINPUT"; /* added PC-TeX vers 94/Jan/6 */
+      if (trace_flag) {
+        sprintf(log_line, "\nSetting up %s ", "TEXINPUTS");
+        show_line(log_line, 0);
+      }
+    }
+/*    path_dirs[TEXINPUTPATH] = initialize_path_list ("TEXINPUTS", TEXINPUTS); */
+    path_dirs[TEXINPUTPATH]  = initialize_path_list (s, TEXINPUTS);
+  }
 }
 
 #ifdef CACHEFILENAME
@@ -646,136 +643,136 @@ void set_paths (int path_bits)
    Otherwise, or if NAME is an absolute or relative pathname, just leave
    it alone.  */
 
-/*	changed to take C string 97/June/5 - used to take Pascal strings */
+/*  changed to take C string 97/June/5 - used to take Pascal strings */
 /*  now expects null terminated strings */
 
 bool test_read_access (unsigned char *name, int path_index)
 { 
 #ifdef BUILDNAMEDIRECT
-	char buffer[PATH_MAX];			/* for constructing name 1996/Jan/20 */
-	int foundflag;					/* true if path found */
+  char buffer[PATH_MAX];      /* for constructing name 1996/Jan/20 */
+  int foundflag;          /* true if path found */
 #else
-	string foundname;
+  string foundname;
 #endif  
 
-	if (open_trace_flag) {
-		sprintf(log_line, "Test read access for `%s' ", name); 	/* C */
-		show_line(log_line, 0);
-	}
+  if (open_trace_flag) {
+    sprintf(log_line, "Test read access for `%s' ", name);  /* C */
+    show_line(log_line, 0);
+  }
 
-	if (*name == '\0') return FALSE;	/* sanity check */
+  if (*name == '\0') return FALSE;  /* sanity check */
 
 #ifdef CACHEFILENAME
-/*	If file name and path_index matches - and saved filename exists */
-/*	then use cached full path / file name 96/Nov/16 */
-	if (cache_file_flag) {
-		if (path_index == last_path_index &&
-			  strcmp(name, last_name) == 0 && *last_filename != '\0') { 
-			if (open_trace_flag) {
-				sprintf(log_line, "\nFOUND `%s' (%d) IN CACHE: `%s' ",
-						name, path_index, last_filename); 
-/*					  name+1, path_index, last_filename); */
-				show_line(log_line, 0);
-			}
-			strcpy(name, last_filename); 
-			return TRUE;
-		}
-		last_path_index = path_index;
-		strcpy(last_name, name);
-		*last_filename = '\0';					/* in case not found */
-	}
+/*  If file name and path_index matches - and saved filename exists */
+/*  then use cached full path / file name 96/Nov/16 */
+  if (cache_file_flag) {
+    if (path_index == last_path_index &&
+        strcmp(name, last_name) == 0 && *last_filename != '\0') { 
+      if (open_trace_flag) {
+        sprintf(log_line, "\nFOUND `%s' (%d) IN CACHE: `%s' ",
+            name, path_index, last_filename); 
+/*            name+1, path_index, last_filename); */
+        show_line(log_line, 0);
+      }
+      strcpy(name, last_filename); 
+      return TRUE;
+    }
+    last_path_index = path_index;
+    strcpy(last_name, name);
+    *last_filename = '\0';          /* in case not found */
+  }
 #endif
 
 /* Look for it.  */ /* only call to find_path_filename in pathsrch.c */
 #ifdef BUILDNAMEDIRECT
-	foundflag = xfind_path_filename (buffer, name, path_dirs[path_index]);
+  foundflag = xfind_path_filename (buffer, (char *)name, path_dirs[path_index]);
 #else
-/*	this returns either a newly allocated string or name */
-/*	will need to free it later again ... */
-	foundname = find_path_filename (name, path_dirs[path_index]);
+/*  this returns either a newly allocated string or name */
+/*  will need to free it later again ... */
+  foundname = find_path_filename (name, path_dirs[path_index]);
 #endif
-/*	If we didn't find it, and we're looking for a font, maybe it's
-    an alias defined in a mapping file.  */	
+/*  If we didn't find it, and we're looking for a font, maybe it's
+    an alias defined in a mapping file.  */ 
 /*  if (!foundname && path_index == TFMFILEPATH) */
 #ifdef BUILDNAMEDIRECT
-	if (foundflag == 0 && path_index == TFMFILEPATH)
+  if (foundflag == 0 && path_index == TFMFILEPATH)
 #else
-		if (foundname == NULL && path_index == TFMFILEPATH)
+    if (foundname == NULL && path_index == TFMFILEPATH)
 #endif
-		{
-			char *mapped_name;
-			static map_type fontmap = NULL;		/* GLOBAL, so won't recreate */
+    {
+      char *mapped_name;
+      static map_type fontmap = NULL;   /* GLOBAL, so won't recreate */
 
-/*			fault in the mapping if necessary.  */
-			if (fontmap == NULL) {
-				if (trace_flag) {
-					sprintf(log_line, "Loading in texfonts.map file for %s\n", name);
-					show_line(log_line, 0);
-				}
-				fontmap = map_create (path_dirs[path_index]);
-			}
+/*      fault in the mapping if necessary.  */
+      if (fontmap == NULL) {
+        if (trace_flag) {
+          sprintf(log_line, "Loading in texfonts.map file for %s\n", name);
+          show_line(log_line, 0);
+        }
+        fontmap = map_create (path_dirs[path_index]);
+      }
 
-/*			Now look for our filename in the mapping.  */
-			mapped_name = map_lookup (fontmap, name);
-			if (mapped_name) {
-/*			Found a possibility.  Look for the new name.  */
+/*      Now look for our filename in the mapping.  */
+      mapped_name = map_lookup (fontmap, (char *) name);
+      if (mapped_name) {
+/*      Found a possibility.  Look for the new name.  */
 #ifdef BUILDNAMEDIRECT
-				foundflag = xfind_path_filename (buffer, mapped_name, path_dirs[path_index]);
+        foundflag = xfind_path_filename (buffer, mapped_name, path_dirs[path_index]);
 #else
-				foundname = find_path_filename (mapped_name, path_dirs[path_index]);
+        foundname = find_path_filename (mapped_name, path_dirs[path_index]);
 #endif
-/*	NOTE: mapped_name is NOT an allocated string to be freed ... */
-			}
-		}
+/*  NOTE: mapped_name is NOT an allocated string to be freed ... */
+      }
+    }
 
-	if (open_trace_flag) {
-		show_line("\n", 0);	/* improve trace format out 94/Jan/8 */
-	}
+  if (open_trace_flag) {
+    show_line("\n", 0); /* improve trace format out 94/Jan/8 */
+  }
 
-	if (open_trace_flag) {
+  if (open_trace_flag) {
 #ifdef BUILDNAMEDIRECT
-		if (foundflag != 0) {
-			sprintf(log_line, "`%s' in test_read_access\n", buffer);
-			show_line(log_line, 0);
-		}
+    if (foundflag != 0) {
+      sprintf(log_line, "`%s' in test_read_access\n", buffer);
+      show_line(log_line, 0);
+    }
 #else
-		if (foundname != NULL) {
-			sprintf(log_line, "`%s' in test_read_access\n", foundname);
-			show_line(log_line, 0);
-		}
+    if (foundname != NULL) {
+      sprintf(log_line, "`%s' in test_read_access\n", foundname);
+      show_line(log_line, 0);
+    }
 #endif
-	}
+  }
 
-/*	If we found it somewhere, save it.  */
+/*  If we found it somewhere, save it.  */
 #ifdef BUILDNAMEDIRECT
-	if (foundflag != 0) {
-		strcpy (name, buffer); 
+  if (foundflag != 0) {
+    strcpy ((char *)name, buffer); 
 #ifdef CACHEFILENAME
-		if (cache_file_flag) {
-			strcpy(last_filename, buffer);	/* full path */
-		}
+    if (cache_file_flag) {
+      strcpy(last_filename, buffer);  /* full path */
+    }
 #endif
-	}
+  }
 #else
-	if (foundname != NULL) {
-		strcpy (name, foundname);
+  if (foundname != NULL) {
+    strcpy (name, foundname);
 #ifdef CACHEFILENAME
-		if (cache_file_flag) {
-			strcpy(last_filename, foundname);	/* full path */
-			last_namelength = strlen(buffer);
-		}
+    if (cache_file_flag) {
+      strcpy(last_filename, foundname); /* full path */
+      last_namelength = strlen(buffer);
+    }
 #endif
-	}
+  }
 #endif
 
 #ifdef BUILDNAMEDIRECT
-	return foundflag;
+  return foundflag;
 #else
-	if (foundname == NULL) return FALSE;
-	else {
-		if (foundname != name) free (foundname);  /* copied, now free ??? 96/Jan/10 */
-		return TRUE;
-	}
+  if (foundname == NULL) return FALSE;
+  else {
+    if (foundname != name) free (foundname);  /* copied, now free ??? 96/Jan/10 */
+    return TRUE;
+  }
 #endif
 }
 
@@ -793,26 +790,26 @@ bool test_read_access (unsigned char *name, int path_index)
 
 static unsigned map_hash (char *key)
 {
-	unsigned n = 0;
+  unsigned n = 0;
 
-/*	There are very few font names which are anagrams of each other 
+/*  There are very few font names which are anagrams of each other 
     so no point in weighting the characters.  */
-	while (*key != 0) n += *key++;
-	n %= MAP_SIZE;
-	return n;
+  while (*key != 0) n += *key++;
+  n %= MAP_SIZE;
+  return n;
 }
 
 /* Look up STR in MAP.  Return the corresponding `value' or NULL.  */
 
 static char *map_lookup_str (map_type map, char *key)
 {
-	map_element_type *p;
-	unsigned n = map_hash (key);
+  map_element_type *p;
+  unsigned n = map_hash (key);
 
-	for (p = map[n]; p != NULL; p = p->next)
-		if (STREQ (key, p->key)) return p->value;
+  for (p = map[n]; p != NULL; p = p->next)
+    if (STREQ (key, p->key)) return p->value;
 
-	return NULL;
+  return NULL;
 }
 
 
@@ -821,29 +818,29 @@ static char *map_lookup_str (map_type map, char *key)
 
 char *map_lookup (map_type map, char *key)
 {
-	string suffix = find_suffix (key);
-	string ret = map_lookup_str (map, key);
+  string suffix = find_suffix (key);
+  string ret = map_lookup_str (map, key);
 
-	if (! ret) {
-/*		OK, the original KEY didn't work.  Let's check for the KEY without
-		an extension -- perhaps they gave foobar.tfm, but the mapping only
-		defines `foobar'.  */
-		if (suffix)	{
-			string base_key = remove_suffix (key);
-			ret = map_lookup_str (map, base_key);
-			free (base_key);	// it's safe to free copy
-		}
-	}
+  if (! ret) {
+/*    OK, the original KEY didn't work.  Let's check for the KEY without
+    an extension -- perhaps they gave foobar.tfm, but the mapping only
+    defines `foobar'.  */
+    if (suffix) {
+      string base_key = remove_suffix (key);
+      ret = map_lookup_str (map, base_key);
+      free (base_key);  // it's safe to free copy
+    }
+  }
 
-/*	Append the same suffix we took off, if necessary.  */
-/*	what if suffix is NULL ??? */ /* what if we didn't take off suffix ??? */
+/*  Append the same suffix we took off, if necessary.  */
+/*  what if suffix is NULL ??? */ /* what if we didn't take off suffix ??? */
 /*  if (ret) */
-	if (ret && suffix) {						/* 1994/March/18 */
-		ret = extend_filename (ret, suffix);
-//		the above creates a newly allocated string ... should free old ?
-//		except extend_filename may return the old one ?
-	}
-	return ret;
+  if (ret && suffix) {            /* 1994/March/18 */
+    ret = extend_filename (ret, suffix);
+//    the above creates a newly allocated string ... should free old ?
+//    except extend_filename may return the old one ?
+  }
+  return ret;
 }
 
 /* If KEY is not already in MAP, insert it and VALUE.  */
@@ -851,26 +848,26 @@ char *map_lookup (map_type map, char *key)
 
 void map_insert (map_type map, char *key, char *value)
 {
-	unsigned n = map_hash (key);
-	map_element_type **ptr = &map[n];
+  unsigned n = map_hash (key);
+  map_element_type **ptr = &map[n];
 /*  map_element_type ***trailer = &p; */
 
-	while (*ptr != NULL && ! STREQ (key, (*ptr)->key)) {
+  while (*ptr != NULL && ! STREQ (key, (*ptr)->key)) {
 /*       *p = (*p)->next; */
-		ptr = &((*ptr)->next);
+    ptr = &((*ptr)->next);
 /*       trailer = &p; */
-	}
+  }
 
-	if (*ptr == NULL)    {
+  if (*ptr == NULL)    {
 /*      **trailer = XTALLOC (MAP_SIZE, map_element_type); *//* 94/March/19 */
-		*ptr = (map_element_type *) xmalloc (sizeof(map_element_type));
+    *ptr = (map_element_type *) xmalloc (sizeof(map_element_type));
 /*      (**trailer)->key = xstrdup (key); */
-		(*ptr)->key = xstrdup (key);
+    (*ptr)->key = xstrdup (key);
 /*      (**trailer)->value = xstrdup (value); */
-		(*ptr)->value = xstrdup (value);
+    (*ptr)->value = xstrdup (value);
 /*      (**trailer)->next = NULL; */
-		(*ptr)->next = NULL;
-	}
+    (*ptr)->next = NULL;
+  }
 }
 
 /* Open and read the mapping file FILENAME, putting its entries into
@@ -891,71 +888,71 @@ void map_insert (map_type map, char *key, char *value)
 
 int map_file_parse (map_type map, char *map_filename)
 {
-	char *l;
-	unsigned map_lineno = 0;
-	FILE *f; 
+  char *l;
+  unsigned map_lineno = 0;
+  FILE *f; 
 #ifndef MALLOCLINE
-	char line[MAXLINE];							/* 97/May/17 */
+  char line[MAXLINE];             /* 97/May/17 */
 #endif  
 
-	if (trace_flag) {
-		sprintf(log_line, "Opening %s\n",  map_filename);	/* 97/May/17 */
-		show_line(log_line, 0);
-	}
-//	f = xfopen (map_filename, FOPEN_R_MODE);
-	f = fopen (map_filename, FOPEN_R_MODE);
-	if (f == NULL) {
-		perrormod(map_filename);	// should not happen, since we tested
-		return -1;					// failed
-	}
+  if (trace_flag) {
+    sprintf(log_line, "Opening %s\n",  map_filename); /* 97/May/17 */
+    show_line(log_line, 0);
+  }
+//  f = xfopen (map_filename, FOPEN_R_MODE);
+  f = fopen (map_filename, FOPEN_R_MODE);
+  if (f == NULL) {
+    perrormod(map_filename);  // should not happen, since we tested
+    return -1;          // failed
+  }
 #ifdef MALLOCLINE
-	while ((l = read_line (f)) != NULL) 
+  while ((l = read_line (f)) != NULL) 
 #else
-		while ((l = read_a_line (f, line, sizeof(line))) != NULL)	/* 97/May/17 */
+    while ((l = read_a_line (f, line, sizeof(line))) != NULL) /* 97/May/17 */
 #endif
-		{
-			string filename;
-			string comment_loc;
+    {
+      string filename;
+      string comment_loc;
 
-/*			comment_loc = strrchr (l, '%'); */
-			comment_loc = strchr (l, '%');			/* 96/Nov/16 */
-/*			if (comment_loc == NULL) comment_loc = strrchr (l, ';'); */
-			if (comment_loc == NULL) comment_loc = strchr (l, ';'); /* fixed */
+/*      comment_loc = strrchr (l, '%'); */
+      comment_loc = strchr (l, '%');      /* 96/Nov/16 */
+/*      if (comment_loc == NULL) comment_loc = strrchr (l, ';'); */
+      if (comment_loc == NULL) comment_loc = strchr (l, ';'); /* fixed */
 
-/*			Ignore anything after a % or;  */
-/*			if (comment_loc) *comment_loc = 0; */
-			if (comment_loc != NULL) *comment_loc = '\0';
+/*      Ignore anything after a % or;  */
+/*      if (comment_loc) *comment_loc = 0; */
+      if (comment_loc != NULL) *comment_loc = '\0';
 
-			map_lineno++;
+      map_lineno++;
 
-/*			If we don't have any filename, that's ok, the line is blank.  */
-			filename = strtok (l, " \t");
-/*			if (filename)  */
-			if (filename != NULL) {
-				string alias = strtok (NULL, " \t");
+/*      If we don't have any filename, that's ok, the line is blank.  */
+      filename = strtok (l, " \t");
+/*      if (filename)  */
+      if (filename != NULL) {
+        string alias = strtok (NULL, " \t");
 
-/*				But if we have a filename and no alias, something's wrong.  */
-				if (alias == NULL || *alias == 0) {
-					sprintf(log_line,
-							" Have file name `%s', but no mapping (line %u in file %s).\n",
-							filename, map_lineno, map_filename);
-					show_line(log_line, 1);
-				}
-				else  {
-/*					We've got everything.  Insert the new entry.  */
-					map_insert (map, alias, filename);
-				}
-			}
+/*        But if we have a filename and no alias, something's wrong.  */
+        if (alias == NULL || *alias == 0) {
+          sprintf(log_line,
+              " Have file name `%s', but no mapping (line %u in file %s).\n",
+              filename, map_lineno, map_filename);
+          show_line(log_line, 1);
+        }
+        else  {
+/*          We've got everything.  Insert the new entry.  */
+          map_insert (map, alias, filename);
+        }
+      }
 #ifdef MALLOCLINE
-			free (l);
+      free (l);
 #endif
-		}
-//	xfclose (f, map_filename);
-	(void) fclose (f);		// we don't care about errors at this stage
-	return 0;				// success
+    }
+//  xfclose (f, map_filename);
+  (void) fclose (f);    // we don't care about errors at this stage
+  return 0;       // success
 }
 
-void unshroud_string (char *, char *, int);	/* in texmf.c */
+void unshroud_string (char *, char *, int); /* in texmf.c */
 
 /* Look for the file `texfonts.map' in each of the directories in
    DIR_LIST.  Entries in earlier files override later files.  */
@@ -964,37 +961,37 @@ void unshroud_string (char *, char *, int);	/* in texmf.c */
 
 map_type map_create (string *dir_list)
 {
-	map_type map = (map_type) xcalloc (MAP_SIZE, sizeof (map_element_type *));
+  map_type map = (map_type) xcalloc (MAP_SIZE, sizeof (map_element_type *));
 
-	while (*dir_list) {
-		char filename[PATH_MAX];
+  while (*dir_list) {
+    char filename[PATH_MAX];
 
-/*		 We don't bother with the filename truncation that `readable' in
+/*     We don't bother with the filename truncation that `readable' in
          `pathsrch.c' does, since we ourselves are giving the filename,
          and I don't think it's worth worrying about too-long
          intermediate directory names in the path.  */
-		strcpy (filename, *dir_list);
-/*      strcat (filename, "texfonts.map"); */		/* 1993/Nov/20 */
-		unshroud_string (filename+strlen(filename),
-						"ufygpout/nbq", PATH_MAX - strlen(filename));
+    strcpy (filename, *dir_list);
+/*      strcat (filename, "texfonts.map"); */   /* 1993/Nov/20 */
+    unshroud_string (filename+strlen(filename),
+            "ufygpout/nbq", PATH_MAX - strlen(filename));
 
-/*		testing access first so xfopen won't fail... */
-/*		maybe do this another way to avoid using `access' ? */
-		if (file_method) {
-			if (file_p (filename) != NULL) {		/* use file_p the new way */
-				(void)  map_file_parse (map, filename);
-			}
-		}
-		else {	
-/*			if (access (filename, R_OK) == 0) */	/* use access the old way */
-			if (_access (filename, R_OK) == 0) {	/* 1999/Jan/8 ??? /*
-/*			if (readable (filename) != NULL) */
-				(void) map_file_parse (map, filename);
-			}
-		}
-		dir_list++;
-	}
-	return map;
+/*    testing access first so xfopen won't fail... */
+/*    maybe do this another way to avoid using `access' ? */
+    if (file_method) {
+      if (file_p (filename) != NULL) {    /* use file_p the new way */
+        (void)  map_file_parse (map, filename);
+      }
+    }
+    else {  
+/*      if (access (filename, R_OK) == 0) */  /* use access the old way */
+      if (_access (filename, R_OK) == 0) {  /* 1999/Jan/8 ??? */
+/*      if (readable (filename) != NULL) */
+        (void) map_file_parse (map, filename);
+      }
+    }
+    dir_list++;
+  }
+  return map;
 }
 
 /**********************************************************************/
@@ -1011,159 +1008,159 @@ map_type map_create (string *dir_list)
 
 char *file_p (string fn)
 {
-	struct _finddata_t fi;
-	long hFind;
-	int ret;
+  struct _finddata_t fi;
+  long hFind;
+  int ret;
 
-	if (open_trace_flag) {
-		sprintf(log_line, "Is `%s' a readable file? ", fn);
-		show_line(log_line, 0);
-	}
+  if (open_trace_flag) {
+    sprintf(log_line, "Is `%s' a readable file? ", fn);
+    show_line(log_line, 0);
+  }
 
-/*	allow for `normal' (_A_NORMAL) as well as `read-only' files */
+/*  allow for `normal' (_A_NORMAL) as well as `read-only' files */
 
-	hFind = _findfirst (fn, &fi);
-	if (hFind > 0) {
-		ret = 0;
-		_findclose (hFind);
-	}
-	else ret = -1;
+  hFind = _findfirst (fn, &fi);
+  if (hFind > 0) {
+    ret = 0;
+    _findclose (hFind);
+  }
+  else ret = -1;
 
-/*	check whether found and whether *not* a sub-directory */
-	if (ret == 0) {
-		if ((fi.attrib & _A_SUBDIR) == 0) {
-			if (open_trace_flag) {
-				sprintf(log_line, "`%s' IS a readable file. ", fn);
-				show_line(log_line, 0);
-			}
-			return fn;		/* true - its a file, not a dir */
-		}
-		else {
-			if (open_trace_flag) {
-				sprintf(log_line, "`%s' is a subdirectory. ", fn);
-				show_line(log_line, 0);
-			}
-			return NULL;	/* false - directory */
-		}
-	}
-	else {
-		if (open_trace_flag) {
-			sprintf(log_line, "`%s' is NOT a readable file. ", fn);
-			show_line(log_line, 0);
-		}
-		return NULL;	/* false - not found or no read access */
-	}
+/*  check whether found and whether *not* a sub-directory */
+  if (ret == 0) {
+    if ((fi.attrib & _A_SUBDIR) == 0) {
+      if (open_trace_flag) {
+        sprintf(log_line, "`%s' IS a readable file. ", fn);
+        show_line(log_line, 0);
+      }
+      return fn;    /* true - its a file, not a dir */
+    }
+    else {
+      if (open_trace_flag) {
+        sprintf(log_line, "`%s' is a subdirectory. ", fn);
+        show_line(log_line, 0);
+      }
+      return NULL;  /* false - directory */
+    }
+  }
+  else {
+    if (open_trace_flag) {
+      sprintf(log_line, "`%s' is NOT a readable file. ", fn);
+      show_line(log_line, 0);
+    }
+    return NULL;  /* false - not found or no read access */
+  }
 }
 
 #endif /* DOS */
 
-/* #pragma optimize ("g",)	*/	/* try and avoid compiler bug here _dos_find */
-/* #pragma optimize ("g",)*/	/* try and avoid compiler bug here _dos_find */
-// #pragma optimize ("", on)		/* 96/Sep/15 */
+/* #pragma optimize ("g",)  */  /* try and avoid compiler bug here _dos_find */
+/* #pragma optimize ("g",)*/  /* try and avoid compiler bug here _dos_find */
+// #pragma optimize ("", on)    /* 96/Sep/15 */
 
 
 /**************************************************************************/
 
 /* S_IFMT is file type mask 0170000 and S_IFDIR is directory 0040000 */
 
-#pragma optimize ("g", off) 	/* try and avoid compiler bug here _dos_find */
+#pragma optimize ("g", off)   /* try and avoid compiler bug here _dos_find */
 
 /* NOTE: _dos_find... prevents running under Windows NT ??? */
 /* and presently dir_method = true so we do use this _dos_find_first */
 
 bool dir_p (string fn)
 {
-	FILE *test;
-	char *s;
-	struct _finddata_t fi;
-	long hFind;
-	int ret;
-	char tmpfn[FILENAME_MAX];				/* long enough ??? */
+  FILE *test;
+  char *s;
+  struct _finddata_t fi;
+  long hFind;
+  int ret;
+  char tmpfn[FILENAME_MAX];       /* long enough ??? */
 
-	strcpy (tmpfn, fn);						/* make copy so can modify */
-	if (open_trace_flag) {
-		sprintf(log_line, "Is `%s' a directory? ", tmpfn);
-		show_line(log_line, 0);
-	}
+  strcpy (tmpfn, fn);           /* make copy so can modify */
+  if (open_trace_flag) {
+    sprintf(log_line, "Is `%s' a directory? ", tmpfn);
+    show_line(log_line, 0);
+  }
 
-	s = tmpfn + strlen(tmpfn) - 1;
-	if (*s == '\\' || *s == '/') *s = '\0';	/* get rid of trailing path sep */
+  s = tmpfn + strlen(tmpfn) - 1;
+  if (*s == '\\' || *s == '/') *s = '\0'; /* get rid of trailing path sep */
 
-/*	quick test for "." and ".." case - avoid confusion later */
-	if (strcmp (tmpfn, ".") == 0 || strcmp(tmpfn, "..") == 0) return 1; 
+/*  quick test for "." and ".." case - avoid confusion later */
+  if (strcmp (tmpfn, ".") == 0 || strcmp(tmpfn, "..") == 0) return 1; 
 
-	if (dir_method) {			/* use _findfirst *first* if requested */
-		hFind = _findfirst(tmpfn, &fi);
-		if (hFind > 0) {
-			ret = 0;
-			_findclose(hFind);
-		}
-		else ret = -1;
+  if (dir_method) {     /* use _findfirst *first* if requested */
+    hFind = _findfirst(tmpfn, &fi);
+    if (hFind > 0) {
+      ret = 0;
+      _findclose(hFind);
+    }
+    else ret = -1;
 
-		if (ret == 0) {
-/*			_findfirst succeeded --- now test attributes of what was found */
-			if (fi.attrib & _A_SUBDIR) {
-				if (open_trace_flag) {
-					sprintf(log_line, "Directory `%s' DOES exist ", fn);
-					show_line(log_line, 0);
-				}
-				return 1;			/* true - it is a sub-directory */
-			}
-			else {
-				if (open_trace_flag) {
-					sprintf(log_line, "`%s' is a FILE, not a DIRECTORY ", fn);
-					show_line(log_line, 0);
-				}
-				return 0;			/* false - its a file, not a dir */
-			}
-		}
-		else {
-/*			_findfirst failed --- possible causes: missing *or* top-level */
-/*			crude check first top level directory ? - assume form `c:' */
-			if (*(tmpfn+1) != ':' || *(tmpfn+2) != '\0') {
-/*				it is *not* top level and _findfirst failed - give up */
-				if (open_trace_flag) {
-					sprintf(log_line, "Directory `%s' does NOT exist ", fn);
-					show_line(log_line, 0);
-				}
-				return 0;			/* false - it is not a directory */
-			}
-/*			else drop through to old method */
-/*			else { */
-/*				top-level dir, so revert to the old method after all ... */
-/*				return dir_p_1 (fn); */ 
-/*				or try _findfirst after appending PATH_SEP and nul ? */
-/*			} */ /* drop through */
-		}
-	}
+    if (ret == 0) {
+/*      _findfirst succeeded --- now test attributes of what was found */
+      if (fi.attrib & _A_SUBDIR) {
+        if (open_trace_flag) {
+          sprintf(log_line, "Directory `%s' DOES exist ", fn);
+          show_line(log_line, 0);
+        }
+        return 1;     /* true - it is a sub-directory */
+      }
+      else {
+        if (open_trace_flag) {
+          sprintf(log_line, "`%s' is a FILE, not a DIRECTORY ", fn);
+          show_line(log_line, 0);
+        }
+        return 0;     /* false - its a file, not a dir */
+      }
+    }
+    else {
+/*      _findfirst failed --- possible causes: missing *or* top-level */
+/*      crude check first top level directory ? - assume form `c:' */
+      if (*(tmpfn+1) != ':' || *(tmpfn+2) != '\0') {
+/*        it is *not* top level and _findfirst failed - give up */
+        if (open_trace_flag) {
+          sprintf(log_line, "Directory `%s' does NOT exist ", fn);
+          show_line(log_line, 0);
+        }
+        return 0;     /* false - it is not a directory */
+      }
+/*      else drop through to old method */
+/*      else { */
+/*        top-level dir, so revert to the old method after all ... */
+/*        return dir_p_1 (fn); */ 
+/*        or try _findfirst after appending PATH_SEP and nul ? */
+/*      } */ /* drop through */
+    }
+  }
 
 /* either: dropped through (top-level of driver) or dir_method is false */
 /* use the old method --- fopen of nul in supposed directory */
 /* NOTE: nul device exists in all dirs */ /* Possible OS/2 and NDOS problem */
-	strcat (tmpfn, PATH_SEP_STRING "nul"); 
-/*	if ((test = fopen (tmpfn, "r")) == NULL) */
-	if (share_flag == 0) test = fopen (tmpfn, "r");
-	else test = _fsopen(tmpfn, "r", share_flag);		/* 1994/July/12 */
-	if (test == NULL) {
-		if (open_trace_flag) {
-			sprintf(log_line, "Directory `%s' does NOT exist ", tmpfn);
-			show_line(log_line, 0);
-		}
-		return 0;			/* false */
-	}
-	else {
-		(void) fclose(test);		/* have to remember to close it again */
-		if (open_trace_flag) {
-			sprintf(log_line, "Directory `%s' DOES exist ", tmpfn);
-			show_line(log_line, 0);
-		}
-		return 1;			/* true */
-	}
+  strcat (tmpfn, PATH_SEP_STRING "nul"); 
+/*  if ((test = fopen (tmpfn, "r")) == NULL) */
+  if (share_flag == 0) test = fopen (tmpfn, "r");
+  else test = _fsopen(tmpfn, "r", share_flag);    /* 1994/July/12 */
+  if (test == NULL) {
+    if (open_trace_flag) {
+      sprintf(log_line, "Directory `%s' does NOT exist ", tmpfn);
+      show_line(log_line, 0);
+    }
+    return 0;     /* false */
+  }
+  else {
+    (void) fclose(test);    /* have to remember to close it again */
+    if (open_trace_flag) {
+      sprintf(log_line, "Directory `%s' DOES exist ", tmpfn);
+      show_line(log_line, 0);
+    }
+    return 1;     /* true */
+  }
 }
 
-/* #pragma optimize ("g",)*/	/* try and avoid compiler bug here _dos_find */
-/* #pragma optimize ("g") */	/* try and avoid compiler bug here _dos_find */
-#pragma optimize ("", on)		/* 96/Sep/12 */
+/* #pragma optimize ("g",)*/  /* try and avoid compiler bug here _dos_find */
+/* #pragma optimize ("g") */  /* try and avoid compiler bug here _dos_find */
+#pragma optimize ("", on)   /* 96/Sep/12 */
 
 /* NOTE: calling _stat makes packed EXE file 3,400 bytes larger ! */
 
@@ -1201,117 +1198,117 @@ bool dir_p (string fn)
 
 int xfind_path_filename (string buffer, string filename,  string * dir_list)
 {
-	string found_name = NULL;
+  string found_name = NULL;
 
-	if (buffer == filename) {
-		show_line("buffer == filename\n", 1);
-	}
+  if (buffer == filename) {
+    show_line("buffer == filename\n", 1);
+  }
 
-	*buffer = '\0';				/* "" in case we fail */
+  *buffer = '\0';       /* "" in case we fail */
 
-	if (open_trace_flag) {
-		sprintf(log_line, "Find path for `%s' ", filename);
-		show_line(log_line, 0);
-	}
+  if (open_trace_flag) {
+    sprintf(log_line, "Find path for `%s' ", filename);
+    show_line(log_line, 0);
+  }
 
 /*  ignore current directory for TFM files ? */ /* 1994/Jan/24 */
-	if (!current_tfm &&  strstr(filename, ".tfm") != NULL &&
-		  strcmp(*dir_list, "./") == 0) {
-		if (open_trace_flag) {
-			sprintf(log_line, "Ignoring `.' for %s ", filename);
-			show_line(log_line, 0);
-		}
-		dir_list++;						/* step over first entry in dir list */
-	}
+  if (!current_tfm &&  strstr(filename, ".tfm") != NULL &&
+      strcmp(*dir_list, "./") == 0) {
+    if (open_trace_flag) {
+      sprintf(log_line, "Ignoring `.' for %s ", filename);
+      show_line(log_line, 0);
+    }
+    dir_list++;           /* step over first entry in dir list */
+  }
 
-	if (trace_flag && open_trace_flag) {		/* debugging trace 1994/Jan/8 */
-		char **pstrs;
-		pstrs = dir_list;
-		show_line("\n", 0);
-		sprintf(log_line, "Find path for `%s' ", filename);
-		show_line(log_line, 0);
-		show_line("- IN: ", 0);
-		while (*pstrs != NULL) {
-			sprintf(log_line, "%s ", *pstrs);
-			show_line(log_line, 0);
-			pstrs++;
-		}
-		show_line("\n", 0);
-	}
+  if (trace_flag && open_trace_flag) {    /* debugging trace 1994/Jan/8 */
+    char **pstrs;
+    pstrs = dir_list;
+    show_line("\n", 0);
+    sprintf(log_line, "Find path for `%s' ", filename);
+    show_line(log_line, 0);
+    show_line("- IN: ", 0);
+    while (*pstrs != NULL) {
+      sprintf(log_line, "%s ", *pstrs);
+      show_line(log_line, 0);
+      pstrs++;
+    }
+    show_line("\n", 0);
+  }
 
-/*	Do this before testing for absolute-ness, as a leading ~ will be an
-	absolute pathname.  */	/* forget this for DOS ! */
+/*  Do this before testing for absolute-ness, as a leading ~ will be an
+  absolute pathname.  */  /* forget this for DOS ! */
 #ifndef MSDOS
-	filename = expand_tilde (filename);
+  filename = expand_tilde (filename);
 #endif
 
 #ifdef MSDOS
-/*	is this always safe?  That is, is filename writable and its OK to modify */
-/*	unixify(filename);   */ /* done `in place' */
-	if (deslash) unixify(filename);		/* made conditional 94/Feb/24 */
+/*  is this always safe?  That is, is filename writable and its OK to modify */
+/*  unixify(filename);   */ /* done `in place' */
+  if (deslash) unixify(filename);   /* made conditional 94/Feb/24 */
 #endif
 
-/*	following addded in attempt to catch `nul' */		/* 94/Jan/6 bkph */
-/*	could also try and catch `nul.tex' first - but who cares about speed ? */
-/*	needed to add this since `access' gets the wrong answer */
-/*	that is, `nul' is a file that can be opened, but `access' says not so */
-	if (strcmp(filename, "nul") == 0) strcpy(buffer, filename); 
-/*	If FILENAME is absolute or explicitly relative, or if DIR_LIST is
-		null, only check if FILENAME is readable.  */
-/*	if (absolute_p (filename) || dir_list == NULL) */ /* 94/Jan/6 */
-	else if (absolute_p (filename) || dir_list == NULL) {
-		if (file_method)  found_name = file_p (filename);
-		else found_name = readable (filename);
-		if (found_name != NULL) strcpy(buffer, found_name);
-		else *buffer = '\0';
-	}
-	else { /* Test if FILENAME is in any of the directories in DIR_LIST.  */
-		char *s;
-		int sourceflag;
-		int firsttime=1;
-		while (*dir_list != NULL)  {
+/*  following addded in attempt to catch `nul' */   /* 94/Jan/6 bkph */
+/*  could also try and catch `nul.tex' first - but who cares about speed ? */
+/*  needed to add this since `access' gets the wrong answer */
+/*  that is, `nul' is a file that can be opened, but `access' says not so */
+  if (strcmp(filename, "nul") == 0) strcpy(buffer, filename); 
+/*  If FILENAME is absolute or explicitly relative, or if DIR_LIST is
+    null, only check if FILENAME is readable.  */
+/*  if (absolute_p (filename) || dir_list == NULL) */ /* 94/Jan/6 */
+  else if (absolute_p (filename) || dir_list == NULL) {
+    if (file_method)  found_name = file_p (filename);
+    else found_name = readable (filename);
+    if (found_name != NULL) strcpy(buffer, found_name);
+    else *buffer = '\0';
+  }
+  else { /* Test if FILENAME is in any of the directories in DIR_LIST.  */
+    char *s;
+    int sourceflag;
+    int firsttime=1;
+    while (*dir_list != NULL)  {
 /* if item is current directory, look in source file directory first */
 /* provided usesourcedirectory flag is set and workingdirectory in use */
-			s = *dir_list;
-			sourceflag = 0;
-			if (strcmp(s, "./") == 0) {
-				if (firsttime && usesourcedirectory && workingdirectory &&
-					  source_direct != NULL && *source_direct != '\0') {
-					s = source_direct;
-					if (trace_flag) {
-						sprintf(log_line, "Using %s dir %s %s\n", "source", s, "X");
-						show_line(log_line, 0);
-					}
-					sourceflag = 1;			/* avoid increment of list below */
-					firsttime = 0;			/* special stuff only first time */
-				}
-				else if (trace_flag) {
-					sprintf(log_line, "Using %s dir %s %s\n", "current",  s, "X");
-					show_line(log_line, 0);
-				}
-			}
-			if (trace_flag) {
-				sprintf(log_line, "XCONCAT %s %s in find_path_filename\n",
-						s, filename);
-				show_line(log_line, 0);
-			}
-/*			filename = concat (*dir_list, save_filename); */
-			(void) xconcat (buffer, s, filename);
-			if (file_method) found_name = file_p (buffer);	/* new way */
-			else found_name = readable (buffer);			/* slow old way */
-			if (found_name == NULL) {
-				*buffer = '\0';
-				if (! sourceflag)		/* 98/Sep/29 repeat in current dir */
-					dir_list++;				/* try next */
-			}
-			else {
-				if (found_name != buffer)
-					strcpy(buffer, found_name);				/* success */
-				break;
-			}
-		}
-	}
-	return (*buffer != '\0');			/* true if not empty string */
+      s = *dir_list;
+      sourceflag = 0;
+      if (strcmp(s, "./") == 0) {
+        if (firsttime && usesourcedirectory && workingdirectory &&
+            source_direct != NULL && *source_direct != '\0') {
+          s = source_direct;
+          if (trace_flag) {
+            sprintf(log_line, "Using %s dir %s %s\n", "source", s, "X");
+            show_line(log_line, 0);
+          }
+          sourceflag = 1;     /* avoid increment of list below */
+          firsttime = 0;      /* special stuff only first time */
+        }
+        else if (trace_flag) {
+          sprintf(log_line, "Using %s dir %s %s\n", "current",  s, "X");
+          show_line(log_line, 0);
+        }
+      }
+      if (trace_flag) {
+        sprintf(log_line, "XCONCAT %s %s in find_path_filename\n",
+            s, filename);
+        show_line(log_line, 0);
+      }
+/*      filename = concat (*dir_list, save_filename); */
+      (void) xconcat (buffer, s, filename);
+      if (file_method) found_name = file_p (buffer);  /* new way */
+      else found_name = readable (buffer);      /* slow old way */
+      if (found_name == NULL) {
+        *buffer = '\0';
+        if (! sourceflag)   /* 98/Sep/29 repeat in current dir */
+          dir_list++;       /* try next */
+      }
+      else {
+        if (found_name != buffer)
+          strcpy(buffer, found_name);       /* success */
+        break;
+      }
+    }
+  }
+  return (*buffer != '\0');     /* true if not empty string */
 }
 
 #else
@@ -1324,112 +1321,112 @@ int xfind_path_filename (string buffer, string filename,  string * dir_list)
 
 string find_path_filename (string filename,  string * dir_list)
 {
-	string found_name = NULL;
+  string found_name = NULL;
   
-	if (open_trace_flag) {
-//		printf("Find path for `%s' ", filename);
-		sprintf(log_line, "Find path for `%s' ", filename);
-		show_line(log_line, 0);
-	}
+  if (open_trace_flag) {
+//    printf("Find path for `%s' ", filename);
+    sprintf(log_line, "Find path for `%s' ", filename);
+    show_line(log_line, 0);
+  }
 
 /*  ignore current directory for TFM files ? */ /* 1994/Jan/24 */
-	if (!current_tfm &&
-			strstr(filename, ".tfm") != NULL &&
-				strcmp(*dir_list, "./") == 0) {
-		if (open_trace_flag) {
-			sprintf(log_line, "Ignoring `.' for %s ", filename);
-			show_line(log_line, 0);
-		}
-		dir_list++;						/* step over first entry in dir list */
-	}
+  if (!current_tfm &&
+      strstr(filename, ".tfm") != NULL &&
+        strcmp(*dir_list, "./") == 0) {
+    if (open_trace_flag) {
+      sprintf(log_line, "Ignoring `.' for %s ", filename);
+      show_line(log_line, 0);
+    }
+    dir_list++;           /* step over first entry in dir list */
+  }
 
-	if (trace_flag && open_trace_flag) {		/* debugging trace 1994/Jan/8 */
-		char **pstrs;
-		pstrs = dir_list;
-		show_line("\n", 0);
-		sprintf(log_line, "Find path for `%s' ", filename);
-		show_line(log_line, 0);
-		show_line("- IN: ", 0);
-		while (*pstrs != NULL) {
-//			printf("%s ", *pstrs);
-			sprintf(log_line, "%s ", *pstrs);
-			show_line(log_line, 0);
-			pstrs++;
-		}
-		show_line("\n", 0);
-	}
+  if (trace_flag && open_trace_flag) {    /* debugging trace 1994/Jan/8 */
+    char **pstrs;
+    pstrs = dir_list;
+    show_line("\n", 0);
+    sprintf(log_line, "Find path for `%s' ", filename);
+    show_line(log_line, 0);
+    show_line("- IN: ", 0);
+    while (*pstrs != NULL) {
+//      printf("%s ", *pstrs);
+      sprintf(log_line, "%s ", *pstrs);
+      show_line(log_line, 0);
+      pstrs++;
+    }
+    show_line("\n", 0);
+  }
 
-/*	Do this before testing for absolute-ness, as a leading ~ will be an
-    absolute pathname.  */	/* forget this for DOS ! */
+/*  Do this before testing for absolute-ness, as a leading ~ will be an
+    absolute pathname.  */  /* forget this for DOS ! */
 #ifndef MSDOS
-	filename = expand_tilde (filename);
+  filename = expand_tilde (filename);
 #endif
 
 #ifdef MSDOS
-/*	is this always safe?  That is, is filename writable and its OK to modify */
-/*	unixify(filename);   */ /* done `in place' */
-	if (deslash)  unixify(filename);		/* made conditional 94/Feb/24 */
+/*  is this always safe?  That is, is filename writable and its OK to modify */
+/*  unixify(filename);   */ /* done `in place' */
+  if (deslash) unixify(filename);    /* made conditional 94/Feb/24 */
 #endif
-/*	following addded in attempt to catch `nul' */		/* 94/Jan/6 bkph */
-/*	could also try and catch `nul.tex' first - but who cares about speed ? */
-/*	needed to add this since `access' gets the wrong answer */
-/*	that is, `nul' is a file that can be opened, but `access' says not so */
-	if (strcmp(filename, "nul") == 0) found_name = filename; 
-/*	If FILENAME is absolute or explicitly relative, or if DIR_LIST is
-		null, only check if FILENAME is readable.  */
-/*	if (absolute_p (filename) || dir_list == NULL) */ /* 94/Jan/6 */
-	else if (absolute_p (filename) || dir_list == NULL) {
-		if (file_method)  found_name = file_p (filename);	/* new way 94/Feb/13 */
-		else found_name = readable (filename);				/* slow old way */
-	}
-	else { /* Test if FILENAME is in any of the directories in DIR_LIST.  */
-		string save_filename = filename;
-		char *s;
-		int sourceflag;
-		int firsttime=1;
-		while (*dir_list != NULL)  {
+/*  following addded in attempt to catch `nul' */   /* 94/Jan/6 bkph */
+/*  could also try and catch `nul.tex' first - but who cares about speed ? */
+/*  needed to add this since `access' gets the wrong answer */
+/*  that is, `nul' is a file that can be opened, but `access' says not so */
+  if (strcmp(filename, "nul") == 0) found_name = filename; 
+/*  If FILENAME is absolute or explicitly relative, or if DIR_LIST is
+    null, only check if FILENAME is readable.  */
+/*  if (absolute_p (filename) || dir_list == NULL) */ /* 94/Jan/6 */
+  else if (absolute_p (filename) || dir_list == NULL) {
+    if (file_method)  found_name = file_p (filename); /* new way 94/Feb/13 */
+    else found_name = readable (filename);        /* slow old way */
+  }
+  else { /* Test if FILENAME is in any of the directories in DIR_LIST.  */
+    string save_filename = filename;
+    char *s;
+    int sourceflag;
+    int firsttime=1;
+    while (*dir_list != NULL)  {
 /* if item is current directory, look in source file directory first */
 /* provided usesourcedirectory flag is set and workingdirectory in use */
-			s = *dir_list;
-			sourceflag = 0;
-			if (strcmp(s, "./") == 0) {
-				if (firsttime && usesourcedirectory && workingdirectory &&
-					source_direct != NULL && *source_direct != '\0') {
-					s = source_direct;
-					if (trace_flag) {
-						sprintf(log_line, "Using %s dir %s %s\n", "source", s, "F");
-						show_line(log_line, 0);
-					}
-					sourceflag = 1;			/* avoid increment of list below */
-					firsttime = 0;			/* special stuff only first time */
-				}
-				else if (trace_flag) {
-					sprintf(log_line, "Using %s dir %s %s\n", "current", s, "F");
-					show_line(log_line, 0);
-				}
-			}
-			if (trace_flag) {
-				sprintf(log_line, "CONCAT %s %s in find_path_filename\n",
-								  s, save_filename); /* 1996/Jan/20 */
-				show_line(log_line, 0);
-			}
-			filename = concat (s, save_filename);
+      s = *dir_list;
+      sourceflag = 0;
+      if (strcmp(s, "./") == 0) {
+        if (firsttime && usesourcedirectory && workingdirectory &&
+          source_direct != NULL && *source_direct != '\0') {
+          s = source_direct;
+          if (trace_flag) {
+            sprintf(log_line, "Using %s dir %s %s\n", "source", s, "F");
+            show_line(log_line, 0);
+          }
+          sourceflag = 1;     /* avoid increment of list below */
+          firsttime = 0;      /* special stuff only first time */
+        }
+        else if (trace_flag) {
+          sprintf(log_line, "Using %s dir %s %s\n", "current", s, "F");
+          show_line(log_line, 0);
+        }
+      }
+      if (trace_flag) {
+        sprintf(log_line, "CONCAT %s %s in find_path_filename\n",
+                  s, save_filename); /* 1996/Jan/20 */
+        show_line(log_line, 0);
+      }
+      filename = concat (s, save_filename);
 /*          found_name = readable (filename); */
-			if (file_method) found_name = file_p (filename);	/* new way */
-			else found_name = readable (filename);			/* slow old way */
-			if (found_name == NULL)  {
-				free (filename);		/* if this is not it, free it again */
-				if (! sourceflag)		/* 98/Sep/29 repeat in current dir */
-					dir_list++;
-			}
-			else {
-				if (found_name != filename)
-					free (filename);	/* don't free if is the one passed in */
-				break;
-			}
-		}
-	}
-	return found_name;				/* return the allocated name - free later */
+      if (file_method) found_name = file_p (filename);  /* new way */
+      else found_name = readable (filename);      /* slow old way */
+      if (found_name == NULL)  {
+        free (filename);    /* if this is not it, free it again */
+        if (! sourceflag)   /* 98/Sep/29 repeat in current dir */
+          dir_list++;
+      }
+      else {
+        if (found_name != filename)
+          free (filename);  /* don't free if is the one passed in */
+        break;
+      }
+    }
+  }
+  return found_name;        /* return the allocated name - free later */
 }
 #endif
 
@@ -1452,60 +1449,60 @@ string find_path_filename (string filename,  string * dir_list)
 /* static string readable (name) */
 string readable (string name)
 {
-	string ret;
+  string ret;
 
-	if (open_trace_flag) {
-		sprintf(log_line, "is %s readable? ", name);
-		show_line(log_line, 0);
-	}
+  if (open_trace_flag) {
+    sprintf(log_line, "is %s readable? ", name);
+    show_line(log_line, 0);
+  }
 
-/*	Check first whether we have read access, then */
-/*	need to test if directory, since access always says OK for directory */
-/*	BUT: readable is called only from find_path_file */
-/*	So we never call this with directory, so why waste time ? bkph */
-/*	BUT: can be caught out by idiot with a directory called myfile.tex ? */
-	
-	if (_access (name, R_OK) == 0)  {
-		if (test_dir_access) {		/* check only if we are asked to ... */
-			if (dir_p (name)) {
-				if (open_trace_flag) {
-					sprintf(log_line, "tested read access of directory `%s' ", name);
-					show_line(log_line, 0);
-				}
-				ret = NULL;
-			}
-			else ret = name;
-		}
-		else ret = name;
-	}
+/*  Check first whether we have read access, then */
+/*  need to test if directory, since access always says OK for directory */
+/*  BUT: readable is called only from find_path_file */
+/*  So we never call this with directory, so why waste time ? bkph */
+/*  BUT: can be caught out by idiot with a directory called myfile.tex ? */
+  
+  if (_access (name, R_OK) == 0)  {
+    if (test_dir_access) {    /* check only if we are asked to ... */
+      if (dir_p (name)) {
+        if (open_trace_flag) {
+          sprintf(log_line, "tested read access of directory `%s' ", name);
+          show_line(log_line, 0);
+        }
+        ret = NULL;
+      }
+      else ret = name;
+    }
+    else ret = name;
+  }
 /*  if (_access (name, R_OK) == 0 && !dir_p (name))   ret = name; */
 #ifdef ENAMETOOLONG
-	else if (errno == ENAMETOOLONG) { 
-		ret = truncate_pathname (name);
+  else if (errno == ENAMETOOLONG) { 
+    ret = truncate_pathname (name);
 /* Perhaps some other error will occur with the truncated name, so
          let's call access again.  */
-		if (!(_access (ret, R_OK) == 0 && !dir_p (ret))) { /* Failed.  */
-			free (ret);
-			ret = NULL;
-		}
-	}
+    if (!(_access (ret, R_OK) == 0 && !dir_p (ret))) { /* Failed.  */
+      free (ret);
+      ret = NULL;
+    }
+  }
 #endif
-	else if (errno == EACCES) {
-		if (trace_flag) show_line("Access denied!\n", 0);
-		ret = NULL;
-	}
-	else if (errno == ENOENT) {
-		if (trace_flag) show_line("File or path name not found!\n", 1);
-		ret = NULL;
-	}
-	else {
-		if (trace_flag) {
-			sprintf(log_line, "Unknown access error %d!\n", errno);
-			show_line(log_line, 0);
-		}
-		ret = NULL;
-	}
-	return ret;
+  else if (errno == EACCES) {
+    if (trace_flag) show_line("Access denied!\n", 0);
+    ret = NULL;
+  }
+  else if (errno == ENOENT) {
+    if (trace_flag) show_line("File or path name not found!\n", 1);
+    ret = NULL;
+  }
+  else {
+    if (trace_flag) {
+      sprintf(log_line, "Unknown access error %d!\n", errno);
+      show_line(log_line, 0);
+    }
+    ret = NULL;
+  }
+  return ret;
 }
 
 #ifdef ENAMETOOLONG
@@ -1513,13 +1510,13 @@ string readable (string name)
 
 string truncate_pathname (string name)
 {
-	unsigned c_len = 0;       /* Length of current component.  */
-	unsigned ret_len = 0;		/* Length of constructed result.  */
-	string ret = (string) xmalloc (PATH_MAX + 1);
+  unsigned c_len = 0;       /* Length of current component.  */
+  unsigned ret_len = 0;   /* Length of constructed result.  */
+  string ret = (string) xmalloc (PATH_MAX + 1);
 
-	for (; *name; name++)
+  for (; *name; name++)
     {
-      if (*name == PATH_SEP)			/* not in DOS */
+      if (*name == PATH_SEP)      /* not in DOS */
         { /* At a directory delimiter, reset component length.  */
           c_len = 0;
         }
@@ -1543,7 +1540,7 @@ string truncate_pathname (string name)
 
   return ret;
 }
-#endif	/* end of ifdef ENAMETOOLONG */
+#endif  /* end of ifdef ENAMETOOLONG */
 
 
 /* Return true if FILENAME is absolute or explicitly relative, else false.  */
@@ -1553,90 +1550,90 @@ string truncate_pathname (string name)
 // static bool absolute_p (string filename) {
 bool absolute_p (string filename)
 {
-	bool absolute;
-	bool explicit_relative;
+  bool absolute;
+  bool explicit_relative;
 
 #ifdef MSDOS
-/*	absolute = (*filename == PATH_SEP) */			/* 1994/Mar/1 */
-	absolute = (*filename == PATH_SEP || *filename == '\\')
+/*  absolute = (*filename == PATH_SEP) */     /* 1994/Mar/1 */
+  absolute = (*filename == PATH_SEP || *filename == '\\')
                       || ((filename[1] == ':') && ISALPHA (*filename));
 /*                      || ISALPHA (*filename) && filename[1] == ':'; */
 #else
-	absolute = (*filename == PATH_SEP);
+  absolute = (*filename == PATH_SEP);
 #endif
-	if (absolute) return true;			/* don't waste any more time */
+  if (absolute) return true;      /* don't waste any more time */
 
 #ifdef MSDOS
-	explicit_relative = (*filename == '.'
-		&& ((filename[1] == PATH_SEP || filename[1] == '\\')
+  explicit_relative = (*filename == '.'
+    && ((filename[1] == PATH_SEP || filename[1] == '\\')
            || (filename[1] == '.' &&
-			   (filename[2] == PATH_SEP || filename[2] == '\\'))));
+         (filename[2] == PATH_SEP || filename[2] == '\\'))));
 #else
-	explicit_relative = (*filename == '.'  && (filename[1] == PATH_SEP
+  explicit_relative = (*filename == '.'  && (filename[1] == PATH_SEP
            || (filename[1] == '.' && filename[2] == PATH_SEP))); 
 #endif
 
-	return explicit_relative;
+  return explicit_relative;
 /*  return absolute || explicit_relative; */ /* slight rewrite 1994/Feb/13 */
 }
 
 #ifdef MSDOS
-/*	note: this strips off trailing white space in actual environment var ... */
+/*  note: this strips off trailing white space in actual environment var ... */
 void striptrailing (string env_value, string env_name, string default_path)
 {
-	char *s;
-	if (env_name == NULL) {					/* 1994/Feb/24 */
-		if (trace_flag) {
-			sprintf(log_line, "WARNING: no env_name noted, using default %s\n",
-				default_path);
-			show_line(log_line, 0);
-		}
-		return;
-	}
-	if (env_value == NULL) {
-		if (trace_flag) {
-			sprintf(log_line, "WARNING: %s not defined in environment, using default %s\n",
-				env_name, default_path);
-			show_line(log_line, 0);
-		}
-		return;
-	}
-	if (strlen(env_value) == 0) return;
-	s = env_value + strlen(env_value) - 1;
-/*	while (*s <= ' ') *s-- = '\0'; */
-	while (s >= env_value && *s <= ' ')*s-- = '\0';		/* 94/Feb/24 */
+  char *s;
+  if (env_name == NULL) {         /* 1994/Feb/24 */
+    if (trace_flag) {
+      sprintf(log_line, "WARNING: no env_name noted, using default %s\n",
+        default_path);
+      show_line(log_line, 0);
+    }
+    return;
+  }
+  if (env_value == NULL) {
+    if (trace_flag) {
+      sprintf(log_line, "WARNING: %s not defined in environment, using default %s\n",
+        env_name, default_path);
+      show_line(log_line, 0);
+    }
+    return;
+  }
+  if (strlen(env_value) == 0) return;
+  s = env_value + strlen(env_value) - 1;
+/*  while (*s <= ' ') *s-- = '\0'; */
+  while (s >= env_value && *s <= ' ')*s-- = '\0';   /* 94/Feb/24 */
 }
 #endif
 
 /* convert /! and /!! to / and // 97/Mar/22 */
 
 #ifdef MSDOS
-void convertexclam (string env_value) {	/* 97/Mar/22 */
-	char *s;
-	if (env_value == NULL) return;
-	s = env_value;
-	if (strchr(s, '!') == NULL) return;
-	while ((s = strchr(s, '!')) != NULL) {
-		if (*(s+1) == '!') {	/* double !! */
-			if (*(s+2) == PATH_DELIMITER || *(s+2) == '\0') {
-				if (s > env_value && *(s-1) == PATH_SEP) {
-					*s = PATH_SEP;		/* convert the first ! */
-					strcpy(s+1, s+2);	/* flush the second ! */
-				}
-			}
-		}
-		else {		/* single ! */	/* assume already unixified */
-			if (*(s+1) == PATH_DELIMITER || *(s+1) == '\0') {
-				if (s > env_value && *(s-1) == PATH_SEP)
-					strcpy(s, s+1);	/* just flush the ! */
-			}
-		}
-		s++;
-	}
-	if (trace_flag) {
-		sprintf(log_line,"Now is %s\n", env_value);
-		show_line(log_line, 0);
-	}
+void convertexclam (string env_value) { /* 97/Mar/22 */
+  char *s;
+  if (env_value == NULL) return;
+  s = env_value;
+  if (strchr(s, '!') == NULL) return;
+  while ((s = strchr(s, '!')) != NULL) {
+    if (*(s+1) == '!') {  /* double !! */
+      if (*(s+2) == PATH_DELIMITER || *(s+2) == '\0') {
+        if (s > env_value && *(s-1) == PATH_SEP) {
+          *s = PATH_SEP;    /* convert the first ! */
+          strcpy(s+1, s+2); /* flush the second ! */
+        }
+      }
+    }
+    else {    /* single ! */  /* assume already unixified */
+      if (*(s+1) == PATH_DELIMITER || *(s+1) == '\0') {
+        if (s > env_value && *(s-1) == PATH_SEP)
+          strcpy(s, s+1); /* just flush the ! */
+      }
+    }
+    s++;
+  }
+  if (trace_flag) {
+    sprintf(log_line,"Now is %s\n", env_value);
+    show_line(log_line, 0);
+  }
 }
 #endif
 
@@ -1656,76 +1653,76 @@ void convertexclam (string env_value) {	/* 97/Mar/22 */
 
 string *initialize_path_list (string env_name,  string default_path)
 {
-	string dir, path;
-	string *dir_list;
-	unsigned dir_count = 0;
-	string env_value;
-	string orig_path;
-	struct _finddata_t findt;
+  string dir, path;
+  string *dir_list;
+  unsigned dir_count = 0;
+  string env_value;
+  string orig_path;
+  struct _finddata_t findt;
 /*  _finddata_t structure *can* be reused, unlike _find_t 95/Jan/31 */
 /*  so save on stack space, by having one copy here, not one per expand_subdir*/
 
 /*  env_value = env_name ?  getenv (env_name)  : NULL; */
-	env_value = env_name ?  grabenv (env_name)  : NULL; /* 1994/May/19 */
+  env_value = env_name ?  grabenv (env_name)  : NULL; /* 1994/May/19 */
 
 /*  need to convert \ to / as soon as possible to avoid confusion */
-/*	we may be modifying DOS environment variable here ... is it always safe ? */
+/*  we may be modifying DOS environment variable here ... is it always safe ? */
 #ifdef MSDOS
-	if (deslash) unixify (env_value);		    /* 1994/Feb/24 */
+  if (deslash) unixify (env_value);       /* 1994/Feb/24 */
 #endif
-	if (trace_flag) {
-		if (env_name) {			/* only if env_name is non-null 94/Feb/24 */
-			sprintf(log_line, "\nSet %s=", env_name);
-			show_line(log_line, 0);
-			if (env_value) {	/* only if env_name value is set */
-				show_line(env_value, 0);
-			}
-			show_line("\n", 0);
-		}
-	}
+  if (trace_flag) {
+    if (env_name) {     /* only if env_name is non-null 94/Feb/24 */
+      sprintf(log_line, "\nSet %s=", env_name);
+      show_line(log_line, 0);
+      if (env_value) {  /* only if env_name value is set */
+        show_line(env_value, 0);
+      }
+      show_line("\n", 0);
+    }
+  }
 #ifdef MSDOS
-/*	strip off trailing white space which would confuse things - bkph  */
-	striptrailing (env_value, env_name, default_path);
-	convertexclam (env_value);							/* 97/Mar/22 */
+/*  strip off trailing white space which would confuse things - bkph  */
+  striptrailing (env_value, env_name, default_path);
+  convertexclam (env_value);              /* 97/Mar/22 */
 #endif
-	orig_path = expand_default (env_value, default_path);
+  orig_path = expand_default (env_value, default_path);
 
-	if (orig_path == NULL || *orig_path == 0)  return NULL;
+  if (orig_path == NULL || *orig_path == 0)  return NULL;
 
-/*	need to convert \ to / as soon as possible to avoid confusion */
+/*  need to convert \ to / as soon as possible to avoid confusion */
 #ifdef MSDOS
-	if (deslash)  unixify (orig_path);	/* redundant ? */
+  if (deslash)  unixify (orig_path);  /* redundant ? */
 #endif
 
-/*	If we've already seen this PATH_DELIMITER-separated list, then just get
-		it back instead of going back to the filesystem.  */
-	dir_list = find_dir_list (orig_path);
-	if (dir_list != NULL) return dir_list;
+/*  If we've already seen this PATH_DELIMITER-separated list, then just get
+    it back instead of going back to the filesystem.  */
+  dir_list = find_dir_list (orig_path);
+  if (dir_list != NULL) return dir_list;
   
-/*	Be sure `path' is in writable memory.  */ /* if not, copy it */
-	path = (orig_path == env_value || orig_path == default_path
+/*  Be sure `path' is in writable memory.  */ /* if not, copy it */
+  path = (orig_path == env_value || orig_path == default_path
           ? xstrdup (orig_path) : orig_path); 
 
-/*	Find each element in the path in turn.  */
+/*  Find each element in the path in turn.  */
 #ifdef MSDOS
-/*  if (!switchflag) */	
-	if (current_flag) {		/* suppress adding current directory - debugging */
-		if (trace_flag) {
-			sprintf(log_line, "Adding directory `%s'\n", "."); /* 95/Jan/24 */
-			show_line(log_line, 0);
-		}
-		add_directory(&dir_list, &dir_count, ".");
-	}
+/*  if (!switchflag) */ 
+  if (current_flag) {   /* suppress adding current directory - debugging */
+    if (trace_flag) {
+      sprintf(log_line, "Adding directory `%s'\n", "."); /* 95/Jan/24 */
+      show_line(log_line, 0);
+    }
+    add_directory(&dir_list, &dir_count, ".");
+  }
 #endif
-	for (dir = strtok (path, PATH_DELIMITER_STRING); dir != NULL;
-		dir = strtok (NULL, PATH_DELIMITER_STRING)) {
-		int len;
+  for (dir = strtok (path, PATH_DELIMITER_STRING); dir != NULL;
+    dir = strtok (NULL, PATH_DELIMITER_STRING)) {
+    int len;
 
 // #ifdef MYDEBUG
-	if (trace_flag) {
-		sprintf(log_line, "dir %s\n", dir);
-		show_line(log_line, 0);
-	}
+  if (trace_flag) {
+    sprintf(log_line, "dir %s\n", dir);
+    show_line(log_line, 0);
+  }
 // #endif
       /* If the path starts with ~ or ~user, expand it.  Do this
          before calling `expand_subdir' or `add_directory', so that
@@ -1733,12 +1730,12 @@ string *initialize_path_list (string env_name,  string default_path)
          2) pathnames in `expand_subdir' don't have a `~' in them
             (since the system won't grok `~/foo' as a directory).  */
 #ifndef MSDOS
-		dir = expand_tilde (dir);
+    dir = expand_tilde (dir);
 #endif
-		len = strlen (dir);
+    len = strlen (dir);
 
       /* If `dir' is the empty string, ignore it.  */
-		if (len == 0)  continue;
+    if (len == 0)  continue;
 
       /* If `dir' ends in double PATH_SEP, do subdirectories (and remove
          the second PATH_SEP, so the final pathnames we return don't look
@@ -1751,80 +1748,80 @@ string *initialize_path_list (string env_name,  string default_path)
 /* modified to treat double PATH_SEP as expand subdirs *with*  recursion */
 
 #ifdef MSDOS
-		if (len > 2 &&								/* 1994/Mar/1 */
-			(dir[len - 1] == PATH_SEP || dir[len - 1] == '\\')
-				&& (dir[len - 2] == PATH_SEP || dir[len - 2] == '\\'))
+    if (len > 2 &&                /* 1994/Mar/1 */
+      (dir[len - 1] == PATH_SEP || dir[len - 1] == '\\')
+        && (dir[len - 2] == PATH_SEP || dir[len - 2] == '\\'))
 #else
-		if (len > 2 && dir[len - 1] == PATH_SEP && dir[len - 2] == PATH_SEP) 
+    if (len > 2 && dir[len - 1] == PATH_SEP && dir[len - 2] == PATH_SEP) 
 #endif
-		{
-			if (open_trace_flag) {
-				sprintf(log_line, "Double backslash on `%s' ", dir);	/* bkph */
-				show_line(log_line, 0);
-			}
+    {
+      if (open_trace_flag) {
+        sprintf(log_line, "Double backslash on `%s' ", dir);  /* bkph */
+        show_line(log_line, 0);
+      }
 
-			dir[len - 1] = 0;
-			if (dir_p (dir)) {
-				if (trace_flag) {
-					sprintf(log_line, "Adding directory `%s'\n", dir);
-					show_line(log_line, 0);
-				}
-				add_directory (&dir_list, &dir_count, dir);
+      dir[len - 1] = 0;
+      if (dir_p (dir)) {
+        if (trace_flag) {
+          sprintf(log_line, "Adding directory `%s'\n", dir);
+          show_line(log_line, 0);
+        }
+        add_directory (&dir_list, &dir_count, dir);
 /* local variable 'findt' used without having been initialized ? &findt ? */
-				expand_subdir (&dir_list, &dir_count, dir,
-				    findt, 1); 	/* 95/Jan/31 */
-			}
-		}
+        expand_subdir (&dir_list, &dir_count, dir,
+            findt, 1);  /* 95/Jan/31 */
+      }
+    }
 /* following is new to find only directories to one level 1994/Jan/24 */
 #ifdef MSDOS
-		else if (len > 1 &&					/* 1994/Mar/1 */
-			(dir[len - 1] == PATH_SEP || dir[len - 1] == '\\'))
+    else if (len > 1 &&         /* 1994/Mar/1 */
+      (dir[len - 1] == PATH_SEP || dir[len - 1] == '\\'))
 #else
-		else if (len > 1 && dir[len - 1] == PATH_SEP) 
+    else if (len > 1 && dir[len - 1] == PATH_SEP) 
 #endif
         {
-			if (open_trace_flag) {
-				sprintf(log_line, "Single backslash on `%s' ", dir);	/* bkph */
-				show_line(log_line, 0);
-			}
+      if (open_trace_flag) {
+        sprintf(log_line, "Single backslash on `%s' ", dir);  /* bkph */
+        show_line(log_line, 0);
+      }
 
-/*			dir[len - 1] = 0; */
-			if (dir_p (dir)) {
-				if (trace_flag) {
-					sprintf(log_line, "Adding directory `%s'\n", dir);
-					show_line(log_line, 0);
-				}
-				add_directory (&dir_list, &dir_count, dir);
-				expand_subdir (&dir_list, &dir_count, dir,
-				    findt, 0); /* 95/Jan/31 */
-			}
-		}
+/*      dir[len - 1] = 0; */
+      if (dir_p (dir)) {
+        if (trace_flag) {
+          sprintf(log_line, "Adding directory `%s'\n", dir);
+          show_line(log_line, 0);
+        }
+        add_directory (&dir_list, &dir_count, dir);
+        expand_subdir (&dir_list, &dir_count, dir,
+            findt, 0); /* 95/Jan/31 */
+      }
+    }
       else { /* Don't bother to add the directory if it doesn't exist.  */
-		  if (dir_p (dir)) {
-			  if (trace_flag) {
-				  sprintf(log_line, "Adding directory `%s'\n", dir);
-				  show_line(log_line, 0);
-			  }
-			  add_directory (&dir_list, &dir_count, dir);
-		  }
-	  }
-	}
+      if (dir_p (dir)) {
+        if (trace_flag) {
+          sprintf(log_line, "Adding directory `%s'\n", dir);
+          show_line(log_line, 0);
+        }
+        add_directory (&dir_list, &dir_count, dir);
+      }
+    }
+  }
   
 // #ifdef MYDEBUG
-	if (trace_flag) {
-		show_line("Adding terminating null\n", 0);
-	}
+  if (trace_flag) {
+    show_line("Adding terminating null\n", 0);
+  }
 // #endif
 
-/*	Add the terminating null entry to `dir_list'.  */
-	dir_count++;
-	XRETALLOC (dir_list, dir_count, string);
-	dir_list[dir_count - 1] = NULL;
+/*  Add the terminating null entry to `dir_list'.  */
+  dir_count++;
+  XRETALLOC (dir_list, dir_count, string);
+  dir_list[dir_count - 1] = NULL;
   
-/*	Save the directory list we just found.  */
-	save_dir_list (orig_path, dir_list);
+/*  Save the directory list we just found.  */
+  save_dir_list (orig_path, dir_list);
 
-	return dir_list;
+  return dir_list;
 }
 
 /* Subroutines for `initialize_path_list'.  */
@@ -1836,32 +1833,32 @@ string *initialize_path_list (string env_name,  string default_path)
 
 void add_directory (string **dir_list_ptr, unsigned *dir_count_ptr, string dir)
 {
-	if (dir == NULL) return;				/* paranoia 1995/Jan/24 */
+  if (dir == NULL) return;        /* paranoia 1995/Jan/24 */
   /* If `dir' does not end with a `/', add it.  We can't just
      write it in place, since that would overwrite the null that
      strtok may have put in.  So we ALWAYS make a copy of DIR.  */
 #ifdef MSDOS
-	dir = (dir[strlen (dir) - 1] == PATH_SEP ||		/* 1994/Mar/1 */
-			dir[strlen (dir) - 1] == '\\') ?
-				xstrdup (dir) : concat (dir, PATH_SEP_STRING);
+  dir = (dir[strlen (dir) - 1] == PATH_SEP ||   /* 1994/Mar/1 */
+      dir[strlen (dir) - 1] == '\\') ?
+        xstrdup (dir) : concat (dir, PATH_SEP_STRING);
 #else
-	dir = (dir[strlen (dir) - 1] == PATH_SEP ? xstrdup (dir)
+  dir = (dir[strlen (dir) - 1] == PATH_SEP ? xstrdup (dir)
          : concat (dir, PATH_SEP_STRING)); 
 #endif
 #ifdef MSDOS
-	if (deslash) unixify (dir);			/* redundant ? bkph */ 
+  if (deslash) unixify (dir);     /* redundant ? bkph */ 
 #endif
 
 // #ifdef MYDEBUG
-	if (trace_flag) {
-		sprintf(log_line, "Adding directory `%s'\n", dir);
-		show_line(log_line, 0);
-	}
+  if (trace_flag) {
+    sprintf(log_line, "Adding directory `%s'\n", dir);
+    show_line(log_line, 0);
+  }
 // #else
 //     if (open_trace_flag) {
-// 		sprintf(log_line, "Adding directory `%s' ", dir);
-// 		show_line(log_line, 0);
-// 	}
+//    sprintf(log_line, "Adding directory `%s' ", dir);
+//    show_line(log_line, 0);
+//  }
 // #endif
 
   /* Add `dir' to the list of the directories.  */
@@ -1871,8 +1868,8 @@ void add_directory (string **dir_list_ptr, unsigned *dir_count_ptr, string dir)
 }
 
 void lowercase (char *s)
-{							/* 1994/Jan/25 */
-	while (*s) *s++ = (char) tolower(*s);
+{             /* 1994/Jan/25 */
+  while (*s) *s++ = (char) tolower(*s);
 }
 
 
@@ -1885,31 +1882,31 @@ void lowercase (char *s)
 
 string  expand_default (string env_path, string default_path)
 {
-	string expansion;
+  string expansion;
   
-	if (env_path == NULL) expansion = default_path;
-	else if (*env_path == PATH_DELIMITER)
-		expansion = concat (default_path, env_path);
-	else if (env_path[strlen (env_path) - 1] == PATH_DELIMITER)
-		expansion = concat (env_path, default_path);
-	else expansion = env_path;
+  if (env_path == NULL) expansion = default_path;
+  else if (*env_path == PATH_DELIMITER)
+    expansion = concat (default_path, env_path);
+  else if (env_path[strlen (env_path) - 1] == PATH_DELIMITER)
+    expansion = concat (env_path, default_path);
+  else expansion = env_path;
   
-	if (trace_flag) {								/* 1994/Jan/8 */
-		if (env_path == NULL) {
-			sprintf(log_line, "Using the default %s\n", expansion);
-			show_line(log_line, 0);
-		}
-		else if (expansion == env_path) {
-			sprintf(log_line, "Using %s (default was %s)\n", expansion, default_path);
-			show_line(log_line, 0);
-		}
-		else {								/* expansion != env_path */
-			sprintf(log_line, "Expanded %s (default was %s) to %s\n",
-				env_path, default_path, expansion);
-			show_line(log_line, 0);
-		}
-	}
-	return expansion;
+  if (trace_flag) {               /* 1994/Jan/8 */
+    if (env_path == NULL) {
+      sprintf(log_line, "Using the default %s\n", expansion);
+      show_line(log_line, 0);
+    }
+    else if (expansion == env_path) {
+      sprintf(log_line, "Using %s (default was %s)\n", expansion, default_path);
+      show_line(log_line, 0);
+    }
+    else {                /* expansion != env_path */
+      sprintf(log_line, "Expanded %s (default was %s) to %s\n",
+        env_path, default_path, expansion);
+      show_line(log_line, 0);
+    }
+  }
+  return expansion;
 }
 
 
@@ -1930,9 +1927,9 @@ string expand_tilde (string name)
     expansion = name;
   
   /* If `~' or `~/', use $HOME if it exists, or `.' if it doesn't.  */
-  else if (name[1] == PATH_SEP || name[1] == 0)			/* not in DOS */
+  else if (name[1] == PATH_SEP || name[1] == 0)     /* not in DOS */
     {
-      home = getenv ("HOME");							/* not in DOS */
+      home = getenv ("HOME");             /* not in DOS */
       if (home == NULL)
         home = ".";
         
@@ -1946,7 +1943,7 @@ string expand_tilde (string name)
       struct passwd *p;
       string user;
       unsigned c = 2;
-      while (name[c] != PATH_SEP && name[c] != 0)	/* not in DOS */
+      while (name[c] != PATH_SEP && name[c] != 0) /* not in DOS */
         c++;
       
       user = (string) xmalloc (c);
@@ -1971,8 +1968,8 @@ string expand_tilde (string name)
 // structure used for manipulation dir lists
 
 typedef struct {
-	string path;
-	string *dir_list;
+  string path;
+  string *dir_list;
 } saved_path_entry;
 
 /* Routines to save and retrieve a directory list keyed by the original
@@ -1991,66 +1988,66 @@ static unsigned saved_paths_length = 0;
 
 void save_dir_list (string path,  string *dir_list)
 {
-//	saved_paths_length++;
-	XRETALLOC (saved_paths, saved_paths_length+1, saved_path_entry);
-	saved_paths[saved_paths_length].path = path;
-	saved_paths[saved_paths_length].dir_list = dir_list;
-	saved_paths_length++;
+//  saved_paths_length++;
+  XRETALLOC (saved_paths, saved_paths_length+1, saved_path_entry);
+  saved_paths[saved_paths_length].path = path;
+  saved_paths[saved_paths_length].dir_list = dir_list;
+  saved_paths_length++;
 }
 
 /* When we retrieve, just check the list in order.  */
 
 string *find_dir_list (string path)
 {
-	unsigned p;
+  unsigned p;
   
 // #ifdef MYDEBUG
-	if (trace_flag) {
-		sprintf(log_line, "Find Dir List for path: %s\n", path);
-		show_line(log_line, 0);
-	}
+  if (trace_flag) {
+    sprintf(log_line, "Find Dir List for path: %s\n", path);
+    show_line(log_line, 0);
+  }
 // #endif
 
-	for (p = 0; p < saved_paths_length; p++) {
-		if (strcmp (saved_paths[p].path, path) == 0)
-			return saved_paths[p].dir_list;
-	}
-	return NULL;
+  for (p = 0; p < saved_paths_length; p++) {
+    if (strcmp (saved_paths[p].path, path) == 0)
+      return saved_paths[p].dir_list;
+  }
+  return NULL;
 }
 
 /* Unixify filename and path (turn \ into /) --- assumes null terminated */
 
 char *unixify (char * t)
 {
-	char * s = t;
-	if (s == NULL) return s;		/* paranoia -- 1993/Apr/10 */
+  char * s = t;
+  if (s == NULL) return s;    /* paranoia -- 1993/Apr/10 */
 #ifdef MSDOS
-	if (t != '\0') {
-		while (*s != '\0') {				/* paranoia -- 1997/Oct/23 */
-/*			if (*s == '\\') *s = '/'; */
-			if (*s == '\\') *s = PATH_SEP;
-			s++;
-		}				/* endwhile */
-	}
+  if (t != '\0') {
+    while (*s != '\0') {        /* paranoia -- 1997/Oct/23 */
+/*      if (*s == '\\') *s = '/'; */
+      if (*s == '\\') *s = PATH_SEP;
+      s++;
+    }       /* endwhile */
+  }
 // #ifdef MYDEBUG
-	if (trace_flag)	{
-		sprintf(log_line, "Unixified name: %s\n", t);
-		show_line(log_line, 0);
-	}
+  if (trace_flag) {
+    sprintf(log_line, "Unixified name: %s\n", t);
+    show_line(log_line, 0);
+  }
 // #endif
 #endif /* DOS */
-	return t;
+  return t;
 }
 
 /****************************************************************************/
 
 /* moved here to avoid problems with pragma */
 
-/* struct _finddata_t findt; */	/* make global, can be reused unlike _find_t */
-								/* avoids heavy stack usage in tree search */
-								/* but ties up some global fixed space ... */
+/* struct _finddata_t findt; */ /* make global, can be reused unlike _find_t */
+                /* avoids heavy stack usage in tree search */
+                /* but ties up some global fixed space ... */
 
-#pragma optimize ("g", off) 	/* try and avoid compiler bug here _dos_find */
+#pragma optimize ("g", off)   /* try and avoid compiler bug here _dos_find */
 
 /* Add DIRNAME to DIR_LIST and look for subdirectories, possibly recursively.
    We assume DIRNAME is the name of a directory.  */
@@ -2061,97 +2058,97 @@ char *unixify (char * t)
 /* called only from initialize_path_list  (and recursively) */
 
 void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirname,
-					struct _finddata_t findt, integer recurseflag)
+          struct _finddata_t findt, integer recurseflag)
 {
 #ifdef MSDOS
-/*	struct _finddata_t findt; */
-	long hFind;
-	int ret;
-	int len;
+/*  struct _finddata_t findt; */
+  long hFind;
+  int ret;
+  int len;
 /*  char buffer[PATH_MAX]; */   /* pretty long? potential recursion problem? */
-	char buffer[FILENAME_MAX];	/* this is DOS and Windows NT after all ... */
-	char *potential;
-#endif	/* DOS */
+  char buffer[FILENAME_MAX];  /* this is DOS and Windows NT after all ... */
+  char *potential;
+#endif  /* DOS */
 
-	if (trace_flag) {
-		sprintf(log_line, "\nExpanding sub dir %s ", dirname);
-		show_line(log_line, 0);
-	}
+  if (trace_flag) {
+    sprintf(log_line, "\nExpanding sub dir %s ", dirname);
+    show_line(log_line, 0);
+  }
 
 #ifdef MSDOS
-	strcpy(buffer, dirname);
-	len = strlen(dirname);
+  strcpy(buffer, dirname);
+  len = strlen(dirname);
 
 #ifdef MSDOS
 /*  if (buffer[len-1] == PATH_SEP) strcat(buffer, "*.*"); */
-	if (buffer[len-1] == PATH_SEP || buffer[len-1] == '\\')
-		strcat(buffer, "*.*");						/* 1994/Mar/1 */
-	else strcat(buffer, PATH_SEP_STRING "*.*");
+  if (buffer[len-1] == PATH_SEP || buffer[len-1] == '\\')
+    strcat(buffer, "*.*");            /* 1994/Mar/1 */
+  else strcat(buffer, PATH_SEP_STRING "*.*");
 #else
-	if(buffer[len-1] == PATH_SEP) strcat(buffer, "*");
-	else strcat(buffer, PATH_SEP_STRING "*");
-#endif	/* MSDOS */
+  if(buffer[len-1] == PATH_SEP) strcat(buffer, "*");
+  else strcat(buffer, PATH_SEP_STRING "*");
+#endif  /* MSDOS */
 
-/*	Note: the _A_SUBDIR means we get ordinary files PLUS sub-directories */
-	if (open_trace_flag)  {
-		sprintf(log_line, "\nDIRNAME `%s' ", dirname);
-		show_line(log_line, 0);
-	}
-/*	we'll need to step over `.' and `..' up front of directory list */
-	hFind = _findfirst(buffer, &findt);
-	if (hFind > 0) ret = 0;
-	else ret = -1;
-/*	_dos_findnext( &findt ); */
-/* 	while(_dos_findnext(&findt)== 0)  { */
-	while (ret == 0)  {
-/*		if (open_trace_flag) */
-		if (open_trace_flag && trace_flag) {
-			sprintf(log_line, "NEXT `%s' (%0x) ", findt.name, findt.attrib);
-			show_line(log_line, 0);
-		}
-/*		if (strchr(findt.name, '.') != NULL) continue; *//* not needed */
-		if (findt.name[0] != '.' &&		/* ignore "." and ".." */
-			findt.attrib & _A_SUBDIR){	/* only look at SUBDIRs */
-			if (open_trace_flag)  {
-				sprintf(log_line, "\nDIRNAME `%s' ", dirname);
-				show_line(log_line, 0);
-			}
+/*  Note: the _A_SUBDIR means we get ordinary files PLUS sub-directories */
+  if (open_trace_flag)  {
+    sprintf(log_line, "\nDIRNAME `%s' ", dirname);
+    show_line(log_line, 0);
+  }
+/*  we'll need to step over `.' and `..' up front of directory list */
+  hFind = _findfirst(buffer, &findt);
+  if (hFind > 0) ret = 0;
+  else ret = -1;
+/*  _dos_findnext( &findt ); */
+/*  while(_dos_findnext(&findt)== 0)  { */
+  while (ret == 0)  {
+/*    if (open_trace_flag) */
+    if (open_trace_flag && trace_flag) {
+      sprintf(log_line, "NEXT `%s' (%0x) ", findt.name, findt.attrib);
+      show_line(log_line, 0);
+    }
+/*    if (strchr(findt.name, '.') != NULL) continue; *//* not needed */
+    if (findt.name[0] != '.' &&   /* ignore "." and ".." */
+      findt.attrib & _A_SUBDIR){  /* only look at SUBDIRs */
+      if (open_trace_flag)  {
+        sprintf(log_line, "\nDIRNAME `%s' ", dirname);
+        show_line(log_line, 0);
+      }
 #ifdef MSDOS
-			potential = concat3(dirname,
-				(dirname[len-1] == PATH_SEP || dirname[len-1] == '\\')
-					? "" : PATH_SEP_STRING, findt.name);
+      potential = concat3(dirname,
+        (dirname[len-1] == PATH_SEP || dirname[len-1] == '\\')
+          ? "" : PATH_SEP_STRING, findt.name);
 #else
-			potential = concat3(dirname, dirname[len-1] == PATH_SEP 
-				? "" : PATH_SEP_STRING, findt.name);
-#endif	/* DOS */
-			lowercase (potential);					/* make look nicer ? */
-			if (open_trace_flag) {
-				sprintf(log_line, "POTENTIAL `%s' ", potential);
-				show_line(log_line, 0);
-			}
-			if (trace_flag) {
-				sprintf(log_line, "Adding directory `%s'\n", potential); /* 95/Jan/24 */
-				show_line(log_line, 0);
-			}
-			add_directory(dir_list_ptr, dir_count_ptr, potential);
-			if (recurseflag) 
-				expand_subdir(dir_list_ptr, dir_count_ptr,
-				    potential, findt, 1);  /* 95/Jan/31 */
-			free(potential);
-		}			/* end of findt.attrib & _A_SUBDIR != 0 */
-		ret = _findnext(hFind, &findt);
-	}
+      potential = concat3(dirname, dirname[len-1] == PATH_SEP 
+        ? "" : PATH_SEP_STRING, findt.name);
+#endif  /* DOS */
+      lowercase (potential);          /* make look nicer ? */
+      if (open_trace_flag) {
+        sprintf(log_line, "POTENTIAL `%s' ", potential);
+        show_line(log_line, 0);
+      }
+      if (trace_flag) {
+        sprintf(log_line, "Adding directory `%s'\n", potential); /* 95/Jan/24 */
+        show_line(log_line, 0);
+      }
+      add_directory(dir_list_ptr, dir_count_ptr, potential);
+      if (recurseflag) 
+        expand_subdir(dir_list_ptr, dir_count_ptr,
+            potential, findt, 1);  /* 95/Jan/31 */
+      free(potential);
+    }     /* end of findt.attrib & _A_SUBDIR != 0 */
+    ret = _findnext(hFind, &findt);
+  }
 #ifdef MSDOS
-	if (hFind > 0) _findclose (hFind);
+  if (hFind > 0) _findclose (hFind);
 #endif
 
 #ifndef MSDOS
-	_dos_findclose(&findt);
+  _dos_findclose(&findt);
 #endif
 
 #else  /* end of MSDOS (way up there) */
 
-/*	This is how we do this if we are NOT using DOS */
+/*  This is how we do this if we are NOT using DOS */
   DIR *dir;
   struct dirent *e;
   unsigned length;
@@ -2168,7 +2165,7 @@ void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirna
 
   /* Construct the part of the pathname that doesn't change.  */
   strcpy (potential, dirname);
-  if (potential[length - 1] != PATH_SEP)	/* not in DOS */
+  if (potential[length - 1] != PATH_SEP)  /* not in DOS */
     {
       potential[length] = PATH_SEP;
       potential[length + 1] = 0;
@@ -2189,10 +2186,10 @@ void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirna
           /* If we can't _stat it, or if it isn't a directory, continue.  */
           if (_stat (potential, &st) == 0 && S_ISDIR (st.st_mode))
             { /* It's a subdirectory; add `potential' to the list.  */
-				if (trace_flag) {
-					sprintf(log_line, "Adding directory `%s'\n", potential); /* 95/Jan/24 */
-					show_line(log_line, 0);
-				}
+        if (trace_flag) {
+          sprintf(log_line, "Adding directory `%s'\n", potential); /* 95/Jan/24 */
+          show_line(log_line, 0);
+        }
               add_directory (dir_list_ptr, dir_count_ptr, potential);
 
               /* If it's not a leaf, quit.  Assume that leaf
@@ -2204,7 +2201,7 @@ void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirna
               if (st.st_nlink > 2)
                 { /* All criteria are met; find subdirectories.  */
                   expand_subdir (dir_list_ptr, dir_count_ptr, potential,
-					  findt, 1);	/* 95/Jan/31 */
+            findt, 1);  /* 95/Jan/31 */
                 }
             }
 
@@ -2213,11 +2210,11 @@ void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirna
         }
     }
   
-	closedir (dir);
-#endif	/* end of *not* DOS case */
+  closedir (dir);
+#endif  /* end of *not* DOS case */
 }
 
-// #pragma optimize ("", on)		/* 96/Sep/12 */
+// #pragma optimize ("", on)    /* 96/Sep/12 */
 
 /************************************************************************/
 
@@ -2303,8 +2300,8 @@ static enum
 } ordering;
 
 
-#define	my_index strchr
-#define	my_bcopy(src, dst, n)	memcpy ((dst), (src), (n))
+#define my_index strchr
+#define my_bcopy(src, dst, n) memcpy ((dst), (src), (n))
 
 
 /* Handle permutation of arguments.  */
@@ -2327,21 +2324,21 @@ static int last_nonopt;
 
 static void exchange (char **argv)
 {
-	int nonopts_size;					/* paranoia - bkph */
-	char **temp;						/* paranoia - bkph */
+  int nonopts_size;         /* paranoia - bkph */
+  char **temp;            /* paranoia - bkph */
 /*  int nonopts_size = (last_nonopt - first_nonopt) * sizeof (char *); */
-	nonopts_size = (last_nonopt - first_nonopt) * sizeof (char *);
+  nonopts_size = (last_nonopt - first_nonopt) * sizeof (char *);
 /*  char **temp = (char **) _alloca (nonopts_size); */
-	temp = (char **) _alloca (nonopts_size);
+  temp = (char **) _alloca (nonopts_size);
 
   /* Interchange the two blocks of data in ARGV.  */
 
-	my_bcopy ((char *) &argv[first_nonopt], (char *) temp, nonopts_size);
-	my_bcopy ((char *) &argv[last_nonopt], (char *) &argv[first_nonopt],
-	    (optind - last_nonopt) * sizeof (char *));
-	my_bcopy ((char *) temp,
-	    (char *) &argv[first_nonopt + optind - last_nonopt],
-	    nonopts_size);
+  my_bcopy ((char *) &argv[first_nonopt], (char *) temp, nonopts_size);
+  my_bcopy ((char *) &argv[last_nonopt], (char *) &argv[first_nonopt],
+      (optind - last_nonopt) * sizeof (char *));
+  my_bcopy ((char *) temp,
+      (char *) &argv[first_nonopt + optind - last_nonopt],
+      nonopts_size);
 
   /* Update records for the slots the non-options now occupy.  */
 
@@ -2350,7 +2347,7 @@ static void exchange (char **argv)
 }
 
 
-char *get_env_shroud (char *);		/* in texmf.c */
+char *get_env_shroud (char *);    /* in texmf.c */
 
 /* Scan elements of ARGV (whose length is ARGC) for option characters
    given in OPTSTRING.
@@ -2409,307 +2406,307 @@ char *get_env_shroud (char *);		/* in texmf.c */
    long-named options.  */
 
 int _getopt_internal (int argc, char *const *argv, const char *optstring,
-					  const struct option *longopts, int *longind, int long_only)
+            const struct option *longopts, int *longind, int long_only)
 {
-	int option_index;
-	char *commandlineflag = "command line flag";
+  int option_index;
+  char *commandlineflag = "command line flag";
 
-	optarg = 0;
+  optarg = 0;
 
   /* Initialize the internal data when the first call is made.
      Start processing options with ARGV-element 1 (since ARGV-element 0
      is the program name); the sequence of previously skipped
      non-option ARGV-elements is empty.  */
 
-	if (optind == 0) {
-		first_nonopt = last_nonopt = optind = 1;
+  if (optind == 0) {
+    first_nonopt = last_nonopt = optind = 1;
 
-		nextchar = NULL;
+    nextchar = NULL;
 
-/*		 Determine how to handle the ordering of options and nonoptions.  */
+/*     Determine how to handle the ordering of options and nonoptions.  */
 
-		if (optstring[0] == '-') {
-			ordering = RETURN_IN_ORDER;
-			++optstring;
-		}
-		else if (optstring[0] == '+') {
-			ordering = REQUIRE_ORDER;
-			++optstring;
-		}
+    if (optstring[0] == '-') {
+      ordering = RETURN_IN_ORDER;
+      ++optstring;
+    }
+    else if (optstring[0] == '+') {
+      ordering = REQUIRE_ORDER;
+      ++optstring;
+    }
 /*      else if (getenv ("POSIXLY_CORRECT") != NULL) */
-		else if (get_env_shroud ("QPTJYMZ`DPSSFDU") != NULL)
-			ordering = REQUIRE_ORDER;
-		else
-			ordering = PERMUTE;
-	}
+    else if (get_env_shroud ("QPTJYMZ`DPSSFDU") != NULL)
+      ordering = REQUIRE_ORDER;
+    else
+      ordering = PERMUTE;
+  }
 
-	if (nextchar == NULL || *nextchar == '\0') {
-		if (ordering == PERMUTE) {
-	  /* If we have just processed some options following some non-options,
-	     exchange them so that the options come first.  */
+  if (nextchar == NULL || *nextchar == '\0') {
+    if (ordering == PERMUTE) {
+    /* If we have just processed some options following some non-options,
+       exchange them so that the options come first.  */
 
-			if (first_nonopt != last_nonopt && last_nonopt != optind)
-				exchange ((char **) argv);
-			else if (last_nonopt != optind)
-				first_nonopt = optind;
+      if (first_nonopt != last_nonopt && last_nonopt != optind)
+        exchange ((char **) argv);
+      else if (last_nonopt != optind)
+        first_nonopt = optind;
 
-	  /* Now skip any additional non-options
-	     and extend the range of non-options previously skipped.  */
+    /* Now skip any additional non-options
+       and extend the range of non-options previously skipped.  */
 
-			while (optind < argc
-				   && (argv[optind][0] != '-' || argv[optind][1] == '\0')
-				 )
-				optind++;
-			last_nonopt = optind;
-		}
+      while (optind < argc
+           && (argv[optind][0] != '-' || argv[optind][1] == '\0')
+         )
+        optind++;
+      last_nonopt = optind;
+    }
 
-/*	 Special ARGV-element `--' means premature end of options.
-	 Skip it like a null option,
-	 then exchange with previous non-options as if it were an option,
-	 then skip everything else like a non-option.  */
+/*   Special ARGV-element `--' means premature end of options.
+   Skip it like a null option,
+   then exchange with previous non-options as if it were an option,
+   then skip everything else like a non-option.  */
 
-		if (optind != argc && !strcmp (argv[optind], "--")) {
-			optind++;
+    if (optind != argc && !strcmp (argv[optind], "--")) {
+      optind++;
 
-			if (first_nonopt != last_nonopt && last_nonopt != optind)
-				exchange ((char **) argv);
-			else if (first_nonopt == last_nonopt)
-				first_nonopt = optind;
-			last_nonopt = argc;
+      if (first_nonopt != last_nonopt && last_nonopt != optind)
+        exchange ((char **) argv);
+      else if (first_nonopt == last_nonopt)
+        first_nonopt = optind;
+      last_nonopt = argc;
 
-			optind = argc;
-		}
+      optind = argc;
+    }
 
-/*	 If we have done all the ARGV-elements, stop the scan
-	 and back over any non-options that we skipped and permuted.  */
+/*   If we have done all the ARGV-elements, stop the scan
+   and back over any non-options that we skipped and permuted.  */
 
-		if (optind == argc) {
-	  /* Set the next-arg-index to point at the non-options
-	     that we previously skipped, so the caller will digest them.  */
-			if (first_nonopt != last_nonopt)
-				optind = first_nonopt;
-			return EOF;
-		}
+    if (optind == argc) {
+    /* Set the next-arg-index to point at the non-options
+       that we previously skipped, so the caller will digest them.  */
+      if (first_nonopt != last_nonopt)
+        optind = first_nonopt;
+      return EOF;
+    }
 
 /*   If we have come to a non-option and did not permute it,
-	 either stop the scan or describe it to the caller and pass it by.  */
+   either stop the scan or describe it to the caller and pass it by.  */
 
-		if ((argv[optind][0] != '-' || argv[optind][1] == '\0')) {
-			if (ordering == REQUIRE_ORDER)
-				return EOF;
-			optarg = argv[optind++];
-			return 1;
-		}
+    if ((argv[optind][0] != '-' || argv[optind][1] == '\0')) {
+      if (ordering == REQUIRE_ORDER)
+        return EOF;
+      optarg = argv[optind++];
+      return 1;
+    }
 
-/*	 We have found another option-ARGV-element.
-	 Start decoding its characters.  */ /* unusual use of bool */
+/*   We have found another option-ARGV-element.
+   Start decoding its characters.  */ /* unusual use of bool */
 
-		nextchar = (argv[optind] + 1
-					+ (longopts != NULL && argv[optind][1] == '-'));
-	}
+    nextchar = (argv[optind] + 1
+          + (longopts != NULL && argv[optind][1] == '-'));
+  }
 
-	if (longopts != NULL
-		  && ((argv[optind][0] == '-'
-			   && (argv[optind][1] == '-' || long_only)))) {
-		const struct option *p;
-		char *s = nextchar;
-		int exact = 0;
-		int ambig = 0;
-		const struct option *pfound = NULL;
-		int indfound=0;		/* keep compiler quiet */
+  if (longopts != NULL
+      && ((argv[optind][0] == '-'
+         && (argv[optind][1] == '-' || long_only)))) {
+    const struct option *p;
+    char *s = nextchar;
+    int exact = 0;
+    int ambig = 0;
+    const struct option *pfound = NULL;
+    int indfound=0;   /* keep compiler quiet */
 
-		while (*s && *s != '=')
-			s++;
+    while (*s && *s != '=')
+      s++;
 
-/*		Test all options for either exact match or abbreviated matches.  */
-		for (p = longopts, option_index = 0; p->name;
-			 p++, option_index++)
-			if (!strncmp (p->name, nextchar, s - nextchar))
-			{
-/*	    if (s - nextchar == strlen (p->name)) */
-				if (s - nextchar == (int) strlen (p->name))	{ /* avoid warning bkph */
-/*			Exact match found.  */
-					pfound = p;
-					indfound = option_index;
-					exact = 1;
-					break;
-				}
-				else if (pfound == NULL) {
-		/* First nonexact match found.  */
-					pfound = p;
-					indfound = option_index;
-				}
-				else
-		  /* Second nonexact match found.  */
-					ambig = 1;
-			}
+/*    Test all options for either exact match or abbreviated matches.  */
+    for (p = longopts, option_index = 0; p->name;
+       p++, option_index++)
+      if (!strncmp (p->name, nextchar, s - nextchar))
+      {
+/*      if (s - nextchar == strlen (p->name)) */
+        if (s - nextchar == (int) strlen (p->name)) { /* avoid warning bkph */
+/*      Exact match found.  */
+          pfound = p;
+          indfound = option_index;
+          exact = 1;
+          break;
+        }
+        else if (pfound == NULL) {
+    /* First nonexact match found.  */
+          pfound = p;
+          indfound = option_index;
+        }
+        else
+      /* Second nonexact match found.  */
+          ambig = 1;
+      }
 
-		if (ambig && !exact) {
-			if (opterr) {
-				sprintf(log_line,
-						"%s `%s' is ambiguous\n", commandlineflag, argv[optind]);
-				show_line(log_line, 1);
-			}
-			nextchar += strlen (nextchar);
-			optind++;
-			return '?';
-		}
+    if (ambig && !exact) {
+      if (opterr) {
+        sprintf(log_line,
+            "%s `%s' is ambiguous\n", commandlineflag, argv[optind]);
+        show_line(log_line, 1);
+      }
+      nextchar += strlen (nextchar);
+      optind++;
+      return '?';
+    }
 
-		if (pfound != NULL) {
-			option_index = indfound;
-			optind++;
-			if (*s)	{
-/*			Don't test has_arg with >, because some C compilers don't
-			allow it to be used on enums.  */
-				if (pfound->has_arg)
-					optarg = s + 1;
-				else {
-					if (opterr) {
-						if (argv[optind - 1][1] == '-') {		/* --option */
-//				  fprintf (stderr,
-							sprintf(log_line,
-									"%s `--%s' does not take an argument\n",
-									commandlineflag,pfound->name);
-							show_line(log_line, 1);
-						}
-						else {			/* +option or -option */
-//				  fprintf (stderr,
-							sprintf(log_line,
-									"%s `%c%s' does not take an argument\n",
-									commandlineflag, argv[optind - 1][0], pfound->name);
-							show_line(log_line, 1);
-						}
-					}
-					nextchar += strlen (nextchar);
-					return '?';
-				}
-			}
-			else if (pfound->has_arg == 1) {
-				if (optind < argc)
-					optarg = argv[optind++];
-				else  {
-					if (opterr) {
-//				fprintf (stderr, 
-						sprintf(log_line,
-								"%s `%s' requires an argument\n",
-								commandlineflag, argv[optind - 1]);
-						show_line(log_line, 1);
-					}
-					nextchar += strlen (nextchar);
-					return '?';
-				}
-			}
-			nextchar += strlen (nextchar);
-			if (longind != NULL)
-				*longind = option_index;
-			if (pfound->flag)
-			{
-				*(pfound->flag) = pfound->val;
-				return 0;
-			}
-			return pfound->val;
-		}
-	  /* Can't find it as a long option.  If this is not getopt_long_only,
-	 or the option starts with '--' or is not a valid short
-	 option, then it's an error.
-	 Otherwise interpret it as a short option.  */
-		if (!long_only || argv[optind][1] == '-'
-			  || my_index (optstring, *nextchar) == NULL) {
-			if (opterr)	{
-				if (argv[optind][1] == '-') {		/* --option */
-					sprintf (log_line,
-							 "don't understand %s `--%s'\n",
-							 commandlineflag, nextchar);
-					show_line(log_line, 1);
-				}
-				else {		/* +option or -option */
-					sprintf (log_line,
-							 "don't understand %s `%c%s'\n",
-							 commandlineflag, argv[optind][0], nextchar);
-					show_line(log_line, 1);
-				}
-			}
-			nextchar = (char *) "";
-			optind++;
-			return '?';
-		}
-	}
+    if (pfound != NULL) {
+      option_index = indfound;
+      optind++;
+      if (*s) {
+/*      Don't test has_arg with >, because some C compilers don't
+      allow it to be used on enums.  */
+        if (pfound->has_arg)
+          optarg = s + 1;
+        else {
+          if (opterr) {
+            if (argv[optind - 1][1] == '-') {   /* --option */
+//          fprintf (stderr,
+              sprintf(log_line,
+                  "%s `--%s' does not take an argument\n",
+                  commandlineflag,pfound->name);
+              show_line(log_line, 1);
+            }
+            else {      /* +option or -option */
+//          fprintf (stderr,
+              sprintf(log_line,
+                  "%s `%c%s' does not take an argument\n",
+                  commandlineflag, argv[optind - 1][0], pfound->name);
+              show_line(log_line, 1);
+            }
+          }
+          nextchar += strlen (nextchar);
+          return '?';
+        }
+      }
+      else if (pfound->has_arg == 1) {
+        if (optind < argc)
+          optarg = argv[optind++];
+        else  {
+          if (opterr) {
+//        fprintf (stderr, 
+            sprintf(log_line,
+                "%s `%s' requires an argument\n",
+                commandlineflag, argv[optind - 1]);
+            show_line(log_line, 1);
+          }
+          nextchar += strlen (nextchar);
+          return '?';
+        }
+      }
+      nextchar += strlen (nextchar);
+      if (longind != NULL)
+        *longind = option_index;
+      if (pfound->flag)
+      {
+        *(pfound->flag) = pfound->val;
+        return 0;
+      }
+      return pfound->val;
+    }
+    /* Can't find it as a long option.  If this is not getopt_long_only,
+   or the option starts with '--' or is not a valid short
+   option, then it's an error.
+   Otherwise interpret it as a short option.  */
+    if (!long_only || argv[optind][1] == '-'
+        || my_index (optstring, *nextchar) == NULL) {
+      if (opterr) {
+        if (argv[optind][1] == '-') {   /* --option */
+          sprintf (log_line,
+               "don't understand %s `--%s'\n",
+               commandlineflag, nextchar);
+          show_line(log_line, 1);
+        }
+        else {    /* +option or -option */
+          sprintf (log_line,
+               "don't understand %s `%c%s'\n",
+               commandlineflag, argv[optind][0], nextchar);
+          show_line(log_line, 1);
+        }
+      }
+      nextchar = (char *) "";
+      optind++;
+      return '?';
+    }
+  }
 
   /* Look at and handle the next option-character.  */
 
-	{
-		char c = *nextchar++;
-		char *temp = my_index (optstring, c);
+  {
+    char c = *nextchar++;
+    char *temp = my_index (optstring, c);
 
-	/* Increment `optind' when we start to process its last character.  */
-		if (*nextchar == '\0')
-			++optind;
+  /* Increment `optind' when we start to process its last character.  */
+    if (*nextchar == '\0')
+      ++optind;
 
 /*    if (temp == NULL || c == ':') */
-		if (temp == NULL || c == ARGSEP) {
-			if (opterr) {
-				if (c < 040 || c >= 0177) {
-//	        fprintf (stderr,
-					sprintf(log_line,
-							"Unrecognized %s (0%o)\n", commandlineflag, c);
-					show_line(log_line, 1);
-				}
-				else {
-//			fprintf (stderr,
-					sprintf(log_line,
-							"Unrecognized %s `-%c'\n", commandlineflag, c);
-					show_line(log_line, 1);
-				}
-			}
-			return '?';
-		}
-/*		if (temp[1] == ':') */
-		if (temp[1] == ARGSEP) {
-/*			if (temp[2] == ':') */
-			if (temp[2] == ARGSEP) {
-/**				This is an option that accepts an argument optionally.  */
-				if (*nextchar != '\0')	{
-					optarg = nextchar;
-					optind++;
-				}
-				else
-					optarg = 0;
-				nextchar = NULL;
-			}
-			else {
-/*				This is an option that requires an argument.  */
-				if (*nextchar != '\0') {
-					optarg = nextchar;
-/*			If we end this ARGV-element by taking the rest as an arg,
-			we must advance to the next element now.  */
-					optind++;
-				}
-				else if (optind == argc) {
-					if (opterr) {
-						sprintf(log_line,
-								"%s `-%c' requires an argument\n",
-								commandlineflag, c);
-						show_line(log_line, 1);
-					}
-					c = '?';
-				}
-				else
-		  /* We already incremented `optind' once;
-		 increment it again when taking next ARGV-elt as argument.  */
-					optarg = argv[optind++];
-				nextchar = NULL;
-			}
-		}
-		return c;
-	}
+    if (temp == NULL || c == ARGSEP) {
+      if (opterr) {
+        if (c < 040 || c >= 0177) {
+//          fprintf (stderr,
+          sprintf(log_line,
+              "Unrecognized %s (0%o)\n", commandlineflag, c);
+          show_line(log_line, 1);
+        }
+        else {
+//      fprintf (stderr,
+          sprintf(log_line,
+              "Unrecognized %s `-%c'\n", commandlineflag, c);
+          show_line(log_line, 1);
+        }
+      }
+      return '?';
+    }
+/*    if (temp[1] == ':') */
+    if (temp[1] == ARGSEP) {
+/*      if (temp[2] == ':') */
+      if (temp[2] == ARGSEP) {
+/**       This is an option that accepts an argument optionally.  */
+        if (*nextchar != '\0')  {
+          optarg = nextchar;
+          optind++;
+        }
+        else
+          optarg = 0;
+        nextchar = NULL;
+      }
+      else {
+/*        This is an option that requires an argument.  */
+        if (*nextchar != '\0') {
+          optarg = nextchar;
+/*      If we end this ARGV-element by taking the rest as an arg,
+      we must advance to the next element now.  */
+          optind++;
+        }
+        else if (optind == argc) {
+          if (opterr) {
+            sprintf(log_line,
+                "%s `-%c' requires an argument\n",
+                commandlineflag, c);
+            show_line(log_line, 1);
+          }
+          c = '?';
+        }
+        else
+      /* We already incremented `optind' once;
+     increment it again when taking next ARGV-elt as argument.  */
+          optarg = argv[optind++];
+        nextchar = NULL;
+      }
+    }
+    return c;
+  }
 }
 
 int getopt (int argc, char *const *argv, const char *optstring)
 {
   return _getopt_internal (argc, argv, optstring,
-			   (const struct option *) 0,
-			   (int *) 0,
-			   0);
+         (const struct option *) 0,
+         (int *) 0,
+         0);
 }
 
 #pragma optimize ("", on)

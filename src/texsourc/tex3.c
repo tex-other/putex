@@ -2227,9 +2227,11 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
       tfm_temp = getc(tfm_file); 
       np = np * 256 + tfm_temp; 
     } 
-    if(lf != 6 + lh +(ec - bc + 1)+ nw + nh + nd + ni + nl + nk + ne + 
-    np)
-    goto lab11; 
+    if (lf != 6 + lh +(ec - bc + 1)+ nw + nh + nd + ni + nl + nk + ne + np)
+		goto lab11; 
+/* For robustness, enforce a restriction checked by TFtoPL (suggested by DRF) */
+	if ((nw == 0) || (nh == 0) || (nd == 0) || (ni == 0))
+		goto lab11;
   } 
   lf = lf - 6 - lh; 
   if(np < 7)

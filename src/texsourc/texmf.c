@@ -111,10 +111,10 @@ char **gargv;		/* char *gargv[] -- bkph ? */
    happen in `t_open_in', then call the main body.  */
 
 #ifdef MSDOS
-int init(int, char **);			/* in local.c */
+  int init(int, char **);			/* in local.c */
 #endif /* INIVIR */ 
 
-char *setprogramname(char *comm)
+char *set_program_name(char *comm)
 {			/* bkph */
 	char *s;
 	if ((s = strrchr (comm, '\\')) != NULL) s++;
@@ -138,7 +138,7 @@ int main (int ac, char *av[])
 	gargc = ac;					/* make available globally */
 	gargv = av;					/* make available globally */
 #ifdef MSDOS
-	program_name = setprogramname(av[0]);		/* rewritten 1994/Mar/1 - bkph */
+	program_name = set_program_name(av[0]);		/* rewritten 1994/Mar/1 - bkph */
 #else
 	program_name = strrchr (av[0], PATH_SEP); 
 	if (program_name == NULL) program_name = av[0];
@@ -159,7 +159,7 @@ int main (int ac, char *av[])
 #ifndef INI
 	if (ready_already != 314159) {
 #ifdef MSDOS
-		program_name = setprogramname(av[0]);	/* rewritten 1994/Mar/1 - bkph */
+		program_name = set_program_name(av[0]);	/* rewritten 1994/Mar/1 - bkph */
 #else
 		program_name = strrchr (av[0], PATH_SEP);
 		if (program_name == NULL)	program_name = av[0];
@@ -185,8 +185,7 @@ int main (int ac, char *av[])
 			sprintf(log_line, "EXITING at %s %d %d %d\n", "MAIN", flag, ret, jump_used);
 			show_line(log_line, 0);
 		}
-	}
-	else {	// get here from non-local jump via jumpbuffer - if any
+	} else {	// get here from non-local jump via jumpbuffer - if any
 		if (trace_flag) {
 			sprintf(log_line, "EXITING at %s %d %d %d\n", "JUMPOUT", flag, ret, jump_used);
 			show_line(log_line, 0);
@@ -309,9 +308,9 @@ void get_date_and_time (integer *minutes, integer *pday, integer *pmonth, intege
 	}
 	else {
 		*minutes = tmptr->tm_hour * 60 + tmptr->tm_min;
-		*pday = tmptr->tm_mday;
-		*pmonth = tmptr->tm_mon + 1;
-		*pyear = tmptr->tm_year + 1900;
+		*pday    = tmptr->tm_mday;
+		*pmonth  = tmptr->tm_mon + 1;
+		*pyear   = tmptr->tm_year + 1900;
 		if (trace_flag) {
 			sprintf(log_line, "%d-%d-%d %d:%d\n",
 			tmptr->tm_year + 1900, tmptr->tm_mon + 1, tmptr->tm_mday,
