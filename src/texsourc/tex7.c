@@ -35,10 +35,10 @@ void build_page (void)
   scaled delta, h, w; 
 
 /* begin if (link(contrib_head)=null)or output_active then return; l.19351 */
-  if((mem[mem_top - 1].hh.v.RH == 0)|| output_active)
+  if((mem[contrib_head].hh.v.RH == 0)|| output_active)
     return; 
   do {
-      lab22: p = mem[mem_top - 1].hh.v.RH; 
+      lab22: p = mem[contrib_head].hh.v.RH; 
 /*    if(last_glue != 262143L) */
     if(last_glue != empty_flag)
       delete_glue_ref(last_glue);
@@ -75,7 +75,7 @@ void build_page (void)
           else
             mem[temp_ptr + 1].cint = 0;
           mem[q].hh.v.RH = p;
-          mem[mem_top - 1].hh.v.RH = q;
+          mem[contrib_head].hh.v.RH = q;
           goto lab22;
       } 
       else {
@@ -326,17 +326,17 @@ void build_page (void)
     } 
     mem[page_tail].hh.v.RH = p; 
     page_tail = p; 
-    mem[mem_top - 1].hh.v.RH = mem[p].hh.v.RH; 
+    mem[contrib_head].hh.v.RH = mem[p].hh.v.RH; 
     mem[p].hh.v.RH = 0; 
     goto lab30; 
-    lab31: mem[mem_top - 1].hh.v.RH = mem[p].hh.v.RH; 
+    lab31: mem[contrib_head].hh.v.RH = mem[p].hh.v.RH; 
     mem[p].hh.v.RH = 0; 
     flush_node_list(p); 
     lab30:; 
-  } while(!(mem[mem_top - 1].hh.v.RH == 0)); 
+  } while(!(mem[contrib_head].hh.v.RH == 0)); 
   if(nest_ptr == 0)
-  tail = mem_top - 1; 
-  else nest[0].tail_field = mem_top - 1; 
+  tail = contrib_head; 
+  else nest[0].tail_field = contrib_head; 
 } 
 /* sec 1043 */
 void app_space (void) 
@@ -416,7 +416,7 @@ bool its_all_over (void)
   register bool Result; 
   if(privileged ())
   {
-    if((mem_top - 2 == page_tail) && (head == cur_list.tail_field) && (dead_cycles == 0)) 
+    if((page_head == page_tail) && (head == cur_list.tail_field) && (dead_cycles == 0)) 
     {
       Result = true; 
       return(Result); 
@@ -504,7 +504,7 @@ void off_save (void)
       
     back_input (); 
     p = get_avail (); 
-    mem[mem_top - 3].hh.v.RH = p; 
+    mem[temp_head].hh.v.RH = p; 
 	print_err("Missing ");
     switch(cur_group)
     {case 14 : 
@@ -540,7 +540,7 @@ void off_save (void)
       break; 
     } 
     print_string(" inserted");
-    begin_token_list(mem[mem_top - 3].hh.v.RH, 4);
+    begin_token_list(mem[temp_head].hh.v.RH, 4);
 	help5("I've inserted something that you may have forgotten.",
 		"(See the <inserted text> above.)",
 		"With luck, this will get me unwedged. But if you",
@@ -601,9 +601,9 @@ void box_end_(integer boxcontext)
   append_to_vlist(cur_box); 
   if(adjust_tail != 0)
   {
-    if(mem_top - 5 != adjust_tail)
+    if(adjust_head != adjust_tail)
     {
-      mem[tail].hh.v.RH = mem[mem_top - 5].hh 
+      mem[tail].hh.v.RH = mem[adjust_head].hh 
      .v.RH; 
       tail = adjust_tail; 
     } 
@@ -1391,9 +1391,9 @@ void init_math (void)
     break; 
   case 6 : 
     {
-      mem[mem_top - 12]= mem[p + 1]; 
-      mem[mem_top - 12].hh.v.RH = mem[p].hh.v.RH; 
-      p = mem_top - 12; 
+      mem[lig_trick]= mem[p + 1]; 
+      mem[lig_trick].hh.v.RH = mem[p].hh.v.RH; 
+      p = lig_trick; 
       goto lab21; 
     } 
     break; 

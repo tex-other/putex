@@ -35,8 +35,8 @@ void math_fraction (void)
   {
     if(c >= 3)
     {
-      scan_delimiter(mem_top - 12, false); 
-      scan_delimiter(mem_top - 12, false); 
+      scan_delimiter(lig_trick, false); 
+      scan_delimiter(lig_trick, false); 
     } 
     if(c % 3 == 0)
     scan_dimen(false, false, false);
@@ -90,7 +90,7 @@ void math_left_right (void)
   {
     if(cur_group == 15)
     {
-      scan_delimiter(mem_top - 12, false);
+      scan_delimiter(lig_trick, false);
 	  print_err("Extra "); 
       print_esc("right");
 	  help1("I'm ignoring a \\right that had no matching \\left."); 
@@ -187,7 +187,7 @@ void after_math (void)
     cur_style = 2; 
     mlist_penalties = false; 
     mlist_to_hlist (); 
-    a = hpack(mem[mem_top - 3].hh.v.RH, 0, 1); 
+    a = hpack(mem[temp_head].hh.v.RH, 0, 1); 
     unsave (); 
     decr(save_ptr); 
     if(save_stack[save_ptr + 0].cint == 1)
@@ -232,7 +232,7 @@ void after_math (void)
     cur_style = 2; 
     mlist_penalties =(mode > 0); 
     mlist_to_hlist (); 
-    mem[tail].hh.v.RH = mem[mem_top - 3].hh.v.RH; 
+    mem[tail].hh.v.RH = mem[temp_head].hh.v.RH; 
     while(mem[tail].hh.v.RH != 0)tail = 
     mem[tail].hh.v.RH; 
     {
@@ -259,8 +259,8 @@ void after_math (void)
     cur_style = 0; 
     mlist_penalties = false; 
     mlist_to_hlist (); 
-    p = mem[mem_top - 3].hh.v.RH; 
-    adjust_tail = mem_top - 5; 
+    p = mem[temp_head].hh.v.RH; 
+    adjust_tail = adjust_head; 
     b = hpack(p, 0, 1); 
     p = mem[b + 5].hh.v.RH; 
     t = adjust_tail; 
@@ -365,9 +365,9 @@ void after_math (void)
       append_to_vlist(a); 
       g2 = 0; 
     } 
-    if(t != mem_top - 5)
+    if(t != adjust_head)
     {
-      mem[tail].hh.v.RH = mem[mem_top - 5].hh.v.RH; 
+      mem[tail].hh.v.RH = mem[adjust_head].hh.v.RH; 
       tail = t; 
     } 
     {
@@ -930,7 +930,7 @@ void issue_message (void)
   char c; 
   str_number s; 
   c = cur_chr; 
-  mem[mem_top - 12].hh.v.RH = scan_toks(false, true); 
+  mem[lig_trick].hh.v.RH = scan_toks(false, true); 
   old_setting = selector; 
   selector = 21; 
   token_show(def_ref); 
@@ -1065,8 +1065,8 @@ void show_whatever (void)
       if(interaction == 3)
    ; 
       print_nl(" > "); /*  */
-      token_show(mem_top - 3); 
-      flush_list(mem[mem_top - 3].hh.v.RH); 
+      token_show(temp_head); 
+      flush_list(mem[temp_head].hh.v.RH); 
       goto lab50; 
     } 
     break; 
@@ -1255,7 +1255,7 @@ void handle_right_brace (void)
     break; 
   case 3 : 
     {
-      adjust_tail = mem_top - 5; 
+      adjust_tail = adjust_head; 
       package(0); 
     } 
     break; 
@@ -1348,14 +1348,14 @@ void handle_right_brace (void)
   mem[page_tail].hh.v.RH = mem[head].hh.v.RH; 
   page_tail = tail; 
       } 
-      if(mem[mem_top - 2].hh.v.RH != 0)
+      if(mem[page_head].hh.v.RH != 0)
       {
-  if(mem[mem_top - 1].hh.v.RH == 0)
+  if(mem[contrib_head].hh.v.RH == 0)
   nest[0].tail_field = page_tail; 
-  mem[page_tail].hh.v.RH = mem[mem_top - 1].hh.v.RH; 
-  mem[mem_top - 1].hh.v.RH = mem[mem_top - 2].hh.v.RH; 
-  mem[mem_top - 2].hh.v.RH = 0; 
-  page_tail = mem_top - 2; 
+  mem[page_tail].hh.v.RH = mem[contrib_head].hh.v.RH; 
+  mem[contrib_head].hh.v.RH = mem[page_head].hh.v.RH; 
+  mem[page_head].hh.v.RH = 0; 
+  page_tail = page_head; 
       } 
       pop_nest (); 
       build_page (); 

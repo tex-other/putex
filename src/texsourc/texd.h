@@ -508,7 +508,7 @@ EXTERN char
   zzzac[mem_max - mem_bot + 1]; 
 #endif
 
-EXTERN halfword wasmemend, waslomax, washimin; 
+EXTERN halfword was_mem_end, was_lo_max, was_hi_min; 
 EXTERN bool panicking; 
 #endif /* DEBUG */
 
@@ -1394,6 +1394,156 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define float_cost(a)    mem[a + 1].cint
 #define ins_ptr(a)       info(a + 4)
 #define split_top_ptr(a) link(a + 4)
+/* sec 0162 */
+#define contrib_head  mem_top - 1
+#define page_head     mem_top - 2
+#define temp_head     mem_top - 3
+#define hold_head     mem_top - 4
+#define adjust_head   mem_top - 5
+#define active        mem_top - 7
+#define align_head    mem_top - 8
+#define end_span      mem_top - 9
+#define omit_template mem_top - 10
+#define null_list     mem_top - 11
+#define lig_trick     mem_top - 12
+/* sec 0207 */
+#define escape 0
+#define relax 0
+#define left_brace 1
+#define right_brace 2
+#define math_shift 3
+#define tab_mark 4
+#define car_ret 5
+#define out_param 5
+#define mac_param 6
+#define sup_mark 7
+#define sub_mark 8
+#define ignore 9
+#define endv 9
+#define spacer 10
+#define letter 11
+#define other_char 12
+#define active_char 13
+#define par_end 13
+#define match 13
+#define comment 14
+#define end_match 14
+#define stop 14
+#define invalid_char 15
+#define delim_num 15
+#define max_char_code 15
+/* sec 0208 */
+#define char_num 16
+#define math_char_num 17
+#define mark 18
+#define xray 19
+#define make_box 20
+#define hmove 21
+#define vmove 22
+#define un_hbox 23
+#define un_vbox 24
+#define remove_item 25
+#define hskip 26
+#define vskip 27
+#define mskip 28
+#define kern 29
+#define mkern 30
+#define leader_ship 31
+#define halign 32
+#define valign 33
+#define no_align 34
+#define vrule 35
+#define hrule 36
+#define insert 37
+#define vadjust 38
+#define ignore_spaces 39
+#define after_assignment 40
+#define after_group 41
+#define break_penalty 42
+#define start_par 43
+#define ital_corr 44
+#define accent 45
+#define math_accent 46
+#define discretionary 47
+#define eq_no 48
+#define left_right 49
+#define math_comp 50
+#define limit_switch 51
+#define above 52
+#define math_style 53
+#define math_choice 54
+#define non_script 55
+#define vcenter 56
+#define case_shift 57
+#define message 58
+#define extension 59
+#define in_stream 60
+#define begin_group 61
+#define end_group 62
+#define omit 63
+#define ex_space 64
+#define no_boundary 65
+#define radical 66
+#define end_cs_name 67
+#define min_internal 68
+#define char_given 68
+#define math_given 69
+#define last_item 70
+#define max_non_prefixed_command 70
+/* sec 0209 */
+#define toks_register 71
+#define assign_toks 72
+#define assign_int 73
+#define assign_dimen 74
+#define assign_glue 75
+#define assign_mu_glue 76
+#define assign_font_dimen 77
+#define assign_font_int 78
+#define set_aux 79
+#define set_prev_graf 80
+#define set_page_dimen 81
+#define set_page_int 82
+#define set_box_dimen 83
+#define set_shape 84
+#define def_code 85
+#define def_family 86
+#define set_font 87
+#define def_font 88
+#define tex_register 89
+#define max_internal 89
+#define advance 90
+#define multiply 91
+#define divide 92
+#define prefix 93
+#define let 94
+#define shorthand_def 95
+#define read_to_cs 96
+#define def 97
+#define set_box 98
+#define hyph_data 99
+#define set_interaction 100
+#define max_command 100
+/* sec 0210 */
+#define undefined_cs max_command + 1
+#define expand_after max_command + 2
+#define no_expand max_command + 3
+#define input max_command + 4
+#define if_test max_command + 5
+#define fi_or_else max_command + 6
+#define cs_name max_command + 7
+#define convert max_command + 8
+#define the max_command + 9
+#define top_bot_mark max_command + 10
+#define call max_command + 11
+#define long_call max_command + 12
+#define outer_call max_command + 13
+#define long_outer_call max_command + 14
+#define end_template max_command + 15
+#define dont_expand max_command + 16
+#define glue_ref max_command + 17
+#define shape_ref max_command + 18
+#define box_ref max_command + 19 
+#define data max_command + 20
 /* sec 0212 */
 #define ignore_depth -65536000L
 /* sec 0213 */

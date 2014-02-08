@@ -1017,9 +1017,9 @@ void hlist_out (void)
       break; 
     case 6 : 
       {
-  mem[mem_top - 12]= mem[p + 1]; 
-  mem[mem_top - 12].hh.v.RH = mem[p].hh.v.RH; 
-  p = mem_top - 12; 
+  mem[lig_trick]= mem[p + 1]; 
+  mem[lig_trick].hh.v.RH = mem[p].hh.v.RH; 
+  p = lig_trick; 
   goto lab21; 
       } 
       break; 
@@ -1630,9 +1630,9 @@ halfword hpack_(halfword p, scaled w, small_number m)
   break; 
       case 6 : 
   {
-    mem[mem_top - 12]= mem[p + 1]; 
-    mem[mem_top - 12].hh.v.RH = mem[p].hh.v.RH; 
-    p = mem_top - 12; 
+    mem[lig_trick]= mem[p + 1]; 
+    mem[lig_trick].hh.v.RH = mem[p].hh.v.RH; 
+    p = lig_trick; 
     goto lab21; 
   } 
   break; 

@@ -247,7 +247,7 @@ void stampcopy (char *s)
 #define MAXCHRS 256
 #define NOTDEF 127
 
-void read_xchr_sub (FILE *input)
+void read_xchr_sub (FILE *pinput)
 {
   char buffer[PATH_MAX];
   int k, from, to, count = 0;
@@ -256,18 +256,18 @@ void read_xchr_sub (FILE *input)
 #ifdef USEMEMSET
   memset (xchr, NOTDEF, MAXCHRS);           /* mark unused */
 #else
-  for (k = 0; k < MAXCHRS; k++) xchr[k]= -1;  */  /* mark unused */
+  for (k = 0; k < MAXCHRS; k++) xchr[k]= -1; /* mark unused */
 #endif
 #ifdef USEMEMSET
   memset (xord, NOTDEF, MAXCHRS);           /* mark unused */
 #else
-  for (k = 0; k < MAXCHRS; k++) xord[k]= -1;  */  /* mark unused */
+  for (k = 0; k < MAXCHRS; k++) xord[k]= -1;  /* mark unused */
 #endif
 
 #ifdef ALLOCATEBUFFER
-  while (fgets(buffer, current_buf_size, input) != NULL) 
+  while (fgets(buffer, current_buf_size, pinput) != NULL) 
 #else
-  while (fgets(buffer, sizeof(buffer), input) != NULL)
+  while (fgets(buffer, sizeof(buffer), pinput) != NULL)
 #endif
   {
     if (*buffer == '%' || *buffer == ';' || *buffer == '\n') continue;
@@ -316,7 +316,7 @@ void read_xchr_sub (FILE *input)
 
 char *replacement[MAXCHRS];     /* pointers to replacement strings */
 
-void read_repl_sub (FILE *input)
+void read_repl_sub (FILE *pinput)
 {
   int k, n, m, chrs;
   char buffer[PATH_MAX];
@@ -330,7 +330,7 @@ void read_repl_sub (FILE *input)
   for (k = 0; k < MAXCHRS; k++) replacement[k] = NULL; 
 #endif
 
-  while (fgets(buffer, PATH_MAX, input) != NULL) {
+  while (fgets(buffer, PATH_MAX, pinput) != NULL) {
     if (*buffer == '%' || *buffer == ';' || *buffer == '\n') continue;
     if ((m = sscanf (buffer, "%d%n %s", &chrs, &n, &charname)) == 0)
       continue; 
@@ -384,7 +384,7 @@ void read_repl_sub (FILE *input)
 
 int read_xchr_file (char *filename, int flag, char *argv[])
 {
-  FILE *input;
+  FILE *pinput;
   char infile[PATH_MAX];
   char *s;
 
@@ -400,9 +400,9 @@ int read_xchr_file (char *filename, int flag, char *argv[])
     sprintf(log_line, "Trying %s\n", infile);
     show_line(log_line, 0);
   }
-  if (share_flag == 0) input = fopen (infile, "r");
-  else input = _fsopen (infile, "r", share_flag);    /* 94/July/12 */
-  if (input == NULL) {
+  if (share_flag == 0) pinput = fopen (infile, "r");
+  else pinput = _fsopen (infile, "r", share_flag);    /* 94/July/12 */
+  if (pinput == NULL) {
     if (strrchr(infile, '.') == NULL) {
       if (flag == 0) strcat(infile, ".map");
       else strcat(infile, ".key");
@@ -410,11 +410,11 @@ int read_xchr_file (char *filename, int flag, char *argv[])
         sprintf(log_line, "Trying %s\n", infile);
         show_line(log_line, 0);
       }
-      if (share_flag == 0) input = fopen (infile, "r");
-      else input = _fsopen (infile, "r", share_flag);  /* 94/July/12 */
+      if (share_flag == 0) pinput = fopen (infile, "r");
+      else pinput = _fsopen (infile, "r", share_flag);  /* 94/July/12 */
     }
   }
-  if (input == NULL) {
+  if (pinput == NULL) {
 /*    strcpy (infile, gargv[0]); */   /* try TeX program path */
     strcpy (infile, argv[0]);     /* try TeX program path */
     if ((s = strrchr (infile, '\\')) != NULL) *(s+1) = '\0';
@@ -425,9 +425,9 @@ int read_xchr_file (char *filename, int flag, char *argv[])
       sprintf(log_line, "Trying %s\n", infile);
       show_line(log_line, 0);
     }
-    if (share_flag == 0) input = fopen (infile, "r");
-    else input = _fsopen (infile, "r", share_flag);    /* 94/July/12 */
-    if (input == NULL) {
+    if (share_flag == 0) pinput = fopen (infile, "r");
+    else pinput = _fsopen (infile, "r", share_flag);    /* 94/July/12 */
+    if (pinput == NULL) {
       if (strchr(infile, '.') == NULL) {
         if (flag == 0) strcat(infile, ".map");
         else strcat(infile, ".key");
@@ -435,12 +435,12 @@ int read_xchr_file (char *filename, int flag, char *argv[])
           sprintf(log_line, "Trying %s\n", infile);
           show_line(log_line, 0);
         }
-        if (share_flag == 0) input = fopen (infile, "r");
-        else input = _fsopen (infile, "r", share_flag); /* 94/July/12 */
+        if (share_flag == 0) pinput = fopen (infile, "r");
+        else pinput = _fsopen (infile, "r", share_flag); /* 94/July/12 */
       }
     }
   }
-  if (input == NULL) {          /* 97/July/31 */
+  if (pinput == NULL) {          /* 97/July/31 */
 /*    strcpy (infile, gargv[0]); */   /* try TeX program path\keyboard */
     strcpy (infile, argv[0]);     /* try TeX program path */
     if ((s = strrchr (infile, '\\')) != NULL) *(s+1) = '\0';
@@ -452,9 +452,9 @@ int read_xchr_file (char *filename, int flag, char *argv[])
       sprintf(log_line, "Trying %s\n", infile);
       show_line(log_line, 0);
     }
-    if (share_flag == 0) input = fopen (infile, "r");
-    else input = _fsopen (infile, "r", share_flag);
-    if (input == NULL) {
+    if (share_flag == 0) pinput = fopen (infile, "r");
+    else pinput = _fsopen (infile, "r", share_flag);
+    if (pinput == NULL) {
       if (strchr(infile, '.') == NULL) {
         if (flag == 0) strcat(infile, ".map");
         else strcat(infile, ".key");
@@ -462,13 +462,13 @@ int read_xchr_file (char *filename, int flag, char *argv[])
           sprintf(log_line, "Trying %s\n", infile);
           show_line(log_line, 0);
         }
-        if (share_flag == 0) input = fopen (infile, "r");
-        else input = _fsopen (infile, "r", share_flag);
+        if (share_flag == 0) pinput = fopen (infile, "r");
+        else pinput = _fsopen (infile, "r", share_flag);
       }
     }
   }
 /*  Note: can't look in TeX source file dir, since that is not known yet */
-  if (input == NULL) {
+  if (pinput == NULL) {
     sprintf(log_line, "ERROR: Sorry, cannot find %s file %s",
         flag ? " xchr[]" : "key mapping", filename);
     show_line(log_line, 1);
@@ -477,11 +477,11 @@ int read_xchr_file (char *filename, int flag, char *argv[])
   }
 
   if (flag == 0)
-    read_xchr_sub (input);
+    read_xchr_sub (pinput);
   else
-    read_repl_sub (input);
+    read_repl_sub (pinput);
 
-  (void) fclose (input);
+  (void) fclose (pinput);
   return 1;
 }
 
@@ -2193,7 +2193,7 @@ bool setupdviwindo (void)
 { /* set up full file name for dviwindo.ini */
   char dviwindoini[PATH_MAX];
   char line[PATH_MAX];
-  FILE *input;
+  FILE *pinput;
   char *windir;
   int em = strlen(envsection);
   int wm = strlen(wndsection);
@@ -2224,10 +2224,10 @@ bool setupdviwindo (void)
   if (*dviwindoini != '\0') {
     dviwindo = xstrdup(dviwindoini);    /* avoid PATH_MAX string */
 /*    check whether dviwindo.ini actually has [Environment] section */
-    if (share_flag == 0) input = fopen(dviwindo, "r");
-    else input = _fsopen(dviwindo, "r", share_flag);
-    if (input != NULL) {
-      while (fgets (line, sizeof(line), input) != NULL) {
+    if (share_flag == 0) pinput = fopen(dviwindo, "r");
+    else pinput = _fsopen(dviwindo, "r", share_flag);
+    if (pinput != NULL) {
+      while (fgets (line, sizeof(line), pinput) != NULL) {
         if (*line == ';') continue;
         if (*line == '\n') continue;
         if (*line == '[') {
@@ -2257,12 +2257,12 @@ bool setupdviwindo (void)
         }
       }
       if (envflag) {
-        (void) fclose(input); 
+        (void) fclose(pinput); 
         return true;
       }
       if (trace_flag)
         show_line("Failed to find [Environment]", 1); /* DEBUGGING */
-      (void) fclose(input);
+      (void) fclose(pinput);
     }
     else if (trace_flag) perrormod(dviwindo);  /* DEBUGGING */
     strcpy(dviwindo, ""); /* failed, for one reason or another */
@@ -2280,7 +2280,7 @@ char *lastname=NULL, *lastvalue=NULL;
 char *grabenv (char *varname)
 {
   char line[PATH_MAX];
-  FILE *input;
+  FILE *pinput;
   char *s;
   int m, n;
 /*  int m = strlen(envsection); */
@@ -2308,19 +2308,19 @@ char *grabenv (char *varname)
     else return xstrdup(s);       /* make safe 98/Jan/31 */
   }
 
-  if (share_flag == 0) input = fopen(dviwindo, "r");
-  else input = _fsopen(dviwindo, "r", share_flag);
+  if (share_flag == 0) pinput = fopen(dviwindo, "r");
+  else pinput = _fsopen(dviwindo, "r", share_flag);
 
-  if (input != NULL) {
+  if (pinput != NULL) {
     m = strlen(envsection);
 /*    search for [Environment] section */ /* should be case insensitive */
-    while (fgets (line, sizeof(line), input) != NULL) {
+    while (fgets (line, sizeof(line), pinput) != NULL) {
       if (*line == ';') continue;
       if (*line == '\n') continue;
       if (_strnicmp(line, envsection, m) == 0) {  /* 98/Jan/31 */
 /*        search for varname=... */ /* should be case sensitive ? */
         n = strlen(varname);
-        while (fgets (line, sizeof(line), input) != NULL) {
+        while (fgets (line, sizeof(line), pinput) != NULL) {
           if (*line == ';') continue;
           if (*line == '[') break;
 /*          if (*line == '\n') break; */  /* ??? */
@@ -2328,7 +2328,7 @@ char *grabenv (char *varname)
 /*          if (strncmp(line, varname, n) == 0 && */
           if (_strnicmp(line, varname, n) == 0 &&
             *(line+n) == '=') { /* found it ? */
-              (void) fclose (input);
+              (void) fclose (pinput);
 /*              flush trailing white space */
               s = line + strlen(line) - 1;
               while (*s <= ' ' && s > line) *s-- = '\0';
@@ -2347,7 +2347,7 @@ char *grabenv (char *varname)
 /*        break; */ /* ? not found in designated section */    
       }       /* end of search for [Environment] section */
     }
-    (void) fclose (input);
+    (void) fclose (pinput);
   }           /* end of if fopen */
   s = getenv(varname);    /* failed, so try and get from environment */
 /*  if (s != NULL) return s;  */
@@ -2625,7 +2625,7 @@ char *yytexcmd="YANDYTEX.CMD";    /* name of command line file */
 /* can this be reentered ? */
 
 /* supply extension if none */
-void extension (char *fname, char *ext)
+void yy_extension (char *fname, char *ext)
 {
   char *s, *t;
     if ((s = strrchr(fname, '.')) == NULL ||
@@ -2667,7 +2667,7 @@ int read_commands (char *filename)
 
 /*  Try first in current directory (or use full name as specified) */
   strcpy(commandfile, filename);
-  extension(commandfile, "cmd");
+  yy_extension(commandfile, "cmd");
   if (share_flag == 0)
 	  command = fopen(commandfile, "r");
   else
@@ -2678,7 +2678,7 @@ int read_commands (char *filename)
 /*    don't need fancy footwork, since programpath non-empty */
     strcat(commandfile, "\\");
     strcat(commandfile, filename);
-    extension(commandfile, "cmd");
+    yy_extension(commandfile, "cmd");
     if (share_flag == 0)
 		command = fopen(commandfile, "r");
     else

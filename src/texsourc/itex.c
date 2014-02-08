@@ -283,32 +283,28 @@ if (!non_ascii) {
 	;
 /* darn, need to know mem_top, mem_max etc for the following ... */
 #ifdef DEBUG
-  wasmemend = mem_min; 
-/*  waslomax = mem_min;  */
-  waslomax = mem_bot; 
-/*  washimin = mem_max; */
-  washimin = mem_top; 
+  was_mem_end = mem_min; 
+/*  was_lo_max = mem_min;  */
+  was_lo_max = mem_bot; 
+/*  was_hi_min = mem_max; */
+  was_hi_min = mem_top; 
   panicking = false; 
 #endif /* DEBUG */
   nest_ptr = 0; 
   max_nest_stack = 0; 
   mode = 1; 
-  head = mem_top - 1; 
-  tail = mem_top - 1; 
+  head = contrib_head; 
+  tail = contrib_head; 
   cur_list.aux_field.cint = ignore_depth; 
-  mode_line = 0; 
-/* *********************************************************************** */
-/*  cur_list .lhmfield = 0; */ /* removed in 3.14159 */
-/*  cur_list .rhmfield = 0; */ /* removed in 3.14159 */
-/* *********************************************************************** */
+  mode_line = 0;
   prev_graf = 0; 
   shown_mode = 0; 
   page_contents = 0; 
-  page_tail = mem_top - 2; 
+  page_tail = page_head; 
 #ifdef ALLOCATEMAIN
   if (is_initex)			/* in iniTeX we did already allocate mem [] */
 #endif
-	  mem[mem_top - 2].hh.v.RH = 0; 
+	  mem[page_head].hh.v.RH = 0; 
 /*  last_glue = 262143L;  */ /* NO! */
   last_glue = empty_flag; 
   last_penalty = 0; 
@@ -459,28 +455,28 @@ if (!non_ascii) {
 
 #ifdef ALLOCATEMAIN
 void initialize_aux (void)
-{/* ??? */
+{
 #ifdef DEBUG
-  wasmemend = mem_min; 
-/*  waslomax = mem_min; */
-  waslomax = mem_bot; 
-/*  washimin = mem_max;  */
-  washimin = mem_top; 
+  was_mem_end = mem_min; 
+/*  was_lo_max = mem_min; */
+  was_lo_max = mem_bot; 
+/*  was_hi_min = mem_max;  */
+  was_hi_min = mem_top; 
   panicking = false; 
 #endif /* DEBUG */
 /*  nest_ptr = 0; */
 /*  max_nest_stack = 0; */
   mode = 1; 
-  head = mem_top - 1; 
-  tail = mem_top - 1; 
+  head = contrib_head; 
+  tail = contrib_head; 
   cur_list.aux_field.cint = ignore_depth; 
   mode_line = 0; 
   prev_graf = 0; 
 /*  shown_mode = 0;  */
 /*  page_contents = 0;  */
-  page_tail = mem_top - 2; 
+  page_tail = page_head; 
   //mem[mem_top - 2].hh.v.RH = 0;
-  link(mem_top-2) = 0;
+  link(page_head) = 0;
 }
 #endif	// end of ifdef ALLOCATEMAIN
 
@@ -497,7 +493,7 @@ void line_break_ (integer finalwidowpenalty)
 
 /*  savedbadness = 0; */				/* 96/Feb/9 */
   pack_begin_line = mode_line; 
-  mem[mem_top - 3].hh.v.RH = link(head); 
+  mem[temp_head].hh.v.RH = link(head); 
   if((tail >= hi_mem_min)) 
   {
     link(tail) = new_penalty(10000); 
@@ -643,11 +639,11 @@ void line_break_ (integer finalwidowpenalty)
     q = get_node(3); 
     mem[q].hh.b0 = 0; 
     mem[q].hh.b1 = 2; 
-    mem[q].hh.v.RH = mem_top - 7; 
+    mem[q].hh.v.RH = active; 
     mem[q + 1].hh.v.RH = 0; 
     mem[q + 1].hh.v.LH = prev_graf + 1; 
     mem[q + 2].cint = 0; 
-    mem[mem_top - 7].hh.v.RH = q; 
+    mem[active].hh.v.RH = q; 
     active_width[1] = background[1]; 
     active_width[2] = background[2]; 
     active_width[3] = background[3]; 
@@ -656,14 +652,14 @@ void line_break_ (integer finalwidowpenalty)
     active_width[6] = background[6]; 
 /*	passive:=null; printed_node:=temp_head; pass_number:=0; */
     passive = 0; 
-    printed_node = mem_top - 3; 
+    printed_node = temp_head; 
     pass_number = 0; 
     font_in_short_display = 0; 
-    cur_p = mem[mem_top - 3].hh.v.RH; 
+    cur_p = mem[temp_head].hh.v.RH; 
     autobreaking = true; 
     prevp = cur_p; 
 /*  while (cur_p<>null)and(link(active)<>last_active) do */
-    while((cur_p != 0)&&(mem[mem_top - 7].hh.v.RH != mem_top - 7)) 
+    while((cur_p != 0)&&(mem[active].hh.v.RH != active)) 
     {
       if((cur_p >= hi_mem_min)) 
       {
@@ -999,9 +995,9 @@ void line_break_ (integer finalwidowpenalty)
     if(cur_p == 0)
     {
       try_break(-10000, 1); 
-      if(mem[mem_top - 7].hh.v.RH != mem_top - 7)
+      if(mem[active].hh.v.RH != active)
       {
-	r = mem[mem_top - 7].hh.v.RH; 
+	r = mem[active].hh.v.RH; 
 	fewest_demerits = 1073741823L; /* 2^30 - 1 */
 	do {
 	    if(mem[r].hh.b0 != 2)
@@ -1011,7 +1007,7 @@ void line_break_ (integer finalwidowpenalty)
 	    best_bet = r; 
 	  } 
 	  r = mem[r].hh.v.RH; 
-	} while(!(r == mem_top - 7)); 
+	} while(!(r == active)); 
 	best_line = mem[best_bet + 1].hh.v.LH; 
 /*  if looseness=0 then goto done; */
 	if(eqtb[(hash_size + 3182)].cint == 0){
@@ -1022,7 +1018,7 @@ void line_break_ (integer finalwidowpenalty)
 	}
 	{
 /* r:=link(active); actual_looseness:=0; */
-	  r = mem[mem_top - 7].hh.v.RH; 
+	  r = mem[active].hh.v.RH; 
 	  actual_looseness = 0; 
 	  do {
 	      if(mem[r].hh.b0 != 2)
@@ -1049,7 +1045,7 @@ void line_break_ (integer finalwidowpenalty)
 	      } 
 	    } 
 	    r = mem[r].hh.v.RH; 
-	  } while(!(r == mem_top - 7)); 
+	  } while(!(r == active)); 
 	  best_line = mem[best_bet + 1].hh.v.LH; 
 	} 
 /*  if (actual_looseness=looseness)or final_pass then goto done; */
@@ -1062,8 +1058,8 @@ void line_break_ (integer finalwidowpenalty)
 	}
       } 
     } 
-    q = mem[mem_top - 7].hh.v.RH; 
-    while(q != mem_top - 7){
+    q = mem[active].hh.v.RH; 
+    while(q != active){
       cur_p = mem[q].hh.v.RH; 
       if(mem[q].hh.b0 == 2)
       free_node(q, 7); 
@@ -1124,8 +1120,8 @@ void line_break_ (integer finalwidowpenalty)
   } 
 #endif /* STAT */
   post_line_break(finalwidowpenalty); 
-  q = mem[mem_top - 7].hh.v.RH; 
-  while(q != mem_top - 7){
+  q = mem[active].hh.v.RH; 
+  while(q != active){
     cur_p = mem[q].hh.v.RH; 
     if(mem[q].hh.b0 == 2)
     free_node(q, 7); 
@@ -2746,23 +2742,23 @@ void do_initex (void)
   } 
 /* info(omit_template) <- end_template_token; p.790 */
 /* @d end_template_token==cs_token_flag+frozen_end_template */
-/*  mem[mem_top - 10].hh.v.LH = 14114;  */
-/*  mem[mem_top - 10].hh.v.LH = 10019 + 4095; */  /* + eqtbextra ? NO */
-/*  mem[mem_top - 10].hh.v.LH = (hash_size + 4614); */
-/*  mem[mem_top - 10].hh.v.LH = (hash_size + 4095 + 519); */
-  mem[mem_top - 10].hh.v.LH = (hash_size + hash_extra + 4095 + 519); 
+/*  mem[omit_template].hh.v.LH = 14114;  */
+/*  mem[omit_template].hh.v.LH = 10019 + 4095; */  /* + eqtbextra ? NO */
+/*  mem[omit_template].hh.v.LH = (hash_size + 4614); */
+/*  mem[omit_template].hh.v.LH = (hash_size + 4095 + 519); */
+  mem[omit_template].hh.v.LH = (hash_size + hash_extra + 4095 + 519); 
 /* link(end_span) <- max_quarterword + 1 p.797 */
-/*  mem[mem_top - 9].hh.v.RH = 256;  */			/* 94/Apr/4 ? */
-  mem[mem_top - 9].hh.v.RH = max_quarterword + 1;   /* 96/Oct/12 ??? */
+/*  mem[end_span].hh.v.RH = 256;  */			/* 94/Apr/4 ? */
+  mem[end_span].hh.v.RH = max_quarterword + 1;   /* 96/Oct/12 ??? */
 /* info(end_span) <- null p.797 */
-  mem[mem_top - 9].hh.v.LH = 0; 
+  mem[end_span].hh.v.LH = 0; 
 /* type(last_active) <- hyphenated; p.820 */
-  mem[mem_top - 7].hh.b0 = 1; 
+  mem[active].hh.b0 = 1; 
 /* line_number(last_active) <- max_halfword; p.820 */
 /*  mem[mem_top - 6].hh.v.LH = 262143L;  */
   mem[mem_top - 6].hh.v.LH = empty_flag;	/* max_halfword ? */
 /* subtype(last_active) <- 0; p.820 */
-  mem[mem_top - 7].hh.b1 = 0; 
+  mem[active].hh.b1 = 0; 
 /* subtype(page_ins_head) <- 255; p.981 */
   mem[mem_top].hh.b1 = 255;	/* subtype(page_ins_head) = qi(255)  p.981 */ 
 /* type(page_ins_head) <- split_up; p.981 */
@@ -2770,9 +2766,9 @@ void do_initex (void)
 /* link(page_ins_head) <- page_ins_head; p.981 */
   mem[mem_top].hh.v.RH = mem_top; 
 /* type(page_head) <- glue_node; p. 988 */
-  mem[mem_top - 2].hh.b0 = 10; 
+  mem[page_head].hh.b0 = 10; 
 /* subtype(page_head) <- normal; p. 988 */
-  mem[mem_top - 2].hh.b1 = 0; 
+  mem[page_head].hh.b1 = 0; 
   avail = 0;							/* avail <- null p.164 */
   mem_end = mem_top;						/* mem_end <- mem_top */
   hi_mem_min = mem_top - 13;				/* hi_mem_min <- hi_mem_stat_min */
@@ -3661,7 +3657,7 @@ void new_patterns (void)
     print_esc("patterns");
 	help1("All patterns must be given before typesetting begins.");
     error (); 
-    mem[mem_top - 12].hh.v.RH = scan_toks(false, false); 
+    mem[lig_trick].hh.v.RH = scan_toks(false, false); 
     flush_list(def_ref); 
   } 
 } 
@@ -4130,239 +4126,239 @@ void store_fmt_file (void)
 #ifdef INITEX
 void init_prim (void) 
 { 
-  no_new_control_sequence = false; 
-  primitive(373, 75, (hash_size + 782)); /* lineskip */
-  primitive(374, 75, (hash_size + 783)); /* baselineskip */
-  primitive(375, 75, (hash_size + 784)); /* parskip */
-  primitive(376, 75, (hash_size + 785)); /* abovedisplayskip */
-  primitive(377, 75, (hash_size + 786)); /* belowdisplayskip */
-  primitive(378, 75, (hash_size + 787)); /* abovedisplayshortskip */
-  primitive(379, 75, (hash_size + 788)); /* belowdisplayshortskip */
-  primitive(380, 75, (hash_size + 789)); /* leftskip */
-  primitive(381, 75, (hash_size + 790)); /* rightskip */
-  primitive(382, 75, (hash_size + 791)); /* topskip */
-  primitive(383, 75, (hash_size + 792)); /* splittopskip */
-  primitive(384, 75, (hash_size + 793)); /* tabskip */
-  primitive(385, 75, (hash_size + 794)); /* spaceskip */
-  primitive(386, 75, (hash_size + 795)); /* xspaceskip */
-  primitive(387, 75, (hash_size + 796)); /* parfillskip */
-  primitive(388, 76, (hash_size + 797)); /* thinmuskip */
-  primitive(389, 76, (hash_size + 798)); /* medmuskip */
-  primitive(390, 76, (hash_size + 799)); /* thickmuskip */
-  primitive(395, 72, (hash_size + 1313)); /* output */
-  primitive(396, 72, (hash_size + 1314)); /* everypar */
-  primitive(397, 72, (hash_size + 1315)); /* everymath */
-  primitive(398, 72, (hash_size + 1316)); /* everydisplay */
-  primitive(399, 72, (hash_size + 1317)); /* everyhbox */
-  primitive(400, 72, (hash_size + 1318)); /* everyvbox */
-  primitive(401, 72, (hash_size + 1319)); /* everyjob */
-  primitive(402, 72, (hash_size + 1320)); /* everycr */
-  primitive(403, 72, (hash_size + 1321)); /* errhelp */
-  primitive(417, 73, (hash_size + 3163)); /* pretolerance */
-  primitive(418, 73, (hash_size + 3164)); /* tolerance */
-  primitive(419, 73, (hash_size + 3165)); /* linepenalty */
-  primitive(420, 73, (hash_size + 3166)); /* hyphenpenalty */
-  primitive(421, 73, (hash_size + 3167)); /* exhyphenpenalty */
-  primitive(422, 73, (hash_size + 3168)); /* clubpenalty */
-  primitive(423, 73, (hash_size + 3169)); /* widowpenalty */
-  primitive(424, 73, (hash_size + 3170)); /* displaywidowpenalty */
-  primitive(425, 73, (hash_size + 3171)); /* brokenpenalty */
-  primitive(426, 73, (hash_size + 3172)); /* binoppenalty */
-  primitive(427, 73, (hash_size + 3173)); /* relpenalty */
-  primitive(428, 73, (hash_size + 3174)); /* predisplaypenalty */
-  primitive(429, 73, (hash_size + 3175)); /* postdisplaypenalty */
-  primitive(430, 73, (hash_size + 3176)); /* interlinepenalty */
-  primitive(431, 73, (hash_size + 3177)); /* doublehyphendemerits */
-  primitive(432, 73, (hash_size + 3178)); /* finalhyphendemerits */
-  primitive(433, 73, (hash_size + 3179)); /* adjdemerits */
-  primitive(434, 73, (hash_size + 3180)); /* mag */
-  primitive(435, 73, (hash_size + 3181)); /* delimiterfactor */
-  primitive(436, 73, (hash_size + 3182)); /* looseness */
-  primitive(437, 73, (hash_size + 3183)); /* time */
-  primitive(438, 73, (hash_size + 3184)); /* day */
-  primitive(439, 73, (hash_size + 3185)); /* month */
-  primitive(440, 73, (hash_size + 3186)); /* year */
-  primitive(441, 73, (hash_size + 3187)); /* showboxbreadth */
-  primitive(442, 73, (hash_size + 3188)); /* showboxdepth */
-  primitive(443, 73, (hash_size + 3189)); /* hbadness */
-  primitive(444, 73, (hash_size + 3190)); /* vbadness */
-  primitive(445, 73, (hash_size + 3191)); /* pausing */
-  primitive(446, 73, (hash_size + 3192)); /* tracingonline */
-  primitive(447, 73, (hash_size + 3193)); /* tracingmacros */
-  primitive(448, 73, (hash_size + 3194)); /* tracingstats */
-  primitive(449, 73, (hash_size + 3195)); /* tracingparagraphs */
-  primitive(450, 73, (hash_size + 3196)); /* tracingpages */
-  primitive(451, 73, (hash_size + 3197)); /* tracingoutput */
-  primitive(452, 73, (hash_size + 3198)); /* tracinglostchars */
-  primitive(453, 73, (hash_size + 3199)); /* tracingcommands */
-  primitive(454, 73, (hash_size + 3200)); /* tracingrestores */
-  primitive(455, 73, (hash_size + 3201)); /* uchyph */
-  primitive(456, 73, (hash_size + 3202)); /* outputpenalty */
-  primitive(457, 73, (hash_size + 3203)); /* maxdeadcycles */
-  primitive(458, 73, (hash_size + 3204)); /* hangafter */
-  primitive(459, 73, (hash_size + 3205)); /* floatingpenalty */
-  primitive(460, 73, (hash_size + 3206)); /* globaldefs */
-  primitive(461, 73, (hash_size + 3207)); /* fam */
-  primitive(462, 73, (hash_size + 3208)); /* escapechar */
-  primitive(463, 73, (hash_size + 3209)); /* defaulthyphenchar */
-  primitive(464, 73, (hash_size + 3210)); /* defaultskewchar */
-  primitive(465, 73, (hash_size + 3211)); /* endlinechar */
-  primitive(466, 73, (hash_size + 3212)); /* newlinechar */
-  primitive(467, 73, (hash_size + 3213)); /* language */
-  primitive(468, 73, (hash_size + 3214)); /* lefthyphenmin */
-  primitive(469, 73, (hash_size + 3215)); /* righthyphenmin */
-  primitive(470, 73, (hash_size + 3216)); /* holdinginserts */
-  primitive(471, 73, (hash_size + 3217)); /* errorcontextlines */
-  primitive(475, 74, (hash_size + 3730)); /* parindent */
-  primitive(476, 74, (hash_size + 3731)); /* mathsurround */
-  primitive(477, 74, (hash_size + 3732)); /* lineskiplimit */
-  primitive(478, 74, (hash_size + 3733)); /* hsize */
-  primitive(479, 74, (hash_size + 3734)); /* vsize */
-  primitive(480, 74, (hash_size + 3735)); /* maxdepth */
-  primitive(481, 74, (hash_size + 3736)); /* splitmaxdepth */
-  primitive(482, 74, (hash_size + 3737)); /* boxmaxdepth */
-  primitive(483, 74, (hash_size + 3738)); /* hfuzz */
-  primitive(484, 74, (hash_size + 3739)); /* vfuzz */
-  primitive(485, 74, (hash_size + 3740)); /* delimitershortfall */
-  primitive(486, 74, (hash_size + 3741)); /* nulldelimiterspace */
-  primitive(487, 74, (hash_size + 3742)); /* scriptspace */
-  primitive(488, 74, (hash_size + 3743)); /* predisplaysize */
-  primitive(489, 74, (hash_size + 3744)); /* displaywidth */
-  primitive(490, 74, (hash_size + 3745)); /* displayindent */
-  primitive(491, 74, (hash_size + 3746)); /* overfullrule */
-  primitive(492, 74, (hash_size + 3747)); /* hangindent */
-  primitive(493, 74, (hash_size + 3748)); /* hoffset */
-  primitive(494, 74, (hash_size + 3749)); /* voffset */
-  primitive(495, 74, (hash_size + 3750));	/* emergencystretch */
-  primitive(32, 64, 0);	/*   */
-  primitive(47, 44, 0);	/* / */
-  primitive(505, 45, 0);	/* accent */
-  primitive(506, 90, 0);	/* advance */
-  primitive(507, 40, 0);	/* afterassignment */
-  primitive(508, 41, 0);	/* aftergroup */
-  primitive(509, 61, 0);	/* begingroup */
-  primitive(510, 16, 0);	/* char */
-  primitive(501, 107, 0);		/* csname */
-  primitive(511, 15, 0);	/* delimiter */
-  primitive(512, 92, 0);	/* divide */
-  primitive(502, 67, 0);	/* endcsname */
-  primitive(513, 62, 0);	/* endgroup */
+  no_new_control_sequence = false;
+  primitive(373, assign_glue, (hash_size + 782)); /* lineskip */
+  primitive(374, assign_glue, (hash_size + 783)); /* baselineskip */
+  primitive(375, assign_glue, (hash_size + 784)); /* parskip */
+  primitive(376, assign_glue, (hash_size + 785)); /* abovedisplayskip */
+  primitive(377, assign_glue, (hash_size + 786)); /* belowdisplayskip */
+  primitive(378, assign_glue, (hash_size + 787)); /* abovedisplayshortskip */
+  primitive(379, assign_glue, (hash_size + 788)); /* belowdisplayshortskip */
+  primitive(380, assign_glue, (hash_size + 789)); /* leftskip */
+  primitive(381, assign_glue, (hash_size + 790)); /* rightskip */
+  primitive(382, assign_glue, (hash_size + 791)); /* topskip */
+  primitive(383, assign_glue, (hash_size + 792)); /* splittopskip */
+  primitive(384, assign_glue, (hash_size + 793)); /* tabskip */
+  primitive(385, assign_glue, (hash_size + 794)); /* spaceskip */
+  primitive(386, assign_glue, (hash_size + 795)); /* xspaceskip */
+  primitive(387, assign_glue, (hash_size + 796)); /* parfillskip */
+  primitive(388, assign_mu_glue, (hash_size + 797)); /* thinmuskip */
+  primitive(389, assign_mu_glue, (hash_size + 798)); /* medmuskip */
+  primitive(390, assign_mu_glue, (hash_size + 799)); /* thickmuskip */
+  primitive(395, assign_toks, (hash_size + 1313)); /* output */
+  primitive(396, assign_toks, (hash_size + 1314)); /* everypar */
+  primitive(397, assign_toks, (hash_size + 1315)); /* everymath */
+  primitive(398, assign_toks, (hash_size + 1316)); /* everydisplay */
+  primitive(399, assign_toks, (hash_size + 1317)); /* everyhbox */
+  primitive(400, assign_toks, (hash_size + 1318)); /* everyvbox */
+  primitive(401, assign_toks, (hash_size + 1319)); /* everyjob */
+  primitive(402, assign_toks, (hash_size + 1320)); /* everycr */
+  primitive(403, assign_toks, (hash_size + 1321)); /* errhelp */
+  primitive(417, assign_int, (hash_size + 3163)); /* pretolerance */
+  primitive(418, assign_int, (hash_size + 3164)); /* tolerance */
+  primitive(419, assign_int, (hash_size + 3165)); /* linepenalty */
+  primitive(420, assign_int, (hash_size + 3166)); /* hyphenpenalty */
+  primitive(421, assign_int, (hash_size + 3167)); /* exhyphenpenalty */
+  primitive(422, assign_int, (hash_size + 3168)); /* clubpenalty */
+  primitive(423, assign_int, (hash_size + 3169)); /* widowpenalty */
+  primitive(424, assign_int, (hash_size + 3170)); /* displaywidowpenalty */
+  primitive(425, assign_int, (hash_size + 3171)); /* brokenpenalty */
+  primitive(426, assign_int, (hash_size + 3172)); /* binoppenalty */
+  primitive(427, assign_int, (hash_size + 3173)); /* relpenalty */
+  primitive(428, assign_int, (hash_size + 3174)); /* predisplaypenalty */
+  primitive(429, assign_int, (hash_size + 3175)); /* postdisplaypenalty */
+  primitive(430, assign_int, (hash_size + 3176)); /* interlinepenalty */
+  primitive(431, assign_int, (hash_size + 3177)); /* doublehyphendemerits */
+  primitive(432, assign_int, (hash_size + 3178)); /* finalhyphendemerits */
+  primitive(433, assign_int, (hash_size + 3179)); /* adjdemerits */
+  primitive(434, assign_int, (hash_size + 3180)); /* mag */
+  primitive(435, assign_int, (hash_size + 3181)); /* delimiterfactor */
+  primitive(436, assign_int, (hash_size + 3182)); /* looseness */
+  primitive(437, assign_int, (hash_size + 3183)); /* time */
+  primitive(438, assign_int, (hash_size + 3184)); /* day */
+  primitive(439, assign_int, (hash_size + 3185)); /* month */
+  primitive(440, assign_int, (hash_size + 3186)); /* year */
+  primitive(441, assign_int, (hash_size + 3187)); /* showboxbreadth */
+  primitive(442, assign_int, (hash_size + 3188)); /* showboxdepth */
+  primitive(443, assign_int, (hash_size + 3189)); /* hbadness */
+  primitive(444, assign_int, (hash_size + 3190)); /* vbadness */
+  primitive(445, assign_int, (hash_size + 3191)); /* pausing */
+  primitive(446, assign_int, (hash_size + 3192)); /* tracingonline */
+  primitive(447, assign_int, (hash_size + 3193)); /* tracingmacros */
+  primitive(448, assign_int, (hash_size + 3194)); /* tracingstats */
+  primitive(449, assign_int, (hash_size + 3195)); /* tracingparagraphs */
+  primitive(450, assign_int, (hash_size + 3196)); /* tracingpages */
+  primitive(451, assign_int, (hash_size + 3197)); /* tracingoutput */
+  primitive(452, assign_int, (hash_size + 3198)); /* tracinglostchars */
+  primitive(453, assign_int, (hash_size + 3199)); /* tracingcommands */
+  primitive(454, assign_int, (hash_size + 3200)); /* tracingrestores */
+  primitive(455, assign_int, (hash_size + 3201)); /* uchyph */
+  primitive(456, assign_int, (hash_size + 3202)); /* outputpenalty */
+  primitive(457, assign_int, (hash_size + 3203)); /* maxdeadcycles */
+  primitive(458, assign_int, (hash_size + 3204)); /* hangafter */
+  primitive(459, assign_int, (hash_size + 3205)); /* floatingpenalty */
+  primitive(460, assign_int, (hash_size + 3206)); /* globaldefs */
+  primitive(461, assign_int, (hash_size + 3207)); /* fam */
+  primitive(462, assign_int, (hash_size + 3208)); /* escapechar */
+  primitive(463, assign_int, (hash_size + 3209)); /* defaulthyphenchar */
+  primitive(464, assign_int, (hash_size + 3210)); /* defaultskewchar */
+  primitive(465, assign_int, (hash_size + 3211)); /* endlinechar */
+  primitive(466, assign_int, (hash_size + 3212)); /* newlinechar */
+  primitive(467, assign_int, (hash_size + 3213)); /* language */
+  primitive(468, assign_int, (hash_size + 3214)); /* lefthyphenmin */
+  primitive(469, assign_int, (hash_size + 3215)); /* righthyphenmin */
+  primitive(470, assign_int, (hash_size + 3216)); /* holdinginserts */
+  primitive(471, assign_int, (hash_size + 3217)); /* errorcontextlines */
+  primitive(475, assign_dimen, (hash_size + 3730)); /* parindent */
+  primitive(476, assign_dimen, (hash_size + 3731)); /* mathsurround */
+  primitive(477, assign_dimen, (hash_size + 3732)); /* lineskiplimit */
+  primitive(478, assign_dimen, (hash_size + 3733)); /* hsize */
+  primitive(479, assign_dimen, (hash_size + 3734)); /* vsize */
+  primitive(480, assign_dimen, (hash_size + 3735)); /* maxdepth */
+  primitive(481, assign_dimen, (hash_size + 3736)); /* splitmaxdepth */
+  primitive(482, assign_dimen, (hash_size + 3737)); /* boxmaxdepth */
+  primitive(483, assign_dimen, (hash_size + 3738)); /* hfuzz */
+  primitive(484, assign_dimen, (hash_size + 3739)); /* vfuzz */
+  primitive(485, assign_dimen, (hash_size + 3740)); /* delimitershortfall */
+  primitive(486, assign_dimen, (hash_size + 3741)); /* nulldelimiterspace */
+  primitive(487, assign_dimen, (hash_size + 3742)); /* scriptspace */
+  primitive(488, assign_dimen, (hash_size + 3743)); /* predisplaysize */
+  primitive(489, assign_dimen, (hash_size + 3744)); /* displaywidth */
+  primitive(490, assign_dimen, (hash_size + 3745)); /* displayindent */
+  primitive(491, assign_dimen, (hash_size + 3746)); /* overfullrule */
+  primitive(492, assign_dimen, (hash_size + 3747)); /* hangindent */
+  primitive(493, assign_dimen, (hash_size + 3748)); /* hoffset */
+  primitive(494, assign_dimen, (hash_size + 3749)); /* voffset */
+  primitive(495, assign_dimen, (hash_size + 3750));	/* emergencystretch */
+  primitive(32, ex_space, 0);	/*   */
+  primitive(47, ital_corr, 0);	/* / */
+  primitive(505, accent, 0);	/* accent */
+  primitive(506, advance, 0);	/* advance */
+  primitive(507, after_assignment, 0);	/* afterassignment */
+  primitive(508, after_group, 0);	/* aftergroup */
+  primitive(509, begin_group, 0);	/* begingroup */
+  primitive(510, char_num, 0);	/* char */
+  primitive(501, cs_name, 0);		/* csname */
+  primitive(511, delim_num, 0);	/* delimiter */
+  primitive(512, divide, 0);	/* divide */
+  primitive(502, end_cs_name, 0);	/* endcsname */
+  primitive(513, end_group, 0);	/* endgroup */
 /*  hash[(hash_size + 516)].v.RH = 513; */	
   hash[(hash_size + hash_extra + 516)].v.RH = 513;	/* endgroup */
 /*  eqtb[(hash_size + 516)]= eqtb[cur_val]; */
   eqtb[(hash_size + hash_extra + 516)]= eqtb[cur_val]; 
-  primitive(514, 102, 0);		/* expandafter */
-  primitive(515, 88, 0);	/* font */
-  primitive(516, 77, 0);	/* fontdimen */
-  primitive(517, 32, 0);	/* halign */
-  primitive(518, 36, 0);	/* hrule */
-  primitive(519, 39, 0);	/* ignorespaces */
-  primitive(327, 37, 0); /* insert */
-  primitive(348, 18, 0); /* mark */
-  primitive(520, 46, 0);	/* mathaccent */
-  primitive(521, 17, 0);	/* mathchar */
-  primitive(522, 54, 0);	/* mathchoice */
-  primitive(523, 91, 0);	/* multiply */
-  primitive(524, 34, 0);	/* noalign */
-  primitive(525, 65, 0);	/* noboundary */
-  primitive(526, 103, 0);		/* noexpand */
-  primitive(332, 55, 0); /* nonscript */
-  primitive(527, 63, 0);	/* omit */
-  primitive(405, 84, 0);	/* parshape */
-  primitive(528, 42, 0);	/* penalty */
-  primitive(529, 80, 0);	/* prevgraf */
-  primitive(530, 66, 0);	/* radical */
-  primitive(531, 96, 0);	/* read */
-  primitive(532, 0, 256);		/* primitive("relax",relax,256); */
+  primitive(514, expand_after, 0);		/* expandafter */
+  primitive(515, def_font, 0);	/* font */
+  primitive(516, assign_font_dimen, 0);	/* fontdimen */
+  primitive(517, halign, 0);	/* halign */
+  primitive(518, hrule, 0);	/* hrule */
+  primitive(519, ignore_spaces, 0);	/* ignorespaces */
+  primitive(327, insert, 0); /* insert */
+  primitive(348, mark, 0); /* mark */
+  primitive(520, math_accent, 0);	/* mathaccent */
+  primitive(521, math_char_num, 0);	/* mathchar */
+  primitive(522, math_choice, 0);	/* mathchoice */
+  primitive(523, multiply, 0);	/* multiply */
+  primitive(524, no_align, 0);	/* noalign */
+  primitive(525, no_boundary, 0);	/* noboundary */
+  primitive(526, no_expand, 0);		/* noexpand */
+  primitive(332, non_script, 0); /* nonscript */
+  primitive(527, omit, 0);	/* omit */
+  primitive(405, set_shape, 0);	/* parshape */
+  primitive(528, break_penalty, 0);	/* penalty */
+  primitive(529, set_prev_graf, 0);	/* prevgraf */
+  primitive(530, radical, 0);	/* radical */
+  primitive(531, read_to_cs, 0);	/* read */
+  primitive(532, relax, 256);		/* primitive("relax",relax,256); */
 /*  hash[(hash_size + 521)].v.RH = 532; */ 
   hash[(hash_size + hash_extra + 521)].v.RH = 532;  /* read */
 /*  eqtb[(hash_size + 521)]= eqtb[cur_val];  */
   eqtb[(hash_size + hash_extra + 521)]= eqtb[cur_val]; 
-  primitive(533, 98, 0);	/* setbox */
-  primitive(534, 109, 0);		/* the */
-  primitive(404, 71, 0);	/* toks */
-  primitive(349, 38, 0); /* vadjust */
-  primitive(535, 33, 0);	/* valign */
-  primitive(536, 56, 0);	/* vcenter */
-  primitive(537, 35, 0);	/* vrule */
-  primitive(594, 13, 256);	/* par */
+  primitive(533, set_box, 0);	/* setbox */
+  primitive(534, the, 0);		/* the */
+  primitive(404, toks_register, 0);	/* toks */
+  primitive(349, vadjust, 0); /* vadjust */
+  primitive(535, valign, 0);	/* valign */
+  primitive(536, vcenter, 0);	/* vcenter */
+  primitive(537, vrule, 0);	/* vrule */
+  primitive(594, par_end, 256);	/* par */
   par_loc = cur_val; 
   par_token = 4095 + par_loc; 
-  primitive(626, 104, 0);		/* input */
-  primitive(627, 104, 1);		/* endinput */
-  primitive(628, 110, 0);		/* topmark */
-  primitive(629, 110, 1);		/* firstmark */
-  primitive(630, 110, 2);		/* botmark */
-  primitive(631, 110, 3);		/* splitfirstmark */
-  primitive(632, 110, 4);		/* splitbotmark */
-  primitive(473, 89, 0);	/* count */
-  primitive(497, 89, 1);	/* dimen */
-  primitive(392, 89, 2);	/* skip */
-  primitive(393, 89, 3);	/* muskip */
-  primitive(665, 79, 102);	/* spacefactor */
-  primitive(666, 79, 1);	/* prevdepth */
-  primitive(667, 82, 0);	/* dead_cycles */
-  primitive(668, 82, 1);	/* insert_penalties */
-  primitive(669, 83, 1);	/* wd */
-  primitive(670, 83, 3);	/* ht */
-  primitive(671, 83, 2);	/* dp */
-  primitive(672, 70, 0);	/* last_penalty */
-  primitive(673, 70, 1);	/* last_kern */
-  primitive(674, 70, 2);	/* lastskip */
-  primitive(675, 70, 3);	/* inputlineno */
-  primitive(676, 70, 4);	/* badness */
-  primitive(732, 108, 0);		/* number */
-  primitive(733, 108, 1);		/* romannumeral */
-  primitive(734, 108, 2);		/* string */
-  primitive(735, 108, 3);		/* meaning */
-  primitive(736, 108, 4);		/* font_name */
-  primitive(737, 108, 5);		/* job_name */
-  primitive(753, 105, 0);		/* if */
-  primitive(754, 105, 1);		/* ifcat */
-  primitive(755, 105, 2);		/* ifnum */
-  primitive(756, 105, 3);		/* ifdim */
-  primitive(757, 105, 4);		/* ifodd */
-  primitive(758, 105, 5);		/* ifvmode */
-  primitive(759, 105, 6);		/* ifhmode */
-  primitive(760, 105, 7);		/* ifmmode */
-  primitive(761, 105, 8);		/* ifinner */
-  primitive(762, 105, 9);		/* ifvoid */
-  primitive(763, 105, 10);	/* ifhbox */
-  primitive(764, 105, 11);	/* ifvbox */
-  primitive(765, 105, 12);	/* ifx */
-  primitive(766, 105, 13);	/* ifeof */
-  primitive(767, 105, 14);	/* iftrue */
-  primitive(768, 105, 15);	/* iffalse */
-  primitive(769, 105, 16);	/* ifcase */
-  primitive(770, 106, 2);		/* fi */
+  primitive(626, input, 0);		/* input */
+  primitive(627, input, 1);		/* endinput */
+  primitive(628, top_bot_mark, 0);		/* topmark */
+  primitive(629, top_bot_mark, 1);		/* firstmark */
+  primitive(630, top_bot_mark, 2);		/* botmark */
+  primitive(631, top_bot_mark, 3);		/* splitfirstmark */
+  primitive(632, top_bot_mark, 4);		/* splitbotmark */
+  primitive(473, tex_register, 0);	/* count */
+  primitive(497, tex_register, 1);	/* dimen */
+  primitive(392, tex_register, 2);	/* skip */
+  primitive(393, tex_register, 3);	/* muskip */
+  primitive(665, set_aux, 102);	/* spacefactor */
+  primitive(666, set_aux, 1);	/* prevdepth */
+  primitive(667, set_page_int, 0);	/* dead_cycles */
+  primitive(668, set_page_int, 1);	/* insert_penalties */
+  primitive(669, set_box_dimen, 1);	/* wd */
+  primitive(670, set_box_dimen, 3);	/* ht */
+  primitive(671, set_box_dimen, 2);	/* dp */
+  primitive(672, last_item, 0);	/* last_penalty */
+  primitive(673, last_item, 1);	/* last_kern */
+  primitive(674, last_item, 2);	/* lastskip */
+  primitive(675, last_item, 3);	/* inputlineno */
+  primitive(676, last_item, 4);	/* badness */
+  primitive(732, convert, 0);		/* number */
+  primitive(733, convert, 1);		/* romannumeral */
+  primitive(734, convert, 2);		/* string */
+  primitive(735, convert, 3);		/* meaning */
+  primitive(736, convert, 4);		/* font_name */
+  primitive(737, convert, 5);		/* job_name */
+  primitive(753, if_test, 0);		/* if */
+  primitive(754, if_test, 1);		/* ifcat */
+  primitive(755, if_test, 2);		/* ifnum */
+  primitive(756, if_test, 3);		/* ifdim */
+  primitive(757, if_test, 4);		/* ifodd */
+  primitive(758, if_test, 5);		/* ifvmode */
+  primitive(759, if_test, 6);		/* ifhmode */
+  primitive(760, if_test, 7);		/* ifmmode */
+  primitive(761, if_test, 8);		/* ifinner */
+  primitive(762, if_test, 9);		/* ifvoid */
+  primitive(763, if_test, 10);	/* ifhbox */
+  primitive(764, if_test, 11);	/* ifvbox */
+  primitive(765, if_test, 12);	/* ifx */
+  primitive(766, if_test, 13);	/* ifeof */
+  primitive(767, if_test, 14);	/* iftrue */
+  primitive(768, if_test, 15);	/* iffalse */
+  primitive(769, if_test, 16);	/* ifcase */
+  primitive(770, fi_or_else, 2);		/* fi */
 /*  hash[(hash_size + 518)].v.RH = 770; */ 
   hash[(hash_size + hash_extra + 518)].v.RH = 770;		/* fi */
 /*  eqtb[(hash_size + 518)]= eqtb[cur_val];  */
   eqtb[(hash_size + hash_extra + 518)]= eqtb[cur_val]; 
-  primitive(771, 106, 4);		/* or */
-  primitive(772, 106, 3);		/* else */
-  primitive(795, 87, 0);		/* nullfont */
+  primitive(771, fi_or_else, 4);		/* or */
+  primitive(772, fi_or_else, 3);		/* else */
+  primitive(795, set_font, 0);		/* nullfont */
 /*  hash[(hash_size + 524)].v.RH = 795; */	/* hash[frozen_null_font] */
   hash[(hash_size + hash_extra + 524)].v.RH = 795;	/* nullfont */
 /*  eqtb[(hash_size + 524)]= eqtb[cur_val];  */
   eqtb[(hash_size + hash_extra + 524)]= eqtb[cur_val]; 
-  primitive(892, 4, 256);		/* span */
+  primitive(892, tab_mark, 256);		/* span */
 		  /* primitive("span",tab_mark,span_code); */
-  primitive(893, 5, 257);		/* cr */
+  primitive(893, car_ret, 257);		/* cr */
 		  /* primitive("cr",car_ret,cr_code); */
 /*  hash[(hash_size + 515)].v.RH = 893; */	
   hash[(hash_size + hash_extra + 515)].v.RH = 893;		/* cr */
 /*  eqtb[(hash_size + 515)]= eqtb[cur_val];  */
   eqtb[(hash_size + hash_extra + 515)]= eqtb[cur_val]; 
-  primitive(894, 5, 258);			/* cr cr */
+  primitive(894, car_ret, 258);			/* cr cr */
 /*  hash[(hash_size + 519)].v.RH = 895;  */
   hash[(hash_size + hash_extra + 519)].v.RH = 895; /* endtemplate */
 /*  hash[(hash_size + 520)].v.RH = 895;  */
   hash[(hash_size + hash_extra + 520)].v.RH = 895; /* endtemplate */
 /*  eqtb[(hash_size + 520)].hh.b0 = 9;  */
   eqtb[(hash_size + hash_extra + 520)].hh.b0 = 9; 
-/*  eqtb[(hash_size + 520)].hh.v.RH = mem_top - 11;  */
-  eqtb[(hash_size + hash_extra + 520)].hh.v.RH = mem_top - 11; 
+/*  eqtb[(hash_size + 520)].hh.v.RH = null_list;  */
+  eqtb[(hash_size + hash_extra + 520)].hh.v.RH = null_list; 
 /*  eqtb[(hash_size + 520)].hh.b1 = 1;  */
   eqtb[(hash_size + hash_extra + 520)].hh.b1 = 1; 
 /*  eqtb[(hash_size + 519)]= eqtb[(hash_size + 520)];  */
@@ -4370,136 +4366,136 @@ void init_prim (void)
 		eqtb[(hash_size + hash_extra + 520)]; 
 /*  eqtb[(hash_size + 519)].hh.b0 = 115;  */
   eqtb[(hash_size + hash_extra + 519)].hh.b0 = 115; 
-  primitive(964, 81, 0);	/* pagegoal */
-  primitive(965, 81, 1);	/* pagetotal */
-  primitive(966, 81, 2);	/* pagestretch */
-  primitive(967, 81, 3);	/* pagefilstretch */
-  primitive(968, 81, 4);	/* pagefillstretch */
-  primitive(969, 81, 5);	/* pagefilllstretch */
-  primitive(970, 81, 6);	/* pageshrink */
-  primitive(971, 81, 7);	/* pagedepth */
-  primitive(1019, 14, 0);		/* end */
-  primitive(1020, 14, 1);		/* dump */
-  primitive(1021, 26, 4);		/* hskip */
-  primitive(1022, 26, 0);		/* hfil */
-  primitive(1023, 26, 1);		/* hfill */
-  primitive(1024, 26, 2);		/* hss */
-  primitive(1025, 26, 3);		/* hfilneg */
-  primitive(1026, 27, 4);		/* vskip */
-  primitive(1027, 27, 0);		/* vfil */
-  primitive(1028, 27, 1);		/* vfill */
-  primitive(1029, 27, 2);		/* vss */
-  primitive(1030, 27, 3);		/* vfilneg */
-  primitive(333, 28, 5); /* mskip */
-  primitive(337, 29, 1); /* kern */
-  primitive(339, 30, 99); /* mkern */
-  primitive(1048, 21, 1);		/* moveleft */
-  primitive(1049, 21, 0);		/* moveright */
-  primitive(1050, 22, 1);		/* raise */
-  primitive(1051, 22, 0);		/* lower */
-  primitive(406, 20, 0);	/* box */
-  primitive(1052, 20, 1);		/* copy */
-  primitive(1053, 20, 2);		/* lastbox */
-  primitive(959, 20, 3);	/* vsplit */
-  primitive(1054, 20, 4);		/* vtop */
-  primitive(961, 20, 5);	/* vbox */
-  primitive(1055, 20, 106);	/* hbox */
-  primitive(1056, 31, 99);	/* ship_out */
-  primitive(1057, 31, 100);	/* leaders */
-  primitive(1058, 31, 101);	/* cleaders */
-  primitive(1059, 31, 102);	/* xleaders */
-  primitive(1074, 43, 1);		/* indent */
-  primitive(1075, 43, 0);		/* noindent */
-  primitive(1084, 25, 12);	/* unpenalty */
-  primitive(1085, 25, 11);	/* unkern */
-  primitive(1086, 25, 10);	/* unskip */
-  primitive(1087, 23, 0);		/* unhbox */
-  primitive(1088, 23, 1);		/* unhcopy */
-  primitive(1089, 24, 0);		/* unvbox */
-  primitive(1090, 24, 1);		/* unvcopy */
-  primitive(45, 47, 1);		/* - */
-  primitive(346, 47, 0); /* discretionary */
-  primitive(1121, 48, 0);		/* eqno */
-  primitive(1122, 48, 1);		/* leqno */
-  primitive(860, 50, 16);		/* mathord */
-  primitive(861, 50, 17); /* mathop */
-  primitive(862, 50, 18); /* mathbin */
-  primitive(863, 50, 19); /* mathrel */
-  primitive(864, 50, 20); /* mathopen */
-  primitive(865, 50, 21); /* mathclose */
-  primitive(866, 50, 22); /* mathpunct */
-  primitive(867, 50, 23); /* mathinner */
-  primitive(869, 50, 26); /* underline */
-  primitive(868, 50, 27); /* overline */
-  primitive(1123, 51, 0); /* displaylimits */
-  primitive(872, 51, 1); /* limits */
-  primitive(873, 51, 2); /* nolimits */
-  primitive(855, 53, 0); /* displaystyle */
-  primitive(856, 53, 2); /* textstyle */
-  primitive(857, 53, 4); /* scriptstyle */
-  primitive(858, 53, 6); /* scriptscriptstyle */
-  primitive(1141, 52, 0); /* above */
-  primitive(1142, 52, 1); /* over */
-  primitive(1143, 52, 2); /* atop */
-  primitive(1144, 52, 3); /* abovewithdelims */
-  primitive(1145, 52, 4); /* overwithdelims */
-  primitive(1146, 52, 5); /* atopwithdelims */
-  primitive(870, 49, 30); /* left */
-  primitive(871, 49, 31); /* right */
+  primitive(964, set_page_dimen, 0);	/* pagegoal */
+  primitive(965, set_page_dimen, 1);	/* pagetotal */
+  primitive(966, set_page_dimen, 2);	/* pagestretch */
+  primitive(967, set_page_dimen, 3);	/* pagefilstretch */
+  primitive(968, set_page_dimen, 4);	/* pagefillstretch */
+  primitive(969, set_page_dimen, 5);	/* pagefilllstretch */
+  primitive(970, set_page_dimen, 6);	/* pageshrink */
+  primitive(971, set_page_dimen, 7);	/* pagedepth */
+  primitive(1019, end_match, 0);		/* end */
+  primitive(1020, stop, 1);		/* dump */
+  primitive(1021, hskip, 4);		/* hskip */
+  primitive(1022, hskip, 0);		/* hfil */
+  primitive(1023, hskip, 1);		/* hfill */
+  primitive(1024, hskip, 2);		/* hss */
+  primitive(1025, hskip, 3);		/* hfilneg */
+  primitive(1026, vskip, 4);		/* vskip */
+  primitive(1027, vskip, 0);		/* vfil */
+  primitive(1028, vskip, 1);		/* vfill */
+  primitive(1029, vskip, 2);		/* vss */
+  primitive(1030, vskip, 3);		/* vfilneg */
+  primitive(333, mskip, 5); /* mskip */
+  primitive(337, kern, 1); /* kern */
+  primitive(339, mkern, 99); /* mkern */
+  primitive(1048, hmove, 1);		/* moveleft */
+  primitive(1049, hmove, 0);		/* moveright */
+  primitive(1050, vmove, 1);		/* raise */
+  primitive(1051, vmove, 0);		/* lower */
+  primitive(406, make_box, 0);	/* box */
+  primitive(1052, make_box, 1);		/* copy */
+  primitive(1053, make_box, 2);		/* lastbox */
+  primitive(959, make_box, 3);	/* vsplit */
+  primitive(1054, make_box, 4);		/* vtop */
+  primitive(961, make_box, 5);	/* vbox */
+  primitive(1055, make_box, 106);	/* hbox */
+  primitive(1056, leader_ship, 99);	/* ship_out */
+  primitive(1057, leader_ship, 100);	/* leaders */
+  primitive(1058, leader_ship, 101);	/* cleaders */
+  primitive(1059, leader_ship, 102);	/* xleaders */
+  primitive(1074, start_par, 1);		/* indent */
+  primitive(1075, start_par, 0);		/* noindent */
+  primitive(1084, remove_item, 12);	/* unpenalty */
+  primitive(1085, remove_item, 11);	/* unkern */
+  primitive(1086, remove_item, 10);	/* unskip */
+  primitive(1087, un_hbox, 0);		/* unhbox */
+  primitive(1088, un_hbox, 1);		/* unhcopy */
+  primitive(1089, un_vbox, 0);		/* unvbox */
+  primitive(1090, un_vbox, 1);		/* unvcopy */
+  primitive(45, discretionary, 1);		/* - */
+  primitive(346, discretionary, 0); /* discretionary */
+  primitive(1121, eq_no, 0);		/* eqno */
+  primitive(1122, eq_no, 1);		/* leqno */
+  primitive(860, math_comp, 16);		/* mathord */
+  primitive(861, math_comp, 17); /* mathop */
+  primitive(862, math_comp, 18); /* mathbin */
+  primitive(863, math_comp, 19); /* mathrel */
+  primitive(864, math_comp, 20); /* mathopen */
+  primitive(865, math_comp, 21); /* mathclose */
+  primitive(866, math_comp, 22); /* mathpunct */
+  primitive(867, math_comp, 23); /* mathinner */
+  primitive(869, math_comp, 26); /* underline */
+  primitive(868, math_comp, 27); /* overline */
+  primitive(1123, limit_switch, 0); /* displaylimits */
+  primitive(872, limit_switch, 1); /* limits */
+  primitive(873, limit_switch, 2); /* nolimits */
+  primitive(855, math_style, 0); /* displaystyle */
+  primitive(856, math_style, 2); /* textstyle */
+  primitive(857, math_style, 4); /* scriptstyle */
+  primitive(858, math_style, 6); /* scriptscriptstyle */
+  primitive(1141, above, 0); /* above */
+  primitive(1142, above, 1); /* over */
+  primitive(1143, above, 2); /* atop */
+  primitive(1144, above, 3); /* abovewithdelims */
+  primitive(1145, above, 4); /* overwithdelims */
+  primitive(1146, above, 5); /* atopwithdelims */
+  primitive(870, left_right, 30); /* left */
+  primitive(871, left_right, 31); /* right */
 /*  hash[(hash_size + 517)].v.RH = 871;  */
   hash[(hash_size + hash_extra + 517)].v.RH = 871;		/* right */
 /*  eqtb[(hash_size + 517)]= eqtb[cur_val];  */
   eqtb[(hash_size + hash_extra + 517)]= eqtb[cur_val]; 
-  primitive(1165, 93, 1); /* long */
-  primitive(1166, 93, 2); /* outer */
-  primitive(1167, 93, 4); /* global */
-  primitive(1168, 97, 0); /* def */
-  primitive(1169, 97, 1); /* gdef */
-  primitive(1170, 97, 2); /* edef */
-  primitive(1171, 97, 3); /* xdef */
-  primitive(1185, 94, 0); /* let */
-  primitive(1186, 94, 1); /* futurelet */
-  primitive(1187, 95, 0); /* chardef */
-  primitive(1188, 95, 1); /* mathchardef */
-  primitive(1189, 95, 2); /* countdef */
-  primitive(1190, 95, 3); /* dimendef */
-  primitive(1191, 95, 4); /* skipdef */
-  primitive(1192, 95, 5); /* muskipdef */
-  primitive(1193, 95, 6); /* toksdef */
-  primitive(412, 85, (hash_size + 1883)); /* catcode */
-  primitive(416, 85, (hash_size + 2907)); /* mathcode */
-  primitive(413, 85, (hash_size + 2139)); /* lccode */
-  primitive(414, 85, (hash_size + 2395)); /* uccode */
-  primitive(415, 85, (hash_size + 2651)); /* sfcode */
-  primitive(474, 85, (hash_size + 3474)); /* delcode */
-  primitive(409, 86, (hash_size + 1835)); /* textfont */
-  primitive(410, 86, (hash_size + 1851)); /* scriptfont */
-  primitive(411, 86, (hash_size + 1867)); /* scriptscriptfont */
-  primitive(935, 99, 0); /* hyphenation */
-  primitive(947, 99, 1); /* patterns */
-  primitive(1211, 78, 0); /* hyphen_char */
-  primitive(1212, 78, 1); /* skew_char */
-  primitive(272, 100, 0); /* batchmode */
-  primitive(273, 100, 1); /* nonstopmode */
-  primitive(274, 100, 2); /* scrollmode */
-  primitive(1221, 100, 3); /* errorstopmode */
-  primitive(1222, 60, 1); /* openin */
-  primitive(1223, 60, 0); /* closein */
-  primitive(1224, 58, 0); /* message */
-  primitive(1225, 58, 1); /* errmessage */
-  primitive(1231, 57, (hash_size + 2139)); /* lowercase */
-  primitive(1232, 57, (hash_size + 2395)); /* uppercase */
-  primitive(1233, 19, 0); /* show */
-  primitive(1234, 19, 1); /* show_box */
-  primitive(1235, 19, 2); /* showthe */
-  primitive(1236, 19, 3); /* showlists */
-  primitive(1279, 59, 0); /* openout */
-  primitive(591, 59, 1); /* write */
+  primitive(1165, prefix, 1); /* long */
+  primitive(1166, prefix, 2); /* outer */
+  primitive(1167, prefix, 4); /* global */
+  primitive(1168, def, 0); /* def */
+  primitive(1169, def, 1); /* gdef */
+  primitive(1170, def, 2); /* edef */
+  primitive(1171, def, 3); /* xdef */
+  primitive(1185, let, 0); /* let */
+  primitive(1186, let, 1); /* futurelet */
+  primitive(1187, shorthand_def, 0); /* chardef */
+  primitive(1188, shorthand_def, 1); /* mathchardef */
+  primitive(1189, shorthand_def, 2); /* countdef */
+  primitive(1190, shorthand_def, 3); /* dimendef */
+  primitive(1191, shorthand_def, 4); /* skipdef */
+  primitive(1192, shorthand_def, 5); /* muskipdef */
+  primitive(1193, shorthand_def, 6); /* toksdef */
+  primitive(412, def_code, (hash_size + 1883)); /* catcode */
+  primitive(416, def_code, (hash_size + 2907)); /* mathcode */
+  primitive(413, def_code, (hash_size + 2139)); /* lccode */
+  primitive(414, def_code, (hash_size + 2395)); /* uccode */
+  primitive(415, def_code, (hash_size + 2651)); /* sfcode */
+  primitive(474, def_code, (hash_size + 3474)); /* delcode */
+  primitive(409, def_family, (hash_size + 1835)); /* textfont */
+  primitive(410, def_family, (hash_size + 1851)); /* scriptfont */
+  primitive(411, def_family, (hash_size + 1867)); /* scriptscriptfont */
+  primitive(935, hyph_data, 0); /* hyphenation */
+  primitive(947, hyph_data, 1); /* patterns */
+  primitive(1211, assign_font_int, 0); /* hyphen_char */
+  primitive(1212, assign_font_int, 1); /* skew_char */
+  primitive(272, set_interaction, 0); /* batchmode */
+  primitive(273, set_interaction, 1); /* nonstopmode */
+  primitive(274, set_interaction, 2); /* scrollmode */
+  primitive(1221, set_interaction, 3); /* errorstopmode */
+  primitive(1222, in_stream, 1); /* openin */
+  primitive(1223, in_stream, 0); /* closein */
+  primitive(1224, message, 0); /* message */
+  primitive(1225, message, 1); /* errmessage */
+  primitive(1231, case_shift, (hash_size + 2139)); /* lowercase */
+  primitive(1232, case_shift, (hash_size + 2395)); /* uppercase */
+  primitive(1233, xray, 0); /* show */
+  primitive(1234, xray, 1); /* show_box */
+  primitive(1235, xray, 2); /* showthe */
+  primitive(1236, xray, 3); /* showlists */
+  primitive(1279, extension, 0); /* openout */
+  primitive(591, extension, 1); /* write */
   write_loc = cur_val; 
-  primitive(1280, 59, 2);		/* closeout */
-  primitive(1281, 59, 3);		/* special */
-  primitive(1282, 59, 4);		/* immediate */
-  primitive(1283, 59, 5);		/* setlanguage */
+  primitive(1280, extension, 2);		/* closeout */
+  primitive(1281, extension, 3);		/* special */
+  primitive(1282, extension, 4);		/* immediate */
+  primitive(1283, extension, 5);		/* setlanguage */
   no_new_control_sequence = true; 
 } 
 #endif /* INITEX */

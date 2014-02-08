@@ -132,10 +132,10 @@ void close_files_and_terminate (void)
   integer k; 
 
   if (closed_already++) {
-    show_line("CLOSEDFILESANDTERMINATED ALREADY ", 0);
+    show_line("close_files_and_terminated already ", 0);
     return;     // sanity check
   }
-  if (trace_flag) show_line("\nCLOSEFILESANDTERMINATE ", 0);
+  if (trace_flag) show_line("\nclose_files_and_terminate ", 0);
 //  close all open files
   {
     register integer for_end; 
@@ -153,7 +153,6 @@ void close_files_and_terminate (void)
 /* if tracing_stats>0 then @<Output statistics about this job@>; */
 /*  if(eqtb[(hash_size + 3194)].cint > 0) */
   if(eqtb[(hash_size + 3194)].cint > 0 ||
-/*     trace_flag != 0) *//* 93/Nov/30 - bkph */
      verbose_flag != 0)  /* 93/Nov/30 - bkph */
   if(log_opened) {
 /*   used to output paragraph breaking statistics here */
@@ -384,33 +383,35 @@ void close_files_and_terminate (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     if(dvi_limit == half_buf)writedvi(half_buf, dvi_buf_size - 1); 
     if(dvi_ptr > 0)writedvi(0, dvi_ptr - 1); 
-    print_nl("Output written on ");   /*  */
-  if (full_file_name_flag && dvi_file_name != NULL) 
-    print_char_string((unsigned char *)dvi_file_name);
-  else slow_print(output_file_name); 
+    print_nl("Output written on ");
+	if (full_file_name_flag && dvi_file_name != NULL) 
+		print_char_string((unsigned char *) dvi_file_name);
+	else
+		slow_print(output_file_name); 
     print_string(" (");
     print_int(total_pages); 
     print_string(" page");
-    if(total_pages != 1) print_char(115);   /* s */
+    if (total_pages != 1) print_char('s');
     print_string(", ");
     print_int(dvi_offset + dvi_ptr); 
-    print_string("bytes).");
+    print_string(" bytes).");
     b_close(dvi_file); 
   } 
   if(log_opened) {
-    (void) putc ('\n',  log_file);
+    (void) putc ('\n', log_file);
     (void) a_close(log_file); 
     selector = selector - 2; 
     if(selector == 17) {
-    print_nl("Transcript written on ");  /*   */
-    if (full_file_name_flag && log_file_name != NULL) 
-      print_char_string((unsigned char *)log_file_name);
-    else slow_print(texmf_log_name); 
-    print_char(46);  /* . */
+    print_nl("Transcript written on ");
+    if (full_file_name_flag && log_file_name != NULL)
+		print_char_string((unsigned char *) log_file_name);
+    else
+		slow_print(texmf_log_name); 
+    print_char('.');
     } 
   } 
   print_ln (); 
-  if((edit_name_start != 0)&&(interaction > 0)) {
+  if ((edit_name_start != 0) && (interaction > 0)) {
     call_edit(str_pool, edit_name_start, edit_name_length, edit_line);
   }
 } /* end of close_files_and_terminate */
@@ -420,7 +421,6 @@ void debug_help (void)
 {/* 888 10 */ 
   integer k, l, m, n; 
   while(true){
-      
  ; 
     print_nl(" debug # (-1 to exit):");  /*  */
 #ifndef _WINDOWS

@@ -488,12 +488,12 @@ void show_activities (void)
       print_string(" (\\output routine)");
       if(p == 0)
       {
-  if(mem_top - 2 != page_tail)
+  if(page_head != page_tail)
   {
     print_nl("### current page:");
     if(output_active)
       print_string(" (held over for next output)");
-    show_box(mem[mem_top - 2].hh.v.RH); 
+    show_box(mem[page_head].hh.v.RH); 
     if(page_contents > 0)
     {
       print_nl("total height ");
@@ -515,7 +515,7 @@ void show_activities (void)
         print_scaled(t); 
         if(mem[r].hh.b0 == 1)
         {
-    q = mem_top - 2; 
+    q = page_head; 
     t = 0; 
     do {
         q = mem[q].hh.v.RH; 
@@ -532,7 +532,7 @@ void show_activities (void)
     } 
   } 
 /*  if link(contrib_head)<>null then l.4393 */
-  if(mem[mem_top - 1].hh.v.RH != 0)
+  if(mem[contrib_head].hh.v.RH != 0)
   print_nl(" (\\output routine)");
       } 
       show_box(mem[nest[p].head_field].hh.v.RH); 

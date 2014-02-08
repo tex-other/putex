@@ -527,7 +527,7 @@ halfword str_toks_(pool_pointer b)
   }
 #endif
   } 
-  p = mem_top - 3; 
+  p = temp_head; 
   mem[p].hh.v.RH = 0;   /* link(p):=null l.9135 */
   k = b; 
   while(k < pool_ptr){
@@ -570,7 +570,7 @@ halfword the_toks (void)
   scan_something_internal(5, false); 
   if(cur_val_level >= 4)
   {
-    p = mem_top - 3; 
+    p = temp_head; 
     mem[p].hh.v.RH = 0; 
     if(cur_val_level == 4)
     {
@@ -643,8 +643,8 @@ halfword the_toks (void)
 } 
 void ins_the_toks (void) 
 { 
-  mem[mem_top - 12].hh.v.RH = the_toks (); 
-  begin_token_list(mem[mem_top - 3].hh.v.RH, 4); 
+  mem[lig_trick].hh.v.RH = the_toks (); 
+  begin_token_list(mem[temp_head].hh.v.RH, 4); 
 } 
 void conv_toks (void) 
 { 
@@ -710,8 +710,8 @@ void conv_toks (void)
     break; 
   } 
   selector = old_setting; 
-  mem[mem_top - 12].hh.v.RH = str_toks(b); 
-  begin_token_list(mem[mem_top - 3].hh.v.RH, 4); 
+  mem[lig_trick].hh.v.RH = str_toks(b); 
+  begin_token_list(mem[temp_head].hh.v.RH, 4); 
 } 
 halfword scan_toks_(bool macrodef, bool xpand)
 {/* 40 30 31 32 */ register halfword Result;
@@ -817,9 +817,9 @@ halfword scan_toks_(bool macrodef, bool xpand)
         
     q = the_toks (); 
 /*     if link(temp_head)<>null then l.9376 */
-    if(mem[mem_top - 3].hh.v.RH != 0)
+    if(mem[temp_head].hh.v.RH != 0)
     {
-      mem[p].hh.v.RH = mem[mem_top - 3].hh.v.RH; 
+      mem[p].hh.v.RH = mem[temp_head].hh.v.RH; 
       p = q; 
     } 
   } 

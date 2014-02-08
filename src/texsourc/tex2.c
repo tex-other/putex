@@ -798,14 +798,14 @@ void macro_call (void)
     if(long_state >= 113)
     long_state = long_state - 2; 
     do {
-  mem[mem_top - 3].hh.v.RH = 0; /* repeat link(temp_head):=null; */
+  mem[temp_head].hh.v.RH = 0; /* repeat link(temp_head):=null; */
       if((mem[r].hh.v.LH > 3583)||(mem[r].hh.v.LH < 3328)) 
       s = 0; /* s:=null l.7984 */
       else {
   matchchr = mem[r].hh.v.LH - 3328; 
   s = mem[r].hh.v.RH; 
   r = s; 
-  p = mem_top - 3; 
+  p = temp_head; 
   m = 0; 
       } 
       lab22: get_token (); 
@@ -878,7 +878,7 @@ void macro_call (void)
         "My plan is to forget the whole thing and hope for the best."); 
     back_error (); 
   } 
-  pstack[n]= mem[mem_top - 3].hh.v.RH; 
+  pstack[n]= mem[temp_head].hh.v.RH; 
   align_state = align_state - unbalance; 
   {
     register integer for_end; 
@@ -929,7 +929,7 @@ void macro_call (void)
             "My plan is to forget the whole thing and hope for the best.");
         back_error (); 
       } 
-      pstack[n]= mem[mem_top - 3].hh.v.RH; 
+      pstack[n]= mem[temp_head].hh.v.RH; 
       align_state = align_state - unbalance; 
       {
       register integer for_end; 
@@ -996,7 +996,7 @@ void macro_call (void)
       goto lab22; 
       lab40: if(s != 0)
       {
-  if((m == 1)&&(mem[p].hh.v.LH < 768)&&(p != mem_top - 3 
+  if((m == 1)&&(mem[p].hh.v.LH < 768)&&(p != temp_head 
   ))
   {
     mem[rbraceptr].hh.v.RH = 0; /* rbraceptr may be used without ... */
@@ -1008,7 +1008,7 @@ void macro_call (void)
       decr(dyn_used); 
 #endif /* STAT */
     } 
-    p = mem[mem_top - 3].hh.v.RH; 
+    p = mem[temp_head].hh.v.RH; 
     pstack[n]= mem[p].hh.v.RH; 
     {
       mem[p].hh.v.RH = avail; 
@@ -1019,7 +1019,7 @@ void macro_call (void)
 #endif /* STAT */
     } 
   } 
-  else pstack[n]= mem[mem_top - 3].hh.v.RH; 
+  else pstack[n]= mem[temp_head].hh.v.RH; 
   incr(n); 
   if(eqtb[(hash_size + 3193)].cint > 0)
   {
@@ -2295,7 +2295,7 @@ lab20:
     cur_cmd = mem[cur_align + 5].hh.v.LH; 
     mem[cur_align + 5].hh.v.LH = cur_chr; 
     if(cur_cmd == 63)
-    begin_token_list(mem_top - 10, 2); 
+    begin_token_list(omit_template, 2); 
     else begin_token_list(mem[cur_align + 2].cint, 2); 
     align_state = 1000000L; 
     goto lab20; 

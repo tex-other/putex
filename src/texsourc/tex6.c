@@ -90,7 +90,7 @@ void try_break_ (integer pi,small_number breaktype)
   goto lab10; 
   else pi = -10000; 
   nobreakyet = true; 
-  prevr = mem_top - 7; 
+  prevr = active; 
   oldl = 0; 
   cur_active_width[1]= active_width[1]; 
   cur_active_width[2]= active_width[2]; 
@@ -117,7 +117,7 @@ void try_break_ (integer pi,small_number breaktype)
       if(l > oldl)
       {
   if((minimum_demerits < 1073741823L)&&  /* 2^30 - 1 */
-    ((oldl != easyline)||(r == mem_top - 7)))
+    ((oldl != easyline)||(r == active)))
   {
     if(nobreakyet)
     {
@@ -262,7 +262,7 @@ void try_break_ (integer pi,small_number breaktype)
       mem[prevr + 6].cint = mem[prevr + 6].cint - cur_active_width 
      [6]+ break_width[6]; 
     } 
-    else if(prevr == mem_top - 7)
+    else if(prevr == active)
     {
       active_width[1]= break_width[1]; 
       active_width[2]= break_width[2]; 
@@ -344,7 +344,7 @@ void try_break_ (integer pi,small_number breaktype)
       } 
     while(fitclass++ < for_end); } 
     minimum_demerits = 1073741823L; /* 2^30 - 1 */
-    if(r != mem_top - 7)
+    if(r != active)
     {
       q = get_node(7); 
       mem[q].hh.v.RH = r; 
@@ -361,7 +361,7 @@ void try_break_ (integer pi,small_number breaktype)
       prevr = q; 
     } 
   } 
-  if(r == mem_top - 7)
+  if(r == active)
   goto lab10; 
   if(l > easyline)
   {
@@ -418,7 +418,7 @@ void try_break_ (integer pi,small_number breaktype)
       if((b > 10000)||(pi == -10000)) 
       {
   if(final_pass &&(minimum_demerits == 1073741823L)&&  /* 2^30 - 1 */
-    (mem[r].hh.v.RH == mem_top - 7)&&(prevr == mem_top - 7)) 
+    (mem[r].hh.v.RH == active)&&(prevr == active)) 
   artificialdemerits = true; 
   else if(b > threshold)
   goto lab60; 
@@ -512,9 +512,9 @@ void try_break_ (integer pi,small_number breaktype)
       goto lab22; 
       lab60: mem[prevr].hh.v.RH = mem[r].hh.v.RH; 
       free_node(r, 3); 
-      if(prevr == mem_top - 7)
+      if(prevr == active)
       {
-  r = mem[mem_top - 7].hh.v.RH; 
+  r = mem[active].hh.v.RH; 
   if(mem[r].hh.b0 == 2)
   {
     active_width[1]= active_width[1]+ mem[r + 1].cint; 
@@ -529,14 +529,14 @@ void try_break_ (integer pi,small_number breaktype)
     cur_active_width[4]= active_width[4]; 
     cur_active_width[5]= active_width[5]; 
     cur_active_width[6]= active_width[6]; 
-    mem[mem_top - 7].hh.v.RH = mem[r].hh.v.RH; 
+    mem[active].hh.v.RH = mem[r].hh.v.RH; 
     free_node(r, 7); 
   } 
       } 
       else if(mem[prevr].hh.b0 == 2)
       {
   r = mem[prevr].hh.v.RH; 
-  if(r == mem_top - 7)
+  if(r == active)
   {
     cur_active_width[1]= cur_active_width[1]- mem[prevr + 1]
    .cint; 
@@ -550,7 +550,7 @@ void try_break_ (integer pi,small_number breaktype)
    .cint; 
     cur_active_width[6]= cur_active_width[6]- mem[prevr + 6]
    .cint; 
-    mem[prevprevr].hh.v.RH = mem_top - 7; /* prevprevr may be used ... */
+    mem[prevprevr].hh.v.RH = active; /* prevprevr may be used ... */
     free_node(prevr, 7); 
     prevr = prevprevr; 
   } 
@@ -675,7 +675,7 @@ void post_line_break_(integer finalwidowpenalty)
     } 
     else {
   
-      q = mem_top - 3; 
+      q = temp_head; 
       while(mem[q].hh.v.RH != 0)q = mem[q].hh.v.RH; 
     } 
     r = new_param_glue(8); 
@@ -685,8 +685,8 @@ void post_line_break_(integer finalwidowpenalty)
     lab30:; 
     r = mem[q].hh.v.RH; 
     mem[q].hh.v.RH = 0; 
-    q = mem[mem_top - 3].hh.v.RH; 
-    mem[mem_top - 3].hh.v.RH = r; 
+    q = mem[temp_head].hh.v.RH; 
+    mem[temp_head].hh.v.RH = r; 
     if(eqtb[(hash_size + 789)].hh.v.RH != 0)
     {
       r = new_param_glue(7); 
@@ -708,14 +708,14 @@ void post_line_break_(integer finalwidowpenalty)
       curwidth = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * curline].cint; 
       curindent = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * curline - 1].cint; 
     } 
-    adjust_tail = mem_top - 5; 
+    adjust_tail = adjust_head; 
     just_box = hpack(q, curwidth, 0); 
     mem[just_box + 4].cint = curindent; 
     append_to_vlist(just_box); 
 /* if adjust_head<>adjust_tail then l.17346 */
-    if(mem_top - 5 != adjust_tail)
+    if(adjust_head != adjust_tail)
     {
-      mem[tail].hh.v.RH = mem[mem_top - 5].hh.v.RH; 
+      mem[tail].hh.v.RH = mem[adjust_head].hh.v.RH; 
       tail = adjust_tail; 
     } 
     adjust_tail = 0; /* adjust_tail:=null */
@@ -740,7 +740,7 @@ void post_line_break_(integer finalwidowpenalty)
     if(cur_p != 0)
     if(! postdiscbreak)
     {
-      r = mem_top - 3; 
+      r = temp_head; 
       while(true){
   q = mem[r].hh.v.RH; 
   if(q == mem[cur_p + 1].hh.v.RH)
@@ -755,15 +755,15 @@ void post_line_break_(integer finalwidowpenalty)
   goto lab31; 
   r = q; 
       } 
-      lab31: if(r != mem_top - 3)
+      lab31: if(r != temp_head)
       {
   mem[r].hh.v.RH = 0; 
-  flush_node_list(mem[mem_top - 3].hh.v.RH); 
-  mem[mem_top - 3].hh.v.RH = q; 
+  flush_node_list(mem[temp_head].hh.v.RH); 
+  mem[temp_head].hh.v.RH = q; 
       } 
     } 
   } while(!(cur_p == 0)); 
-  if((curline != best_line)||(mem[mem_top - 3].hh.v.RH != 0)) {
+  if((curline != best_line)||(mem[temp_head].hh.v.RH != 0)) {
     confusion(933);   /* disc2 */
     return;       // abort_flag set
   }
@@ -780,9 +780,9 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
   scaled w; 
   font_index k; 
   hyphen_passed = 0;            /* paragraph 907 ? */
-  t = mem_top - 4; 
+  t = hold_head; 
   w = 0; 
-  mem[mem_top - 4].hh.v.RH = 0; 
+  mem[hold_head].hh.v.RH = 0; 
   cur_l = hu[j]; 
   cur_q = t; 
   if(j == 0)
@@ -1263,7 +1263,7 @@ void hyphenate (void)
     j = reconstitute(j, hn, bchar, hyf_char)+ 1; 
     if(hyphen_passed == 0)
     {
-      mem[s].hh.v.RH = mem[mem_top - 4].hh.v.RH; 
+      mem[s].hh.v.RH = mem[hold_head].hh.v.RH; 
 /*      while(mem[s].hh.v.RH > 0)*/ /* 94/Mar/22 */
       while(mem[s].hh.v.RH != 0)    /* l.17903 */
       s = mem[s].hh.v.RH; 
@@ -1271,13 +1271,13 @@ void hyphenate (void)
       {
   l = j; 
   hyphen_passed = j - 1; 
-  mem[mem_top - 4].hh.v.RH = 0; /* link(hold_head):=null; */
+  mem[hold_head].hh.v.RH = 0; /* link(hold_head):=null; */
       } 
     } 
     if(hyphen_passed > 0)
     do {
   r = get_node(2); 
-      mem[r].hh.v.RH = mem[mem_top - 4].hh.v.RH; 
+      mem[r].hh.v.RH = mem[hold_head].hh.v.RH; 
       mem[r].hh.b0 = 7; 
       majortail = r; 
       rcount = 0; 
@@ -1313,13 +1313,13 @@ void hyphenate (void)
 /*  begin l:=reconstitute(l,i,font_bchar[hf],non_char)+1; l.17948 */
   l = reconstitute(l, i, font_bchar[hf], 256)+ 1; 
 /*  if link(hold_head)>null then l.17949 */
-/*  if(mem[mem_top - 4].hh.v.RH > 0)*/  /* 94/Mar/22 */
-  if(mem[mem_top - 4].hh.v.RH != 0) /* BUG FIX ??? */
+/*  if(mem[hold_head].hh.v.RH > 0)*/  /* 94/Mar/22 */
+  if(mem[hold_head].hh.v.RH != 0) /* BUG FIX ??? */
   {
     if(minortail == 0)/*      if minor_tail=null then */
-    mem[r + 1].hh.v.LH = mem[mem_top - 4].hh.v.RH; 
-    else mem[minortail].hh.v.RH = mem[mem_top - 4].hh.v.RH; 
-    minortail = mem[mem_top - 4].hh.v.RH; 
+    mem[r + 1].hh.v.LH = mem[hold_head].hh.v.RH; 
+    else mem[minortail].hh.v.RH = mem[hold_head].hh.v.RH; 
+    minortail = mem[hold_head].hh.v.RH; 
 /*    while link(minor_tail)>null do minor_tail:=link(minor_tail); l.17953 */
 /*    while(mem[minortail].hh.v.RH > 0)*/ /* 94/Mar/22 */
     while(mem[minortail].hh.v.RH != 0)  /* BUG FIX */
@@ -1356,13 +1356,13 @@ void hyphenate (void)
       cloc = 0; 
     } 
 /*   if link(hold_head)>null then l. l.17973 */
-/*    if(mem[mem_top - 4].hh.v.RH > 0)  */    /* 94/Mar/22 ??? */
-    if(mem[mem_top - 4].hh.v.RH != 0)     /* BUG FIX */
+/*    if(mem[hold_head].hh.v.RH > 0)  */    /* 94/Mar/22 ??? */
+    if(mem[hold_head].hh.v.RH != 0)     /* BUG FIX */
     {
       if(minortail == 0)/*     begin if minor_tail=null then */
-      mem[r + 1].hh.v.RH = mem[mem_top - 4].hh.v.RH; 
-      else mem[minortail].hh.v.RH = mem[mem_top - 4].hh.v.RH; 
-      minortail = mem[mem_top - 4].hh.v.RH; 
+      mem[r + 1].hh.v.RH = mem[hold_head].hh.v.RH; 
+      else mem[minortail].hh.v.RH = mem[hold_head].hh.v.RH; 
+      minortail = mem[hold_head].hh.v.RH; 
 /*     while link(minor_tail)>null do minor_tail:=link(minor_tail); l.17977 */
 /*      while(mem[minortail].hh.v.RH > 0)*/ /* 94/Mar/22 */
       while(mem[minortail].hh.v.RH != 0)    /* ??? */
@@ -1372,7 +1372,7 @@ void hyphenate (void)
   while(l > j){
       
     j = reconstitute(j, hn, bchar, 256)+ 1; 
-    mem[majortail].hh.v.RH = mem[mem_top - 4].hh.v.RH; 
+    mem[majortail].hh.v.RH = mem[hold_head].hh.v.RH; 
 /* while link(major_tail)>null do advance_major_tail; l.17987 */
 /*    while(mem[majortail].hh.v.RH > 0){ */ /* 94/Mar/22 */
     while(mem[majortail].hh.v.RH != 0){   /* ??? */
@@ -1394,7 +1394,7 @@ void hyphenate (void)
       } 
       s = majortail; 
       hyphen_passed = j - 1; 
-      mem[mem_top - 4].hh.v.RH = 0;  /* link(hold_head):=null; */
+      mem[hold_head].hh.v.RH = 0;  /* link(hold_head):=null; */
     } while(!(! odd(hyf[j - 1]))); 
   } while(!(j > hn)); 
   mem[s].hh.v.RH = q; 
@@ -1571,8 +1571,8 @@ halfword prune_page_top_(halfword p)
 {register halfword Result;
   halfword prevp; 
   halfword q; 
-  prevp = mem_top - 3; 
-  mem[mem_top - 3].hh.v.RH = p; 
+  prevp = temp_head; 
+  mem[temp_head].hh.v.RH = p; 
 /* while p<>null do l.18803 */
   while(p != 0)switch(mem[p].hh.b0)
   {case 0 : 
@@ -1615,7 +1615,7 @@ halfword prune_page_top_(halfword p)
     }
     break; 
   } 
-  Result = mem[mem_top - 3].hh.v.RH; 
+  Result = mem[temp_head].hh.v.RH; 
   return Result; 
 } 
 halfword vert_break_(halfword p, scaled h, scaled d)
@@ -1953,9 +1953,9 @@ void fire_up_(halfword c)
       r = mem[r].hh.v.RH; 
     } 
   } 
-  q = mem_top - 4; 
+  q = hold_head; 
   mem[q].hh.v.RH = 0; 
-  prevp = mem_top - 2; 
+  prevp = page_head; 
   p = mem[prevp].hh.v.RH; 
   while(p != best_page_break){
       
@@ -2043,19 +2043,19 @@ void fire_up_(halfword c)
   eqtb[(hash_size + 792)].hh.v.RH = savesplittopskip; 
   if(p != 0)    /* if p<>null then l.19730 */
   {
-    if(mem[mem_top - 1].hh.v.RH == 0)/* if link(contrib_head)=null then */
+    if(mem[contrib_head].hh.v.RH == 0)/* if link(contrib_head)=null then */
     if(nest_ptr == 0)
     tail = page_tail; 
     else nest[0].tail_field = page_tail; 
-    mem[page_tail].hh.v.RH = mem[mem_top - 1].hh.v.RH; 
-    mem[mem_top - 1].hh.v.RH = p; 
+    mem[page_tail].hh.v.RH = mem[contrib_head].hh.v.RH; 
+    mem[contrib_head].hh.v.RH = p; 
     mem[prevp].hh.v.RH = 0; /*   link(prev_p):=null; */
   } 
   savevbadness = eqtb[(hash_size + 3190)].cint; 
   eqtb[(hash_size + 3190)].cint = 10000; 
   savevfuzz = eqtb[(hash_size + 3739)].cint; 
   eqtb[(hash_size + 3739)].cint = 1073741823L;  /* 2^30 - 1 */
-  eqtb[(hash_size + 1833)].hh.v.RH = vpackage(mem[mem_top - 2].hh.v.RH, 
+  eqtb[(hash_size + 1833)].hh.v.RH = vpackage(mem[page_head].hh.v.RH, 
   best_size, 0, page_max_depth); 
   eqtb[(hash_size + 3190)].cint = savevbadness; 
   eqtb[(hash_size + 3739)].cint = savevfuzz; 
@@ -2063,17 +2063,17 @@ void fire_up_(halfword c)
   if(last_glue != empty_flag)
   delete_glue_ref(last_glue); 
   page_contents = 0; 
-  page_tail = mem_top - 2; 
-  mem[mem_top - 2].hh.v.RH = 0; 
+  page_tail = page_head; 
+  mem[page_head].hh.v.RH = 0; 
 /*  last_glue = 262143L;  */
   last_glue = empty_flag; 
   last_penalty = 0; 
   last_kern = 0; 
   page_so_far[7]= 0; 
   page_max_depth = 0; 
-  if(q != mem_top - 4)
+  if(q != hold_head)
   {
-    mem[mem_top - 2].hh.v.RH = mem[mem_top - 4].hh.v.RH; 
+    mem[page_head].hh.v.RH = mem[hold_head].hh.v.RH; 
     page_tail = q; 
   } 
   r = mem[mem_top].hh.v.RH; 
@@ -2116,16 +2116,16 @@ void fire_up_(halfword c)
     return; 
   } 
   {
-    if(mem[mem_top - 2].hh.v.RH != 0)
+    if(mem[page_head].hh.v.RH != 0)
     {
-      if(mem[mem_top - 1].hh.v.RH == 0)
+      if(mem[contrib_head].hh.v.RH == 0)
       if(nest_ptr == 0)
       tail = page_tail; 
       else nest[0].tail_field = page_tail; 
-      else mem[page_tail].hh.v.RH = mem[mem_top - 1].hh.v.RH; 
-      mem[mem_top - 1].hh.v.RH = mem[mem_top - 2].hh.v.RH; 
-      mem[mem_top - 2].hh.v.RH = 0; 
-      page_tail = mem_top - 2; 
+      else mem[page_tail].hh.v.RH = mem[contrib_head].hh.v.RH; 
+      mem[contrib_head].hh.v.RH = mem[page_head].hh.v.RH; 
+      mem[page_head].hh.v.RH = 0; 
+      page_tail = page_head; 
     } 
     ship_out(eqtb[(hash_size + 1833)].hh.v.RH);
     eqtb[(hash_size + 1833)].hh.v.RH = 0; 
