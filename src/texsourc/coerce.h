@@ -921,8 +921,8 @@ void fatal_error_(char *);
 #define fatal_error(s) fatal_error_((char *) (s))
 void overflow_(char *, integer);
 #define overflow(s, n) overflow_((char *) (s), (integer) (n))
-void confusion_(str_number);
-#define confusion(s) confusion_((str_number) (s))
+void confusion_(char *);
+#define confusion(s) confusion_((char *) (s))
 bool init_terminal(void);
 str_number make_string(void);
 bool str_eq_buf_(str_number, integer);
@@ -1064,8 +1064,8 @@ void geq_word_define_(halfword, integer);
 #define geq_word_define(p, w) geq_word_define_((halfword) (p), (integer) (w))
 void save_for_after_(halfword);
 #define save_for_after(t) save_for_after_((halfword) (t))
-void restore_trace_(halfword, str_number);
-#define restore_trace(p, s) restore_trace_((halfword) (p), (str_number) (s))
+void restore_trace_(halfword, char *);
+#define restore_trace(p, s) restore_trace_((halfword) (p), (char *) (s))
 void unsave(void);
 void prepare_mag(void);
 void token_show_(halfword);

@@ -620,9 +620,9 @@ bool open_output (FILE **f, char *fopen_mode)
 #ifdef MSDOS
 /* write into user specified output directory if given on command line */
 /* following code added 1993/Dec/12 */ /* separated 1996/Jan/20 */
-	if (prepend_path_if(name_of_file+1, name_of_file+1, ".dvi", (unsigned char *)dvi_directory) ||
-		prepend_path_if(name_of_file+1, name_of_file+1, ".log", (unsigned char *)log_directory) ||
-		prepend_path_if(name_of_file+1, name_of_file+1, ".aux", (unsigned char *)aux_directory)) {
+	if (prepend_path_if (name_of_file+1, name_of_file+1, ".dvi", (unsigned char *)dvi_directory) ||
+		prepend_path_if (name_of_file+1, name_of_file+1, ".log", (unsigned char *)log_directory) ||
+		prepend_path_if (name_of_file+1, name_of_file+1, ".aux", (unsigned char *)aux_directory)) {
 		if (open_trace_flag) {
 			sprintf(log_line, "After prepend %s\n", name_of_file+1);
 			show_line(log_line, 0);

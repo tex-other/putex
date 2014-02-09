@@ -39,7 +39,7 @@ bool open_fmt_file (void)
   j = cur_input.loc_field; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* For Windows NT, lets allow + instead of & for format specification */
-/* if(buffer[cur_input.loc_field]== 38) */  /* 95/Jan/22 */
+/* if (buffer[cur_input.loc_field]== 38) */  /* 95/Jan/22 */
   if (buffer[cur_input.loc_field]== '&' || buffer[cur_input.loc_field]== '+')
   {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -49,7 +49,7 @@ bool open_fmt_file (void)
     buffer[last]= 32; 
     while (buffer[j]!= 32) incr(j); 
     pack_buffered_name(0, cur_input.loc_field, j - 1);
-    if(w_open_in(fmt_file)) 
+    if (w_open_in(fmt_file)) 
       goto lab40;  // format file opened OK
   
 //  format file open failed
@@ -83,7 +83,7 @@ bool open_fmt_file (void)
   } 
 /*  Try the default format (either because no format specified or failed) */
   pack_buffered_name(format_default_length - 4, 1, 0); 
-  if(! w_open_in(fmt_file)) 
+  if (! w_open_in(fmt_file)) 
   {
  ; 
   if (knuth_flag) {
@@ -141,8 +141,8 @@ void close_files_and_terminate (void)
     register integer for_end; 
     k = 0; 
     for_end = 15;        /* CHECK LIMIT */
-    if(k <= for_end) do 
-      if(write_open[k]){
+    if (k <= for_end) do 
+      if (write_open[k]){
         (void) a_close(write_file[k]);
       }
     while(k++ < for_end);
@@ -151,16 +151,16 @@ void close_files_and_terminate (void)
 
 #ifdef STAT
 /* if tracing_stats>0 then @<Output statistics about this job@>; */
-/*  if(eqtb[(hash_size + 3194)].cint > 0) */
-  if(eqtb[(hash_size + 3194)].cint > 0 ||
+/*  if (eqtb[(hash_size + 3194)].cint > 0) */
+  if (eqtb[(hash_size + 3194)].cint > 0 ||
      verbose_flag != 0)  /* 93/Nov/30 - bkph */
-  if(log_opened) {
+  if (log_opened) {
 /*   used to output paragraph breaking statistics here */
     (void) fprintf(log_file, "%c\n", ' ');
     (void) fprintf(log_file, "\n");
     (void) fprintf(log_file, "%s%s\n", "Here is how much of TeX's memory", " you used:"); 
     (void) fprintf(log_file, "%c%ld%s", ' ', (long)str_ptr - init_str_ptr, " string"); 
-    if(str_ptr != init_str_ptr + 1)
+    if (str_ptr != init_str_ptr + 1)
       (void) putc('s',  log_file);
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATESTRING
@@ -189,7 +189,7 @@ void close_files_and_terminate (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     (void) fprintf(log_file, "%c%ld%s%ld\n", ' ', (long)cs_count, " multiletter control sequences out of ", (long)(hash_size + hash_extra));
     (void) fprintf(log_file, "%c%ld%s%ld%s", ' ', (long)fmem_ptr, " words of font info for ", (long)font_ptr - 0, " font");
-    if(font_ptr != 1)
+    if (font_ptr != 1)
       (void) putc('s',  log_file);
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATEFONT
@@ -200,7 +200,7 @@ void close_files_and_terminate (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     (void) fprintf(log_file, "%s%ld%s%ld\n", ", out of ", (long)font_mem_size, " for ", (long)font_max - 0); 
     (void) fprintf(log_file, "%c%ld%s", ' ', (long)hyph_count, " hyphenation exception");
-    if(hyph_count != 1)
+    if (hyph_count != 1)
       (void) putc('s',  log_file);
 /*  (void) fprintf(log_file, "%s%ld\n",  " out of ", (long)607);  */
     (void) fprintf(log_file, "%s%ld\n",  " out of ", (long) hyphen_prime);
@@ -287,28 +287,28 @@ void close_files_and_terminate (void)
   } /* end of if (log_opened) */ 
 #endif /* STAT */
   while(cur_s > -1){
-    if(cur_s > 0){
+    if (cur_s > 0){
       dvi_buf[dvi_ptr]= 142; 
       incr(dvi_ptr); 
-      if(dvi_ptr == dvi_limit)dvi_swap (); 
+      if (dvi_ptr == dvi_limit)dvi_swap (); 
     } 
     else {
       {
       dvi_buf[dvi_ptr]= 140; 
       incr(dvi_ptr); 
-      if(dvi_ptr == dvi_limit)dvi_swap (); 
+      if (dvi_ptr == dvi_limit)dvi_swap (); 
       } 
       incr(total_pages); 
     } 
     decr(cur_s); 
   } 
 
-  if(total_pages == 0) print_nl("No pages of output.");  /*  */
+  if (total_pages == 0) print_nl("No pages of output.");  /*  */
   else {
     {
     dvi_buf[dvi_ptr]= 248;   /* post - start of postamble */
     incr(dvi_ptr); 
-    if(dvi_ptr == dvi_limit)dvi_swap (); 
+    if (dvi_ptr == dvi_limit)dvi_swap (); 
   } 
     dvi_four(last_bop); 
     last_bop = dvi_offset + dvi_ptr - 5; 
@@ -321,12 +321,12 @@ void close_files_and_terminate (void)
     {
     dvi_buf[dvi_ptr]= max_push / 256; 
     incr(dvi_ptr); 
-    if(dvi_ptr == dvi_limit)dvi_swap (); 
+    if (dvi_ptr == dvi_limit)dvi_swap (); 
     } 
     {
     dvi_buf[dvi_ptr]= max_push % 256;  
     incr(dvi_ptr); 
-    if(dvi_ptr == dvi_limit)dvi_swap (); 
+    if (dvi_ptr == dvi_limit)dvi_swap (); 
     } 
   if (total_pages >= 65536) {    // 99/Oct/10 dvi_t 16 bit problem
     sprintf(
@@ -340,38 +340,38 @@ void close_files_and_terminate (void)
     {
     dvi_buf[dvi_ptr]=(total_pages / 256)% 256;  
     incr(dvi_ptr); 
-    if(dvi_ptr == dvi_limit)dvi_swap (); 
+    if (dvi_ptr == dvi_limit)dvi_swap (); 
     } 
     {
     dvi_buf[dvi_ptr]= total_pages % 256;  
     incr(dvi_ptr); 
-    if(dvi_ptr == dvi_limit) dvi_swap (); 
+    if (dvi_ptr == dvi_limit) dvi_swap (); 
     } 
 
   if (show_fonts_used && log_opened)     /* 97/Dec/24 */
     show_font_info();           // now in local.c
 
     while(font_ptr > 0){
-    if(font_used[font_ptr])dvi_font_def(font_ptr);
+    if (font_used[font_ptr])dvi_font_def(font_ptr);
     decr(font_ptr); 
     } 
     {
     dvi_buf[dvi_ptr]= 249;   /* post_post end of postamble */
     incr(dvi_ptr); 
-    if(dvi_ptr == dvi_limit)dvi_swap (); 
+    if (dvi_ptr == dvi_limit)dvi_swap (); 
     } 
     dvi_four(last_bop); 
     {
     dvi_buf[dvi_ptr]= 2; 
     incr(dvi_ptr); 
-    if(dvi_ptr == dvi_limit)dvi_swap (); 
+    if (dvi_ptr == dvi_limit)dvi_swap (); 
     } 
     k = 4 +((dvi_buf_size - dvi_ptr)% 4); 
     while(k > 0){
       {
       dvi_buf[dvi_ptr]= 223; /* four to seven bytes of 223 */
       incr(dvi_ptr); 
-      if(dvi_ptr == dvi_limit)dvi_swap (); 
+      if (dvi_ptr == dvi_limit)dvi_swap (); 
     } 
     decr(k); 
     } 
@@ -381,8 +381,8 @@ void close_files_and_terminate (void)
     show_line(log_line, 0);
   }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    if(dvi_limit == half_buf)writedvi(half_buf, dvi_buf_size - 1); 
-    if(dvi_ptr > 0)writedvi(0, dvi_ptr - 1); 
+    if (dvi_limit == half_buf)writedvi(half_buf, dvi_buf_size - 1); 
+    if (dvi_ptr > 0)writedvi(0, dvi_ptr - 1); 
     print_nl("Output written on ");
 	if (full_file_name_flag && dvi_file_name != NULL) 
 		print_char_string((unsigned char *) dvi_file_name);
@@ -397,11 +397,11 @@ void close_files_and_terminate (void)
     print_string(" bytes).");
     b_close(dvi_file); 
   } 
-  if(log_opened) {
+  if (log_opened) {
     (void) putc ('\n', log_file);
     (void) a_close(log_file); 
     selector = selector - 2; 
-    if(selector == 17) {
+    if (selector == 17) {
     print_nl("Transcript written on ");
     if (full_file_name_flag && log_file_name != NULL)
 		print_char_string((unsigned char *) log_file_name);
@@ -427,8 +427,8 @@ void debug_help (void)
     fflush(stdout); 
 #endif
     read(stdin, m);  // ???
-    if(m < 0)return; 
-    else if(m == 0)
+    if (m < 0)return; 
+    else if (m == 0)
     dumpcore (); 
     else {
       read(stdin, n);  // ???
@@ -468,7 +468,7 @@ void debug_help (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATESTRING
 /* About to output node list make some space in string pool 97/Mar/9 */
-  if(pool_ptr + 32000 > current_pool_size)
+  if (pool_ptr + 32000 > current_pool_size)
     str_pool = realloc_str_pool (increment_pool_size);
 /* We don't bother to check whether this worked */
 #endif
@@ -504,7 +504,7 @@ void debug_help (void)
     register integer for_end; 
     k = 0; 
     for_end = n; 
-    if(k <= for_end) 
+    if (k <= for_end) 
       do print(buffer[k]); 
     while(k++ < for_end);
   } 

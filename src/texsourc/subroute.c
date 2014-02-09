@@ -2085,7 +2085,7 @@ void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirna
     strcat(buffer, "*.*");            /* 1994/Mar/1 */
   else strcat(buffer, PATH_SEP_STRING "*.*");
 #else
-  if(buffer[len-1] == PATH_SEP) strcat(buffer, "*");
+  if (buffer[len-1] == PATH_SEP) strcat(buffer, "*");
   else strcat(buffer, PATH_SEP_STRING "*");
 #endif  /* MSDOS */
 

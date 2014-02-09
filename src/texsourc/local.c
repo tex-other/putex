@@ -3461,7 +3461,7 @@ void print_cs_names (FILE *output, int pass)
   ccount=0;
   for (h = hash_base + 1; h < nfcs; h++) {
     if (pass == 1 && csused[h]) continue;
-    if(hash[h].v.RH != 0) {
+    if (hash[h].v.RH != 0) {
       if (pass == 0) csused[h] = 1;
       ccount++;
     }
@@ -3482,7 +3482,7 @@ void print_cs_names (FILE *output, int pass)
 /*    for (h = 515; h < (hash_size + 780); h++) { */
     for (h = hash_base+1; h < nfcs; h++) {
       if (pass == 1 && csused[ h]) continue; 
-      if(hash[h].v.RH != 0) cnumtable[ccount++] = h;
+      if (hash[h].v.RH != 0) cnumtable[ccount++] = h;
     }
 
     qsort ((void *)cnumtable, ccount, sizeof (int), &comparecs);
@@ -3641,12 +3641,12 @@ void dvi_font_show(internal_font_number f, int suppressname)
     l = (str_start[font_name[f]+ 1]- str_start[font_name[f]]); 
     k = str_start[font_area[f]];
     for_end = str_start[font_area[f]+ 1]- 1;
-    if(k <= for_end) do {
+    if (k <= for_end) do {
       putc(str_pool[k], log_file);
     } while(k++ < for_end, stdout); 
     k = str_start[font_name[f]];
     for_end = str_start[font_name[f]+ 1]- 1;
-    if(k <= for_end) do {
+    if (k <= for_end) do {
       putc(str_pool[k], log_file);
     } while(k++ < for_end);
   }
@@ -3676,7 +3676,7 @@ void show_font_info (void)
 
   fcount=0;
   for (k = 1; k <= font_ptr; k++)
-    if(font_used[k])fcount++;
+    if (font_used[k])fcount++;
 
   if (fcount == 0) return;  /* don't bother to get into trouble */
 
@@ -3689,7 +3689,7 @@ void show_font_info (void)
 
   fcount=0;
   for (k = 1; k <= font_ptr; k++) 
-    if(font_used[k])fnumtable[fcount++] = (short) k;
+    if (font_used[k])fnumtable[fcount++] = (short) k;
 
   qsort ((void *)fnumtable, fcount, sizeof (short), &comparefnt);
 

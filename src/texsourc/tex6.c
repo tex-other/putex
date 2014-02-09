@@ -29,15 +29,15 @@ void align_peek (void)
   do {
       get_x_token (); 
   } while(!(cur_cmd != 10)); 
-  if(cur_cmd == 34){
+  if (cur_cmd == 34){
     scan_left_brace (); 
     new_save_level(7); 
-    if(mode == -1) normal_paragraph (); 
+    if (mode == -1) normal_paragraph (); 
   } 
-  else if(cur_cmd == 2){
+  else if (cur_cmd == 2){
     fin_align ();
   }
-  else if((cur_cmd == 5)&&(cur_chr == 258)) 
+  else if ((cur_cmd == 5)&&(cur_chr == 258)) 
   goto lab20; 
   else {
     init_row (); 
@@ -48,7 +48,7 @@ void align_peek (void)
 halfword finite_shrink_(halfword p)
 {register halfword Result; 
   halfword q; 
-  if(noshrinkerroryet){
+  if (noshrinkerroryet){
     noshrinkerroryet = false;
 	print_err("Infinite glue shrinkage found in a paragraph");
 	help5("The paragraph just ended includes some glue that has",
@@ -85,8 +85,8 @@ void try_break_ (integer pi,small_number breaktype)
   bool artificialdemerits; 
   halfword savelink; 
   scaled shortfall; 
-  if(abs(pi)>= 10000)
-  if(pi > 0)
+  if (abs(pi)>= 10000)
+  if (pi > 0)
   goto lab10; 
   else pi = -10000; 
   nobreakyet = true; 
@@ -100,7 +100,7 @@ void try_break_ (integer pi,small_number breaktype)
   cur_active_width[6]= active_width[6]; 
   while(true){
     lab22: r = mem[prevr].hh.v.RH; 
-    if(mem[r].hh.b0 == 2)
+    if (mem[r].hh.b0 == 2)
     {
       cur_active_width[1]= cur_active_width[1]+ mem[r + 1].cint; 
       cur_active_width[2]= cur_active_width[2]+ mem[r + 2].cint; 
@@ -114,12 +114,12 @@ void try_break_ (integer pi,small_number breaktype)
     } 
     {
       l = mem[r + 1].hh.v.LH; 
-      if(l > oldl)
+      if (l > oldl)
       {
-  if((minimum_demerits < 1073741823L)&&  /* 2^30 - 1 */
+  if ((minimum_demerits < 1073741823L)&&  /* 2^30 - 1 */
     ((oldl != easyline)||(r == active)))
   {
-    if(nobreakyet)
+    if (nobreakyet)
     {
       nobreakyet = false; 
       break_width[1]= background[1]; 
@@ -130,8 +130,8 @@ void try_break_ (integer pi,small_number breaktype)
       break_width[6]= background[6]; 
       s = cur_p; 
 /* if break_type>unhyphenated then if cur_p<>null then l.16451 */
-      if(breaktype > 0)
-      if(cur_p != 0)
+      if (breaktype > 0)
+      if (cur_p != 0)
       {
         t = mem[cur_p].hh.b1; 
         v = cur_p; 
@@ -140,7 +140,7 @@ void try_break_ (integer pi,small_number breaktype)
       
     decr(t); 
     v = mem[v].hh.v.RH; 
-    if((v >= hi_mem_min)) 
+    if ((v >= hi_mem_min)) 
     {
       f = mem[v].hh.b0; 
       break_width[1]= break_width[1]- font_info[width_base[
@@ -164,7 +164,7 @@ void try_break_ (integer pi,small_number breaktype)
       break; 
       default: 
         {
-          confusion(917); /* disc1 */
+          confusion("disc1");
           return;       // abort_flag set
         }
         break; 
@@ -172,7 +172,7 @@ void try_break_ (integer pi,small_number breaktype)
         } 
         while(s != 0){  /* while s<>null do l.16453 */
       
-    if((s >= hi_mem_min)) 
+    if ((s >= hi_mem_min)) 
     {
       f = mem[s].hh.b0; 
       break_width[1]= break_width[1]+ font_info[width_base[
@@ -198,7 +198,7 @@ void try_break_ (integer pi,small_number breaktype)
       break; 
       default: 
         {
-          confusion(918); /* disc1 */
+          confusion("disc1");
           return;       // abort_flag set
         }
         break; 
@@ -208,12 +208,12 @@ void try_break_ (integer pi,small_number breaktype)
         } 
         break_width[1]= break_width[1]+ disc_width; 
 /* used to be a test on t here instead in 3.141 */
-        if(mem[cur_p + 1].hh.v.RH == 0)
+        if (mem[cur_p + 1].hh.v.RH == 0)
         s = mem[v].hh.v.RH; 
       } 
       while(s != 0){
     
-        if((s >= hi_mem_min)) 
+        if ((s >= hi_mem_min)) 
         goto lab30; 
         switch(mem[s].hh.b0)
         {case 10 : 
@@ -234,7 +234,7 @@ void try_break_ (integer pi,small_number breaktype)
     break; 
         case 11 : 
 /* changes here in nature of test since 3.141 */
-    if(mem[s].hh.b1 != 1)
+    if (mem[s].hh.b1 != 1)
     goto lab30; 
     else break_width[1]= break_width[1]- mem[s + 1].cint 
     ; 
@@ -247,7 +247,7 @@ void try_break_ (integer pi,small_number breaktype)
       } 
       lab30:; 
     } 
-    if(mem[prevr].hh.b0 == 2)
+    if (mem[prevr].hh.b0 == 2)
     {
       mem[prevr + 1].cint = mem[prevr + 1].cint - cur_active_width 
      [1]+ break_width[1]; 
@@ -262,7 +262,7 @@ void try_break_ (integer pi,small_number breaktype)
       mem[prevr + 6].cint = mem[prevr + 6].cint - cur_active_width 
      [6]+ break_width[6]; 
     } 
-    else if(prevr == active)
+    else if (prevr == active)
     {
       active_width[1]= break_width[1]; 
       active_width[2]= break_width[2]; 
@@ -287,7 +287,7 @@ void try_break_ (integer pi,small_number breaktype)
       prevprevr = prevr; 
       prevr = q; 
     } 
-    if(abs(eqtb[(hash_size + 3179)].cint)>= 1073741823L - minimum_demerits)
+    if (abs(eqtb[(hash_size + 3179)].cint)>= 1073741823L - minimum_demerits)
     minimum_demerits = 1073741822L; /* 2^30 - 2 */
     else minimum_demerits = minimum_demerits + abs(eqtb[(hash_size + 3179)].cint 
   ); 
@@ -295,9 +295,9 @@ void try_break_ (integer pi,small_number breaktype)
       register integer for_end; 
       fitclass = 0; 
       for_end = 3; 
-      if(fitclass <= for_end) do 
+      if (fitclass <= for_end) do 
       {
-        if(minimal_demerits[fitclass]<= minimum_demerits)
+        if (minimal_demerits[fitclass]<= minimum_demerits)
         {
     q = get_node(2); 
     mem[q].hh.v.RH = passive; 
@@ -320,23 +320,22 @@ void try_break_ (integer pi,small_number breaktype)
     prevr = q; 
   ;
 #ifdef STAT
-    if(eqtb[(hash_size + 3195)].cint > 0)
+    if (eqtb[(hash_size + 3195)].cint > 0)
     {
-      print_nl("@@");      /* @@ */
+      print_nl("@@");
       print_int(mem[passive].hh.v.LH); 
       print_string(": line ");
       print_int(mem[q + 1].hh.v.LH - 1); 
-      print_char(46); /* . */
+      print_char('.');
       print_int(fitclass); 
-      if(breaktype == 1)
-      print_char(45); /* - */
+      if (breaktype == 1)
+      print_char('-');
       print_string("t=");
       print_int(mem[q + 2].cint); 
       print_string("-> @@");
-      if(mem[passive + 1].hh.v.LH == 0)
-      print_char(48); /* 0 */
-      else print_int(mem[mem[passive + 1].hh.v.LH].hh 
-     .v.LH); 
+      if (mem[passive + 1].hh.v.LH == 0)
+      print_char('0');
+      else print_int(mem[mem[passive + 1].hh.v.LH].hh.v.LH); 
     } 
 #endif /* STAT */
         } 
@@ -344,7 +343,7 @@ void try_break_ (integer pi,small_number breaktype)
       } 
     while(fitclass++ < for_end); } 
     minimum_demerits = 1073741823L; /* 2^30 - 1 */
-    if(r != active)
+    if (r != active)
     {
       q = get_node(7); 
       mem[q].hh.v.RH = r; 
@@ -361,9 +360,9 @@ void try_break_ (integer pi,small_number breaktype)
       prevr = q; 
     } 
   } 
-  if(r == active)
+  if (r == active)
   goto lab10; 
-  if(l > easyline)
+  if (l > easyline)
   {
     linewidth = second_width; 
     oldl = 262142L;       /* 2^18 - 2 ? */
@@ -371,9 +370,9 @@ void try_break_ (integer pi,small_number breaktype)
   else {
       
     oldl = l; 
-    if(l > last_special_line)
+    if (l > last_special_line)
     linewidth = second_width; 
-    else if(eqtb[(hash_size + 1312)].hh.v.RH == 0)
+    else if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
     linewidth = first_width; 
     else linewidth = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * l].cint; 
   } 
@@ -382,8 +381,8 @@ void try_break_ (integer pi,small_number breaktype)
     {
       artificialdemerits = false; 
       shortfall = linewidth - cur_active_width[1];  /* linewidth may be ... */
-      if(shortfall > 0)
-      if((cur_active_width[3]!= 0)||(cur_active_width[4]!= 0)||(
+      if (shortfall > 0)
+      if ((cur_active_width[3]!= 0)||(cur_active_width[4]!= 0)||(
       cur_active_width[5]!= 0)) 
       {
   b = 0; 
@@ -391,16 +390,16 @@ void try_break_ (integer pi,small_number breaktype)
       } 
       else {
     
-  if(shortfall > 7230584L)
-  if(cur_active_width[2]< 1663497L)
+  if (shortfall > 7230584L)
+  if (cur_active_width[2]< 1663497L)
   {
     b = 10000; 
     fitclass = 0; 
     goto lab31; 
   } 
   b = badness(shortfall, cur_active_width[2]); 
-  if(b > 12)
-  if(b > 99)
+  if (b > 12)
+  if (b > 99)
   fitclass = 0; 
   else fitclass = 1; 
   else fitclass = 2; 
@@ -408,57 +407,57 @@ void try_break_ (integer pi,small_number breaktype)
       } 
       else {
     
-  if(- (integer) shortfall > cur_active_width[6])
+  if (- (integer) shortfall > cur_active_width[6])
   b = 10001; 
   else b = badness(- (integer) shortfall, cur_active_width[6]); 
-  if(b > 12)
+  if (b > 12)
   fitclass = 3; 
   else fitclass = 2; 
       } 
-      if((b > 10000)||(pi == -10000)) 
+      if ((b > 10000)||(pi == -10000)) 
       {
-  if(final_pass &&(minimum_demerits == 1073741823L)&&  /* 2^30 - 1 */
+  if (final_pass &&(minimum_demerits == 1073741823L)&&  /* 2^30 - 1 */
     (mem[r].hh.v.RH == active)&&(prevr == active)) 
   artificialdemerits = true; 
-  else if(b > threshold)
+  else if (b > threshold)
   goto lab60; 
   noderstaysactive = false; 
       } 
       else {
     
   prevr = r; 
-  if(b > threshold)
+  if (b > threshold)
   goto lab22; 
   noderstaysactive = true; 
       } 
-      if(artificialdemerits)
+      if (artificialdemerits)
       d = 0; 
       else {
     
   d = eqtb[(hash_size + 3165)].cint + b; 
-  if(abs(d)>= 10000)
+  if (abs(d)>= 10000)
   d = 100000000L; 
   else d = d * d; 
-  if(pi != 0)
-  if(pi > 0)
+  if (pi != 0)
+  if (pi > 0)
   d = d + pi * pi; 
-  else if(pi > -10000)
+  else if (pi > -10000)
   d = d - pi * pi; 
-  if((breaktype == 1)&&(mem[r].hh.b0 == 1)) 
-  if(cur_p != 0)
+  if ((breaktype == 1)&&(mem[r].hh.b0 == 1)) 
+  if (cur_p != 0)
   d = d + eqtb[(hash_size + 3177)].cint; 
   else d = d + eqtb[(hash_size + 3178)].cint; 
-  if(abs(toint(fitclass)- toint(mem[r].hh.b1)) > 1)
+  if (abs(toint(fitclass)- toint(mem[r].hh.b1)) > 1)
   d = d + eqtb[(hash_size + 3179)].cint; 
       } 
   ;
 #ifdef STAT
-      if(eqtb[(hash_size + 3195)].cint > 0)
+      if (eqtb[(hash_size + 3195)].cint > 0)
       {
-  if(printed_node != cur_p)
+  if (printed_node != cur_p)
   {
     print_nl("");    /*  */
-    if(cur_p == 0)
+    if (cur_p == 0)
     short_display(mem[printed_node].hh.v.RH); 
     else {
         
@@ -471,51 +470,51 @@ void try_break_ (integer pi,small_number breaktype)
     printed_node = cur_p; 
   } 
   print_nl("@");   /* @ */
-  if(cur_p == 0)
+  if (cur_p == 0)
     print_esc("par");
-  else if(mem[cur_p].hh.b0 != 10)
+  else if (mem[cur_p].hh.b0 != 10)
   {
-    if(mem[cur_p].hh.b0 == 12)
+    if (mem[cur_p].hh.b0 == 12)
       print_esc("penalty");
-    else if(mem[cur_p].hh.b0 == 7)
+    else if (mem[cur_p].hh.b0 == 7)
       print_esc("discretionary");
-    else if(mem[cur_p].hh.b0 == 11)
+    else if (mem[cur_p].hh.b0 == 11)
       print_esc("kern");
     else print_esc("math");
   } 
   print_string("via @@");   /*  */
-  if(mem[r + 1].hh.v.RH == 0)
-  print_char(48); /* 0 */
+  if (mem[r + 1].hh.v.RH == 0)
+  print_char('0');
   else print_int(mem[mem[r + 1].hh.v.RH].hh.v.LH); 
   print_string("b=");
-  if(b > 10000)
-  print_char(42);   /* * */
+  if (b > 10000)
+  print_char('*');
   else print_int(b); 
   print_string("p=");
   print_int(pi); 
   print_string("d=");
-  if(artificialdemerits)
-  print_char(42);   /* * */
+  if (artificialdemerits)
+  print_char('*');
   else print_int(d); 
       } 
 #endif /* STAT */
       d = d + mem[r + 2].cint; 
-      if(d <= minimal_demerits[fitclass])
+      if (d <= minimal_demerits[fitclass])
       {
   minimal_demerits[fitclass]= d; 
   best_place[fitclass]= mem[r + 1].hh.v.RH; 
   best_pl_line[fitclass]= l; 
-  if(d < minimum_demerits)
+  if (d < minimum_demerits)
   minimum_demerits = d; 
       } 
-      if(noderstaysactive)
+      if (noderstaysactive)
       goto lab22; 
       lab60: mem[prevr].hh.v.RH = mem[r].hh.v.RH; 
       free_node(r, 3); 
-      if(prevr == active)
+      if (prevr == active)
       {
   r = mem[active].hh.v.RH; 
-  if(mem[r].hh.b0 == 2)
+  if (mem[r].hh.b0 == 2)
   {
     active_width[1]= active_width[1]+ mem[r + 1].cint; 
     active_width[2]= active_width[2]+ mem[r + 2].cint; 
@@ -533,10 +532,10 @@ void try_break_ (integer pi,small_number breaktype)
     free_node(r, 7); 
   } 
       } 
-      else if(mem[prevr].hh.b0 == 2)
+      else if (mem[prevr].hh.b0 == 2)
       {
   r = mem[prevr].hh.v.RH; 
-  if(r == active)
+  if (r == active)
   {
     cur_active_width[1]= cur_active_width[1]- mem[prevr + 1]
    .cint; 
@@ -554,7 +553,7 @@ void try_break_ (integer pi,small_number breaktype)
     free_node(prevr, 7); 
     prevr = prevprevr; 
   } 
-  else if(mem[r].hh.b0 == 2)
+  else if (mem[r].hh.b0 == 2)
   {
     cur_active_width[1]= cur_active_width[1]+ mem[r + 1].cint; 
     cur_active_width[2]= cur_active_width[2]+ mem[r + 2].cint; 
@@ -583,9 +582,9 @@ void try_break_ (integer pi,small_number breaktype)
   lab10: 
   ;
 #ifdef STAT
-  if(cur_p == printed_node)
-  if(cur_p != 0)
-  if(mem[cur_p].hh.b0 == 7){
+  if (cur_p == printed_node)
+  if (cur_p != 0)
+  if (mem[cur_p].hh.b0 == 7){
     t = mem[cur_p].hh.b1; 
     while(t > 0){
       decr(t); 
@@ -620,8 +619,8 @@ void post_line_break_(integer finalwidowpenalty)
       q = mem[cur_p + 1].hh.v.RH; 
     discbreak = false; 
     postdiscbreak = false; 
-    if(q != 0)
-    if(mem[q].hh.b0 == 10)
+    if (q != 0)
+    if (mem[q].hh.b0 == 10)
     {
       delete_glue_ref(mem[q + 1].hh.v.LH); 
       mem[q + 1].hh.v.LH = eqtb[(hash_size + 790)].hh.v.RH; 
@@ -631,10 +630,10 @@ void post_line_break_(integer finalwidowpenalty)
     } 
     else {
   
-      if(mem[q].hh.b0 == 7)
+      if (mem[q].hh.b0 == 7)
       {
   t = mem[q].hh.b1; 
-  if(t == 0)
+  if (t == 0)
   r = mem[q].hh.v.RH; 
   else {
       
@@ -650,7 +649,7 @@ void post_line_break_(integer finalwidowpenalty)
     flush_node_list(mem[q].hh.v.RH); 
     mem[q].hh.b1 = 0; 
   } 
-  if(mem[q + 1].hh.v.RH != 0)
+  if (mem[q + 1].hh.v.RH != 0)
   {
     s = mem[q + 1].hh.v.RH; 
     while(mem[s].hh.v.RH != 0)s = mem[s].hh.v.RH; 
@@ -659,7 +658,7 @@ void post_line_break_(integer finalwidowpenalty)
     mem[q + 1].hh.v.RH = 0; 
     postdiscbreak = true; 
   } 
-  if(mem[q + 1].hh.v.LH != 0)
+  if (mem[q + 1].hh.v.LH != 0)
   {
     s = mem[q + 1].hh.v.LH; 
     mem[q].hh.v.RH = s; 
@@ -670,7 +669,7 @@ void post_line_break_(integer finalwidowpenalty)
   mem[q].hh.v.RH = r; 
   discbreak = true; 
       } 
-      else if((mem[q].hh.b0 == 9)||(mem[q].hh.b0 == 11)) 
+      else if ((mem[q].hh.b0 == 9)||(mem[q].hh.b0 == 11)) 
       mem[q + 1].cint = 0; 
     } 
     else {
@@ -687,18 +686,18 @@ void post_line_break_(integer finalwidowpenalty)
     mem[q].hh.v.RH = 0; 
     q = mem[temp_head].hh.v.RH; 
     mem[temp_head].hh.v.RH = r; 
-    if(eqtb[(hash_size + 789)].hh.v.RH != 0)
+    if (eqtb[(hash_size + 789)].hh.v.RH != 0)
     {
       r = new_param_glue(7); 
       mem[r].hh.v.RH = q; 
       q = r; 
     } 
-    if(curline > last_special_line)
+    if (curline > last_special_line)
     {
       curwidth = second_width; 
       curindent = second_indent; 
     } 
-    else if(eqtb[(hash_size + 1312)].hh.v.RH == 0)
+    else if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
     {
       curwidth = first_width; 
       curindent = first_indent; 
@@ -713,22 +712,22 @@ void post_line_break_(integer finalwidowpenalty)
     mem[just_box + 4].cint = curindent; 
     append_to_vlist(just_box); 
 /* if adjust_head<>adjust_tail then l.17346 */
-    if(adjust_head != adjust_tail)
+    if (adjust_head != adjust_tail)
     {
       mem[tail].hh.v.RH = mem[adjust_head].hh.v.RH; 
       tail = adjust_tail; 
     } 
     adjust_tail = 0; /* adjust_tail:=null */
-    if(curline + 1 != best_line)
+    if (curline + 1 != best_line)
     {
       pen = eqtb[(hash_size + 3176)].cint; 
-      if(curline == prev_graf + 1)
+      if (curline == prev_graf + 1)
       pen = pen + eqtb[(hash_size + 3168)].cint; 
-      if(curline + 2 == best_line)
+      if (curline + 2 == best_line)
       pen = pen + finalwidowpenalty; 
-      if(discbreak)
+      if (discbreak)
       pen = pen + eqtb[(hash_size + 3171)].cint; 
-      if(pen != 0)
+      if (pen != 0)
       {
   r = new_penalty(pen); 
   mem[tail].hh.v.RH = r; 
@@ -737,25 +736,25 @@ void post_line_break_(integer finalwidowpenalty)
     } 
     incr(curline); 
     cur_p = mem[cur_p + 1].hh.v.LH; 
-    if(cur_p != 0)
-    if(! postdiscbreak)
+    if (cur_p != 0)
+    if (! postdiscbreak)
     {
       r = temp_head; 
       while(true){
   q = mem[r].hh.v.RH; 
-  if(q == mem[cur_p + 1].hh.v.RH)
+  if (q == mem[cur_p + 1].hh.v.RH)
   goto lab31; 
-  if((q >= hi_mem_min)) 
+  if ((q >= hi_mem_min)) 
   goto lab31; 
-  if((mem[q].hh.b0 < 9)) 
+  if ((mem[q].hh.b0 < 9)) 
   goto lab31; 
 /* change in tests here from 3.141 != 1 instead of == 2 */
-  if(mem[q].hh.b0 == 11)
-  if(mem[q].hh.b1 != 1)
+  if (mem[q].hh.b0 == 11)
+  if (mem[q].hh.b1 != 1)
   goto lab31; 
   r = q; 
       } 
-      lab31: if(r != temp_head)
+      lab31: if (r != temp_head)
       {
   mem[r].hh.v.RH = 0; 
   flush_node_list(mem[temp_head].hh.v.RH); 
@@ -763,8 +762,8 @@ void post_line_break_(integer finalwidowpenalty)
       } 
     } 
   } while(!(cur_p == 0)); 
-  if((curline != best_line)||(mem[temp_head].hh.v.RH != 0)) {
-    confusion(933);   /* disc2 */
+  if ((curline != best_line)||(mem[temp_head].hh.v.RH != 0)) {
+    confusion("disc2");
     return;       // abort_flag set
   }
   prev_graf = best_line - 1; 
@@ -785,11 +784,11 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
   mem[hold_head].hh.v.RH = 0; 
   cur_l = hu[j]; 
   cur_q = t; 
-  if(j == 0)
+  if (j == 0)
   {
     ligature_present = init_lig; 
     p = init_list; 
-    if(ligature_present)
+    if (ligature_present)
     lft_hit = init_lft; 
 /*   while p>null do l.17772 */
 /*    while(p > 0){ */  /* NO! */
@@ -804,7 +803,7 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
       p = mem[p].hh.v.RH; /* p:=link(p); */
     } 
   } 
-  else if(cur_l < 256)
+  else if (cur_l < 256)
   {
     mem[t].hh.v.RH = get_avail (); 
     t = mem[t].hh.v.RH; 
@@ -813,42 +812,42 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
   } 
   lig_stack = 0;    /* lig_stack:=null; */
   {
-    if(j < n)
+    if (j < n)
     cur_r = hu[j + 1]; 
     else cur_r = bchar; 
-    if(odd(hyf[j])) 
+    if (odd(hyf[j])) 
     currh = hchar; 
     else currh = 256; 
   } 
-  lab22: if(cur_l == 256)   /* if cur_l = non_char then */
+  lab22: if (cur_l == 256)   /* if cur_l = non_char then */
   {
     k = bchar_label[hf];    /* begin k:=bchar_label[hf]; */
 /*  if k=non_address then goto done@+else q:=font_info[k].qqqq; l.17812 */
-/*    if(k == font_mem_size) */
-    if(k == non_address)    /* i.e. 0 ---  96/Jan/15 */
+/*    if (k == font_mem_size) */
+    if (k == non_address)    /* i.e. 0 ---  96/Jan/15 */
     goto lab30; 
     else q = font_info[k].qqqq; 
   } 
   else {
     q = font_info[char_base[hf]+ cur_l].qqqq; 
-    if(((q.b2)% 4)!= 1)
+    if (((q.b2)% 4)!= 1)
     goto lab30; 
     k = lig_kern_base[hf]+ q.b3; 
     q = font_info[k].qqqq; 
-    if(q.b0 > 128)
+    if (q.b0 > 128)
     {
       k = lig_kern_base[hf]+ 256 * q.b2 + q.b3 + 32768L - 256 *(128); 
       q = font_info[k].qqqq; 
     } 
   } 
-  if(currh < 256) /* if cur_rh < non_char then test_char:=cur_rh */
+  if (currh < 256) /* if cur_rh < non_char then test_char:=cur_rh */
     testchar = currh; 
   else testchar = cur_r;  /* else test_char:=cur_r; l.17817 */
 /* loop@+begin if next_char(q)=test_char then if skip_byte(q)<=stop_flag then */
   while(true){
-    if(q.b1 == testchar)
-    if(q.b0 <= 128)
-    if(currh < 256)   /*  if cur_rh<non_char then */
+    if (q.b1 == testchar)
+    if (q.b0 <= 128)
+    if (currh < 256)   /*  if cur_rh<non_char then */
     {
       hyphen_passed = j; 
       hchar = 256; 
@@ -856,24 +855,24 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
       goto lab22;     /* goto continue; */
     } 
     else {    /* else begin if hchar<non_char then if odd(hyf[j]) then */
-    if(hchar < 256)
-      if(odd(hyf[j])) 
+    if (hchar < 256)
+      if (odd(hyf[j])) 
       {
   hyphen_passed = j; 
   hchar = 256; 
       } 
-      if(q.b2 < 128)  /* if op_byte(q)<kern_flag then */
+      if (q.b2 < 128)  /* if op_byte(q)<kern_flag then */
       {
 // @<Carry out a ligature replacement, updating the cursor structure
 //  and possibly advancing~|j|; |goto continue| if the cursor doesn't
 //  advance, otherwise |goto done|@>;  => l.17869
-  if(cur_l == 256)    /* begin if cur_l=non_char then lft_hit:=true; */
+  if (cur_l == 256)    /* begin if cur_l=non_char then lft_hit:=true; */
     lft_hit = true; 
-  if(j == n)
-    if(lig_stack == 0)/* if lig_stack=null ? */
+  if (j == n)
+    if (lig_stack == 0)/* if lig_stack=null ? */
       rt_hit = true; 
   {
-    if(interrupt != 0){
+    if (interrupt != 0){
       pause_for_instructions ();
     }
   } 
@@ -890,12 +889,12 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
     {
       cur_r = q.b3; 
 /*   if lig_stack>null then character(lig_stack):=cur_r */
-/*      if(lig_stack > 0) */      /* 94/Mar/22 */
-      if(lig_stack != 0)      /* line breaking?? */
+/*      if (lig_stack > 0) */      /* 94/Mar/22 */
+      if (lig_stack != 0)      /* line breaking?? */
       mem[lig_stack].hh.b1 = cur_r; /* l.17877 ? */
       else {
         lig_stack = new_lig_item(cur_r); 
-        if(j == n)
+        if (j == n)
         bchar = 256; 
         else {
     p = get_avail (); 
@@ -917,16 +916,16 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
   case 7 : 
   case 11 : 
     {
-      if(ligature_present)
+      if (ligature_present)
       {
         p = new_ligature(hf, cur_l, mem[cur_q].hh.v.RH); 
-        if(lft_hit)
+        if (lft_hit)
         {
     mem[p].hh.b1 = 2; 
     lft_hit = false; 
         } 
-/*        if(false)
-        if(lig_stack == 0){
+/*        if (false)
+        if (lig_stack == 0){
           incr(mem[p].hh.b1); 
           rt_hit = false; 
         } */              /* removed 99/Jan/6 */
@@ -946,11 +945,11 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
       cur_l = q.b3; 
       ligature_present = true; 
 /*   if lig_stack>null then pop_lig_stack l.17870 => l.17828 */
-/*      if(lig_stack > 0)*/       /* 94/Mar/22 ??? */
-      if(lig_stack != 0)        /* BUG FIX  */
+/*      if (lig_stack > 0)*/       /* 94/Mar/22 ??? */
+      if (lig_stack != 0)        /* BUG FIX  */
       {
-/*        if(mem[lig_stack + 1].hh.v.RH > 0) */ /* 94/Mar/22  */
-        if(mem[lig_stack + 1].hh.v.RH != 0) /* l.17828 ? */
+/*        if (mem[lig_stack + 1].hh.v.RH > 0) */ /* 94/Mar/22  */
+        if (mem[lig_stack + 1].hh.v.RH != 0) /* l.17828 ? */
         {
     mem[t].hh.v.RH = mem[lig_stack + 1].hh.v.RH; 
     t = mem[t].hh.v.RH; 
@@ -959,18 +958,18 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
         p = lig_stack; 
         lig_stack = mem[p].hh.v.RH; 
         free_node(p, 2); 
-        if(lig_stack == 0)  /* if lig_stack=null ? */
+        if (lig_stack == 0)  /* if lig_stack=null ? */
         {
-    if(j < n)
+    if (j < n)
     cur_r = hu[j + 1]; 
     else cur_r = bchar; 
-    if(odd(hyf[j])) 
+    if (odd(hyf[j])) 
     currh = hchar; 
     else currh = 256; 
         } 
         else cur_r = mem[lig_stack].hh.b1; 
       } 
-      else if(j == n)
+      else if (j == n)
       goto lab30; 
       else {
     
@@ -982,10 +981,10 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
         } 
         incr(j); 
         {
-    if(j < n)
+    if (j < n)
     cur_r = hu[j + 1]; 
     else cur_r = bchar; 
-    if(odd(hyf[j])) 
+    if (odd(hyf[j])) 
     currh = hchar; 
     else currh = 256; 
         } 
@@ -993,16 +992,16 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
     } 
     break; 
   } 
-  if(q.b2 > 4)
-  if(q.b2 != 7)
+  if (q.b2 > 4)
+  if (q.b2 != 7)
   goto lab30; 
   goto lab22; 
       } 
       w = font_info[kern_base[hf]+ 256 * q.b2 + q.b3].cint; 
       goto lab30; 
     } 
-    if(q.b0 >= 128)
-    if(currh == 256)
+    if (q.b0 >= 128)
+    if (currh == 256)
     goto lab30; 
     else {
   
@@ -1013,16 +1012,16 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
     q = font_info[k].qqqq; 
   } 
   lab30:; 
-  if(ligature_present)
+  if (ligature_present)
   {
     p = new_ligature(hf, cur_l, mem[cur_q].hh.v.RH); 
-    if(lft_hit)
+    if (lft_hit)
     {
       mem[p].hh.b1 = 2; 
       lft_hit = false; 
     } 
-    if(rt_hit)
-    if(lig_stack == 0)  /* if lig_stack=null ? */
+    if (rt_hit)
+    if (lig_stack == 0)  /* if lig_stack=null ? */
     {
       incr(mem[p].hh.b1); 
       rt_hit = false; 
@@ -1031,14 +1030,14 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
     t = p; 
     ligature_present = false; 
   } 
-  if(w != 0)
+  if (w != 0)
   {
     mem[t].hh.v.RH = new_kern(w); 
     t = mem[t].hh.v.RH; 
     w = 0; 
   } 
-/*  if(lig_stack > 0)*/     /* 94/Mar/22 ??? l.17870 */
-  if(lig_stack != 0)        /* l.17841 */
+/*  if (lig_stack > 0)*/     /* 94/Mar/22 ??? l.17870 */
+  if (lig_stack != 0)        /* l.17841 */
   {
 /* begin cur_q:=t; cur_l:=character(lig_stack);
   ligature_present:=true; l.17842 */
@@ -1047,8 +1046,8 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
     ligature_present = true; 
     {
 /*   pop_lig_stack; goto continue; l.17843 => l.17828 */
-/*      if(mem[lig_stack + 1].hh.v.RH > 0) *//* 94/Mar/22 */
-      if(mem[lig_stack + 1].hh.v.RH != 0) /* BUG FIX */
+/*      if (mem[lig_stack + 1].hh.v.RH > 0) *//* 94/Mar/22 */
+      if (mem[lig_stack + 1].hh.v.RH != 0) /* BUG FIX */
       {
   mem[t].hh.v.RH = mem[lig_stack + 1].hh.v.RH; 
   t = mem[t].hh.v.RH; 
@@ -1057,12 +1056,12 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
       p = lig_stack; 
       lig_stack = mem[p].hh.v.RH; 
       free_node(p, 2); 
-      if(lig_stack == 0)
+      if (lig_stack == 0)
       {
-  if(j < n)
+  if (j < n)
   cur_r = hu[j + 1]; 
   else cur_r = bchar; 
-  if(odd(hyf[j])) 
+  if (odd(hyf[j])) 
   currh = hchar; 
   else currh = 256; 
       } 
@@ -1097,7 +1096,7 @@ void hyphenate (void)
     register integer for_end; 
     j = 0; 
     for_end = hn; 
-    if(j <= for_end) do 
+    if (j <= for_end) do 
       hyf[j]= 0; 
     while(j++ < for_end);
   } 
@@ -1108,25 +1107,25 @@ void hyphenate (void)
     register integer for_end; 
     j = 2; 
     for_end = hn; 
-    if(j <= for_end) do 
+    if (j <= for_end) do 
 /*    h =(h + h + hc[j])% 607;  */
       h =(h + h + hc[j])% hyphen_prime; 
     while(j++ < for_end);
   } 
   while(true){
     k = hyph_word[h]; 
-    if(k == 0)
+    if (k == 0)
     goto lab45; 
-    if((str_start[k + 1]- str_start[k])< hn)
+    if ((str_start[k + 1]- str_start[k])< hn)
     goto lab45; 
-    if((str_start[k + 1]- str_start[k])== hn)
+    if ((str_start[k + 1]- str_start[k])== hn)
     {
       j = 1; 
       u = str_start[k]; 
       do {
-    if(str_pool[u]< hc[j])
+    if (str_pool[u]< hc[j])
   goto lab45; 
-  if(str_pool[u]> hc[j])
+  if (str_pool[u]> hc[j])
   goto lab30; 
   incr(j); 
   incr(u); 
@@ -1141,13 +1140,13 @@ void hyphenate (void)
       goto lab40; 
     } 
     lab30:; 
-    if(h > 0)
+    if (h > 0)
     decr(h); 
 /*    else h = 607;  */
     else h = hyphen_prime; 
   } 
   lab45: decr(hn); 
-  if(trie_trc[cur_lang + 1]!= cur_lang)
+  if (trie_trc[cur_lang + 1]!= cur_lang)
   return; 
   hc[0]= 0; 
   hc[hn + 1]= 0; 
@@ -1156,18 +1155,18 @@ void hyphenate (void)
     register integer for_end; 
     j = 0; 
     for_end = hn - rhyf + 1; 
-    if(j <= for_end) do 
+    if (j <= for_end) do 
     {
       z = trie_trl[cur_lang + 1]+ hc[j]; 
       l = j; 
       while(hc[l]== trie_trc[z]){
-      if(trie_tro[z]!= min_trie_op)
+      if (trie_tro[z]!= min_trie_op)
   {
     v = trie_tro[z]; 
     do {
         v = v + op_start[cur_lang]; 
       i = l - hyf_distance[v]; 
-      if(hyf_num[v]> hyf[i])
+      if (hyf_num[v]> hyf[i])
       hyf[i]= hyf_num[v]; 
       v = hyf_next[v]; 
     } while(!(v == min_trie_op)); 
@@ -1181,7 +1180,7 @@ void hyphenate (void)
       register integer for_end; 
     j = 0; 
     for_end = lhyf - 1; 
-    if(j <= for_end) do 
+    if (j <= for_end) do 
       hyf[j]= 0; 
     while(j++ < for_end);
      } 
@@ -1189,7 +1188,7 @@ void hyphenate (void)
     register integer for_end; 
     j = 0; 
     for_end = rhyf - 1; 
-    if(j <= for_end) do 
+    if (j <= for_end) do 
       hyf[hn - j]= 0; 
     while(j++ < for_end);
   } 
@@ -1198,9 +1197,9 @@ void hyphenate (void)
     register integer for_end; 
     j = lhyf; 
     for_end = hn - rhyf; 
-    if(j <= for_end) do 
+    if (j <= for_end) do 
 /* lost if (j <= for_end) do since 3.141 */
-      if(odd(hyf[j])) 
+      if (odd(hyf[j])) 
         goto lab41; 
     while(j++ < for_end);
   } 
@@ -1211,8 +1210,8 @@ void hyphenate (void)
   r = mem[ha].hh.v.RH; 
   mem[ha].hh.v.RH = 0; 
   bchar = hyfbchar; 
-  if((ha >= hi_mem_min)) 
-  if(mem[ha].hh.b0 != hf)
+  if ((ha >= hi_mem_min)) 
+  if (mem[ha].hh.b0 != hf)
   goto lab42; 
   else {
       
@@ -1220,8 +1219,8 @@ void hyphenate (void)
     init_lig = false; 
     hu[0]= mem[ha].hh.b1; 
   } 
-  else if(mem[ha].hh.b0 == 6)
-  if(mem[ha + 1].hh.b0 != hf)
+  else if (mem[ha].hh.b0 == 6)
+  if (mem[ha + 1].hh.b0 != hf)
   goto lab42; 
   else {
       
@@ -1229,8 +1228,8 @@ void hyphenate (void)
     init_lig = true; 
     init_lft =(mem[ha].hh.b1 > 1); 
     hu[0]= mem[ha + 1].hh.b1; 
-    if(init_list == 0)
-    if(init_lft)
+    if (init_list == 0)
+    if (init_lft)
     {
       hu[0]= 256; 
       init_lig = false; 
@@ -1239,9 +1238,9 @@ void hyphenate (void)
   } 
   else {
       
-    if(!(r >= hi_mem_min)) 
-    if(mem[r].hh.b0 == 6)
-    if(mem[r].hh.b1 > 1)
+    if (!(r >= hi_mem_min)) 
+    if (mem[r].hh.b0 == 6)
+    if (mem[r].hh.b1 > 1)
     goto lab42; 
     j = 1; 
     s = ha; 
@@ -1261,20 +1260,20 @@ void hyphenate (void)
   do {
       l = j; 
     j = reconstitute(j, hn, bchar, hyf_char)+ 1; 
-    if(hyphen_passed == 0)
+    if (hyphen_passed == 0)
     {
       mem[s].hh.v.RH = mem[hold_head].hh.v.RH; 
 /*      while(mem[s].hh.v.RH > 0)*/ /* 94/Mar/22 */
       while(mem[s].hh.v.RH != 0)    /* l.17903 */
       s = mem[s].hh.v.RH; 
-      if(odd(hyf[j - 1])) 
+      if (odd(hyf[j - 1])) 
       {
   l = j; 
   hyphen_passed = j - 1; 
   mem[hold_head].hh.v.RH = 0; /* link(hold_head):=null; */
       } 
     } 
-    if(hyphen_passed > 0)
+    if (hyphen_passed > 0)
     do {
   r = get_node(2); 
       mem[r].hh.v.RH = mem[hold_head].hh.v.RH; 
@@ -1295,7 +1294,7 @@ void hyphenate (void)
       mem[r + 1].hh.v.LH = 0; 
 /* hyf_node:=new_character(hf,hyf_char); */
       hyfnode = new_character(hf, hyf_char); 
-      if(hyfnode != 0)  /* if hyf_node<>null then */
+      if (hyfnode != 0)  /* if hyf_node<>null then */
       {
   incr(i); 
   c = hu[i]; 
@@ -1313,10 +1312,10 @@ void hyphenate (void)
 /*  begin l:=reconstitute(l,i,font_bchar[hf],non_char)+1; l.17948 */
   l = reconstitute(l, i, font_bchar[hf], 256)+ 1; 
 /*  if link(hold_head)>null then l.17949 */
-/*  if(mem[hold_head].hh.v.RH > 0)*/  /* 94/Mar/22 */
-  if(mem[hold_head].hh.v.RH != 0) /* BUG FIX ??? */
+/*  if (mem[hold_head].hh.v.RH > 0)*/  /* 94/Mar/22 */
+  if (mem[hold_head].hh.v.RH != 0) /* BUG FIX ??? */
   {
-    if(minortail == 0)/*      if minor_tail=null then */
+    if (minortail == 0)/*      if minor_tail=null then */
     mem[r + 1].hh.v.LH = mem[hold_head].hh.v.RH; 
     else mem[minortail].hh.v.RH = mem[hold_head].hh.v.RH; 
     minortail = mem[hold_head].hh.v.RH; 
@@ -1326,7 +1325,7 @@ void hyphenate (void)
       minortail = mem[minortail].hh.v.RH; 
   } 
       } 
-      if(hyfnode != 0) /* if hyf_node<>null then l.17956 */
+      if (hyfnode != 0) /* if hyf_node<>null then l.17956 */
       {
   hu[i]= c; 
   l = i; 
@@ -1337,9 +1336,9 @@ void hyphenate (void)
       mem[r + 1].hh.v.RH = 0; 
       cloc = 0; 
 /* if bchar_label[hf]<non_address then l.17991 3.1415 */
-/*      if(bchar_label[hf]< font_mem_size) */
+/*      if (bchar_label[hf]< font_mem_size) */
 /* if bchar_label[hf]<>non_address then l.17991 3.14159 */
-      if(bchar_label[hf]!= non_address) /* i.e. 0 --- 96/Jan/15 */
+      if (bchar_label[hf]!= non_address) /* i.e. 0 --- 96/Jan/15 */
       {
   decr(l); 
   c = hu[l]; 
@@ -1350,16 +1349,16 @@ void hyphenate (void)
     
   do {
       l = reconstitute(l, hn, bchar, 256)+ 1; 
-    if(cloc > 0)
+    if (cloc > 0)
     {
       hu[cloc]= c;    /* c may be used ... */
       cloc = 0; 
     } 
 /*   if link(hold_head)>null then l. l.17973 */
-/*    if(mem[hold_head].hh.v.RH > 0)  */    /* 94/Mar/22 ??? */
-    if(mem[hold_head].hh.v.RH != 0)     /* BUG FIX */
+/*    if (mem[hold_head].hh.v.RH > 0)  */    /* 94/Mar/22 ??? */
+    if (mem[hold_head].hh.v.RH != 0)     /* BUG FIX */
     {
-      if(minortail == 0)/*     begin if minor_tail=null then */
+      if (minortail == 0)/*     begin if minor_tail=null then */
       mem[r + 1].hh.v.RH = mem[hold_head].hh.v.RH; 
       else mem[minortail].hh.v.RH = mem[hold_head].hh.v.RH; 
       minortail = mem[hold_head].hh.v.RH; 
@@ -1381,7 +1380,7 @@ void hyphenate (void)
     } 
   } 
       } 
-      if(rcount > 127)
+      if (rcount > 127)
       {
   mem[s].hh.v.RH = mem[r].hh.v.RH; 
   mem[r].hh.v.RH = 0; /* link(r):=null */
@@ -1415,9 +1414,9 @@ void new_hyph_exceptions (void)
   str_number s, t; 
   pool_pointer u, v; 
   scan_left_brace (); 
-  if(eqtb[(hash_size + 3213)].cint <= 0)
+  if (eqtb[(hash_size + 3213)].cint <= 0)
     cur_lang = 0; 
-  else if(eqtb[(hash_size + 3213)].cint > 255)
+  else if (eqtb[(hash_size + 3213)].cint > 255)
     cur_lang = 0; 
   else cur_lang = eqtb[(hash_size + 3213)].cint; 
   n = 0; 
@@ -1430,9 +1429,9 @@ lab21: switch(cur_cmd){
     case 11 : 
     case 12 : 
     case 68 : 
-      if(cur_chr == 45)
+      if (cur_chr == 45)
       {
-  if(n < 63)
+  if (n < 63)
   {
     q = get_avail (); 
     mem[q].hh.v.RH = p; 
@@ -1442,14 +1441,14 @@ lab21: switch(cur_cmd){
       } 
       else {
     
-  if(eqtb[(hash_size + 2139) + cur_chr].hh.v.RH == 0)
+  if (eqtb[(hash_size + 2139) + cur_chr].hh.v.RH == 0)
   {
 	  print_err("Not a letter");
 	  help2("Letters in \\hyphenation words must have \\lccode>0.",
 		  "Proceed; I'll ignore the character I just read.");
     error (); 
   } 
-  else if(n < 63)
+  else if (n < 63)
   {
     incr(n); 
     hc[n]= eqtb[(hash_size + 2139) + cur_chr].hh.v.RH; 
@@ -1467,23 +1466,23 @@ lab21: switch(cur_cmd){
     case 10 : 
     case 2 : 
       {
-  if(n > 1)
+  if (n > 1)
   {
     incr(n); 
     hc[n]= cur_lang; 
     {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATESTRING
-      if(pool_ptr + n > current_pool_size)
+      if (pool_ptr + n > current_pool_size)
 /*      str_pool = realloc_str_pool (increment_pool_size); */
       str_pool = realloc_str_pool (increment_pool_size + n);
-      if(pool_ptr + n > current_pool_size){ /* in case it failed 94/Jan/24 */
+      if (pool_ptr + n > current_pool_size){ /* in case it failed 94/Jan/24 */
       overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
       return;     // abort_flag set
     }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-      if(pool_ptr + n > pool_size){
+      if (pool_ptr + n > pool_size){
       overflow("pool size", pool_size - init_pool_ptr); /* pool size */
       return;     // abort_flag set
     }
@@ -1494,7 +1493,7 @@ lab21: switch(cur_cmd){
       register integer for_end; 
       j = 1; 
       for_end = n; 
-      if(j <= for_end) do 
+      if (j <= for_end) do 
       {
 /*      h =(h + h + hc[j])% 607;  */
         h =(h + h + hc[j])% hyphen_prime; 
@@ -1506,8 +1505,8 @@ lab21: switch(cur_cmd){
       while(j++ < for_end);
     } 
     s = make_string (); 
-/*    if(hyph_count == 607)*/
-    if(hyph_count == hyphen_prime){
+/*    if (hyph_count == 607)*/
+    if (hyph_count == hyphen_prime){
 /*      overflow(942, 607);  */ 
       overflow("exception dictionary", hyphen_prime); /* exception dictionary - NOT DYNAMIC */
 /*    not dynamic ---- but can be set -e=... from command line in ini-TeX */
@@ -1517,18 +1516,18 @@ lab21: switch(cur_cmd){
     while(hyph_word[h]!= 0){
         
       k = hyph_word[h]; 
-      if((str_start[k + 1]- str_start[k])<(str_start[s + 1 
+      if ((str_start[k + 1]- str_start[k])<(str_start[s + 1 
     ]- str_start[s])) 
       goto lab40; 
-      if((str_start[k + 1]- str_start[k])>(str_start[s + 1 
+      if ((str_start[k + 1]- str_start[k])>(str_start[s + 1 
     ]- str_start[s])) 
       goto lab45; 
       u = str_start[k]; 
       v = str_start[s]; 
       do {
-    if(str_pool[u]< str_pool[v])
+    if (str_pool[u]< str_pool[v])
         goto lab40; 
-        if(str_pool[u]> str_pool[v])
+        if (str_pool[u]> str_pool[v])
         goto lab45; 
         incr(u); 
         incr(v); 
@@ -1540,7 +1539,7 @@ lab21: switch(cur_cmd){
       hyph_word[h]= s; 
       s = t; 
       lab45:; 
-      if(h > 0)
+      if (h > 0)
       decr(h); 
 /*      else h = 607;  */
       else h = hyphen_prime; 
@@ -1548,7 +1547,7 @@ lab21: switch(cur_cmd){
     hyph_word[h]= s; 
     hyph_list[h]= p; 
   } 
-  if(cur_cmd == 2)
+  if (cur_cmd == 2)
   return; 
   n = 0; 
   p = 0; 
@@ -1582,7 +1581,7 @@ halfword prune_page_top_(halfword p)
       q = new_skip_param(10); 
       mem[prevp].hh.v.RH = q; 
       mem[q].hh.v.RH = p; 
-      if(mem[temp_ptr + 1].cint > mem[p + 3].cint)
+      if (mem[temp_ptr + 1].cint > mem[p + 3].cint)
       mem[temp_ptr + 1].cint = mem[temp_ptr + 1].cint - mem[p + 3]
      .cint; 
       else mem[temp_ptr + 1].cint = 0; 
@@ -1610,7 +1609,7 @@ halfword prune_page_top_(halfword p)
     break; 
     default: 
     {
-      confusion(953);   /* pruning */
+      confusion("pruning");
       return 0;       // abort_flag set
     }
     break; 
@@ -1639,7 +1638,7 @@ halfword vert_break_(halfword p, scaled h, scaled d)
   active_width[6]= 0; 
   prevdp = 0; 
   while(true){
-    if(p == 0)  /* if p=null l.18879 */
+    if (p == 0)  /* if p=null l.18879 */
     pi = -10000; 
     else switch(mem[p].hh.b0)
     {case 0 : 
@@ -1655,16 +1654,16 @@ halfword vert_break_(halfword p, scaled h, scaled d)
       goto lab45; 
       break; 
     case 10 : 
-      if((mem[prevp].hh.b0 < 9)) 
+      if ((mem[prevp].hh.b0 < 9)) 
       pi = 0; 
       else goto lab90; 
       break; 
     case 11 : 
       {
-  if(mem[p].hh.v.RH == 0)/* if link(p)=null l.18903 */
+  if (mem[p].hh.v.RH == 0)/* if link(p)=null l.18903 */
   t = 12; 
   else t = mem[mem[p].hh.v.RH].hh.b0; 
-  if(t == 10)
+  if (t == 10)
   pi = 0; 
   else goto lab90; 
       } 
@@ -1678,39 +1677,39 @@ halfword vert_break_(halfword p, scaled h, scaled d)
       break; 
       default: 
       {
-        confusion(954); /* vert_break */
+        confusion("vertbreak");
         return 0;       // abort_flag set
       }
       break; 
     } 
-    if(pi < 10000)      /* pi may be used ... */
+    if (pi < 10000)      /* pi may be used ... */
     {
-      if(active_width[1]< h)
-      if((active_width[3]!= 0)||(active_width[4]!= 0)||(
+      if (active_width[1]< h)
+      if ((active_width[3]!= 0)||(active_width[4]!= 0)||(
       active_width[5]!= 0)) 
       b = 0; 
       else b = badness(h - active_width[1], active_width[2]); 
-      else if(active_width[1]- h > active_width[6])
+      else if (active_width[1]- h > active_width[6])
       b = 1073741823L;  /* 2^30 - 1 */
       else b = badness(active_width[1]- h, active_width[6]); 
-      if(b < 1073741823L) /* 2^30 - 1 */
-      if(pi <= -10000)
+      if (b < 1073741823L) /* 2^30 - 1 */
+      if (pi <= -10000)
       b = pi; 
-      else if(b < 10000)
+      else if (b < 10000)
       b = b + pi; 
       else b = 100000L; 
-      if(b <= leastcost)
+      if (b <= leastcost)
       {
   best_place = p; 
   leastcost = b; 
   best_height_plus_depth = active_width[1]+ prevdp; 
       } 
-      if((b == 1073741823L)||(pi <= -10000))  /* 2^30 - 1 */
+      if ((b == 1073741823L)||(pi <= -10000))  /* 2^30 - 1 */
       goto lab30; 
     } 
-    if((mem[p].hh.b0 < 10)||(mem[p].hh.b0 > 11)) 
+    if ((mem[p].hh.b0 < 10)||(mem[p].hh.b0 > 11)) 
     goto lab45; 
-    lab90: if(mem[p].hh.b0 == 11)
+    lab90: if (mem[p].hh.b0 == 11)
     q = p; 
     else {
   
@@ -1718,7 +1717,7 @@ halfword vert_break_(halfword p, scaled h, scaled d)
       active_width[2 + mem[q].hh.b0]= active_width[2 + mem[q]
       .hh.b0]+ mem[q + 2].cint; 
       active_width[6]= active_width[6]+ mem[q + 3].cint; 
-      if((mem[q].hh.b1 != 0)&&(mem[q + 3].cint != 0)) 
+      if ((mem[q].hh.b1 != 0)&&(mem[q + 3].cint != 0)) 
       {
 		  print_err("Infinite glue shrinkage found in box being split");
 		  help4("The box you are \\vsplitting contains some infinitely",
@@ -1735,7 +1734,7 @@ halfword vert_break_(halfword p, scaled h, scaled d)
     } 
     active_width[1]= active_width[1]+ prevdp + mem[q + 1].cint; 
     prevdp = 0; 
-    lab45: if(prevdp > d)
+    lab45: if (prevdp > d)
     {
       active_width[1]= active_width[1]+ prevdp - d; 
       prevdp = d; 
@@ -1753,19 +1752,19 @@ halfword vsplit_(eight_bits n, scaled h)
   halfword p; 
   halfword q; 
   v = eqtb[(hash_size + 1578) + n].hh.v.RH; 
-  if(cur_mark[3]!= 0)
+  if (cur_mark[3]!= 0)
   {
     delete_token_ref(cur_mark[3]); 
     cur_mark[3]= 0; 
     delete_token_ref(cur_mark[4]); 
     cur_mark[4]= 0; 
   } 
-  if(v == 0)    /* if v=null then l.18999 */
+  if (v == 0)    /* if v=null then l.18999 */
   {
     Result = 0; /*   begin vsplit:=null; return; */
     return(Result); 
   } 
-  if(mem[v].hh.b0 != 1)
+  if (mem[v].hh.b0 != 1)
   {
 	  print_err("");
     print_esc("vsplit");
@@ -1779,11 +1778,11 @@ halfword vsplit_(eight_bits n, scaled h)
   } 
   q = vert_break(mem[v + 5].hh.v.RH, h, eqtb[(hash_size + 3736)].cint); 
   p = mem[v + 5].hh.v.RH; 
-  if(p == q)
+  if (p == q)
   mem[v + 5].hh.v.RH = 0; 
   else while(true){
-    if(mem[p].hh.b0 == 4)
-    if(cur_mark[3]== 0)
+    if (mem[p].hh.b0 == 4)
+    if (cur_mark[3]== 0)
     {
       cur_mark[3]= mem[p + 1].cint; 
       cur_mark[4]= cur_mark[3]; 
@@ -1794,7 +1793,7 @@ halfword vsplit_(eight_bits n, scaled h)
       cur_mark[4]= mem[p + 1].cint; 
       incr(mem[cur_mark[4]].hh.v.LH); 
     } 
-    if(mem[p].hh.v.RH == q)
+    if (mem[p].hh.v.RH == q)
     {
       mem[p].hh.v.RH = 0; 
       goto lab30; 
@@ -1805,7 +1804,7 @@ halfword vsplit_(eight_bits n, scaled h)
   q = prune_page_top(q); 
   p = mem[v + 5].hh.v.RH; 
   free_node(v, 7); 
-  if(q == 0)    /* if q=null l.18993 */
+  if (q == 0)    /* if q=null l.18993 */
   eqtb[(hash_size + 1578) + n].hh.v.RH = 0;  /* then box(n):=null */
   else eqtb[(hash_size + 1578) + n].hh.v.RH =
     vpackage(q, 0, 1, 1073741823L);  /* 2^30 - 1 */
@@ -1815,31 +1814,31 @@ halfword vsplit_(eight_bits n, scaled h)
 void print_totals (void) 
 { 
   print_scaled(page_so_far[1]); 
-  if(page_so_far[2]!= 0)
+  if (page_so_far[2]!= 0)
   {
     print_string(" plus ");
     print_scaled(page_so_far[2]); 
     print_string("");
   } 
-  if(page_so_far[3]!= 0)
+  if (page_so_far[3]!= 0)
   {
     print_string(" plus ");
     print_scaled(page_so_far[3]); 
     print_string("fil");
   } 
-  if(page_so_far[4]!= 0)
+  if (page_so_far[4]!= 0)
   {
     print_string(" plus ");
     print_scaled(page_so_far[4]); 
     print_string("fill");
   } 
-  if(page_so_far[5]!= 0)
+  if (page_so_far[5]!= 0)
   {
     print_string(" plus ");
     print_scaled(page_so_far[5]); 
     print_string("filll");
   } 
-  if(page_so_far[6]!= 0)
+  if (page_so_far[6]!= 0)
   {
     print_string(" minus ");
     print_scaled(page_so_far[6]); 
@@ -1860,7 +1859,7 @@ void freeze_page_specs_(small_number s)
   least_page_cost = 1073741823L;  /* 2^30 - 1 */
   ;
 #ifdef STAT
-  if(eqtb[(hash_size + 3196)].cint > 0)
+  if (eqtb[(hash_size + 3196)].cint > 0)
   {
     begin_diagnostic (); 
     print_nl("might split");  /*  */
@@ -1885,8 +1884,8 @@ void ensure_vbox_(eight_bits n)
 {
   halfword p; 
   p = eqtb[(hash_size + 1578) + n].hh.v.RH; 
-  if(p != 0) /* if p<>null then if type(p)=hlist_node then l.19324 */
-  if(mem[p].hh.b0 == 0)
+  if (p != 0) /* if p<>null then if type(p)=hlist_node then l.19324 */
+  if (mem[p].hh.b0 == 0)
   {
 	  print_err("Insertions can only be added to a vbox");
 	  help3("Tut tut: You're trying to \\insert into a",
@@ -1906,24 +1905,24 @@ void fire_up_(halfword c)
   integer savevbadness; 
   scaled savevfuzz; 
   halfword savesplittopskip; 
-  if(mem[best_page_break].hh.b0 == 12)
+  if (mem[best_page_break].hh.b0 == 12)
   {
     geq_word_define((hash_size + 3202), mem[best_page_break + 1].cint); 
     mem[best_page_break + 1].cint = 10000; 
   } 
   else geq_word_define((hash_size + 3202), 10000); 
-  if(cur_mark[2]!= 0)
+  if (cur_mark[2]!= 0)
   {
-    if(cur_mark[0]!= 0)
+    if (cur_mark[0]!= 0)
     delete_token_ref(cur_mark[0]); 
     cur_mark[0]= cur_mark[2]; 
     incr(mem[cur_mark[0]].hh.v.LH); 
     delete_token_ref(cur_mark[1]); 
     cur_mark[1]= 0; 
   } 
-  if(c == best_page_break)
+  if (c == best_page_break)
   best_page_break = 0; 
-  if(eqtb[(hash_size + 1833)].hh.v.RH != 0)
+  if (eqtb[(hash_size + 1833)].hh.v.RH != 0)
   {
 	  print_err("");
     print_esc("box");
@@ -1934,17 +1933,17 @@ void fire_up_(halfword c)
   } 
   insert_penalties = 0; 
   savesplittopskip = eqtb[(hash_size + 792)].hh.v.RH; 
-  if(eqtb[(hash_size + 3216)].cint <= 0)
+  if (eqtb[(hash_size + 3216)].cint <= 0)
   {
     r = mem[mem_top].hh.v.RH; 
     while(r != mem_top){
   
-      if(mem[r + 2].hh.v.LH != 0)
+      if (mem[r + 2].hh.v.LH != 0)
       {
   n = mem[r].hh.b1; 
   ensure_vbox(n); 
 /*    if box(n)=null then box(n):=new_null_box; l.19759 */
-  if(eqtb[(hash_size + 1578) + n].hh.v.RH == 0)
+  if (eqtb[(hash_size + 1578) + n].hh.v.RH == 0)
   eqtb[(hash_size + 1578) + n].hh.v.RH = new_null_box (); 
   p = eqtb[(hash_size + 1578) + n].hh.v.RH + 5; 
   while(mem[p].hh.v.RH != 0)p = mem[p].hh.v.RH; 
@@ -1959,25 +1958,25 @@ void fire_up_(halfword c)
   p = mem[prevp].hh.v.RH; 
   while(p != best_page_break){
       
-    if(mem[p].hh.b0 == 3)
+    if (mem[p].hh.b0 == 3)
     {
-      if(eqtb[(hash_size + 3216)].cint <= 0)
+      if (eqtb[(hash_size + 3216)].cint <= 0)
       {
   r = mem[mem_top].hh.v.RH; 
   while(mem[r].hh.b1 != mem[p].hh.b1)r = mem[r].hh.v.RH 
   ; 
 /*  if best_ins_ptr(r)=null then wait:=true l.19783 */
-  if(mem[r + 2].hh.v.LH == 0)
+  if (mem[r + 2].hh.v.LH == 0)
   wait = true; 
   else {
       
     wait = false; 
     s = mem[r + 2].hh.v.RH; 
     mem[s].hh.v.RH = mem[p + 4].hh.v.LH; 
-    if(mem[r + 2].hh.v.LH == p)
+    if (mem[r + 2].hh.v.LH == p)
     {
-      if(mem[r].hh.b0 == 1)
-      if((mem[r + 1].hh.v.LH == p)&&(mem[r + 1].hh.v.RH 
+      if (mem[r].hh.b0 == 1)
+      if ((mem[r + 1].hh.v.LH == p)&&(mem[r + 1].hh.v.RH 
       != 0)) 
       {
         while(mem[s].hh.v.RH != mem[r + 1].hh.v.RH)s = mem 
@@ -1986,7 +1985,7 @@ void fire_up_(halfword c)
         eqtb[(hash_size + 792)].hh.v.RH = mem[p + 4].hh.v.RH; 
         mem[p + 4].hh.v.LH = prune_page_top(mem[r + 1].hh.v.RH 
       ); 
-        if(mem[p + 4].hh.v.LH != 0)
+        if (mem[p + 4].hh.v.LH != 0)
         {
     temp_ptr = vpackage(mem[p + 4].hh.v.LH, 0, 1, 
     1073741823L);  /* 2^30 - 1 */
@@ -2011,7 +2010,7 @@ void fire_up_(halfword c)
   } 
   mem[prevp].hh.v.RH = mem[p].hh.v.RH; 
   mem[p].hh.v.RH = 0; 
-  if(wait)
+  if (wait)
   {
     mem[q].hh.v.RH = p; 
     q = p; 
@@ -2025,14 +2024,14 @@ void fire_up_(halfword c)
   p = prevp; 
       } 
     } 
-    else if(mem[p].hh.b0 == 4)
+    else if (mem[p].hh.b0 == 4)
     {
-      if(cur_mark[1]== 0)
+      if (cur_mark[1]== 0)
       {
   cur_mark[1]= mem[p + 1].cint; 
   incr(mem[cur_mark[1]].hh.v.LH); 
       } 
-      if(cur_mark[2]!= 0)
+      if (cur_mark[2]!= 0)
       delete_token_ref(cur_mark[2]); 
       cur_mark[2]= mem[p + 1].cint; 
       incr(mem[cur_mark[2]].hh.v.LH); 
@@ -2041,10 +2040,10 @@ void fire_up_(halfword c)
     p = mem[prevp].hh.v.RH; 
   } 
   eqtb[(hash_size + 792)].hh.v.RH = savesplittopskip; 
-  if(p != 0)    /* if p<>null then l.19730 */
+  if (p != 0)    /* if p<>null then l.19730 */
   {
-    if(mem[contrib_head].hh.v.RH == 0)/* if link(contrib_head)=null then */
-    if(nest_ptr == 0)
+    if (mem[contrib_head].hh.v.RH == 0)/* if link(contrib_head)=null then */
+    if (nest_ptr == 0)
     tail = page_tail; 
     else nest[0].tail_field = page_tail; 
     mem[page_tail].hh.v.RH = mem[contrib_head].hh.v.RH; 
@@ -2059,8 +2058,8 @@ void fire_up_(halfword c)
   best_size, 0, page_max_depth); 
   eqtb[(hash_size + 3190)].cint = savevbadness; 
   eqtb[(hash_size + 3739)].cint = savevfuzz; 
-/*  if(last_glue != 262143L) */
-  if(last_glue != empty_flag)
+/*  if (last_glue != 262143L) */
+  if (last_glue != empty_flag)
   delete_glue_ref(last_glue); 
   page_contents = 0; 
   page_tail = page_head; 
@@ -2071,7 +2070,7 @@ void fire_up_(halfword c)
   last_kern = 0; 
   page_so_far[7]= 0; 
   page_max_depth = 0; 
-  if(q != hold_head)
+  if (q != hold_head)
   {
     mem[page_head].hh.v.RH = mem[hold_head].hh.v.RH; 
     page_tail = q; 
@@ -2085,14 +2084,14 @@ void fire_up_(halfword c)
   } 
   mem[mem_top].hh.v.RH = mem_top; 
 /* if (top_mark<>null)and(first_mark=null) then l.19654 */
-  if((cur_mark[0]!= 0)&&(cur_mark[1]== 0)) 
+  if ((cur_mark[0]!= 0)&&(cur_mark[1]== 0)) 
   {
     cur_mark[1]= cur_mark[0]; 
     incr(mem[cur_mark[0]].hh.v.LH); 
   } 
 /* if output_routine<>null then */
-  if(eqtb[(hash_size + 1313)].hh.v.RH != 0)
-  if(dead_cycles >= eqtb[(hash_size + 3203)].cint)
+  if (eqtb[(hash_size + 1313)].hh.v.RH != 0)
+  if (dead_cycles >= eqtb[(hash_size + 3203)].cint)
   {
 	  print_err("Output loop---");
     print_int(dead_cycles); 
@@ -2116,10 +2115,10 @@ void fire_up_(halfword c)
     return; 
   } 
   {
-    if(mem[page_head].hh.v.RH != 0)
+    if (mem[page_head].hh.v.RH != 0)
     {
-      if(mem[contrib_head].hh.v.RH == 0)
-      if(nest_ptr == 0)
+      if (mem[contrib_head].hh.v.RH == 0)
+      if (nest_ptr == 0)
       tail = page_tail; 
       else nest[0].tail_field = page_tail; 
       else mem[page_tail].hh.v.RH = mem[contrib_head].hh.v.RH; 

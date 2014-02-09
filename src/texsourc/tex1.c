@@ -116,7 +116,7 @@ void flush_node_list_(halfword p)
                 break;
               default:
                 {
-                  confusion(1289);    /* ext3 */
+                  confusion("ext3");
                   return;         // abort_flag set
                 }
                 break;
@@ -219,7 +219,7 @@ void flush_node_list_(halfword p)
           break;
         default:
           {
-            confusion(350);   /* flushing */
+            confusion("flushing");
             return;         // abort_flag set
           }
           break;
@@ -297,7 +297,7 @@ halfword copy_node_list_(halfword p)
             break;
           default:
             {
-              confusion(1288);    /* ext2 */
+              confusion("ext2");
               return 0;         // abort_flag set
             }
             break;
@@ -348,7 +348,7 @@ halfword copy_node_list_(halfword p)
         break;
       default:
         {
-          confusion(351);   /* copying */
+          confusion("copying");
           return 0;       // abort_flag set
         }
         break;
@@ -469,7 +469,7 @@ void show_activities (void)
 /* ************************************************************************ */
 /* major change from 3.141 -> 3.14159 in following */
 /*.pg_field instead of .lhmfield and .rhmfield */
-/* WAS if((nest[p].lhmfield != 2)||(nest[p].rhmfield != 3)) */
+/* WAS if ((nest[p].lhmfield != 2)||(nest[p].rhmfield != 3)) */
         if (nest[p].pg_field != 8585216L)  /* 830000 hex ??? */
         {
           print_string(" (language");
@@ -1743,7 +1743,7 @@ void show_eqtb_(halfword n)
       print_char('=');
       print_spec(eqtb[n].hh.v.RH, 334);   /* mu */
     } else if (n < (hash_size + 3163))
-      if(n == (hash_size + 1312))
+      if (n == (hash_size + 1312))
       {
         print_esc("parshape");
         print_char('=');
@@ -1784,7 +1784,7 @@ void show_eqtb_(halfword n)
         {
           print_esc("textfont");
           print_int(n - (hash_size + 1835));
-        } else if(n < (hash_size + 1867))
+        } else if (n < (hash_size + 1867))
         {
           print_esc("scriptfont");
           print_int(n - (hash_size + 1851));
@@ -1802,11 +1802,11 @@ void show_eqtb_(halfword n)
         {
           print_esc("catcode");
           print_int(n - (hash_size + 1883));
-        } else if(n < (hash_size + 2395))
+        } else if (n < (hash_size + 2395))
         {
           print_esc("lccode");
           print_int(n - (hash_size + 2139));
-        } else if(n < (hash_size + 2651))
+        } else if (n < (hash_size + 2651))
         {
           print_esc("uccode");
           print_int(n - (hash_size + 2395));
@@ -1835,7 +1835,7 @@ void show_eqtb_(halfword n)
         }
         print_char('=');
         print_int(eqtb[n].cint);
-      } else if(n <= (hash_size + 4006))
+      } else if (n <= (hash_size + 4006))
       {
         if (n < (hash_size + 3751))
           print_length_param(n - (hash_size + 3730)); 
@@ -1928,7 +1928,7 @@ halfword id_lookup_(integer j, integer l)
           register integer for_end; 
           k = j; 
           for_end = j + l - 1; 
-          if(k <= for_end) do {
+          if (k <= for_end) do {
             str_pool[pool_ptr]= buffer[k]; 
             incr(pool_ptr); 
           } 
@@ -1977,13 +1977,13 @@ lab40:
 } 
 void new_save_level_(group_code c)
 { 
-   if(save_ptr > max_save_stack)        /* check_full_save_stack; p.274 */
+   if (save_ptr > max_save_stack)        /* check_full_save_stack; p.274 */
    {
      max_save_stack = save_ptr;
 #ifdef ALLOCATESAVESTACK
-     if(max_save_stack > current_save_size - 6)
+     if (max_save_stack > current_save_size - 6)
        save_stack = realloc_save_stack (increment_save_size);
-     if(max_save_stack > current_save_size - 6){ /* check again after allocation */
+     if (max_save_stack > current_save_size - 6){ /* check again after allocation */
        overflow("save size", current_save_size);
        return;     // abort_flag set
      }
@@ -2001,8 +2001,8 @@ void new_save_level_(group_code c)
 /* save_index(save_ptr):=cur_boundary; */
   save_stack[save_ptr].hh.v.RH = cur_boundary; 
 /* if cur_level = max_quarterword then ... p.274 */
-/*  if(cur_level == 255)*/      /* 94/Apr/4 */
-  if(cur_level == max_quarterword)  {
+/*  if (cur_level == 255)*/      /* 94/Apr/4 */
+  if (cur_level == max_quarterword)  {
 /* { quit if (cur_level + 1) is too large to store in eqtb } */
 /*  overflow("grouping levels", max_quarterword - min_quarterword); */
 /*  overflow("grouping levels", 255); */      /* grouping levels - not dynamic */

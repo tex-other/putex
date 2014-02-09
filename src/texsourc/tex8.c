@@ -31,14 +31,14 @@ void math_fraction (void)
 {
   small_number c; 
   c = cur_chr; 
-  if(cur_list.aux_field.cint != 0)
+  if (cur_list.aux_field.cint != 0)
   {
-    if(c >= 3)
+    if (c >= 3)
     {
       scan_delimiter(lig_trick, false); 
       scan_delimiter(lig_trick, false); 
     } 
-    if(c % 3 == 0)
+    if (c % 3 == 0)
     scan_dimen(false, false, false);
 	print_err("Ambiguous; you need another { and }");
 	help3("I'm ignoring this fraction specification, since I don't",
@@ -59,7 +59,7 @@ void math_fraction (void)
     mem[cur_list.aux_field.cint + 5].qqqq = null_delimiter; 
     mem[head].hh.v.RH = 0; 
     tail = head; 
-    if(c >= 3)
+    if (c >= 3)
     {
       scan_delimiter(cur_list.aux_field.cint + 4, false); 
       scan_delimiter(cur_list.aux_field.cint + 5, false); 
@@ -86,9 +86,9 @@ void math_left_right (void)
   small_number t; 
   halfword p; 
   t = cur_chr; 
-  if((t == 31)&&(cur_group != 16)) 
+  if ((t == 31)&&(cur_group != 16)) 
   {
-    if(cur_group == 15)
+    if (cur_group == 15)
     {
       scan_delimiter(lig_trick, false);
 	  print_err("Extra "); 
@@ -105,7 +105,7 @@ void math_left_right (void)
     p = new_noad (); 
     mem[p].hh.b0 = t; 
     scan_delimiter(p + 1, false); 
-    if(t == 30)
+    if (t == 30)
     {
       push_math(16); 
       mem[head].hh.v.RH = p; 
@@ -144,7 +144,7 @@ void after_math (void)
   halfword r; 
   halfword t; 
   danger = false; 
-  if((font_params[eqtb[(hash_size + 1837)].hh.v.RH]< 22)||
+  if ((font_params[eqtb[(hash_size + 1837)].hh.v.RH]< 22)||
     (font_params[eqtb[(hash_size + 1853)].hh.v.RH]< 22)||
     (font_params[eqtb[(hash_size + 1869)].hh.v.RH]< 22)) 
   {
@@ -156,7 +156,7 @@ void after_math (void)
     flush_math (); 
     danger = true; 
   } 
-  else if((font_params[eqtb[(hash_size + 1838)].hh.v.RH]< 13)||
+  else if ((font_params[eqtb[(hash_size + 1838)].hh.v.RH]< 13)||
       (font_params[eqtb[(hash_size + 1854)].hh.v.RH]< 13)||
       (font_params[eqtb[(hash_size + 1870)].hh.v.RH]< 13)) 
   {
@@ -171,11 +171,11 @@ void after_math (void)
   m = mode; 
   l = false; 
   p = fin_mlist(0); 
-  if(mode == - (integer) m)
+  if (mode == - (integer) m)
   {
     {
       get_x_token (); 
-      if(cur_cmd != 3)
+      if (cur_cmd != 3)
       {
 		  print_err("Display math should end with $$");
 		  help2("The `$' that I just saw supposedly matches a previous `$$'.",
@@ -190,10 +190,10 @@ void after_math (void)
     a = hpack(mem[temp_head].hh.v.RH, 0, 1); 
     unsave (); 
     decr(save_ptr); 
-    if(save_stack[save_ptr + 0].cint == 1)
+    if (save_stack[save_ptr + 0].cint == 1)
     l = true; 
     danger = false; 
-    if((font_params[eqtb[(hash_size + 1837)].hh.v.RH]< 22)||
+    if ((font_params[eqtb[(hash_size + 1837)].hh.v.RH]< 22)||
     (font_params[eqtb[(hash_size + 1853)].hh.v.RH]< 22)||
     (font_params[eqtb[(hash_size + 1869)].hh.v.RH]< 22)) 
     {
@@ -205,7 +205,7 @@ void after_math (void)
       flush_math (); 
       danger = true; 
     } 
-    else if((font_params[eqtb[(hash_size + 1838)].hh.v.RH]< 13)||
+    else if ((font_params[eqtb[(hash_size + 1838)].hh.v.RH]< 13)||
        (font_params[eqtb[(hash_size + 1854)].hh.v.RH]< 13)|| 
        (font_params[eqtb[(hash_size + 1870)].hh.v.RH]< 13)) 
     {
@@ -221,7 +221,7 @@ void after_math (void)
     p = fin_mlist(0); 
   } 
   else a = 0; 
-  if(m < 0)
+  if (m < 0)
   {
     {
       mem[tail].hh.v.RH = new_math(eqtb[(hash_size + 3731)].cint, 
@@ -245,10 +245,10 @@ void after_math (void)
   } 
   else {
       
-    if(a == 0)
+    if (a == 0)
     {
       get_x_token (); 
-      if(cur_cmd != 3) {
+      if (cur_cmd != 3) {
 		  print_err("Display math should end with $$");
 		  help2("The `$' that I just saw supposedly matches a previous `$$'.",
 			  "So I shall assume that you typed `$$' both times.");
@@ -268,7 +268,7 @@ void after_math (void)
     w = mem[b + 1].cint; 
     z = eqtb[(hash_size + 3744)].cint; 
     s = eqtb[(hash_size + 3745)].cint; 
-    if((a == 0)|| danger)
+    if ((a == 0)|| danger)
     {
       e = 0; 
       q = 0; 
@@ -278,9 +278,9 @@ void after_math (void)
       e = mem[a + 1].cint; 
       q = e + font_info[6 + param_base[eqtb[(hash_size + 1837)].hh.v.RH]].cint; 
     } 
-    if(w + q > z)
+    if (w + q > z)
     {
-      if((e != 0)&&((w - totalshrink[0]+ q <= z)||(totalshrink 
+      if ((e != 0)&&((w - totalshrink[0]+ q <= z)||(totalshrink 
      [1]!= 0)||(totalshrink[2]!= 0)||(totalshrink[3]!= 0)
     )) 
       {
@@ -290,7 +290,7 @@ void after_math (void)
       else {
     
   e = 0; 
-  if(w > z)
+  if (w > z)
   {
     free_node(b, 7); 
     b = hpack(p, z, 0); 
@@ -299,12 +299,12 @@ void after_math (void)
       w = mem[b + 1].cint; 
     } 
     d = half(z - w); 
-    if((e > 0)&&(d < 2 * e)) 
+    if ((e > 0)&&(d < 2 * e)) 
     {
       d = half(z - w - e); 
-      if(p != 0)
-      if(!(p >= hi_mem_min)) 
-      if(mem[p].hh.b0 == 10)
+      if (p != 0)
+      if (!(p >= hi_mem_min)) 
+      if (mem[p].hh.b0 == 10)
       d = 0; 
     } 
     {
@@ -312,7 +312,7 @@ void after_math (void)
     ); 
       tail = mem[tail].hh.v.RH; 
     } 
-    if((d + s <= eqtb[(hash_size + 3743)].cint)|| l)
+    if ((d + s <= eqtb[(hash_size + 3743)].cint)|| l)
     {
       g1 = 3; 
       g2 = 4; 
@@ -322,7 +322,7 @@ void after_math (void)
       g1 = 5; 
       g2 = 6; 
     } 
-    if(l &&(e == 0)) 
+    if (l &&(e == 0)) 
     {
       mem[a + 4].cint = s; 
       append_to_vlist(a); 
@@ -336,10 +336,10 @@ void after_math (void)
       mem[tail].hh.v.RH = new_param_glue(g1); 
       tail = mem[tail].hh.v.RH; 
     } 
-    if(e != 0)
+    if (e != 0)
     {
       r = new_kern(z - w - e - d); 
-      if(l)
+      if (l)
       {
   mem[a].hh.v.RH = r; 
   mem[r].hh.v.RH = b; 
@@ -355,7 +355,7 @@ void after_math (void)
     } 
     mem[b + 4].cint = s + d; 
     append_to_vlist(b); 
-    if((a != 0)&&(e == 0)&& ! l)
+    if ((a != 0)&&(e == 0)&& ! l)
     {
       {
   mem[tail].hh.v.RH = new_penalty(10000); 
@@ -365,7 +365,7 @@ void after_math (void)
       append_to_vlist(a); 
       g2 = 0; 
     } 
-    if(t != adjust_head)
+    if (t != adjust_head)
     {
       mem[tail].hh.v.RH = mem[adjust_head].hh.v.RH; 
       tail = t; 
@@ -375,7 +375,7 @@ void after_math (void)
     ); 
       tail = mem[tail].hh.v.RH; 
     } 
-    if(g2 > 0)
+    if (g2 > 0)
     {
       mem[tail].hh.v.RH = new_param_glue(g2); 
       tail = mem[tail].hh.v.RH; 
@@ -387,8 +387,8 @@ void after_math (void)
 void resume_after_display (void) 
 { 
 
-   if(cur_group != 15){
-    confusion(1163);    /* display */
+   if (cur_group != 15){
+    confusion("display");
     return;       // abort_flag set
   }
   unsave (); 
@@ -398,9 +398,9 @@ void resume_after_display (void)
   space_factor = 1000; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* was   clang = 0; etc in 3.141 new stuff follows */
-  if(eqtb[(hash_size + 3213)].cint <= 0)
+  if (eqtb[(hash_size + 3213)].cint <= 0)
   cur_lang = 0; 
-  else if(eqtb[(hash_size + 3213)].cint > 255)
+  else if (eqtb[(hash_size + 3213)].cint > 255)
   cur_lang = 0; 
   else cur_lang = eqtb[(hash_size + 3213)].cint; 
   clang = cur_lang; 
@@ -410,9 +410,9 @@ void resume_after_display (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   {
     get_x_token (); 
-    if(cur_cmd != 10) back_input (); 
+    if (cur_cmd != 10) back_input (); 
   } 
-  if(nest_ptr == 1){
+  if (nest_ptr == 1){
     build_page ();
   }
 }
@@ -423,15 +423,15 @@ lab20:
   do {
     get_token (); 
   } while(!(cur_tok != 2592)); 
-/*  if((cur_cs == 0)||(cur_cs > (hash_size + 514))) */  /* 95/Jan/10 */
-  if((cur_cs == 0)||(cur_cs > (hash_size + hash_extra + 514))) {
+/*  if ((cur_cs == 0)||(cur_cs > (hash_size + 514))) */  /* 95/Jan/10 */
+  if ((cur_cs == 0)||(cur_cs > (hash_size + hash_extra + 514))) {
 	  print_err("Missing control sequence inserted");
 	  help5("Please don't say `\\def cs{...}', say `\\def\\cs{...}'.",
 		  "I've inserted an inaccessible control sequence so that your",
 		  "definition will be completed without mixing me up too badly.",
 		  "You can recover graciously from this error, if you're",
 		  "careful; see exercise 27.2 in The TeXbook.");
-    if(cur_cs == 0)
+    if (cur_cs == 0)
     back_input (); 
 /*    cur_tok = (hash_size + 4609);  */
 /*    cur_tok = (hash_size + 4095 + 514);  */
@@ -443,7 +443,7 @@ lab20:
 /* sec 1229 */
 void trap_zero_glue (void) 
 {
-  if((mem[cur_val + 1].cint == 0)&&(mem[cur_val + 2].cint == 0)
+  if ((mem[cur_val + 1].cint == 0)&&(mem[cur_val + 2].cint == 0)
   &&(mem[cur_val + 3].cint == 0)) 
   {
     incr(mem[0].hh.v.RH); /* mem[mem_bot]? */ /* mem[null]? */
@@ -458,16 +458,16 @@ void do_register_command_ (small_number a)
   char p; 
   q = cur_cmd; 
   {
-    if(q != 89)
+    if (q != 89)
     {
       get_x_token (); 
-      if((cur_cmd >= 73)&&(cur_cmd <= 76)) 
+      if ((cur_cmd >= 73)&&(cur_cmd <= 76)) 
       {
   l = cur_chr; 
   p = cur_cmd - 73; 
   goto lab40; 
       } 
-      if(cur_cmd != 89)
+      if (cur_cmd != 89)
       {
 		  print_err("You can't use `");
   print_cmd_chr(cur_cmd, cur_chr); 
@@ -496,46 +496,46 @@ void do_register_command_ (small_number a)
     } 
   } 
   lab40:; 
-  if(q == 89)
+  if (q == 89)
   scan_optional_equals (); 
-  else if(scan_keyword("by"))   /* by */
+  else if (scan_keyword("by"))   /* by */
 ; 
   arith_error = false; 
-  if(q < 91)
-  if(p < 2)
+  if (q < 91)
+  if (p < 2)
   {
-    if(p == 0){
+    if (p == 0){
     scan_int ();
   }
     else {
     scan_dimen(false, false, false);
   }
-    if(q == 90)
+    if (q == 90)
     cur_val = cur_val + eqtb[l].cint; 
   } 
   else {
       
     scan_glue(p); 
-    if(q == 90){
+    if (q == 90){
       q = new_spec(cur_val); 
       r = eqtb[l].hh.v.RH; 
       delete_glue_ref(cur_val); 
       mem[q + 1].cint = mem[q + 1].cint + mem[r + 1].cint; 
-      if(mem[q + 2].cint == 0)
+      if (mem[q + 2].cint == 0)
       mem[q].hh.b0 = 0; 
-      if(mem[q].hh.b0 == mem[r].hh.b0)
+      if (mem[q].hh.b0 == mem[r].hh.b0)
       mem[q + 2].cint = mem[q + 2].cint + mem[r + 2].cint; 
-      else if((mem[q].hh.b0 < mem[r].hh.b0)&&(mem[r + 2]
+      else if ((mem[q].hh.b0 < mem[r].hh.b0)&&(mem[r + 2]
      .cint != 0)) 
       {
   mem[q + 2].cint = mem[r + 2].cint; 
   mem[q].hh.b0 = mem[r].hh.b0; 
       } 
-      if(mem[q + 3].cint == 0)
+      if (mem[q + 3].cint == 0)
       mem[q].hh.b1 = 0; 
-      if(mem[q].hh.b1 == mem[r].hh.b1)
+      if (mem[q].hh.b1 == mem[r].hh.b1)
       mem[q + 3].cint = mem[q + 3].cint + mem[r + 3].cint; 
-      else if((mem[q].hh.b1 < mem[r].hh.b1)&&(mem[r + 3]
+      else if ((mem[q].hh.b1 < mem[r].hh.b1)&&(mem[r + 3]
      .cint != 0)) 
       {
   mem[q + 3].cint = mem[r + 3].cint; 
@@ -546,9 +546,9 @@ void do_register_command_ (small_number a)
   } 
   else {
     scan_int (); 
-    if(p < 2)
-    if(q == 91)
-    if(p == 0)
+    if (p < 2)
+    if (q == 91)
+    if (p == 0)
     cur_val = mult_and_add(eqtb[l].cint, cur_val, 0, 2147483647L); 
 /*  2^31 - 1 */
     else cur_val = mult_and_add(eqtb[l].cint, cur_val, 0, 1073741823L); 
@@ -557,7 +557,7 @@ void do_register_command_ (small_number a)
     else {
       s = eqtb[l].hh.v.RH;  /* l may be used ... */
       r = new_spec(s); 
-      if(q == 91)
+      if (q == 91)
       {
   mem[r + 1].cint = mult_and_add(mem[s + 1].cint, cur_val, 0, 
   1073741823L);  /* 2^30 - 1 */
@@ -574,7 +574,7 @@ void do_register_command_ (small_number a)
       cur_val = r; 
     } 
   } 
-  if(arith_error){
+  if (arith_error){
 	  print_err("Arithmetic overflow");
 	  help2("I can't carry out that multiplication or division,",
 		  "since the result is out of range.");
@@ -583,14 +583,14 @@ void do_register_command_ (small_number a)
     error (); 
     return; 
   } 
-  if(p < 2)
-  if((a >= 4)) 
+  if (p < 2)
+  if ((a >= 4)) 
   geq_word_define(l, cur_val); 
   else eq_word_define(l, cur_val); 
   else {
       
     trap_zero_glue (); 
-    if((a >= 4)) 
+    if ((a >= 4)) 
     geq_define(l, 117, cur_val); 
     else eq_define(l, 117, cur_val); 
   } 
@@ -600,20 +600,20 @@ void do_register_command_ (small_number a)
 void alter_aux (void) 
 {
   halfword c; 
-  if(cur_chr != abs(mode)) {
+  if (cur_chr != abs(mode)) {
     report_illegal_case ();
   }
   else {
     c = cur_chr; 
     scan_optional_equals (); 
-    if(c == 1)
+    if (c == 1)
     {
       scan_dimen(false, false, false); 
       cur_list.aux_field.cint = cur_val; 
     } 
     else {
       scan_int (); 
-      if((cur_val <= 0)||(cur_val > 32767)) 
+      if ((cur_val <= 0)||(cur_val > 32767)) 
       {
 		  print_err("Bad space factor");
 		  help1("I allow only values in the range 1..32767 here.");
@@ -632,7 +632,7 @@ void alter_prev_graf (void)
   while(abs(nest[p].mode_field)!= 1)decr(p); 
   scan_optional_equals (); 
   scan_int (); 
-  if(cur_val < 0)
+  if (cur_val < 0)
   {
 	  print_err("Bad ");
     print_esc("prevgraf");
@@ -661,7 +661,7 @@ void alter_integer (void)
   c = cur_chr; 
   scan_optional_equals (); 
   scan_int (); 
-  if(c == 0)dead_cycles = cur_val; 
+  if (c == 0)dead_cycles = cur_val; 
   else insert_penalties = cur_val; 
 }
 /* sec 1247 */
@@ -674,7 +674,7 @@ void alter_box_dimen (void)
   b = cur_val; 
   scan_optional_equals (); 
   scan_dimen(false, false, false); 
-  if(eqtb[(hash_size + 1578) + b].hh.v.RH != 0)
+  if (eqtb[(hash_size + 1578) + b].hh.v.RH != 0)
   mem[eqtb[(hash_size + 1578) + b].hh.v.RH + c].cint = cur_val; 
 }
 /* sec 1257 */
@@ -689,11 +689,11 @@ void new_font_(small_number a)
   if (job_name == 0) open_log_file (); 
   get_r_token (); 
   u = cur_cs; 
-  if(u >= hash_base)      /* if u >= hash_base then t <- text(u); p.1257 */
+  if (u >= hash_base)      /* if u >= hash_base then t <- text(u); p.1257 */
     t = hash[u].v.RH; 
-  else if(u >= single_base)   /* if u >= single_base then ... */
+  else if (u >= single_base)   /* if u >= single_base then ... */
 /*    if u=null_cs then t:="FONT"@+else t:=u-single_base */
-  if(u == null_cs)
+  if (u == null_cs)
     t = 1213;     /* FONT */
   else t = u - single_base;   /* else t <- u - single_base */
   else {
@@ -721,18 +721,18 @@ void new_font_(small_number a)
     } 
     t = make_string (); 
   } 
-  if((a >= 4)) geq_define(u, 87, 0); 
+  if ((a >= 4)) geq_define(u, 87, 0); 
   else eq_define(u, 87, 0); 
   scan_optional_equals (); 
   scan_file_name (); 
 
 /* paragraph 1258 */
   name_in_progress = true; 
-  if(scan_keyword("at"))  /* at */
+  if (scan_keyword("at"))  /* at */
   {
     scan_dimen(false, false, false); 
     s = cur_val; 
-    if((s <= 0)||(s >= 134217728L)) /* 2^27 */
+    if ((s <= 0)||(s >= 134217728L)) /* 2^27 */
     {
       print_err("Improper `at' size(");
       print_scaled(s); 
@@ -743,11 +743,11 @@ void new_font_(small_number a)
       s = 10 * 65536L;    /* 10pt */
     } 
   } 
-  else if(scan_keyword("scaled")) /* scaled */
+  else if (scan_keyword("scaled")) /* scaled */
   {
     scan_int (); 
     s = - (integer) cur_val; 
-    if((cur_val <= 0)||(cur_val > 32768L))  {
+    if ((cur_val <= 0)||(cur_val > 32768L))  {
 		print_err("Illegal magnification has been changed to 1000");
 		help1("The magnification ratio must be between 1 and 32768.");
       int_error(cur_val); 
@@ -784,12 +784,12 @@ void new_font_(small_number a)
     register integer for_end; 
     f = 1; 
     for_end = font_ptr; 
-    if(f <= for_end) 
+    if (f <= for_end) 
       do 
 /* if str_eq_str(font_name[f],cur_name) ^ str_eq_str(font_area[f],cur_area) */
-        if(str_eq_str(font_name[f], cur_name)&&
+        if (str_eq_str(font_name[f], cur_name)&&
            str_eq_str(font_area[f], cur_area))  {
-          if(cur_name == flushablestring){
+          if (cur_name == flushablestring){
             {
               decr(str_ptr); 
               pool_ptr = str_start[str_ptr]; 
@@ -797,8 +797,8 @@ void new_font_(small_number a)
             cur_name = font_name[f]; 
           } 
 /*    if (ignore_frozen) continue; */       /* 98/Oct/5 */
-          if(s > 0) {   /* if pt size was specified */
-            if(s == font_size[f]){
+          if (s > 0) {   /* if pt size was specified */
+            if (s == font_size[f]){
 /*              if (ignore_frozen == 0)  */
               if (ignore_frozen == 0 || f > frozenfontptr) { /* 99/Mar/26 */
                 if (trace_flag) {
@@ -810,7 +810,7 @@ void new_font_(small_number a)
             }
           } 
 /* else if font_size[f] = xn_over_d(font_dsize[f],-s,1000) then goto common_ending */
-          else if(font_size[f]== xn_over_d(font_dsize[f],
+          else if (font_size[f]== xn_over_d(font_dsize[f],
             - (integer) s, 1000)) { /* if using design size */
 /*            if (ignore_frozen == 0) */
             if (ignore_frozen == 0 || f > frozenfontptr) { /* 99/Mar/26 */
@@ -853,9 +853,9 @@ void new_interaction (void)
 { 
   print_ln (); 
   interaction = cur_chr; 
-  if(interaction == 0) selector = 16; 
+  if (interaction == 0) selector = 16; 
   else selector = 17; 
-  if(log_opened) selector = selector + 2; 
+  if (log_opened) selector = selector + 2; 
 }
 /* sec 1270 */
 void do_assignments (void) 
@@ -864,7 +864,7 @@ void do_assignments (void)
     do {
     get_x_token (); 
     } while(!((cur_cmd != 10)&&(cur_cmd != 0))); 
-    if(cur_cmd <= 70)
+    if (cur_cmd <= 70)
     return; 
     set_box_allowed = false; 
     prefixed_command (); 
@@ -879,12 +879,12 @@ void open_or_close_in (void)
   c = cur_chr; 
   scan_four_bit_int (); 
   n = cur_val; 
-  if(read_open[n]!= 2)
+  if (read_open[n]!= 2)
   {
     (void) a_close(read_file[n]); 
     read_open[n]= 2; 
   } 
-  if(c != 0)
+  if (c != 0)
   {
     scan_optional_equals (); 
     scan_file_name (); 
@@ -892,12 +892,12 @@ void open_or_close_in (void)
 /* *** some changes in following in 3.14159 *** */
 /*  if current extension is *not* empty, try to open using name as is */
 /*  string 335 is "" the empty string */
-    if((cur_ext != 335)&& a_open_in(read_file[n], TEXINPUTPATH)) 
+    if ((cur_ext != 335)&& a_open_in(read_file[n], TEXINPUTPATH)) 
     read_open[n]= 1; 
 /*  we get here if extension is "", or file with extension failed to open */
 /*  if current extension is not `tex,' and `tex' is not irrelevant, try it */
 /*  string 785 is  .tex */
-    else if((cur_ext != 785)&&(name_length + 5 < PATHMAX)&& 
+    else if ((cur_ext != 785)&&(name_length + 5 < PATHMAX)&& 
 /* *** some changes in above file name handling *** */
 /*       (! extensionirrelevantp(name_of_file, "tex"))) */
        (! extensionirrelevantp(name_of_file, name_length, "tex")))
@@ -908,16 +908,16 @@ void open_or_close_in (void)
       name_of_file[name_length + 4]= 120; 
       name_of_file[name_length + 5]= 32; 
       name_length = name_length + 4; 
-      if(a_open_in(read_file[n], TEXINPUTPATH)) 
+      if (a_open_in(read_file[n], TEXINPUTPATH)) 
       read_open[n]= 1; 
       else {
 /*    more changes here in 3.14159 *** */
       name_length = name_length - 4;      /* remove ".tex" again */
       name_of_file[name_length + 1]= 32;  /* '  '  */
 /*    string 335 is "" the empty string */
-      if((cur_ext == 335)&& a_open_in(read_file[n], TEXINPUTPATH)) 
+      if ((cur_ext == 335)&& a_open_in(read_file[n], TEXINPUTPATH)) 
         read_open[n]= 1; 
-      else if(maketextex () && a_open_in(read_file[n], TEXINPUTPATH)) 
+      else if (maketextex () && a_open_in(read_file[n], TEXINPUTPATH)) 
         read_open[n]= 1; 
     } 
     } 
@@ -939,28 +939,28 @@ void issue_message (void)
   {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATESTRING
-  if(pool_ptr + 1 > current_pool_size)
+  if (pool_ptr + 1 > current_pool_size)
       str_pool = realloc_str_pool (increment_pool_size);
-  if(pool_ptr + 1 > current_pool_size){ /* in case it failed 94/Jan/24 */
+  if (pool_ptr + 1 > current_pool_size){ /* in case it failed 94/Jan/24 */
     overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
     return;     // abort_flag set
   }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    if(pool_ptr + 1 > pool_size){
+    if (pool_ptr + 1 > pool_size){
     overflow("pool size", pool_size - init_pool_ptr); /* pool size */
     return;     // abort_flag set
   }
 #endif
   } 
   s = make_string (); 
-  if(c == 0)
+  if (c == 0)
   {
-    if(term_offset +(str_start[s + 1]- str_start[s])> max_print_line - 
+    if (term_offset +(str_start[s + 1]- str_start[s])> max_print_line - 
     2)
     print_ln (); 
-    else if((term_offset > 0)||(file_offset > 0)) 
-    print_char(32);   /*   */
+    else if ((term_offset > 0)||(file_offset > 0)) 
+    print_char(' ');
     slow_print(s); 
 #ifndef f_WINDOWS
     fflush(stdout); 
@@ -969,13 +969,13 @@ void issue_message (void)
   else {
     print_err("");  
     slow_print(s); 
-    if(eqtb[(hash_size + 1321)].hh.v.RH != 0)
+    if (eqtb[(hash_size + 1321)].hh.v.RH != 0)
     use_err_help = true; 
-    else if(long_help_seen)
+    else if (long_help_seen)
 		help1("(That was another \\errmessage.)");
     else {
   
-      if(interaction < 3)
+      if (interaction < 3)
       long_help_seen = true; 
 	  help4("This error message was generated by an \\errmessage",
 		  "command, so I can't give any explicit help.",
@@ -1002,11 +1002,11 @@ void shift_case (void)
   p = mem[def_ref].hh.v.RH; 
   while(p != 0){      /* while p <> null ... p.1288 */
     t = mem[p].hh.v.LH; /* t <- info(p) p.1289 */ 
-/*    if(t < 4352) */
-    if(t < 4095 + 257)    /* 4095 + 257 = cs_tokenflag + single_base */
+/*    if (t < 4352) */
+    if (t < 4095 + 257)    /* 4095 + 257 = cs_tokenflag + single_base */
     {
       c = t % 256;  
-      if(eqtb[b + c].hh.v.RH != 0)
+      if (eqtb[b + c].hh.v.RH != 0)
       mem[p].hh.v.LH = t - c + eqtb[b + c].hh.v.RH; 
     } 
     p = mem[p].hh.v.RH; 
@@ -1038,8 +1038,8 @@ void show_whatever (void)
       begin_diagnostic (); 
       print_nl("> \box"); /*  */
       print_int(cur_val); 
-      print_char(61); /* = */
-      if(eqtb[(hash_size + 1578) + cur_val].hh.v.RH == 0)
+      print_char('=');
+      if (eqtb[(hash_size + 1578) + cur_val].hh.v.RH == 0)
       print_string("void");
       else show_box(eqtb[(hash_size + 1578) + cur_val].hh.v.RH); 
     } 
@@ -1047,13 +1047,13 @@ void show_whatever (void)
   case 0 : 
     {
       get_token (); 
-      if(interaction == 3)
+      if (interaction == 3)
    ; 
-      print_nl("> "); /*  */
-      if(cur_cs != 0)
+      print_nl("> ");
+      if (cur_cs != 0)
       {
   sprint_cs(cur_cs); 
-  print_char(61);   /* = */
+  print_char('=');
       } 
       print_meaning (); 
       goto lab50; 
@@ -1062,7 +1062,7 @@ void show_whatever (void)
     default: 
     {
       p = the_toks (); 
-      if(interaction == 3)
+      if (interaction == 3)
    ; 
       print_nl(" > "); /*  */
       token_show(temp_head); 
@@ -1073,19 +1073,19 @@ void show_whatever (void)
   } 
   end_diagnostic(true);
   print_err("OK");
-  if(selector == 19)
-  if(eqtb[(hash_size + 3192)].cint <= 0)
+  if (selector == 19)
+  if (eqtb[(hash_size + 3192)].cint <= 0)
   {
     selector = 17; 
     print_string(" (see the transcript file)");
     selector = 19; 
   } 
-  lab50: if(interaction < 3)
+  lab50: if (interaction < 3)
   {
     help_ptr = 0; 
     decr(error_count); 
   } 
-  else if(eqtb[(hash_size + 3192)].cint > 0)
+  else if (eqtb[(hash_size + 3192)].cint > 0)
   {
 	  help3("This isn't an error message; I'm just \\showing something.",
 		  "Type `I\\show...' to show more (e.g., \\show\\cs,",
@@ -1114,13 +1114,13 @@ void new_whatsit_(small_number s, small_number w)
 void new_write_whatsit_(small_number w)
 {
   new_whatsit(cur_chr, w); 
-  if(w != 2){
+  if (w != 2){
     scan_four_bit_int ();
   }
   else {
     scan_int (); 
-    if(cur_val < 0)cur_val = 17; 
-    else if(cur_val > 15)cur_val = 16; 
+    if (cur_val < 0)cur_val = 17; 
+    else if (cur_val > 15)cur_val = 16; 
   } 
   mem[tail + 1].hh.v.LH = cur_val; 
 } 
@@ -1168,7 +1168,7 @@ void do_extension (void)
   case 4 : 
     {
       get_x_token (); 
-      if((cur_cmd == 59)&&(cur_chr <= 2)) 
+      if ((cur_cmd == 59)&&(cur_chr <= 2)) 
       {
   p = tail; 
   do_extension (); 
@@ -1181,15 +1181,15 @@ void do_extension (void)
     } 
     break; 
   case 5 : 
-    if(abs(mode)!= 102){
+    if (abs(mode)!= 102){
     report_illegal_case ();
   }
     else {
   
       new_whatsit(4, 2); 
       scan_int (); 
-      if(cur_val <= 0) clang = 0; 
-      else if(cur_val > 255)
+      if (cur_val <= 0) clang = 0; 
+      else if (cur_val > 255)
       clang = 0; 
       else clang = cur_val; 
       mem[tail + 1].hh.v.RH = clang; 
@@ -1201,7 +1201,7 @@ void do_extension (void)
     break; 
     default: 
     {
-      confusion(1285);  /* display */
+      confusion("display");
       return;       // abort_flag set
     }
     break; 
@@ -1212,12 +1212,12 @@ void fix_language (void)
 { 
 /*  ASCII_code l;  */
   int l;                  /* 95/Jan/7 */
-  if(eqtb[(hash_size + 3213)].cint <= 0)
+  if (eqtb[(hash_size + 3213)].cint <= 0)
   l = 0; 
-  else if(eqtb[(hash_size + 3213)].cint > 255)
+  else if (eqtb[(hash_size + 3213)].cint > 255)
   l = 0; 
   else l = eqtb[(hash_size + 3213)].cint; 
-  if(l != clang)
+  if (l != clang)
   {
     new_whatsit(4, 2); 
     mem[tail + 1].hh.v.RH = l; 
@@ -1283,7 +1283,7 @@ void handle_right_brace (void)
       p = vpackage(mem[head].hh.v.RH, 0, 1, 
       1073741823L);  /* 2^30 - 1 */
       pop_nest (); 
-      if(save_stack[save_ptr + 0].cint < 255)
+      if (save_stack[save_ptr + 0].cint < 255)
       {
   {
     mem[tail].hh.v.RH = get_node(5); 
@@ -1310,14 +1310,14 @@ void handle_right_brace (void)
   delete_glue_ref(q); 
       } 
       free_node(p, 7); 
-      if(nest_ptr == 0){
+      if (nest_ptr == 0){
       build_page ();
     }
     } 
     break; 
   case 8 : 
     {
-      if((cur_input.loc_field != 0)||((cur_input.index_field != 6)&&(
+      if ((cur_input.loc_field != 0)||((cur_input.index_field != 6)&&(
       cur_input.index_field != 3)))
       {
 		  print_err("Unbalanced output routine");
@@ -1333,7 +1333,7 @@ void handle_right_brace (void)
       unsave (); 
       output_active = false; 
       insert_penalties = 0; 
-      if(eqtb[(hash_size + 1833)].hh.v.RH != 0)
+      if (eqtb[(hash_size + 1833)].hh.v.RH != 0)
       {
 		  print_err("Output routine didn't use all of ");
       print_esc("box");
@@ -1343,14 +1343,14 @@ void handle_right_brace (void)
 		  "Proceed; I'll discard its present contents.");
       box_error(255); 
     }
-      if(tail != head)
+      if (tail != head)
       {
   mem[page_tail].hh.v.RH = mem[head].hh.v.RH; 
   page_tail = tail; 
       } 
-      if(mem[page_head].hh.v.RH != 0)
+      if (mem[page_head].hh.v.RH != 0)
       {
-  if(mem[contrib_head].hh.v.RH == 0)
+  if (mem[contrib_head].hh.v.RH == 0)
   nest[0].tail_field = page_tail; 
   mem[page_tail].hh.v.RH = mem[contrib_head].hh.v.RH; 
   mem[contrib_head].hh.v.RH = mem[page_head].hh.v.RH; 
@@ -1413,20 +1413,20 @@ void handle_right_brace (void)
       mem[save_stack[save_ptr + 0].cint].hh.v.RH = 3; 
       p = fin_mlist(0); 
       mem[save_stack[save_ptr + 0].cint].hh.v.LH = p; 
-      if(p != 0)
-      if(mem[p].hh.v.RH == 0)
-      if(mem[p].hh.b0 == 16)
+      if (p != 0)
+      if (mem[p].hh.v.RH == 0)
+      if (mem[p].hh.b0 == 16)
       {
-  if(mem[p + 3].hh.v.RH == 0)
-  if(mem[p + 2].hh.v.RH == 0)
+  if (mem[p + 3].hh.v.RH == 0)
+  if (mem[p + 2].hh.v.RH == 0)
   {
     mem[save_stack[save_ptr + 0].cint].hh = mem[p + 1].hh; 
     free_node(p, 4); 
   } 
       } 
-      else if(mem[p].hh.b0 == 28)
-      if(save_stack[save_ptr + 0].cint == tail + 1)
-      if(mem[tail].hh.b0 == 16)
+      else if (mem[p].hh.b0 == 28)
+      if (save_stack[save_ptr + 0].cint == tail + 1)
+      if (mem[tail].hh.b0 == 16)
       {
   q = head; 
   while(mem[q].hh.v.RH != tail)q = mem[q].hh 
@@ -1439,7 +1439,7 @@ void handle_right_brace (void)
     break; 
     default: 
     {
-      confusion(1041);  /* rightbrace */
+      confusion("rightbrace");
       return;       // abort_flag set
     }
     break; 
@@ -1452,17 +1452,17 @@ void main_control (void)
     integer t; 
   integer bSuppress;    /* 199/Jan/5 */
 
-  if(eqtb[(hash_size + 1319)].hh.v.RH != 0)/* everyjob */
+  if (eqtb[(hash_size + 1319)].hh.v.RH != 0)/* everyjob */
     begin_token_list(eqtb[(hash_size + 1319)].hh.v.RH, 12); 
 
 lab60:
   get_x_token ();       /* big_switch */
 lab21:
-  if(interrupt != 0)
-    if(OK_to_interrupt){
+  if (interrupt != 0)
+    if (OK_to_interrupt){
       back_input (); 
       {
-        if(interrupt != 0){
+        if (interrupt != 0){
           pause_for_instructions ();
         }
       }  
@@ -1470,9 +1470,9 @@ lab21:
     } 
   ;
 #ifdef DEBUG
-  if(panicking)check_mem(false); 
+  if (panicking)check_mem(false); 
 #endif /* DEBUG */
-  if(eqtb[(hash_size + 3199)].cint > 0)
+  if (eqtb[(hash_size + 3199)].cint > 0)
     show_cur_cmd_chr (); 
 
 /*  the big switch --- don't bother to test abort_flag ??? */
@@ -1492,14 +1492,14 @@ lab21:
        case 167 : 
        {
          get_x_token (); 
-         if((cur_cmd == 11)||(cur_cmd == 12)||(cur_cmd == 68)||(
+         if ((cur_cmd == 11)||(cur_cmd == 12)||(cur_cmd == 68)||(
            cur_cmd == 16)) 
            cancel_boundary = true; 
          goto lab21; 
        } 
        break; 
   case 112 : 
-    if(space_factor == 1000)goto lab120; 
+    if (space_factor == 1000)goto lab120; 
     else {
     app_space ();
   }
@@ -1527,7 +1527,7 @@ lab21:
     } 
     break; 
   case 15 : 
-    if(its_all_over ())return; 
+    if (its_all_over ())return; 
     break; 
   case 23 : 
   case 123 : 
@@ -1595,9 +1595,9 @@ lab21:
       mem[tail].hh.v.RH = scan_rule_spec (); 
       tail = mem[tail].hh.v.RH; 
       } 
-      if(abs(mode)== 1)
+      if (abs(mode)== 1)
       cur_list.aux_field.cint = ignore_depth; 
-      else if(abs(mode)== 102)
+      else if (abs(mode)== 102)
       space_factor = 1000; 
     } 
     break; 
@@ -1625,7 +1625,7 @@ lab21:
   case 63 : 
   case 164 : 
   case 265 : 
-    if(cur_group == 14) unsave (); 
+    if (cur_group == 14) unsave (); 
     else off_save ();
     break; 
   case 3 : 
@@ -1639,7 +1639,7 @@ lab21:
     {
       t = cur_chr; 
       scan_dimen(false, false, false); 
-      if(t == 0)scan_box(cur_val);
+      if (t == 0)scan_box(cur_val);
       else scan_box(- (integer) cur_val);
     } 
     break; 
@@ -1682,18 +1682,18 @@ lab21:
   case 14 : 
     {
       normal_paragraph (); 
-      if(mode > 0){
+      if (mode > 0){
       build_page ();
     }
     } 
     break; 
   case 115 : 
     {
-      if(align_state < 0){
+      if (align_state < 0){
       off_save ();
     }
       end_graf (); 
-      if(mode == 1){
+      if (mode == 1){
       build_page ();
     }
     } 
@@ -1771,8 +1771,8 @@ lab21:
     init_align (); 
     break; 
   case 235 : 
-    if(privileged ())
-    if(cur_group == 15)init_align ();
+    if (privileged ())
+    if (cur_group == 15)init_align ();
     else off_save ();
 
     break; 
@@ -1789,8 +1789,8 @@ lab21:
     init_math (); 
     break; 
   case 251 : 
-    if(privileged ())
-    if(cur_group == 15) start_eq_no (); 
+    if (privileged ())
+    if (cur_group == 15) start_eq_no (); 
     else off_save ();
     break; 
   case 204 : 
@@ -1858,7 +1858,7 @@ lab21:
       push_nest (); 
       mode = -1; 
       cur_list.aux_field.cint = ignore_depth; 
-      if(eqtb[(hash_size + 1318)].hh.v.RH != 0)/* everyvbox */
+      if (eqtb[(hash_size + 1318)].hh.v.RH != 0)/* everyvbox */
       begin_token_list(eqtb[(hash_size + 1318)].hh.v.RH, 11); 
     } 
     break; 
@@ -1891,7 +1891,7 @@ lab21:
     math_left_right (); 
     break; 
   case 206 : 
-    if(cur_group == 15)after_math (); 
+    if (cur_group == 15)after_math (); 
     else off_save ();
     break; 
   case 72 : 
@@ -2032,25 +2032,25 @@ lab21:
 
 lab70:
   main_s = eqtb[(hash_size + 2651) + cur_chr].hh.v.RH; 
-  if(main_s == 1000)
+  if (main_s == 1000)
     space_factor = 1000; 
-  else if(main_s < 1000)
+  else if (main_s < 1000)
   {
-    if(main_s > 0)
+    if (main_s > 0)
     space_factor = main_s; 
   } 
-  else if(space_factor < 1000)
+  else if (space_factor < 1000)
     space_factor = 1000; 
   else space_factor = main_s; 
   main_f = eqtb[(hash_size + 1834)].hh.v.RH; 
   bchar = font_bchar[main_f]; 
   false_bchar = font_false_bchar[main_f]; 
-  if(mode > 0)
-  if(eqtb[(hash_size + 3213)].cint != clang)
+  if (mode > 0)
+  if (eqtb[(hash_size + 3213)].cint != clang)
   fix_language (); 
   {
     lig_stack = avail; 
-    if(lig_stack == 0)
+    if (lig_stack == 0)
     lig_stack = get_avail (); 
     else {
       avail = mem[lig_stack].hh.v.RH; 
@@ -2065,7 +2065,7 @@ lab70:
   cur_l = cur_chr; 
   mem[lig_stack].hh.b1 = cur_l; 
   cur_q = tail; 
-  if(cancel_boundary)
+  if (cancel_boundary)
   {
 /*  begin cancel_boundary:=false; main_k:=non_address; l.20093 */
     cancel_boundary = false; 
@@ -2075,8 +2075,8 @@ lab70:
   } 
   else main_k = bchar_label[main_f]; 
 /* if main_k=non_address then goto main_loop_move+2; l.20096 */
-/*  if(main_k == font_mem_size) */
-  if(main_k == non_address)   /* i.e. 0 --- 1995/Jan/15 */
+/*  if (main_k == font_mem_size) */
+  if (main_k == non_address)   /* i.e. 0 --- 1995/Jan/15 */
 /* cur_r:=cur_l; cur_l:=non_char; */
   goto lab92; 
   cur_r = cur_l; 
@@ -2088,24 +2088,24 @@ lab70:
   insert a null discretionary, if appropriate@>; */
 /* @d wrapup(#)==if cur_l<non_char then */
 /*  main_loop_wrapup */
-lab80: if(cur_l < 256)
+lab80: if (cur_l < 256)
   {
 /*  begin if character(tail)=qi(hyphen_char[main_f]) then
   if link(cur_q)>null then ... l.20107 */
-    if(mem[tail].hh.b1 == hyphen_char[main_f])
-/*    if(mem[cur_q].hh.v.RH > 0) */ /* NO! */
-    if(mem[cur_q].hh.v.RH != 0) /* BUG FIX l.20107 */
+    if (mem[tail].hh.b1 == hyphen_char[main_f])
+/*    if (mem[cur_q].hh.v.RH > 0) */ /* NO! */
+    if (mem[cur_q].hh.v.RH != 0) /* BUG FIX l.20107 */
     ins_disc = true; 
-    if(ligature_present)
+    if (ligature_present)
     {
       main_p = new_ligature(main_f, cur_l, mem[cur_q].hh.v.RH); 
-      if(lft_hit)
+      if (lft_hit)
       {
   mem[main_p].hh.b1 = 2; 
   lft_hit = false; 
       } 
-      if(rt_hit)
-      if(lig_stack == 0)
+      if (rt_hit)
+      if (lig_stack == 0)
       {
   incr(mem[main_p].hh.b1); 
   rt_hit = false; 
@@ -2115,11 +2115,11 @@ lab80: if(cur_l < 256)
       ligature_present = false; 
     } 
 /*   if ins_disc then l.20110 */
-    if(ins_disc)
+    if (ins_disc)
     {
       ins_disc = false; 
 /*   if mode>0 then tail_append(new_disc); l.20112 */
-      if(mode > 0)
+      if (mode > 0)
       {
   mem[tail].hh.v.RH = new_disc (); 
   tail = mem[tail].hh.v.RH; 
@@ -2129,14 +2129,14 @@ lab80: if(cur_l < 256)
 
 /*  main_loop_move */
 lab90:
-  if(lig_stack == 0) goto lab21; 
+  if (lig_stack == 0) goto lab21; 
   cur_q = tail; 
   cur_l = mem[lig_stack].hh.b1; 
 
 lab91:
-  if(!(lig_stack >= hi_mem_min)) goto lab95; 
+  if (!(lig_stack >= hi_mem_min)) goto lab95; 
 
-lab92: if((cur_chr < font_bc[main_f])||(cur_chr > font_ec[main_f])) 
+lab92: if ((cur_chr < font_bc[main_f])||(cur_chr > font_ec[main_f])) 
   {
     char_warning(main_f, cur_chr); 
     {
@@ -2150,7 +2150,7 @@ lab92: if((cur_chr < font_bc[main_f])||(cur_chr > font_ec[main_f]))
     goto lab60; 
   } 
   main_i = font_info[char_base[main_f]+ cur_l].qqqq; 
-  if(!(main_i.b0 > 0)) 
+  if (!(main_i.b0 > 0)) 
   {
     char_warning(main_f, cur_chr); 
     {
@@ -2171,37 +2171,37 @@ lab92: if((cur_chr < font_bc[main_f])||(cur_chr > font_ec[main_f]))
 /*  main_loop_lookahead */
 lab100:
   get_next (); 
-  if(cur_cmd == 11) goto lab101; 
-  if(cur_cmd == 12) goto lab101; 
-  if(cur_cmd == 68) goto lab101; 
+  if (cur_cmd == 11) goto lab101; 
+  if (cur_cmd == 12) goto lab101; 
+  if (cur_cmd == 68) goto lab101; 
   x_token (); 
-  if(cur_cmd == 11) goto lab101; 
-  if(cur_cmd == 12) goto lab101; 
-  if(cur_cmd == 68) goto lab101; 
-  if(cur_cmd == 16) {
+  if (cur_cmd == 11) goto lab101; 
+  if (cur_cmd == 12) goto lab101; 
+  if (cur_cmd == 68) goto lab101; 
+  if (cur_cmd == 16) {
     scan_char_num (); 
     cur_chr = cur_val; 
     goto lab101; 
   } 
-  if(cur_cmd == 65) bchar = 256; 
+  if (cur_cmd == 65) bchar = 256; 
   cur_r = bchar; 
   lig_stack = 0; 
   goto lab110; 
 
 lab101: main_s = eqtb[(hash_size + 2651) + cur_chr].hh.v.RH; 
-  if(main_s == 1000)
+  if (main_s == 1000)
   space_factor = 1000; 
-  else if(main_s < 1000)
+  else if (main_s < 1000)
   {
-    if(main_s > 0)
+    if (main_s > 0)
     space_factor = main_s; 
   } 
-  else if(space_factor < 1000)
+  else if (space_factor < 1000)
   space_factor = 1000; 
   else space_factor = main_s; 
   {
     lig_stack = avail; 
-    if(lig_stack == 0)
+    if (lig_stack == 0)
     lig_stack = get_avail (); 
     else {
       avail = mem[lig_stack].hh.v.RH; 
@@ -2215,14 +2215,14 @@ lab101: main_s = eqtb[(hash_size + 2651) + cur_chr].hh.v.RH;
   mem[lig_stack].hh.b0 = main_f; 
   cur_r = cur_chr; 
   mem[lig_stack].hh.b1 = cur_r; 
-  if(cur_r == false_bchar)
+  if (cur_r == false_bchar)
     cur_r = 256; 
 
 // main_lig_loop:@<If there's a ligature/kern command relevant to |cur_l| and
 //  |cur_r|, adjust the text appropriately; exit to |main_loop_wrapup|@>;
 lab110:
 /*  if char_tag(main_i)<>lig_tag then goto main_loop_wrapup; */
-  if(((main_i.b2) % 4)!= 1)
+  if (((main_i.b2) % 4)!= 1)
     goto lab80;
 /* 425 in tex82.bug */
   if (cur_r == 256)
@@ -2232,7 +2232,7 @@ lab110:
 /*  main_j:=font_info[main_k].qqqq; */
   main_j = font_info[main_k].qqqq; 
 /* if skip_byte(main_j)<=stop_flag then goto main_lig_loop+2; */
-  if(main_j.b0 <= 128)goto lab112; 
+  if (main_j.b0 <= 128)goto lab112; 
 /* main_k:=lig_kern_restart(main_f)(main_j); */
   main_k = lig_kern_base[main_f]+ 256 * main_j.b2 + main_j.b3 + 32768L - 256 * 
  (128); 
@@ -2244,40 +2244,40 @@ lab111: main_j = font_info[main_k].qqqq;
 lab112:
 /*  provide for suppression of f-ligatures 99/Jan/5 */
   bSuppress = 0;
-  if(suppress_f_ligs && main_j.b1 == cur_r && main_j.b2 == 0) {
+  if (suppress_f_ligs && main_j.b1 == cur_r && main_j.b2 == 0) {
     if (cur_l == 'f') 
         bSuppress = 1;
   }
 
-/*  if(main_j.b1 == cur_r)*/
-  if(main_j.b1 == cur_r && bSuppress == 0)  /* 99/Jan/5 */
+/*  if (main_j.b1 == cur_r)*/
+  if (main_j.b1 == cur_r && bSuppress == 0)  /* 99/Jan/5 */
 /*  if skip_byte(main_j)<=stop_flag then l.20185 */
 //   @<Do ligature or kern command, returning to |main_lig_loop|
 //    or |main_loop_wrapup| or |main_loop_move|@>;
-  if(main_j.b0 <= 128)
+  if (main_j.b0 <= 128)
   {
 /* begin if op_byte(main_j)>=kern_flag then l.20225 */
-    if(main_j.b2 >= 128)
+    if (main_j.b2 >= 128)
     {
 /* @d wrapup(#)==if cur_l<non_char then */
-      if(cur_l < 256)
+      if (cur_l < 256)
       {
 /* if character(tail)=qi(hyphen_char[main_f]) then if link(cur_q)>null */
-  if(mem[tail].hh.b1 == hyphen_char[main_f])
-/*  if(mem[cur_q].hh.v.RH > 0) */ /* 94/Mar/22 ?????????????? */
-  if(mem[cur_q].hh.v.RH != 0) /* BUG FIX l.20107l.20186  */
+  if (mem[tail].hh.b1 == hyphen_char[main_f])
+/*  if (mem[cur_q].hh.v.RH > 0) */ /* 94/Mar/22 ?????????????? */
+  if (mem[cur_q].hh.v.RH != 0) /* BUG FIX l.20107l.20186  */
   ins_disc = true; 
 /*   if ligature_present then pack_lig(#); */
-  if(ligature_present)
+  if (ligature_present)
   {
     main_p = new_ligature(main_f, cur_l, mem[cur_q].hh.v.RH); 
-    if(lft_hit)
+    if (lft_hit)
     {
       mem[main_p].hh.b1 = 2; 
       lft_hit = false; 
     } 
-    if(rt_hit)
-    if(lig_stack == 0)
+    if (rt_hit)
+    if (lig_stack == 0)
     {
       incr(mem[main_p].hh.b1); 
       rt_hit = false; 
@@ -2286,10 +2286,10 @@ lab112:
     tail = main_p; 
     ligature_present = false; 
   } 
-  if(ins_disc)
+  if (ins_disc)
   {
     ins_disc = false; 
-    if(mode > 0)
+    if (mode > 0)
     {
       mem[tail].hh.v.RH = new_disc (); 
       tail = mem[tail].hh.v.RH; 
@@ -2304,12 +2304,12 @@ lab112:
       goto lab90; 
     } 
 /* begin if cur_l=non_char then lft_hit:=true; */
-    if(cur_l == 256)
+    if (cur_l == 256)
     lft_hit = true; 
-    else if(lig_stack == 0)
+    else if (lig_stack == 0)
     rt_hit = true; 
     {
-      if(interrupt != 0){
+      if (interrupt != 0){
       pause_for_instructions ();
     }
     } 
@@ -2326,12 +2326,12 @@ lab112:
     case 6 : 
       {
   cur_r = main_j.b3; 
-  if(lig_stack == 0)
+  if (lig_stack == 0)
   {
     lig_stack = new_lig_item(cur_r); 
     bchar = 256; 
   } 
-  else if((lig_stack >= hi_mem_min)) 
+  else if ((lig_stack >= hi_mem_min)) 
   {
     main_p = lig_stack; 
     lig_stack = new_lig_item(cur_r); 
@@ -2351,24 +2351,24 @@ lab112:
     case 7 : 
     case 11 : 
       {
-  if(cur_l < 256) /* if cur_l<non_char then  */
+  if (cur_l < 256) /* if cur_l<non_char then  */
 /*  begin if character(tail)=qi(hyphen_char[main_f]) then if link(cur_q)>null
 then */
   {
-    if(mem[tail].hh.b1 == hyphen_char[main_f])
-/*    if(mem[cur_q].hh.v.RH > 0) */  /* 94/Mar/22 */
-    if(mem[cur_q].hh.v.RH != 0) /* BUG FIX ???????????? */
+    if (mem[tail].hh.b1 == hyphen_char[main_f])
+/*    if (mem[cur_q].hh.v.RH > 0) */  /* 94/Mar/22 */
+    if (mem[cur_q].hh.v.RH != 0) /* BUG FIX ???????????? */
     ins_disc = true; 
-    if(ligature_present)
+    if (ligature_present)
     {
       main_p = new_ligature(main_f, cur_l, mem[cur_q].hh.v.RH); 
-      if(lft_hit)
+      if (lft_hit)
       {
         mem[main_p].hh.b1 = 2; 
         lft_hit = false; 
       } 
-/*      if(false)
-      if(lig_stack == 0){
+/*      if (false)
+      if (lig_stack == 0){
         incr(mem[main_p].hh.b1); 
         rt_hit = false; 
       } */              /* removed 99/Jan/6 */
@@ -2376,10 +2376,10 @@ then */
       tail = main_p; 
       ligature_present = false; 
     } 
-    if(ins_disc)
+    if (ins_disc)
     {
       ins_disc = false; 
-      if(mode > 0)
+      if (mode > 0)
       {
         mem[tail].hh.v.RH = new_disc (); 
         tail = mem[tail].hh.v.RH; 
@@ -2396,24 +2396,24 @@ then */
       {
   cur_l = main_j.b3; 
   ligature_present = true; 
-  if(lig_stack == 0)
+  if (lig_stack == 0)
   goto lab80; 
   else goto lab91; 
       } 
       break; 
     } 
-    if(main_j.b2 > 4)
-    if(main_j.b2 != 7)
+    if (main_j.b2 > 4)
+    if (main_j.b2 != 7)
     goto lab80; 
-    if(cur_l < 256)
+    if (cur_l < 256)
     goto lab110; 
     main_k = bchar_label[main_f]; 
     goto lab111; 
   } 
-  if(main_j.b0 == 0)
+  if (main_j.b0 == 0)
   incr(main_k); 
   else {
-    if(main_j.b0 >= 128)
+    if (main_j.b0 >= 128)
     goto lab80; 
     main_k = main_k + main_j.b0 + 1; 
   } 
@@ -2422,8 +2422,8 @@ then */
 /*  main_move_log */
 lab95: main_p = mem[lig_stack + 1].hh.v.RH; 
 /* if main_p>null then tail_append(main_p); l.20137 */
-/*  if(main_p > 0) */ /* 92/Mar/22 */
-  if(main_p != 0)     /* BUG FIX */
+/*  if (main_p > 0) */ /* 92/Mar/22 */
+  if (main_p != 0)     /* BUG FIX */
   {
     mem[tail].hh.v.RH = main_p; 
     tail = mem[tail].hh.v.RH; 
@@ -2433,21 +2433,21 @@ lab95: main_p = mem[lig_stack + 1].hh.v.RH;
   free_node(temp_ptr, 2); 
   main_i = font_info[char_base[main_f]+ cur_l].qqqq; 
   ligature_present = true; 
-  if(lig_stack == 0)
+  if (lig_stack == 0)
 /*   if main_p>null then goto main_loop_lookahead l.20142 */
-/*  if(main_p > 0) */ /* 94/Mar/2 */
-  if(main_p != 0)   /* BUG FIX */
+/*  if (main_p > 0) */ /* 94/Mar/2 */
+  if (main_p != 0)   /* BUG FIX */
   goto lab100; 
   else cur_r = bchar; 
   else cur_r = mem[lig_stack].hh.b1; 
   goto lab110; 
 
 /*  append_normal_space */
-lab120: if(eqtb[(hash_size + 794)].hh.v.RH == 0)
+lab120: if (eqtb[(hash_size + 794)].hh.v.RH == 0)
   {
     {
       main_p = font_glue[eqtb[(hash_size + 1834)].hh.v.RH]; 
-      if(main_p == 0)
+      if (main_p == 0)
       {
   main_p = new_spec(0); 
   main_k = param_base[eqtb[(hash_size + 1834)].hh.v.RH]+ 2; 
