@@ -79,7 +79,6 @@ void unsave (void)
 #endif /* STAT */
   } 
   else {
-      
     eq_destroy(eqtb[p]); 
     eqtb[p]= save_stack[save_ptr]; 
   ;
@@ -87,8 +86,7 @@ void unsave (void)
     if(eqtb[(hash_size + 3200)].cint > 0)
     restore_trace(p, 542); /* restoring */
 #endif /* STAT */
-  } 
-  else if(xeq_level[p]!= 1)
+  } else if(xeq_level[p]!= 1)
   {
     eqtb[p]= save_stack[save_ptr]; 
     xeq_level[p]= l;     /* l may be used without having been ... */
@@ -1337,18 +1335,17 @@ void scan_optional_equals (void)
   } while(!(cur_cmd != 10)); 
   if(cur_tok != 3133)back_input (); 
 } 
-bool scan_keyword_(str_number s)
+bool scan_keyword_(char * s)
 {/* 10 */ register bool Result; 
   halfword p; 
   halfword q; 
-  pool_pointer k; 
+  char * k; 
   p = mem_top - 13; 
   mem[p].hh.v.RH = 0; 
-  k = str_start[s]; 
-  while(k < str_start[s + 1]){
+  k = s; 
+  while(*k) {
     get_x_token (); 
-    if((cur_cs == 0)&&((cur_chr == str_pool[k])||(cur_chr == 
-    str_pool[k]- 32))) {
+    if((cur_cs == 0) && ((cur_chr == (*k))||(cur_chr == (*k)- 32))) {
       {
   q = get_avail (); 
   mem[p].hh.v.RH = q; 
@@ -1372,8 +1369,8 @@ bool scan_keyword_(str_number s)
 } 
 void mu_error (void) 
 { 
-	print_err("Incompatible glue units");
-	help1("I'm going to assume that 1mu=1pt when they're mixed."); 
+  print_err("Incompatible glue units");
+  help1("I'm going to assume that 1mu=1pt when they're mixed."); 
   error (); 
 } 
 void scan_eight_bit_int (void) 

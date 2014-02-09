@@ -37,17 +37,16 @@ void char_warning_(internal_font_number f, eight_bits c)
       begin_diagnostic (); 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (show_missing) {     /* add ! before 94/June/10 */
-    print_nl("! ");    /* !  */
+    print_nl("! ");
     print_string("Missing character: there is no");
   }
-  else 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  print_nl("Missing character: there is no");      /*  */
+  else
+    print_nl("Missing character: there is no");
     print(c); 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (show_numeric) {             /* bkph 93/Dec/21 */
-    print_char(32);   /*   */
-    print_char(40);   /*(*/
+    print_char(' ');
+    print_char('(');
     if (c / 100 > 0) {
       print_char(48 + c / 100);
 /*      c = c % 100; */
@@ -81,15 +80,15 @@ void char_warning_(internal_font_number f, eight_bits c)
   } 
 } 
 halfword new_character_(internal_font_number f, eight_bits c)
-{/* 10 */ register halfword Result; 
-  halfword p; 
-  if(font_bc[f]<= c)
-  if(font_ec[f]>= c)
-  if((font_info[char_base[f]+ c].qqqq.b0 > 0)) 
-  {
-    p = get_avail (); 
-/*  long to unsigned short ... */
-    mem[p].hh.b0 = f; 
+{
+  register halfword Result;
+  halfword p;
+  if (font_bc[f]<= c)
+    if (font_ec[f]>= c)
+      if ((font_info[char_base[f]+ c].qqqq.b0 > 0))
+      {
+        p = get_avail ();
+        mem[p].hh.b0 = f;
     mem[p].hh.b1 = c; 
     Result = p; 
     return(Result); 
@@ -103,18 +102,17 @@ void dvi_swap (void)
 { 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (trace_flag) {
-  show_char('\n');
-  sprintf(log_line, "dvi_swap %d", dvi_gone);
-  show_line(log_line, 0);
-}
+    show_char('\n');
+    sprintf(log_line, "dvi_swap %d", dvi_gone);
+    show_line(log_line, 0);
+  }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if(dvi_limit == dvi_buf_size)   {
+  if (dvi_limit == dvi_buf_size) {
     writedvi(0, half_buf - 1); 
     dvi_limit = half_buf; 
     dvi_offset = dvi_offset + dvi_buf_size; 
     dvi_ptr = 0; 
-  } 
-  else {
+  } else {
     writedvi(half_buf, dvi_buf_size - 1); 
     dvi_limit = dvi_buf_size; 
   } 
@@ -782,7 +780,8 @@ void hlist_out (void)
   baseline = cur_v; 
   leftedge = cur_h; 
 /* while p<>null do l.12314 */
-  while(p != 0)lab21: if((p >= hi_mem_min)) 
+  while(p != 0)
+lab21: if((p >= hi_mem_min)) 
   {
     if(cur_h != dvi_h)
     {
@@ -1493,9 +1492,9 @@ void scan_spec_(group_code c, bool threecodes)
   char speccode; 
   if(threecodes)
     s = save_stack[save_ptr + 0].cint; 
-  if(scan_keyword(836))   /* to */
+  if(scan_keyword("to"))   /* to */
     speccode = 0; 
-  else if(scan_keyword(837))  /* spread */
+  else if(scan_keyword("spread"))  /* spread */
     speccode = 1; 
   else {
     speccode = 1; 

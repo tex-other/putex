@@ -871,7 +871,7 @@ int texbody(void);          /* 1993/Dec/16 bkph */
 #define mem zmem
 #ifndef ALLOCATEZEQTB
 /* if eqtb is NOT allocated, can just let eqtb be an alias for zeqtb */
-#define eqtb zeqtb        /* EXPERIMENT 1996/JAN/18 */
+//#define eqtb zeqtb        /* EXPERIMENT 1996/JAN/18 */
 #else
 /* uncomment `register memory_word *eqtb=zeqtb' */
 /* but with present compiler its faster to not do it this way 99/Jan/18 */
@@ -1093,8 +1093,8 @@ void get_x_token(void);
 void x_token(void);
 void scan_left_brace(void);
 void scan_optional_equals(void);
-bool scan_keyword_(str_number);
-#define scan_keyword(s) scan_keyword_((str_number) (s))
+bool scan_keyword_(char *);
+#define scan_keyword(s) scan_keyword_((char *) (s))
 void mu_error(void);
 void scan_eight_bit_int(void);
 void scan_char_num(void);

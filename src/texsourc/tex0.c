@@ -29,6 +29,11 @@ static void winerror (char * message)
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+void append_char (ASCII_code c)
+{
+  str_pool[pool_ptr] = c;
+  incr(pool_ptr);
+}
 void print_err (const char * s)
 {
   if (interaction == error_stop_mode);

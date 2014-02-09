@@ -249,10 +249,10 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
     cur_val = - (integer) cur_val; 
   } 
   if(inf)
-  if(scan_keyword(309))   /* fil */
+  if(scan_keyword("fil"))   /* fil */
   {
     cur_order = 1; 
-    while(scan_keyword(108)) {  /* l */
+    while(scan_keyword("l")) {  /* l */
   
       if(cur_order == 3) {
 		  print_err("Illegal unit of measure(");
@@ -292,9 +292,9 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
   } 
   if(mu)
   goto lab45; 
-  if(scan_keyword(705))   /* em */
+  if(scan_keyword("em"))   /* em */
   v =(font_info[6 + param_base[eqtb[(hash_size + 1834)].hh.v.RH]].cint); 
-  else if(scan_keyword(706))  /* ex */
+  else if(scan_keyword("ex"))  /* ex */
   v =(font_info[5 + param_base[eqtb[(hash_size + 1834)].hh.v.RH]].cint); 
   else goto lab45; 
   {
@@ -306,7 +306,7 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
   goto lab89; 
   lab45:; 
   if(mu)
-  if(scan_keyword(334)) /* mu */
+  if(scan_keyword("mu")) /* mu */
   goto lab88; 
   else {
       print_err("Illegal unit of measure("); 
@@ -318,7 +318,7 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
     error (); 
     goto lab88; 
   } 
-  if(scan_keyword(701)) /* true */
+  if(scan_keyword("true")) /* true */
   {
     prepare_mag (); 
     if(eqtb[(hash_size + 3180)].cint != 1000)
@@ -332,44 +332,44 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
 /*      f = f & 65535L; */          /* f positive ??? */
     } 
   } 
-  if(scan_keyword(394))   /* pt */
+  if(scan_keyword("pt"))   /* pt */
   goto lab88; 
-  if(scan_keyword(712))   /* in */
+  if(scan_keyword("in"))   /* in */
   {
     num = 7227; 
     denom = 100; 
   } 
-  else if(scan_keyword(713))  /* pc */
+  else if(scan_keyword("pc"))  /* pc */
   {
     num = 12; 
     denom = 1; 
   } 
-  else if(scan_keyword(714))  /* cm */
+  else if(scan_keyword("cm"))  /* cm */
   {
     num = 7227; 
     denom = 254; 
   } 
-  else if(scan_keyword(715))  /* mm */
+  else if(scan_keyword("mm"))  /* mm */
   {
     num = 7227; 
     denom = 2540; 
   } 
-  else if(scan_keyword(716))  /* bp */
+  else if(scan_keyword("bp"))  /* bp */
   {
     num = 7227; 
     denom = 7200; 
   } 
-  else if(scan_keyword(717))  /* dd */
+  else if(scan_keyword("dd"))  /* dd */
   {
     num = 1238; 
     denom = 1157; 
   } 
-  else if(scan_keyword(718))  /* cc */
+  else if(scan_keyword("cc"))  /* cc */
   {
     num = 14856;          /* numerator */
     denom = 1157;         /* denominator */ 
   } 
-  else if(scan_keyword(719))  /* sp */
+  else if(scan_keyword("sp"))  /* sp */
   goto lab30; 
   else {
       print_err("Illegal unit of measure(");
@@ -452,13 +452,13 @@ void scan_glue_(small_number level)
   } 
   q = new_spec(0); 
   mem[q + 1].cint = cur_val; 
-  if(scan_keyword(727)) /* plus */
+  if(scan_keyword("plus")) /* plus */
   {
     scan_dimen(mu, true, false); 
     mem[q + 2].cint = cur_val; 
     mem[q].hh.b0 = cur_order;  
   } 
-  if(scan_keyword(728)) /* minus */
+  if(scan_keyword("minus")) /* minus */
   {
     scan_dimen(mu, true, false); 
     mem[q + 3].cint = cur_val; 
@@ -483,19 +483,19 @@ halfword scan_rule_spec (void)
     mem[q + 2].cint = 0;        /* depth  := 0.0pt */
   } 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  lab21: if(scan_keyword(729))    /* width */
+  lab21: if(scan_keyword("width"))    /* width */
   {
     scan_dimen(false, false, false); 
     mem[q + 1].cint = cur_val; 
     goto lab21; 
   } 
-  if(scan_keyword(730))     /* height */
+  if(scan_keyword("height"))     /* height */
   {
     scan_dimen(false, false, false); 
     mem[q + 3].cint = cur_val; 
     goto lab21; 
   } 
-  if(scan_keyword(731))     /* depth */
+  if(scan_keyword("depth"))     /* depth */
   {
     scan_dimen(false, false, false); 
     mem[q + 2].cint = cur_val; 
@@ -2092,7 +2092,8 @@ void show_tex_fonts(void)
 /* called only from tex8.c */
 
 internal_font_number read_font_info_(halfword u, str_number nom, str_number aire, scaled s)
-{/* 30 11 45 */ register internal_font_number Result; 
+{
+  register internal_font_number Result; 
   font_index k; 
   bool fileopened; 
 /*  halfword lf, lh, bc, ec, nw, nh, nd, ni, nl, nk, ne, np;  */
@@ -2112,11 +2113,11 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
   g = 0; 
   fileopened = false; 
   pack_file_name(nom, aire, 805); /* .tfm */
-  if(! b_open_in(tfm_file)) 
+  if(!b_open_in(tfm_file)) 
   {   /* new in C version d */
     if(maketextfm ())
     {
-      if(! b_open_in(tfm_file)) 
+      if(!b_open_in(tfm_file)) 
       goto lab11; 
     } 
     else goto lab11; 
@@ -2127,8 +2128,8 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
 /*  tfm_temp = getc(tfm_file);  */ /* done already in open_input, but why? */
     {
       lf = tfm_temp; 
-      if(lf > 127)
-      goto lab11; 
+      if (lf > 127)
+        goto lab11; 
       tfm_temp = getc(tfm_file); 
       lf = lf * 256 + tfm_temp; 
     } 
@@ -2238,12 +2239,12 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
     lf = lf + 7 - np; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATEFONT
-  if((fmem_ptr + lf > current_font_mem_size))   /* 93/Nov/28 */
+  if ((fmem_ptr + lf > current_font_mem_size))   /* 93/Nov/28 */
     font_info = realloc_font_info (increment_font_mem_size + lf);
-  if((font_ptr == font_max)||(fmem_ptr + lf > current_font_mem_size)) 
+  if ((font_ptr == font_max) || (fmem_ptr + lf > current_font_mem_size)) 
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if((font_ptr == font_max)||(fmem_ptr + lf > font_mem_size)) 
+  if ((font_ptr == font_max) || (fmem_ptr + lf > font_mem_size)) 
 #endif
   {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */

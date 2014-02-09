@@ -501,7 +501,6 @@ void off_save (void)
     error (); 
   } 
   else {
-      
     back_input (); 
     p = get_avail (); 
     mem[temp_head].hh.v.RH = p; 
@@ -747,7 +746,7 @@ void begin_box_(integer boxcontext)
     {
       scan_eight_bit_int (); 
       n = cur_val; 
-      if(! scan_keyword(836))  /* to */
+      if(! scan_keyword("to"))  /* to */
       {
 		  print_err("Missing `to' inserted");
 		  help2("I'm working on `\\vsplit<box number> to <dimen>';",

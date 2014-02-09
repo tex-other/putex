@@ -498,7 +498,7 @@ void do_register_command_ (small_number a)
   lab40:; 
   if(q == 89)
   scan_optional_equals (); 
-  else if(scan_keyword(1200))   /* by */
+  else if(scan_keyword("by"))   /* by */
 ; 
   arith_error = false; 
   if(q < 91)
@@ -686,34 +686,34 @@ void new_font_(small_number a)
   str_number t; 
   char old_setting; 
   str_number flushablestring; 
-  if(job_name == 0)open_log_file (); 
+  if (job_name == 0) open_log_file (); 
   get_r_token (); 
   u = cur_cs; 
-  if(u >= 514)      /* if u >= hash_base then t <- text(u); p.1257 */
+  if(u >= hash_base)      /* if u >= hash_base then t <- text(u); p.1257 */
     t = hash[u].v.RH; 
-  else if(u >= 257)   /* if u >= single_base then ... */
+  else if(u >= single_base)   /* if u >= single_base then ... */
 /*    if u=null_cs then t:="FONT"@+else t:=u-single_base */
-  if(u == 513)
+  if(u == null_cs)
     t = 1213;     /* FONT */
-  else t = u - 257;   /* else t <- u - single_base */
+  else t = u - single_base;   /* else t <- u - single_base */
   else {
     old_setting = selector; 
     selector = 21; 
     print_string("FONT");
-    print(u - 1); 
+    print(u - active_base); 
     selector = old_setting; 
     {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATESTRING
-    if(pool_ptr + 1 > current_pool_size)
+    if (pool_ptr + 1 > current_pool_size)
       str_pool = realloc_str_pool (increment_pool_size);
-    if(pool_ptr + 1 > current_pool_size){     /* 94/Jan/24 */
+    if (pool_ptr + 1 > current_pool_size) {     /* 94/Jan/24 */
       overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/9 */
       return;     // abort_flag set
     }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-      if(pool_ptr + 1 > pool_size){
+      if (pool_ptr + 1 > pool_size) {
       overflow("pool size", pool_size - init_pool_ptr); /* pool size */
       return;     // abort_flag set
     }
@@ -728,13 +728,13 @@ void new_font_(small_number a)
 
 /* paragraph 1258 */
   name_in_progress = true; 
-  if(scan_keyword(1214))  /* at */
+  if(scan_keyword("at"))  /* at */
   {
     scan_dimen(false, false, false); 
     s = cur_val; 
     if((s <= 0)||(s >= 134217728L)) /* 2^27 */
     {
-		print_err("Improper `at' size(");
+      print_err("Improper `at' size(");
       print_scaled(s); 
       print_string("pt), replaced by 10pt");
 	  help2("I can only handle fonts at positive sizes that are",
@@ -743,7 +743,7 @@ void new_font_(small_number a)
       s = 10 * 65536L;    /* 10pt */
     } 
   } 
-  else if(scan_keyword(1215)) /* scaled */
+  else if(scan_keyword("scaled")) /* scaled */
   {
     scan_int (); 
     s = - (integer) cur_val; 

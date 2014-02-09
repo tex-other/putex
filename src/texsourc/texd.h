@@ -542,7 +542,7 @@ EXTERN memory_word * zeqtb;
 #else
 #ifdef INCREASEFONTS
 /* EXTERN memory_word zeqtb[13507 + eqtb_extra];  */
-EXTERN memory_word zeqtb[(hash_size + 4007) + eqtb_extra]; 
+EXTERN memory_word eqtb[(hash_size + 4007) + eqtb_extra]; 
 #else
 /* EXTERN memory_word zeqtb[13507];  */ /* hash_size =  9500 */
 /* EXTERN memory_word zeqtb[29007];  */ /* hash_size = 25000 */
@@ -1014,9 +1014,8 @@ EXTERN integer op_start[256];
 EXTERN int hyph_count;  /* padded out */    /* 95/Jan/7 */
 
 #ifdef INITEX
-EXTERN integer 
-#define trie_op_hash (zzzaf - (int)(neg_trie_op_size))
-  zzzaf[trie_op_size - neg_trie_op_size + 1]; 
+EXTERN integer trie_op_hash_C[trie_op_size - neg_trie_op_size + 1];
+#define trie_op_hash (trie_op_hash_C - (int)(neg_trie_op_size)) 
 EXTERN trie_op_code trie_used[256]; 
 EXTERN ASCII_code trie_op_lang[trie_op_size + 1];   /* already padded 751 + 1 */
 EXTERN trie_op_code trie_op_val[trie_op_size + 1]; 
@@ -1837,7 +1836,7 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 /* sec 79 */
 
 extern void tex_help (unsigned int n, ...);
-
+extern void append_char(ASCII_code c);
 #define help0()     tex_help(0)
 #define help1(...)  tex_help(1, __VA_ARGS__)
 #define help2(...)  tex_help(2, __VA_ARGS__)

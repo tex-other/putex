@@ -942,7 +942,7 @@ memory_word *realloc_main (int losize, int hisize)
   int k, minsize;
   int newsize=0;        /* to quieten compiler */
   int n=0;          /* to quieten compiler */
-  memory_word *newmemory=NULL; /* to quieten compiler */
+  memory_word *newmemory = NULL; /* to quieten compiler */
 
 /*  if (losize == 0 && hisize > 0) runawayflag = 1;     
   else runawayflag = 0; */ /* 94/Jan/22 */
@@ -2119,7 +2119,7 @@ void check_fixed_align (int flag)
 }
 
 void check_alloc_align (int flag) {
-  if (testalign ((int) zeqtb, sizeof(zeqtb[0]), "ALLOCATED ALIGNMENT"))
+  if (testalign ((int) eqtb, sizeof(eqtb[0]), "ALLOCATED ALIGNMENT"))
     show_line("PLEASE RECOMPILE ME!\n", 1);
 #ifdef CHECKALIGNMENT
   if (!flag) return;
