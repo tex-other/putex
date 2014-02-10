@@ -33,64 +33,58 @@ halfword rebox_(halfword b, scaled w)
   internal_font_number f; 
   scaled v; 
 /* begin if (width(b)<>w)and(list_ptr(b)<>null) then l.14010 */
-  if ((mem[b + 1].cint != w)&&(mem[b + 5].hh.v.RH != 0)) 
-  {
+  if ((mem[b + 1].cint != w) && (mem[b + 5].hh.v.RH != 0)) {
     if (mem[b].hh.b0 == 1)
-    b = hpack(b, 0, 1); 
-    p = mem[b + 5].hh.v.RH; 
+      b = hpack(b, 0, 1);
+    p = mem[b + 5].hh.v.RH;
 /*  if (is_char_node(p))and(link(p)=null) then l.14013 */
-    if (((p >= hi_mem_min)) &&(mem[p].hh.v.RH == 0)) 
-    {
-      f = mem[p].hh.b0; 
-      v = font_info[width_base[f]+ font_info[char_base[f]+ mem[p]
-      .hh.b1].qqqq.b0].cint; 
+    if (((p >= hi_mem_min)) &&(mem[p].hh.v.RH == 0)) {
+      f = mem[p].hh.b0;
+      v = font_info[width_base[f]+ font_info[char_base[f]+ mem[p].hh.b1].qqqq.b0].cint;
       if (v != mem[b + 1].cint)
-      mem[p].hh.v.RH = new_kern(mem[b + 1].cint - v); 
-    } 
-    free_node(b, 7); 
-    b = new_glue(12); 
-    mem[b].hh.v.RH = p; 
+        mem[p].hh.v.RH = new_kern(mem[b + 1].cint - v);
+    }
+    free_node(b, 7);
+    b = new_glue(12);
+    mem[b].hh.v.RH = p;
 /*   while link(p)<>null do p:=link(p); l.14019 */
-    while(mem[p].hh.v.RH != 0)p = mem[p].hh.v.RH; 
-    mem[p].hh.v.RH = new_glue(12); 
-    Result = hpack(b, w, 0); 
-  } 
-  else {
-      
-    mem[b + 1].cint = w; 
-    Result = b; 
-  } 
-  return Result; 
-} 
+    while (mem[p].hh.v.RH != 0) p = mem[p].hh.v.RH;
+    mem[p].hh.v.RH = new_glue(12);
+    Result = hpack(b, w, 0);
+  } else {
+    mem[b + 1].cint = w;
+    Result = b;
+  }
+  return Result;
+}
 /* This is to be the start of tex5.c */
 halfword math_glue_(halfword g, scaled m)
-{register halfword Result; 
+{
+  register halfword Result; 
   halfword p; 
   integer n; 
   scaled f; 
   n = x_over_n(m, 65536L); 
   f = tex_remainder; 
-  if (f < 0)
-  {
-    decr(n); 
-    f = f + 65536L; 
-  } 
-  p = get_node(4); 
-  mem[p + 1].cint = mult_and_add(n, mem[g + 1].cint, xn_over_d(mem[
-  g + 1].cint, f, 65536L), 1073741823L);  /* 2^30 - 1 */
+  if (f < 0) {
+    decr(n);
+    f = f + 65536L;
+  }
+  p = get_node(4);
+  mem[p + 1].cint = mult_and_add(n, mem[g + 1].cint, xn_over_d(mem[g + 1].cint, f, 65536L), 1073741823L);  /* 2^30 - 1 */
   mem[p].hh.b0 = mem[g].hh.b0; 
   if (mem[p].hh.b0 == 0)
-  mem[p + 2].cint = mult_and_add(n, mem[g + 2].cint, xn_over_d(mem[
-  g + 2].cint, f, 65536L), 1073741823L);  /* 2^30 - 1 */
-  else mem[p + 2].cint = mem[g + 2].cint; 
-  mem[p].hh.b1 = mem[g].hh.b1; 
+    mem[p + 2].cint = mult_and_add(n, mem[g + 2].cint, xn_over_d(mem[g + 2].cint, f, 65536L), 1073741823L);  /* 2^30 - 1 */
+  else
+    mem[p + 2].cint = mem[g + 2].cint;
+  mem[p].hh.b1 = mem[g].hh.b1;
   if (mem[p].hh.b1 == 0)
-  mem[p + 3].cint = mult_and_add(n, mem[g + 3].cint, xn_over_d(mem[
-  g + 3].cint, f, 65536L), 1073741823L);  /* 2^30 - 1 */
-  else mem[p + 3].cint = mem[g + 3].cint; 
-  Result = p; 
-  return Result; 
-} 
+    mem[p + 3].cint = mult_and_add(n, mem[g + 3].cint, xn_over_d(mem[g + 3].cint, f, 65536L), 1073741823L);  /* 2^30 - 1 */
+  else
+    mem[p + 3].cint = mem[g + 3].cint;
+  Result = p;
+  return Result;
+}
 void math_kern_ (halfword p, scaled m)
 { 
   integer n; 
@@ -111,7 +105,7 @@ void math_kern_ (halfword p, scaled m)
   } 
 } 
 void flush_math (void) 
-{ 
+{
   flush_node_list(mem[head].hh.v.RH); 
   flush_node_list(cur_list.aux_field.cint); 
   mem[head].hh.v.RH = 0; 
@@ -127,7 +121,7 @@ halfword clean_box_(halfword p, small_number s)
   switch(mem[p].hh.v.RH)
   {case 1 : 
     {
-      cur_mlist = new_noad (); 
+      cur_mlist = new_noad(); 
       mem[cur_mlist + 1]= mem[p]; 
     } 
     break; 
@@ -142,7 +136,7 @@ halfword clean_box_(halfword p, small_number s)
     break; 
     default: 
     {
-      q = new_null_box (); 
+      q = new_null_box(); 
       goto lab40; 
     } 
     break; 
@@ -150,7 +144,7 @@ halfword clean_box_(halfword p, small_number s)
   savestyle = cur_style; 
   cur_style = s; 
   mlist_penalties = false; 
-  mlist_to_hlist (); 
+  mlist_to_hlist(); 
   q = mem[temp_head].hh.v.RH; 
   cur_style = savestyle; 
   {
@@ -200,7 +194,7 @@ void fetch_(halfword a)
 		"stated character from an undefined font family. For example,",
 		"plain TeX doesn't allow \\it or \\sl in subscripts. Proceed,",
 		"and I'll try to forget that I needed that character.");
-    error (); 
+    error(); 
     cur_i = null_character; 
     mem[a].hh.v.RH = 0; 
   } 
@@ -356,7 +350,7 @@ void make_math_accent_(halfword q)
     if (mem[q + 1].hh.v.RH == 1)
     {
       flush_node_list(x); 
-      x = new_noad (); 
+      x = new_noad(); 
       mem[x + 1]= mem[q + 1]; 
       mem[x + 2]= mem[q + 2]; 
       mem[x + 3]= mem[q + 3]; 
@@ -446,7 +440,7 @@ void make_fraction_(halfword q)
     if (delta2 > 0)
     shiftdown = shiftdown + delta2; 
   } 
-  v = new_null_box (); 
+  v = new_null_box(); 
   mem[v].hh.b0 = 1; 
   mem[v + 3].cint = shiftup + mem[x + 3].cint; 
   mem[v + 2].cint = mem[z + 2].cint + shiftdown; 
@@ -527,7 +521,7 @@ void make_ord_(halfword q)
         
       {
         if (interrupt != 0){
-        pause_for_instructions ();
+        pause_for_instructions();
       }
       } 
       switch(cur_i.b2)
@@ -543,7 +537,7 @@ void make_ord_(halfword q)
       case 7 : 
       case 11 : 
         {
-    r = new_noad (); 
+    r = new_noad(); 
     mem[r + 1].hh.b1 = cur_i.b3; 
     mem[r + 1].hh.b0 = mem[q + 1].hh.b0; 
     mem[q].hh.v.RH = r; 
@@ -849,7 +843,7 @@ void mlist_to_hlist (void)
   cur_mlist = mem[q + 1].hh.v.LH; 
   savestyle = cur_style; 
   mlist_penalties = false; 
-  mlist_to_hlist (); 
+  mlist_to_hlist(); 
   cur_style = savestyle; 
   {
     if (cur_style < 4)
@@ -1064,7 +1058,7 @@ void push_alignment (void)
   mem[p + 4].hh.v.LH = cur_head; 
   mem[p + 4].hh.v.RH = cur_tail; 
   align_ptr = p; 
-  cur_head = get_avail (); 
+  cur_head = get_avail(); 
 } 
 void pop_alignment (void) 
 { 
@@ -1090,14 +1084,14 @@ void pop_alignment (void)
 } 
 void get_preamble_token (void) 
 {/* 20 */ 
-  lab20: get_token (); 
+  lab20: get_token(); 
   while((cur_chr == 256)&&(cur_cmd == 4)) {
       
-    get_token (); 
+    get_token(); 
     if (cur_cmd > 100)
     {
-      expand (); 
-      get_token (); 
+      expand(); 
+      get_token(); 
     } 
   } 
   if (cur_cmd == 9){
@@ -1106,7 +1100,7 @@ void get_preamble_token (void)
   }
   if ((cur_cmd == 75)&&(cur_chr == (hash_size + 793))) 
   {
-    scan_optional_equals (); 
+    scan_optional_equals(); 
     scan_glue(2); 
     if (eqtb[(hash_size + 3206)].cint > 0)
     geq_define((hash_size + 793), 117, cur_val); 
@@ -1119,7 +1113,7 @@ void init_align (void)
   halfword savecsptr; 
   halfword p; 
   savecsptr = cur_cs; 
-  push_alignment (); 
+  push_alignment(); 
   align_state = -1000000L; 
   if ((mode == 203)&&((tail != cur_list 
  .head_field)||(cur_list.aux_field.cint != 0)))
@@ -1130,10 +1124,10 @@ void init_align (void)
 	help3("Displays can use special alignments (like \\eqalignno)",
 		"only if nothing but the alignment itself is between $$'s.",
 		"So I've deleted the formulas that preceded this alignment.");
-    error (); 
-    flush_math (); 
+    error(); 
+    flush_math(); 
   } 
-  push_nest (); 
+  push_nest(); 
   if (mode == 203)
   {
     mode = -1; 
@@ -1168,18 +1162,18 @@ void init_align (void)
 	help3("There should be exactly one # between &'s, when an",
 		"\\halign or \\valign is being set up. In this case you had",
 		"none, so I've put one in; maybe that will work.");
-  back_error (); 
+  back_error(); 
   goto lab31; 
       } 
       else if ((cur_cmd != 10)||(p != hold_head)) 
       {
-  mem[p].hh.v.RH = get_avail (); 
+  mem[p].hh.v.RH = get_avail(); 
   p = mem[p].hh.v.RH; 
   mem[p].hh.v.LH = cur_tok; 
       } 
     } 
     lab31:; 
-    mem[cur_align].hh.v.RH = new_null_box (); 
+    mem[cur_align].hh.v.RH = new_null_box(); 
     cur_align = mem[cur_align].hh.v.RH; 
     mem[cur_align].hh.v.LH = end_span; 
     mem[cur_align + 1].cint = -1073741824L;  /* - 2^30 */
@@ -1197,14 +1191,14 @@ lab22:
 		  help3("There should be exactly one # between &'s, when an",
 			  "\\halign or \\valign is being set up. In this case you had",
 			  "more than one, so I'm ignoring all but the first."); 
-  error (); 
+  error(); 
   goto lab22; 
       } 
-      mem[p].hh.v.RH = get_avail (); 
+      mem[p].hh.v.RH = get_avail(); 
       p = mem[p].hh.v.RH; 
       mem[p].hh.v.LH = cur_tok; 
     } 
-    lab32: mem[p].hh.v.RH = get_avail (); 
+    lab32: mem[p].hh.v.RH = get_avail(); 
     p = mem[p].hh.v.RH; 
 /*    mem[p].hh.v.LH = (hash_size + 4614);  */
 /*    mem[p].hh.v.LH = (hash_size + 4095 + 519);  */
@@ -1216,23 +1210,23 @@ lab22:
 /* if every_cr<>null then begin_token_list(every_cr,every_cr_text); l.15665 */
   if (eqtb[(hash_size + 1320)].hh.v.RH != 0)/* everycr */
     begin_token_list(eqtb[(hash_size + 1320)].hh.v.RH, 13); 
-  align_peek (); 
+  align_peek(); 
 } 
 void init_span_ (halfword p)
 {
-  push_nest (); 
+  push_nest(); 
   if (mode == -102)
   space_factor = 1000; 
   else {
       
     cur_list.aux_field.cint = ignore_depth; 
-    normal_paragraph (); 
+    normal_paragraph(); 
   } 
   cur_span = p; 
 } 
 void init_row (void) 
 {
-  push_nest (); 
+  push_nest(); 
   mode =(-103)- mode; 
   if (mode == -102)
   space_factor = 0; 
@@ -1254,7 +1248,7 @@ void init_col (void)
   align_state = 0; 
   else {
       
-    back_input (); 
+    back_input(); 
     begin_token_list(mem[cur_align + 3].cint, 1); 
   } 
 } 
@@ -1266,7 +1260,7 @@ void fin_row (void)
   if (mode == -102)
   {
     p = hpack(mem[head].hh.v.RH, 0, 1); 
-    pop_nest (); 
+    pop_nest(); 
     append_to_vlist(p); 
     if (cur_head != cur_tail)
     {
@@ -1278,7 +1272,7 @@ void fin_row (void)
       
     p = vpackage(mem[head].hh.v.RH, 0, 1,
     1073741823L);   /* 2^30 - 1 */
-    pop_nest (); 
+    pop_nest(); 
     mem[tail].hh.v.RH = p; 
     tail = p; 
     space_factor = 1000; 
@@ -1287,7 +1281,7 @@ void fin_row (void)
   mem[p + 6].cint = 0; 
   if (eqtb[(hash_size + 1320)].hh.v.RH != 0)/* everycr */
     begin_token_list(eqtb[(hash_size + 1320)].hh.v.RH, 13); 
-  align_peek (); 
+  align_peek(); 
 } 
 void fin_align (void) 
 { 
@@ -1302,12 +1296,12 @@ void fin_align (void)
     confusion("align1");
     return;       // abort_flag set
   }
-  unsave (); 
+  unsave(); 
   if (cur_group != 6){
     confusion("align0");
     return;       // abort_flag set
   }
-  unsave (); 
+  unsave(); 
   if (nest[nest_ptr - 1].mode_field == 203)
   o = eqtb[(hash_size + 3745)].cint; 
   else o = 0; 
@@ -1446,7 +1440,7 @@ void fin_align (void)
       t = t - round(mem[p + 6].gr * mem[v + 3].cint); 
     } 
     s = mem[s].hh.v.RH; 
-    mem[u].hh.v.RH = new_null_box (); 
+    mem[u].hh.v.RH = new_null_box(); 
     u = mem[u].hh.v.RH; 
     t = t + mem[s + 1].cint; 
     if (mode == -1)
@@ -1555,32 +1549,32 @@ void fin_align (void)
     q = mem[q].hh.v.RH; 
   } 
   flush_node_list(p); 
-  pop_alignment (); 
+  pop_alignment(); 
   auxsave = cur_list.aux_field; 
   p = mem[head].hh.v.RH; 
   q = tail; 
-  pop_nest (); 
+  pop_nest(); 
   if (mode == 203)
   {
-    do_assignments (); 
+    do_assignments(); 
     if (cur_cmd != 3) {
 		print_err("Missing $$ inserted");
 		help2("Displays can use special alignments (like \\eqalignno)",
 			"only if nothing but the alignment itself is between $$'s.");
-      back_error (); 
+      back_error(); 
     } 
     else {
   
-      get_x_token (); 
+      get_x_token(); 
       if (cur_cmd != 3)
       {
 		  print_err("Display math should end with $$");
 		  help2("The `$' that I just saw supposedly matches a previous `$$'.",
 			  "So I shall assume that you typed `$$' both times.");
-  back_error (); 
+  back_error(); 
       } 
   }
-    pop_nest (); 
+    pop_nest(); 
     {
       mem[tail].hh.v.RH = new_penalty(eqtb[(hash_size + 3174)].cint 
     ); 
@@ -1603,7 +1597,7 @@ void fin_align (void)
       tail = mem[tail].hh.v.RH; 
     } 
     cur_list.aux_field.cint = auxsave.cint; 
-    resume_after_display (); 
+    resume_after_display(); 
   } 
   else {
       
@@ -1612,7 +1606,7 @@ void fin_align (void)
     if (p != 0)    /*   if p<>null then tail:=q; l.15926 */
     tail = q; 
     if (mode == 1){
-    build_page ();
+    build_page();
   }
   } 
 } 
@@ -1651,7 +1645,7 @@ bool fin_col (void)
   {
 /*  potential problem here if new_null_box causes memory reallocation ??? */
 /*  compiler optimization does not refresh `mem' loaded in registers ? */
-    mem[q].hh.v.RH = new_null_box (); 
+    mem[q].hh.v.RH = new_null_box(); 
     p = mem[q].hh.v.RH; 
     mem[p].hh.v.LH = end_span; 
     mem[p + 1].cint = -1073741824L;  /* - 2^30 */
@@ -1660,7 +1654,7 @@ bool fin_col (void)
     r = mem[cur_loop + 3].cint; 
     while(r != 0){
   
-      mem[q].hh.v.RH = get_avail (); 
+      mem[q].hh.v.RH = get_avail(); 
       q = mem[q].hh.v.RH; 
       mem[q].hh.v.LH = mem[r].hh.v.LH; 
       r = mem[r].hh.v.RH; 
@@ -1671,7 +1665,7 @@ bool fin_col (void)
     r = mem[cur_loop + 2].cint; 
     while(r != 0){
   
-      mem[q].hh.v.RH = get_avail (); 
+      mem[q].hh.v.RH = get_avail(); 
       q = mem[q].hh.v.RH; 
       mem[q].hh.v.LH = mem[r].hh.v.LH; 
       r = mem[r].hh.v.RH; 
@@ -1689,11 +1683,11 @@ bool fin_col (void)
 		"So I'll assume that you meant to type \\cr instead.");
 /* extra_info(cur_align) < cr_code) ? */
     mem[cur_align + 5].hh.v.LH = 257; 
-    error (); 
+    error(); 
   } 
   if (mem[cur_align + 5].hh.v.LH != 256)
   {
-    unsave (); 
+    unsave(); 
     new_save_level(6); 
     {
       if (mode == -102)
@@ -1759,7 +1753,7 @@ bool fin_col (void)
       else o = 0; 
       mem[u + 5].hh.b0 = o; 
       mem[u + 4].cint = totalshrink[o]; 
-      pop_nest (); 
+      pop_nest(); 
       mem[tail].hh.v.RH = u; 
       tail = u; 
     } 
@@ -1779,10 +1773,10 @@ bool fin_col (void)
   } 
   align_state = 1000000L; 
   do {
-      get_x_token (); 
+      get_x_token(); 
   } while(!(cur_cmd != 10)); 
   cur_align = p; 
-  init_col (); 
+  init_col(); 
   Result = false; 
   return Result; 
 } 
@@ -1829,7 +1823,7 @@ scaled make_op_(halfword q)
     x = clean_box(q + 2, 2 *(cur_style / 4)+ 4 +(cur_style % 2)); 
     y = clean_box(q + 1, cur_style); 
     z = clean_box(q + 3, 2 *(cur_style / 4)+ 5); 
-    v = new_null_box (); 
+    v = new_null_box(); 
     mem[v].hh.b0 = 1; 
     mem[v + 1].cint = mem[y + 1].cint; 
     if (mem[x + 1].cint > mem[v + 1].cint)

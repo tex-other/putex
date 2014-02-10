@@ -290,13 +290,13 @@ void close_files_and_terminate (void)
     if (cur_s > 0){
       dvi_buf[dvi_ptr]= 142; 
       incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap (); 
+      if (dvi_ptr == dvi_limit)dvi_swap(); 
     } 
     else {
       {
       dvi_buf[dvi_ptr]= 140; 
       incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap (); 
+      if (dvi_ptr == dvi_limit)dvi_swap(); 
       } 
       incr(total_pages); 
     } 
@@ -308,25 +308,25 @@ void close_files_and_terminate (void)
     {
     dvi_buf[dvi_ptr]= 248;   /* post - start of postamble */
     incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap (); 
+    if (dvi_ptr == dvi_limit)dvi_swap(); 
   } 
     dvi_four(last_bop); 
     last_bop = dvi_offset + dvi_ptr - 5; 
     dvi_four(25400000L);     /* magic DVI scale factor */ 
     dvi_four(473628672L);    /* 7227 * 65536 */
-    prepare_mag ();         /* in tex2.c */
+    prepare_mag();         /* in tex2.c */
     dvi_four(eqtb[(hash_size + 3180)].cint);   /* mag */
     dvi_four(max_v);        /* max height + depth */
     dvi_four(max_h);        /* max width */
     {
     dvi_buf[dvi_ptr]= max_push / 256; 
     incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap (); 
+    if (dvi_ptr == dvi_limit)dvi_swap(); 
     } 
     {
     dvi_buf[dvi_ptr]= max_push % 256;  
     incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap (); 
+    if (dvi_ptr == dvi_limit)dvi_swap(); 
     } 
   if (total_pages >= 65536) {    // 99/Oct/10 dvi_t 16 bit problem
     sprintf(
@@ -340,12 +340,12 @@ void close_files_and_terminate (void)
     {
     dvi_buf[dvi_ptr]=(total_pages / 256)% 256;  
     incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap (); 
+    if (dvi_ptr == dvi_limit)dvi_swap(); 
     } 
     {
     dvi_buf[dvi_ptr]= total_pages % 256;  
     incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit) dvi_swap (); 
+    if (dvi_ptr == dvi_limit) dvi_swap(); 
     } 
 
   if (show_fonts_used && log_opened)     /* 97/Dec/24 */
@@ -358,20 +358,20 @@ void close_files_and_terminate (void)
     {
     dvi_buf[dvi_ptr]= 249;   /* post_post end of postamble */
     incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap (); 
+    if (dvi_ptr == dvi_limit)dvi_swap(); 
     } 
     dvi_four(last_bop); 
     {
     dvi_buf[dvi_ptr]= 2; 
     incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap (); 
+    if (dvi_ptr == dvi_limit)dvi_swap(); 
     } 
     k = 4 +((dvi_buf_size - dvi_ptr)% 4); 
     while(k > 0){
       {
       dvi_buf[dvi_ptr]= 223; /* four to seven bytes of 223 */
       incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap (); 
+      if (dvi_ptr == dvi_limit)dvi_swap(); 
     } 
     decr(k); 
     } 
@@ -410,7 +410,7 @@ void close_files_and_terminate (void)
     print_char('.');
     } 
   } 
-  print_ln (); 
+  print_ln(); 
   if ((edit_name_start != 0) && (interaction > 0)) {
     call_edit(str_pool, edit_name_start, edit_name_length, edit_line);
   }
@@ -429,7 +429,7 @@ void debug_help (void)
     read(stdin, m);  // ???
     if (m < 0)return; 
     else if (m == 0)
-    dumpcore (); 
+    dumpcore(); 
     else {
       read(stdin, n);  // ???
       switch(m)

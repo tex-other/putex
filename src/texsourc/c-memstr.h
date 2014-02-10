@@ -54,8 +54,8 @@
   #define memcmp(s1, s2, n) bcmp ((s1), (s2), (n))
   #define memcpy(to, from, len) bcopy ((from), (to), (len))
 
-  extern char *strtok(char *, const char *); /* extern char *strtok (); */
-  extern char *strstr(const char *, const char *); /* extern char *strstr (); */
+  extern char *strtok(char *, const char *); /* extern char *strtok(); */
+  extern char *strstr(const char *, const char *); /* extern char *strstr(); */
 #endif /* not STDC_HEADERS and not HAVE_STRING_H */
 
 #endif /* not C_MEMSTR_H */

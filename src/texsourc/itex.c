@@ -311,7 +311,7 @@ void initialize (void)
 	;
 #ifdef INITEX
 /* initex stuff split off for convenience of optimization adjustments */
-  if (is_initex)  do_initex ();
+  if (is_initex)  do_initex();
 #else
 /* trap the -i on command line situation if INITEX was NOT defined */
   if (is_initex) {
@@ -387,7 +387,7 @@ void line_break_ (integer finalwidowpenalty)
   init_l_hyf = prev_graf / 4194304L; /* 2^22 */
   init_r_hyf =(prev_graf / 65536L)% 64; 
 /* *********************************************************************** */
-  pop_nest (); 
+  pop_nest(); 
   noshrinkerroryet = true; 
   if ((mem[eqtb[(hash_size + 789)].hh.v.RH].hh.b1 != 0) &&
 	  (mem[eqtb[(hash_size + 789)].hh.v.RH + 3].cint != 0)) 
@@ -464,7 +464,7 @@ void line_break_ (integer finalwidowpenalty)
 /*   if tracing_paragraphs>0 then */
     if (eqtb[(hash_size + 3195)].cint > 0)
     {
-      begin_diagnostic (); 
+      begin_diagnostic(); 
       print_nl("@firstpass");
     } 
 #endif /* STAT */
@@ -481,7 +481,7 @@ void line_break_ (integer finalwidowpenalty)
 	;
 #ifdef STAT
     if (eqtb[(hash_size + 3195)].cint > 0)
-    begin_diagnostic (); 
+    begin_diagnostic(); 
 #endif /* STAT */
   } 
   while(true){
@@ -493,7 +493,7 @@ void line_break_ (integer finalwidowpenalty)
 	;
 #ifdef INITEX
   if (is_initex)  {	/* bkph */
-      if (trie_not_ready)init_trie (); 
+      if (trie_not_ready)init_trie(); 
   }					/* bkph */
 #endif /* INITEX */
 /* ********************************************************************* */
@@ -720,7 +720,7 @@ void line_break_ (integer finalwidowpenalty)
 		s = mem[s].hh.v.RH; 
 	      } 
 	      lab34:; 
-	      hyphenate (); 
+	      hyphenate(); 
 	    } 
 	    lab31:; 
 	  } 
@@ -986,7 +986,7 @@ void line_break_ (integer finalwidowpenalty)
   if (eqtb[(hash_size + 3195)].cint > 0)
   {
     end_diagnostic(true); 
-    normalize_selector (); 
+    normalize_selector(); 
   } 
 #endif /* STAT */
   post_line_break(finalwidowpenalty); 
@@ -1021,7 +1021,7 @@ void prefixed_command (void)
     if (! odd(a / cur_chr)) 
     a = a + cur_chr;			/*   small_number a;  */
     do {
-	get_x_token (); 
+	get_x_token(); 
     } while(!((cur_cmd != 10)&&(cur_cmd != 0))); 
     if (cur_cmd <= 70)
     {
@@ -1029,7 +1029,7 @@ void prefixed_command (void)
       print_cmd_chr(cur_cmd, cur_chr); 
       print_char(39);	/* ' */
 	  help1("I'll pretend you didn't say \\long or \\outer or \\global.");
-      back_error (); 
+      back_error(); 
       return; 
     } 
   } 
@@ -1042,7 +1042,7 @@ void prefixed_command (void)
     print_cmd_chr(cur_cmd, cur_chr); 
     print_char(39);		/* ' */
 	help1("I'll pretend you didn't say \\long or \\outer here.");
-    error (); 
+    error(); 
   } 
   if (eqtb[(hash_size + 3206)].cint != 0)
   if (eqtb[(hash_size + 3206)].cint < 0)
@@ -1069,7 +1069,7 @@ void prefixed_command (void)
 		  (eqtb[(hash_size + 3206)].cint >= 0)) 
       a = a + 4; 
       e =(cur_chr >= 2); 
-      get_r_token (); 
+      get_r_token(); 
       p = cur_cs; 
       q = scan_toks(true, e); 
       if ((a >= 4)) geq_define(p, 111 +(a % 4), def_ref); 
@@ -1079,28 +1079,28 @@ void prefixed_command (void)
   case 94 : 
     {
       n = cur_chr; 
-      get_r_token (); 
+      get_r_token(); 
       p = cur_cs; 
       if (n == 0)
       {
 	do {
-	    get_token (); 
+	    get_token(); 
 	} while(!(cur_cmd != 10)); 
 	if (cur_tok == 3133)
 	{
-	  get_token (); 
+	  get_token(); 
 	  if (cur_cmd == 10)
-	  get_token (); 
+	  get_token(); 
 	} 
       } 
       else {
 	  
-	get_token (); 
+	get_token(); 
 	q = cur_tok; 
-	get_token (); 
-	back_input (); 
+	get_token(); 
+	back_input(); 
 	cur_tok = q; 
-	back_input (); 
+	back_input(); 
       } 
       if (cur_cmd >= 111)
       incr(mem[cur_chr].hh.v.LH); 
@@ -1112,15 +1112,15 @@ void prefixed_command (void)
   case 95 : 
     {
       n = cur_chr; 
-      get_r_token (); 
+      get_r_token(); 
       p = cur_cs; 
       if ((a >= 4))  geq_define(p, 0, 256); 
       else eq_define(p, 0, 256); 
-      scan_optional_equals (); 
+      scan_optional_equals(); 
       switch(n){
 		  case 0 : 
 	{
-	  scan_char_num (); 
+	  scan_char_num(); 
 	  if ((a >= 4)) 
 	  geq_define(p, 68, cur_val); 
 	  else eq_define(p, 68, cur_val); 
@@ -1128,7 +1128,7 @@ void prefixed_command (void)
 	break; 
       case 1 : 
 	{
-	  scan_fifteen_bit_int (); 
+	  scan_fifteen_bit_int(); 
 	  if ((a >= 4)) 
 	  geq_define(p, 69, cur_val); 
 	  else eq_define(p, 69, cur_val); 
@@ -1136,7 +1136,7 @@ void prefixed_command (void)
 	break; 
 	default: 
 	{
-	  scan_eight_bit_int (); 
+	  scan_eight_bit_int(); 
 	  switch(n){
 		  case 2 : 
 	    if ((a >= 4)) 
@@ -1171,16 +1171,16 @@ void prefixed_command (void)
     break; 
   case 96 : 
     {
-      scan_int (); 
+      scan_int(); 
       n = cur_val; 
       if (! scan_keyword("to"))	/* to */
       {
       print_err("Missing `to' inserted");
 	  help2("You should have said `\\read<number> to \\cs'.", 
 		  "I'm going to look for the \\cs now.");
-	error (); 
+	error(); 
       } 
-      get_r_token (); 
+      get_r_token(); 
       p = cur_cs; 
 	  read_toks(n, p); 
       if ((a >= 4)) geq_define(p, 111, cur_val); 
@@ -1193,19 +1193,19 @@ void prefixed_command (void)
       q = cur_cs; 
       if (cur_cmd == 71)
       {
-	scan_eight_bit_int (); 
+	scan_eight_bit_int(); 
 	p = (hash_size + 1322) + cur_val; 
       } 
       else p = cur_chr; 
-      scan_optional_equals (); 
+      scan_optional_equals(); 
       do {
-	  get_x_token (); 
+	  get_x_token(); 
       } while(!((cur_cmd != 10)&&(cur_cmd != 0))); 
       if (cur_cmd != 1)
       {
 	if (cur_cmd == 71)
 	{
-	  scan_eight_bit_int (); 
+	  scan_eight_bit_int(); 
 	  cur_cmd = 72; 
 	  cur_chr = (hash_size + 1322) + cur_val; 
 	} 
@@ -1226,7 +1226,7 @@ void prefixed_command (void)
 	  goto lab30; 
 	} 
       } 
-      back_input (); 
+      back_input(); 
       cur_cs = q; 
       q = scan_toks(false, false); 
       if (mem[def_ref].hh.v.RH == 0){
@@ -1246,10 +1246,10 @@ void prefixed_command (void)
 	  
 	if (p == (hash_size + 1313))			/* output ? */
 	{
-	  mem[q].hh.v.RH = get_avail (); 
+	  mem[q].hh.v.RH = get_avail(); 
 	  q = mem[q].hh.v.RH; 
 	  mem[q].hh.v.LH = 637; 
-	  q = get_avail (); 
+	  q = get_avail(); 
 	  mem[q].hh.v.LH = 379;
 	  mem[q].hh.v.RH = mem[def_ref].hh.v.RH; 
 	  mem[def_ref].hh.v.RH = q; 
@@ -1263,8 +1263,8 @@ void prefixed_command (void)
   case 73 : 
     {
       p = cur_chr; 
-      scan_optional_equals (); 
-      scan_int (); 
+      scan_optional_equals(); 
+      scan_int(); 
       if ((a >= 4)) 
       geq_word_define(p, cur_val); 
       else eq_word_define(p, cur_val); 
@@ -1273,7 +1273,7 @@ void prefixed_command (void)
   case 74 : 
     {
       p = cur_chr; 
-      scan_optional_equals (); 
+      scan_optional_equals(); 
       scan_dimen(false, false, false); 
       if ((a >= 4)) 
       geq_word_define(p, cur_val); 
@@ -1285,10 +1285,10 @@ void prefixed_command (void)
     {
       p = cur_chr; 
       n = cur_cmd; 
-      scan_optional_equals (); 
+      scan_optional_equals(); 
       if (n == 76) scan_glue(3);
       else scan_glue(2);
-      trap_zero_glue (); 
+      trap_zero_glue(); 
       if ((a >= 4)) 
       geq_define(p, 117, cur_val); 
       else eq_define(p, 117, cur_val); 
@@ -1306,10 +1306,10 @@ void prefixed_command (void)
       n = 16777215L; 							/* 2^24 - 1 */
       else n = 255;							/* 2^8 - 1 */
       p = cur_chr; 
-      scan_char_num (); 
+      scan_char_num(); 
       p = p + cur_val; 
-      scan_optional_equals (); 
-      scan_int (); 
+      scan_optional_equals(); 
+      scan_int(); 
       if (((cur_val < 0)&&(p < (hash_size + 3474))) ||(cur_val > n)) 
       {
 		  print_err("Invalid code(");
@@ -1320,7 +1320,7 @@ void prefixed_command (void)
 		print_string("), should be at most ");
 	print_int(n); 
 	help1("I'm going to use 0 instead of that illegal code value.");
-	error (); 
+	error(); 
 	cur_val = 0; 
       } 
       if (p < (hash_size + 2907))
@@ -1339,10 +1339,10 @@ void prefixed_command (void)
   case 86 : 
     {
       p = cur_chr; 
-      scan_four_bit_int (); 
+      scan_four_bit_int(); 
       p = p + cur_val; 
-      scan_optional_equals (); 
-      scan_font_ident (); 
+      scan_optional_equals(); 
+      scan_font_ident(); 
       if ((a >= 4)) 
       geq_define(p, 120, cur_val); 
       else eq_define(p, 120, cur_val); 
@@ -1356,11 +1356,11 @@ void prefixed_command (void)
     break; 
   case 98 : 
     {
-      scan_eight_bit_int (); 
+      scan_eight_bit_int(); 
       if ((a >= 4)) 
       n = 256 + cur_val; 
       else n = cur_val; 
-      scan_optional_equals (); 
+      scan_optional_equals(); 
       if (set_box_allowed){
 		  scan_box(1073741824L + n); /* 2^30 + n */ /* box_flag + n */
 	  }
@@ -1369,29 +1369,29 @@ void prefixed_command (void)
 	print_esc("setbox");		/*  */
 	help2("Sorry, \\setbox is not allowed after \\halign in a display,",
 		"or between \\accent and an accented character.");
-	error (); 
+	error(); 
       } 
     } 
     break; 
   case 79 : 
-    alter_aux (); 
+    alter_aux(); 
     break; 
   case 80 : 
-    alter_prev_graf (); 
+    alter_prev_graf(); 
     break; 
   case 81 : 
-    alter_page_so_far (); 
+    alter_page_so_far(); 
     break; 
   case 82 : 
-    alter_integer (); 
+    alter_integer(); 
     break; 
   case 83 : 
-    alter_box_dimen (); 
+    alter_box_dimen(); 
     break; 
   case 84 : 
     {
-      scan_optional_equals (); 
-      scan_int (); 
+      scan_optional_equals(); 
+      scan_int(); 
       n = cur_val; 
       if (n <= 0)
       p = 0; 
@@ -1424,21 +1424,21 @@ void prefixed_command (void)
 	;
 #ifdef INITEX
   if (is_initex) {		/* bkph */
-      new_patterns (); 
+      new_patterns(); 
       goto lab30; 
   }						/* bkph */
 #endif /* INITEX */
      print_err("Patterns can be loaded only by INITEX");
       help_ptr = 0; 
-      error (); 
+      error(); 
       do {
-		  get_token (); 
+		  get_token(); 
       } while(!(cur_cmd == 2)); 
       return; 
     } 
     else {
 	
-      new_hyph_exceptions (); 
+      new_hyph_exceptions(); 
       goto lab30; 
     } 
     break; 
@@ -1446,7 +1446,7 @@ void prefixed_command (void)
     {
       find_font_dimen(true); 
       k = cur_val; 
-      scan_optional_equals (); 
+      scan_optional_equals(); 
       scan_dimen(false, false, false); 
       font_info[k].cint = cur_val; 
     } 
@@ -1454,10 +1454,10 @@ void prefixed_command (void)
   case 78 : 
     {
       n = cur_chr; 
-      scan_font_ident (); 
+      scan_font_ident(); 
       f = cur_val; 
-      scan_optional_equals (); 
-      scan_int (); 
+      scan_optional_equals(); 
+      scan_int(); 
       if (n == 0)hyphen_char[f]= cur_val; 
       else skew_char[f]= cur_val; 
     } 
@@ -1466,7 +1466,7 @@ void prefixed_command (void)
     new_font(a); 
     break; 
   case 100 : 
-    new_interaction (); 
+    new_interaction(); 
     break; 
     default: 
 	{
@@ -1480,7 +1480,7 @@ void prefixed_command (void)
 lab30:
   if (after_token != 0) {
 	  cur_tok = after_token; 
-	  back_input (); 
+	  back_input(); 
 	  after_token = 0; 
   } 
 } 
@@ -2054,17 +2054,17 @@ void final_cleanup (void)
 { 
   small_number c; 
   c = cur_chr;
-  if (job_name == 0) open_log_file (); 
+  if (job_name == 0) open_log_file(); 
   while (input_ptr > 0) {
 	  if (cur_input.state_field == 0) {
-		  end_token_list ();
-	  } else end_file_reading ();
+		  end_token_list();
+	  } else end_file_reading();
   }
   while (open_parens > 0) {
 	  print_string(" )");
 	  decr(open_parens); 
   } 
-  if (cur_level > level_one)  {
+  if (cur_level > level_one) {
     print_nl("(");
     print_esc("end occurred ");
     print_string("inside a group at level ");
@@ -2076,30 +2076,27 @@ void final_cleanup (void)
     print_esc("end occurred ");
     print_string("when ");
     print_cmd_chr(105, cur_if);	/* i */
-    if (if_line != 0)
-    {
+    if (if_line != 0) {
       print_string("on line ");
       print_int(if_line); 
     } 
     print_string(" was incomplete)");
     if_line = mem[cond_ptr + 1].cint; 
     cur_if = mem[cond_ptr].hh.b1; 
-/* *********************************************************************** */
-    temp_ptr = cond_ptr; /* new in 3.14159 */
-    cond_ptr = mem[cond_ptr].hh.v.RH; 
-	free_node(temp_ptr, 2); /* new in 3.14159 */
-/* *********************************************************************** */
+    temp_ptr = cond_ptr;
+    cond_ptr = mem[cond_ptr].hh.v.RH;
+    free_node(temp_ptr, 2);
   } 
   if (history != 0)
-  if (((history == 1)||(interaction < 3)))
-  if (selector == 19)
-  {
-    selector = 17; 
-    print_nl(" (see the transcript file for additional information)");
-    selector = 19; 
-  } 
-  if (c == 1){
-	;
+    if (((history == 1) || (interaction < 3)))
+      if (selector == 19)
+      {
+        selector = 17;
+        print_nl(" (see the transcript file for additional information)");
+        selector = 19;
+      }
+  if (c == 1) {
+    ;
 #ifdef INITEX
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     if (is_initex) {					/* bkph */
@@ -2117,7 +2114,7 @@ void final_cleanup (void)
 /* *********************************************************************** */
 /* 422. Amendment to bugfix 414 (reported by David Fuchs, September 2007) */
 		if (last_glue != max_halfword) delete_glue_ref(last_glue);
-		store_fmt_file ();	// returns a value ?
+		store_fmt_file();	// returns a value ?
 	}
 #endif /* INITEX */
 	if (!is_initex) 			/* 2000/March/3 */
@@ -2313,14 +2310,14 @@ int texbody (void)					/* now returns a value --- bkph */
 		bad_formator_pool(format_file, "the format file", "TEXFORMATS");	/* 96/Jan/17 */
     goto lab9999;			// abort
   } 
-  initialize (); 
+  initialize(); 
 	;
 #ifdef INITEX
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (is_initex) {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 	  if (! get_strings_started ()) goto lab9999;		// abort
-	  init_prim (); 
+	  init_prim(); 
 	  init_str_ptr = str_ptr; 
 	  init_pool_ptr = pool_ptr; 
 	  dateandtime(eqtb[(hash_size + 3183)].cint,
@@ -2340,7 +2337,7 @@ lab1:			/* get here directly if ready_already already set ... */
   sprintf(log_line, " (%s %s)", application, yandyversion);
   show_line(log_line, 0);
   if (format_ident > 0)slow_print(format_ident); 
-  print_ln (); 
+  print_ln(); 
 #ifndef _WINDOWS
   fflush(stdout); 
 #endif
@@ -2392,7 +2389,7 @@ lab1:			/* get here directly if ready_already already set ... */
 		(buffer[cur_input.loc_field]== '&')||
 		(buffer[cur_input.loc_field]==  '+')) 
     {
-      if (format_ident != 0)initialize (); 
+      if (format_ident != 0)initialize(); 
       if (! open_fmt_file ())goto lab9999; // abort
       if (! load_fmt_file ()){
 		  w_close(fmt_file); 
@@ -2422,7 +2419,7 @@ lab1:			/* get here directly if ready_already already set ... */
      if ((cur_input.loc_field < cur_input.limit_field)&&
 		(eqtb[(hash_size + 1883) + 
 		   buffer[cur_input.loc_field]].hh.v.RH != 0)) 
-    start_input (); 
+    start_input(); 
   }
 
 /*	show font TFMs frozen into format file */
@@ -2863,7 +2860,7 @@ void do_initex (void)
   font_params[0]      = 7; 
   param_base[0]       = -1; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***  */
-  reset_trie ();					/* shared 93/Nov/26 */
+  reset_trie();					/* shared 93/Nov/26 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***  */
 /*  {register integer for_end; k = 0; for_end = 6; if (k <= for_end) do 
     font_info[k].cint = 0; 
@@ -2949,7 +2946,7 @@ bool get_strings_started (void)
           }
         }
       } else append_char(k);
-      g = make_string ();
+      g = make_string();
     }
     while(k++ < for_end);
   } 
@@ -3079,7 +3076,7 @@ lab30:
               } while(k++ < for_end);
           }
           readln(pool_file); /* flush rest to end of file / end of line */
-          g = make_string (); 
+          g = make_string(); 
         }
       } 
     } while(!(c)); 
@@ -3389,12 +3386,12 @@ void new_patterns (void)
     else if (eqtb[(hash_size + 3213)].cint > 255)
     cur_lang = 0; 
     else cur_lang = eqtb[(hash_size + 3213)].cint; 
-    scan_left_brace (); 
+    scan_left_brace(); 
     k = 0; 
     hyf[0]= 0; 
     digitsensed = false; 
     while(true){
-      get_x_token (); 
+      get_x_token(); 
       switch(cur_cmd)
       {case 11 : 
       case 12 : 
@@ -3409,7 +3406,7 @@ void new_patterns (void)
 	    {
 			print_err("Nonletter");
 			help1("(See Appendix H.)");
-	      error (); 
+	      error(); 
 	    } 
 	  } 
 	  if (k < 63)
@@ -3480,7 +3477,7 @@ void new_patterns (void)
 	    {
 			print_err("Duplicate pattern");
 			help1("(See Appendix H.)");
-	      error (); 
+	      error(); 
 	    } 
 	    trie_o[q]= v; 
 	  } 
@@ -3496,7 +3493,7 @@ void new_patterns (void)
 		print_err("Bad ");
 	  print_esc("patterns");
 	  help1("(See Appendix H.)");
-	  error (); 
+	  error(); 
 	} 
 	break; 
       } 
@@ -3507,7 +3504,7 @@ void new_patterns (void)
       print_err("Too late for ");
     print_esc("patterns");
 	help1("All patterns must be given before typesetting begins.");
-    error (); 
+    error(); 
     mem[lig_trick].hh.v.RH = scan_toks(false, false); 
     flush_list(def_ref); 
   } 
@@ -3646,14 +3643,14 @@ void store_fmt_file (void)
     {
       if (interaction == 3) interaction = 2; 
       if (log_opened){
-		  error ();
+		  error();
 	  }
 	;
 #ifdef DEBUG
-      if (interaction > 0) debug_help (); 
+      if (interaction > 0) debug_help(); 
 #endif /* DEBUG */
       history = 3; 
-      jump_out ();		// trying to \dump inside a group
+      jump_out();		// trying to \dump inside a group
 //	  return;			// drops through now
 	}
   } /* end of if save_ptr != 0 */
@@ -3691,7 +3688,7 @@ void store_fmt_file (void)
 	}
 #endif
   } 
-  format_ident = make_string (); 
+  format_ident = make_string(); 
   pack_job_name(780);		/* .fmt */
   while(! w_open_out(fmt_file)) {
 	  prompt_file_name(1267, 780); /* format file name  .fmt */
@@ -3718,11 +3715,11 @@ void store_fmt_file (void)
 	)return;
   if (dumpthings(str_pool[0], pool_ptr) 
 	)return;
-  print_ln (); 
+  print_ln(); 
   print_int(str_ptr); 
   print_string("strings of total length ");
   print_int(pool_ptr); 
-  sort_avail (); 
+  sort_avail(); 
   var_used = 0; 
   dump_int(lo_mem_max); 
   dump_int(rover); 
@@ -3754,7 +3751,7 @@ void store_fmt_file (void)
   } 
   dump_int(var_used); 
   dump_int(dyn_used); 
-  print_ln (); 
+  print_ln(); 
   print_int(x); 
   print_string("memory locations dumped; current usage is ");
   print_int(var_used); 
@@ -3843,7 +3840,7 @@ void store_fmt_file (void)
   if (dumpthings(hash[hash_used + 1], (hash_size + 780) - hash_used) 
 	)return;
   dump_int(cs_count); 
-  print_ln (); 
+  print_ln(); 
   print_int(cs_count); 
   print_string(" multiletter control sequences");
   dump_int(fmem_ptr); 
@@ -3897,7 +3894,7 @@ void store_fmt_file (void)
     while(k++ < for_end);
 	} 
   } 
-  print_ln (); 
+  print_ln(); 
   print_int(fmem_ptr - 7); 
   print_string("words of font info for");
   print_int(font_ptr - 0); 
@@ -3919,13 +3916,13 @@ void store_fmt_file (void)
 		  } 
 	  while(k++ < for_end);
   } 
-  print_ln (); 
+  print_ln(); 
   print_int(hyph_count); 
   print_string(" hyphenation exception");
   if (hyph_count != 1)
   print_char(115);	/* s */
   if (trie_not_ready)
-  init_trie (); 
+  init_trie(); 
   dump_int(trie_max); 
   if (dumpthings(trie_trl[0], trie_max + 1) 
 	)return;

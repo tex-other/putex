@@ -48,7 +48,7 @@
     #include <stdlib.h>
     #include <stddef.h>
 #else /* end of STDC_HEADERS */
-  extern char *getenv (const char *); /* extern char *getenv (); */
+  extern char *getenv (const char *); /* extern char *getenv(); */
 
   #ifndef ALLOC_RETURN_TYPE
     #ifdef MSDOS
@@ -59,7 +59,7 @@
     #endif /* not DOS */
 #endif /* not ALLOC_RETURN_TYPE */
 
-/* extern ALLOC_RETURN_TYPE *calloc (), *malloc (), *realloc (); */
+/* extern ALLOC_RETURN_TYPE *calloc (), *malloc (), *realloc(); */
 extern ALLOC_RETURN_TYPE *calloc (size_t, size_t);
 extern ALLOC_RETURN_TYPE *malloc (size_t);
 extern ALLOC_RETURN_TYPE *realloc (void *, size_t);
@@ -75,8 +75,8 @@ extern ALLOC_RETURN_TYPE *realloc (void *, size_t);
 #include "c-minmax.h"
 
 /* popen is part of POSIX.2, not POSIX.1.  So STDC_HEADERS isn't enough.  */
-/* extern FILE *popen (); */
-/* extern double hypot (); */
+/* extern FILE *popen(); */
+/* extern double hypot(); */
 /* extern double hypot (double, double); */	/* see math.h */
 
 #endif /* not C_STD_H */

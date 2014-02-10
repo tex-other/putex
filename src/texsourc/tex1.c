@@ -237,12 +237,12 @@ halfword copy_node_list_(halfword p)
   halfword q;
   halfword r;
   char words;
-  h = get_avail ();
+  h = get_avail();
   q = h;
   while (p != 0) {      /* while p<>null do l.3969 */
     words = 1;
     if ((p >= hi_mem_min)) 
-      r = get_avail ();
+      r = get_avail();
     else switch (mem[p].hh.b0)
     {
       case 0:
@@ -425,7 +425,7 @@ void push_nest (void)
   }
   nest[nest_ptr]= cur_list;
   incr(nest_ptr);
-  head = get_avail ();
+  head = get_avail();
   tail = head;
   prev_graf = 0;
   mode_line = line;
@@ -452,7 +452,7 @@ void show_activities (void)
   integer t;
   nest[nest_ptr]= cur_list;
   print_nl("  ");
-  print_ln (); 
+  print_ln(); 
   {
     register integer for_end; 
     p = nest_ptr; 
@@ -498,12 +498,12 @@ void show_activities (void)
           if (page_contents > 0)
           {
             print_nl("total height ");
-            print_totals ();
+            print_totals();
             print_nl("goal height ");
             print_scaled(page_so_far[0]);
             r = mem[mem_top].hh.v.RH; 
             while (r != mem_top) {
-              print_ln ();
+              print_ln();
               print_esc("insert");
               t = mem[r].hh.b1;
               print_int(t);
@@ -763,7 +763,7 @@ void begin_diagnostic (void)
 void end_diagnostic_(bool blankline)
 {
   print_nl("  ");
-  if (blankline) print_ln ();
+  if (blankline) print_ln();
   selector = old_setting;
 }
 void print_length_param_ (integer n)
@@ -1936,7 +1936,7 @@ halfword id_lookup_(integer j, integer l)
         } 
 #ifdef SHORTHASH
         {
-          pool_pointer tempstring = make_string ();
+          pool_pointer tempstring = make_string();
           if (tempstring > 65535L) {      /* cannot happen */
             sprintf(log_line, "ERROR: %s too large %d\n",
                 "string ptr", tempstring);
@@ -1945,7 +1945,7 @@ halfword id_lookup_(integer j, integer l)
           hash[p].v.RH = tempstring;
         }
 #else
-        hash[p].v.RH = make_string (); 
+        hash[p].v.RH = make_string(); 
 #endif
 #ifdef CHECKPOOL
         if (checkpool(NULL)) show_line("after make_string\n", 0); 

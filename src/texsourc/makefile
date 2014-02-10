@@ -24,7 +24,7 @@ LINK = link
 # CFLAGS=-c -DDOS -DMSDOS -DPHARLAP -DTeX -DMYDEBUG -Ilib -YX -Ox -Ge -Gy -Gf -W4
 # Release version
 # CFLAGS=/c /Ge /Gy /Gf /Ox /W4 /DMSDOS /DTeX /DPHARLAP /DNDEBUG /Ilib /YX
-CFLAGS=/nologo /c /Gy /Ox /W4 /DMSDOS /DTeX /DPHARLAP /DNDEBUG
+CFLAGS=/nologo /c /Gy /Ox /W4 /DMSDOS /DTeX /DPHARLAP /DNDEBUG /Ilib\libhpdf\include
 # Debugging version
 # CFLAGS=/c /Ge /Gy /Gf /Od /Zi /W4 /DMSDOS /DTeX /DPHARLAP /Ilib /YX 
 
@@ -46,8 +46,8 @@ objs = texmf.obj itex.obj openinou.obj subroute.obj local.obj \
 # ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
 
 texmf.exe: $(objs) 
-	$(LINK) $(LFLAGS) texmf itex openinou subroute local \
-	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9
+	$(LINK) /NODEFAULTLIB:msvcrt $(LFLAGS) texmf itex openinou subroute local \
+	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9 lib/libhpdf/libhpdf.lib lib/zlib/zlib.lib
 	copy texmf.exe yandytex.exe
 	del ..\yandy\bin\texmf.exe
 	copy texmf.exe ..\yandy\bin\texmf.exe

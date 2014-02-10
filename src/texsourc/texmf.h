@@ -58,7 +58,7 @@ typedef FILE *byte_file, *word_file;
 /* Read a line of input as quickly as possible.  */
 #define	input_ln(stream, flag)	input_line (stream)
 extern bool input_line (FILE *);
-/* was extern bool input_line (); */
+/* was extern bool input_line(); */
 
 
 /* We need to read an integer from stdin if we're debugging.  */
@@ -148,10 +148,10 @@ extern bool input_line (FILE *);
 /* We define the routines to do the actual work in texmf.c.  */
 // extern void do_dump (char *, int, int, FILE *);
 extern int do_dump (char *, int, int, FILE *);
-/* extern void do_dump (); */
+/* extern void do_dump(); */
 // extern void do_undump (char *, int, int, FILE *);
 extern int do_undump (char *, int, int, FILE *);
-/* extern void do_undump (); */
+/* extern void do_undump(); */
 
 /* Use the above for all the other dumping and undumping.  */
 #define generic_dump(x) dumpthings (x, 1)
@@ -230,23 +230,23 @@ extern int do_undump (char *, int, int, FILE *);
 /* these, of course are useless definitions since parameters not given */
 
 /* Declare routines in texmf.c.  */
-extern void get_date_and_time ();
-extern void t_open_in ();
-// extern void call_edit ();
-// extern int call_edit ();
-extern bool extensionirrelevantp ();
-extern bool input_line ();
-// extern void do_dump ();
-// extern void do_undump ();
+extern void get_date_and_time();
+extern void t_open_in();
+// extern void call_edit();
+// extern int call_edit();
+extern bool extensionirrelevantp();
+extern bool input_line();
+// extern void do_dump();
+// extern void do_undump();
 
 #ifdef TeX
-extern bool maketextex ();
-extern bool maketextfm ();
+extern bool maketextex();
+extern bool maketextfm();
 #else
-extern void main_body ();
-extern bool initscreen ();
-extern bool maketexmf ();
-extern void updatescreen ();
-extern void blankrectangle ();
-extern void paintrow ();
+extern void main_body();
+extern bool initscreen();
+extern bool maketexmf();
+extern void updatescreen();
+extern void blankrectangle();
+extern void paintrow();
 #endif /* not TeX */

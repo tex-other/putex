@@ -158,7 +158,7 @@ address xmalloc (unsigned size)
   if (new_mem == NULL) {
     sprintf(log_line, "malloc: Unable to honor request for %u bytes.\n", size);
     show_line(log_line, 1);
-    abort ();         // ???
+    abort();         // ???
   }
 #ifdef MYDEBUG
   if (trace_flag) {
@@ -177,7 +177,7 @@ address xcalloc (unsigned nelem, unsigned elsize)
   if (new_mem == NULL) {
     sprintf(log_line, "Unable to honor request for %u elements of size %u.\n", nelem, elsize);
     show_line(log_line, 1);
-    abort ();
+    abort();
   }
   return new_mem;
 }
@@ -208,7 +208,7 @@ address xrealloc (address old_ptr, unsigned size)
     if (new_mem == NULL) {
       sprintf(log_line, "Unable to honor request for %u bytes.\n", size);
       show_line(log_line, 1);
-      abort ();
+      abort();
     }
   }
   return new_mem;

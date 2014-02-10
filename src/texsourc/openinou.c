@@ -69,7 +69,7 @@ extern int shorten_file_name;				/* in local.c bkph */
 
 #ifdef FUNNY_CORE_DUMP
 /* This is defined in ./texmf.c.  */
-extern void funny_core_dump ();
+extern void funny_core_dump();
 #endif /* FUNNY_CORE_DUMP */
 
 
@@ -209,7 +209,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 	requires manual intervention).  */
 	if (path_index == TEXINPUTPATH
       && strncmp (name_of_file+1, "HackyInputFileNameForCoreDump.tex", 33) == 0)
-		funny_core_dump ();
+		funny_core_dump();
 #endif /* FUNNY_CORE_DUMP and not BibTeX */
 
 #ifdef MSDOS

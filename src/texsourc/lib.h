@@ -33,30 +33,30 @@
 #define END_FATAL() fputs (".\n", stderr); exit (1); } while (0)
 
 #define FATAL(str)							\
-  START_FATAL (); fprintf (stderr, "%s", str); END_FATAL ()
+  START_FATAL(); fprintf (stderr, "%s", str); END_FATAL ()
 #define FATAL1(str, e1)							\
-  START_FATAL (); fprintf (stderr, str, e1); END_FATAL ()
+  START_FATAL(); fprintf (stderr, str, e1); END_FATAL ()
 #define FATAL2(str, e1, e2)						\
-  START_FATAL (); fprintf (stderr, str, e1, e2); END_FATAL ()
+  START_FATAL(); fprintf (stderr, str, e1, e2); END_FATAL ()
 #define FATAL3(str, e1, e2, e3)						\
-  START_FATAL (); fprintf (stderr, str, e1, e2, e3); END_FATAL ()
+  START_FATAL(); fprintf (stderr, str, e1, e2, e3); END_FATAL ()
 #define FATAL4(str, e1, e2, e3, e4)					\
-  START_FATAL (); fprintf (stderr, str, e1, e2, e3, e4); END_FATAL ()
+  START_FATAL(); fprintf (stderr, str, e1, e2, e3, e4); END_FATAL ()
 
 
 #define START_WARNING() do { fputs ("warning: ", stderr)
 #define END_WARNING() fputs (".\n", stderr); fflush (stderr); } while (0)
 
 #define WARNING(str)							\
-  START_WARNING (); fprintf (stderr, "%s", str); END_WARNING ()
+  START_WARNING(); fprintf (stderr, "%s", str); END_WARNING ()
 #define WARNING1(str, e1)						\
-  START_WARNING (); fprintf (stderr, str, e1); END_WARNING ()
+  START_WARNING(); fprintf (stderr, str, e1); END_WARNING ()
 #define WARNING2(str, e1, e2)						\
-  START_WARNING (); fprintf (stderr, str, e1, e2); END_WARNING ()
+  START_WARNING(); fprintf (stderr, str, e1, e2); END_WARNING ()
 #define WARNING3(str, e1, e2, e3)					\
-  START_WARNING (); fprintf (stderr, str, e1, e2, e3); END_WARNING ()
+  START_WARNING(); fprintf (stderr, str, e1, e2, e3); END_WARNING ()
 #define WARNING4(str, e1, e2, e3, e4)					\
-  START_WARNING (); fprintf (stderr, str, e1, e2, e3, e4); END_WARNING ()
+  START_WARNING(); fprintf (stderr, str, e1, e2, e3, e4); END_WARNING ()
 
 /* I find this easier to read.  */
 #define STREQ(s1, s2) (strcmp (s1, s2) == 0)

@@ -885,7 +885,6 @@ int texbody(void);          /* 1993/Dec/16 bkph */
 /* but with present compiler its faster to not do it this way 99/Jan/18 */
 #endif
 
-/* this basically removes all use for these stupid #define foo_regmem s */
 void print_err (const char * s);
 void initialize (void);
 void print_ln (void);

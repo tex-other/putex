@@ -26,36 +26,35 @@
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 void scan_int (void) 
-{/* 30 */
+{
   bool negative; 
-  integer m; 
-  small_number d; 
-  bool vacuous; 
-  bool OKsofar; 
-  radix = 0; 
-  OKsofar = true; 
-  negative = false; 
+  integer m;
+  small_number d;
+  bool vacuous;
+  bool OKsofar;
+  radix = 0;
+  OKsofar = true;
+  negative = false;
   do {
-      do {
-      get_x_token (); 
-    } while(!(cur_cmd != 10)); 
-    if (cur_tok == 3117)
-    {
-      negative = ! negative; 
-      cur_tok = 3115; 
-    } 
-  } while(!(cur_tok != 3115)); 
-  if (cur_tok == 3168)
-  {
-    get_token (); 
-    if (cur_tok < 4095)
-    {
-      cur_val = cur_chr; 
+    do {
+      get_x_token();
+    } while (!(cur_cmd != 10));
+    if (cur_tok == 3117) {
+      negative = ! negative;
+      cur_tok = 3115;
+    }
+  } while (!(cur_tok != 3115));
+
+  if (cur_tok == 3168) {
+    get_token();
+    if (cur_tok < 4095) {
+      cur_val = cur_chr;
       if (cur_cmd <= 2)
-      if (cur_cmd == 2)
-      incr(align_state); 
-      else decr(align_state); 
-    } 
+        if (cur_cmd == 2)
+          incr(align_state);
+        else
+          decr(align_state);
+    }
 /* else if cur_tok<cs_token_flag+single_base then ... */
     else if (cur_tok < 4352) /* 4095 + 257 */
 /*   cur_val:=cur_tok-cs_token_flag-active_base */
@@ -64,422 +63,380 @@ void scan_int (void)
     else cur_val = cur_tok - 4352;  /* 4095 + 257 */
     if (cur_val > 255)
     {
-		print_err("Improper alphabetic constant");
-		help2("A one-character control sequence belongs after a ` mark.",
-			"So I'm essentially inserting \\0 here.");
-      cur_val = 48; 
-      back_error (); 
-    } 
-    else {
-      get_x_token (); 
+      print_err("Improper alphabetic constant");
+      help2("A one-character control sequence belongs after a ` mark.",
+        "So I'm essentially inserting \\0 here.");
+      cur_val = 48;
+      back_error();
+    } else {
+      get_x_token();
       if (cur_cmd != 10)
-      back_input (); 
-    } 
-  } 
-  else if ((cur_cmd >= 68)&&(cur_cmd <= 89)) {
+        back_input();
+    }
+  } else if ((cur_cmd >= 68) && (cur_cmd <= 89)) {
     scan_something_internal(0, false);
-  }
-  else {
-      
+  } else {      
 /* begin radix:=10; m:=214748364; l.8734 */
-    radix = 10; 
+    radix = 10;
     m = 214748364L;   /* 7FFFFFFF hex */
-    if (cur_tok == 3111)
-    {
-      radix = 8; 
+    if (cur_tok == 3111) {
+      radix = 8;
       m = 268435456L;   /* 2^28 */
-      get_x_token (); 
-    } 
-    else if (cur_tok == 3106)
-    {
-      radix = 16; 
+      get_x_token();
+    } else if (cur_tok == 3106) {
+      radix = 16;
       m = 134217728L;   /* 2^27 8000000 hex */
-      get_x_token (); 
-    } 
-    vacuous = true; 
-    cur_val = 0; 
-    while(true){
-      if ((cur_tok < 3120 + radix)&&(cur_tok >= 3120)&&(cur_tok <= 3129 
-    )) 
-      d = cur_tok - 3120; 
+      get_x_token();
+    }
+    vacuous = true;
+    cur_val = 0;
+    while (true) {
+      if ((cur_tok < 3120 + radix) && (cur_tok >= 3120) && (cur_tok <= 3129))
+        d = cur_tok - 3120;
       else if (radix == 16)
-      if ((cur_tok <= 2886)&&(cur_tok >= 2881)) 
-      d = cur_tok - 2871; 
-      else if ((cur_tok <= 3142)&&(cur_tok >= 3137)) 
-      d = cur_tok - 3127; 
-      else goto lab30; 
-      else goto lab30; 
+        if ((cur_tok <= 2886) && (cur_tok >= 2881))
+          d = cur_tok - 2871;
+        else if ((cur_tok <= 3142) && (cur_tok >= 3137))
+          d = cur_tok - 3127;
+        else
+          goto lab30;
+      else
+        goto lab30;
       vacuous = false; 
-      if ((cur_val >= m)&&((cur_val > m)||(d > 7)||(radix != 10)
-    )) 
-      {
-  if (OKsofar)
-  {
-	  print_err("Number too big");
-	  help2("I can only go up to 2147483647='17777777777=\"7FFFFFFF,",
-		  "so I'm using that number instead of yours.");
-    error (); 
-    cur_val = 2147483647L;    /* 7FFFFFFF hex */
-    OKsofar = false; 
-  } 
-      } 
-      else cur_val = cur_val * radix + d; 
-      get_x_token (); 
-    } 
-    lab30:; 
-    if (vacuous)
-    {
-		print_err("Missing number, treated as zero");
-		help3("A number should have been here; I inserted `0'.",
-			"(If you can't figure out why I needed to see a number,",
-			"look up `weird error' in the index to The TeXbook.)"); 
-      back_error (); 
-    } 
-    else if (cur_cmd != 10)
-    back_input (); 
-  } 
+      if ((cur_val >= m) && ((cur_val > m) || (d > 7) || (radix != 10))) {
+        if (OKsofar) {
+          print_err("Number too big");
+          help2("I can only go up to 2147483647='17777777777=\"7FFFFFFF,",
+            "so I'm using that number instead of yours.");
+          error();
+          cur_val = 2147483647L;    /* 7FFFFFFF hex */
+          OKsofar = false;
+        }
+      } else cur_val = cur_val * radix + d; 
+      get_x_token();
+    }
+lab30:;
+    if (vacuous) {
+      print_err("Missing number, treated as zero");
+      help3("A number should have been here; I inserted `0'.",
+        "(If you can't figure out why I needed to see a number,",
+        "look up `weird error' in the index to The TeXbook.)");
+      back_error();
+    } else if (cur_cmd != 10)
+      back_input();
+  }
   if (negative)
-  cur_val = - (integer) cur_val; 
-} 
+    cur_val = - (integer) cur_val;
+}
 void scan_dimen_(bool mu, bool inf, bool shortcut)
-{/* 30 31 32 40 45 88 89 */ 
-  bool negative; 
-  integer f; 
-  integer num, denom; 
-  small_number k, kk; 
-  halfword p, q; 
-  scaled v; 
-  integer savecurval; 
-  f = 0; 
-  arith_error = false; 
-  cur_order = 0; 
-  negative = false; 
-  if (! shortcut)
-  {
-    negative = false; 
+{
+  bool negative;
+  integer f;
+  integer num, denom;
+  small_number k, kk;
+  halfword p, q;
+  scaled v;
+  integer savecurval;
+  f = 0;
+  arith_error = false;
+  cur_order = 0;
+  negative = false;
+  if (!shortcut) {
+    negative = false;
     do {
-  do {
-    get_x_token (); 
-      } while(!(cur_cmd != 10)); 
-      if (cur_tok == 3117)
-      {
-  negative = ! negative; 
-  cur_tok = 3115; 
-      } 
-    } while(!(cur_tok != 3115)); 
+      do {
+        get_x_token();
+      } while (!(cur_cmd != 10));
+      if (cur_tok == 3117) {
+        negative = ! negative;
+        cur_tok = 3115;
+      }
+    } while (!(cur_tok != 3115));
     if ((cur_cmd >= 68)&&(cur_cmd <= 89)) 
-    if (mu)
-    {
-      scan_something_internal(3, false); 
-      if (cur_val_level >= 2){
-      v = mem[cur_val + 1].cint; 
-      delete_glue_ref(cur_val); 
-      cur_val = v; 
-      } 
-      if (cur_val_level == 3)
-      goto lab89; 
-      if (cur_val_level != 0){
-      mu_error (); 
-    }
-    } 
-    else {
-      scan_something_internal(1, false); 
-      if (cur_val_level == 1)goto lab89; 
-    } 
-    else {
-  
-      back_input (); 
-      if (cur_tok == 3116)
-      cur_tok = 3118; 
-      if (cur_tok != 3118){
-      scan_int ();
-    }
-      else {
-    
-  radix = 10; 
-  cur_val = 0; 
-      } 
-      if (cur_tok == 3116)
-      cur_tok = 3118; 
-      if ((radix == 10)&&(cur_tok == 3118)) 
-      {
-  k = 0; 
-  p = 0;      /* p:=null l.8883 */
-  get_token (); 
-  while(true){
-    get_x_token (); 
-    if ((cur_tok > 3129)||(cur_tok < 3120)) 
-    goto lab31; 
-    if (k < 17)
-    {
-      q = get_avail (); 
-      mem[q].hh.v.RH = p; 
-      mem[q].hh.v.LH = cur_tok - 3120; 
-      p = q; 
-      incr(k); 
-    } 
-  } 
-  lab31: {
-      register integer for_end; kk = k; for_end = 1; if (kk >= 
-  for_end) do 
-    {
+      if (mu) {
+        scan_something_internal(3, false);
+        if (cur_val_level >= 2) {
+          v = mem[cur_val + 1].cint;
+          delete_glue_ref(cur_val);
+          cur_val = v;
+        }
+        if (cur_val_level == 3)
+          goto lab89;
+        if (cur_val_level != 0) {
+          mu_error();
+        }
+      } else {
+        scan_something_internal(1, false);
+        if (cur_val_level == 1)
+          goto lab89;
+      } else {
+        back_input();
+        if (cur_tok == 3116)
+          cur_tok = 3118;
+        if (cur_tok != 3118) {
+          scan_int();
+        } else {
+          radix = 10;
+          cur_val = 0;
+        }
+        if (cur_tok == 3116)
+          cur_tok = 3118; 
+        if ((radix == 10) && (cur_tok == 3118)) {
+          k = 0;
+          p = 0;      /* p:=null l.8883 */
+          get_token();
+
+          while (true) {
+            get_x_token();
+            if ((cur_tok > 3129) || (cur_tok < 3120))
+              goto lab31;
+            if (k < 17) {
+              q = get_avail();
+              mem[q].hh.v.RH = p;
+              mem[q].hh.v.LH = cur_tok - 3120;
+              p = q;
+              incr(k);
+            }
+          }
+lab31:
+          {
+            register integer for_end;
+            kk = k;
+            for_end = 1;
+            if (kk >= for_end) do {
 /*    long to char ... */
-      dig[kk - 1]= mem[p].hh.v.LH; 
-      q = p; 
-      p = mem[p].hh.v.RH; 
-      {
-        mem[q].hh.v.RH = avail; 
-        avail = q; 
-  ;
+              dig[kk - 1]= mem[p].hh.v.LH; 
+              q = p;
+              p = mem[p].hh.v.RH;
+              {
+                mem[q].hh.v.RH = avail;
+                avail = q;
+                ;
 #ifdef STAT
-        decr(dyn_used); 
+                decr(dyn_used); 
 #endif /* STAT */
-      } 
-    } 
-  while(kk-- > for_end); } 
-  f = round_decimals(k); 
-  if (cur_cmd != 10)
-  back_input (); 
-      } 
-    } 
+              }
+            } while (kk-- > for_end);
+          }
+          f = round_decimals(k);
+          if (cur_cmd != 10)
+            back_input();
+        }
+      }
   } 
-  if (cur_val < 0)
-  {
-    negative = ! negative; 
-    cur_val = - (integer) cur_val; 
+  if (cur_val < 0) {
+    negative = ! negative;
+    cur_val = - (integer) cur_val;
   } 
   if (inf)
-  if (scan_keyword("fil"))   /* fil */
-  {
-    cur_order = 1; 
-    while(scan_keyword("l")) {  /* l */
-  
-      if (cur_order == 3) {
-		  print_err("Illegal unit of measure(");
-  print_string("replaced by filll)");
-  help1("I dddon't go any higher than filll.");
-  error (); 
+    if (scan_keyword("fil")) {
+      cur_order = 1; 
+      while (scan_keyword("l")) {
+        if (cur_order == 3) {
+          print_err("Illegal unit of measure(");
+          print_string("replaced by filll)");
+          help1("I dddon't go any higher than filll.");
+          error();
+        } else incr(cur_order);
+      }
+      goto lab88;
     } 
-      else incr(cur_order); 
-    } 
-    goto lab88; 
-  } 
-  savecurval = cur_val; 
-  do {
-      get_x_token (); 
-  } while(!(cur_cmd != 10)); 
-  if ((cur_cmd < 68)||(cur_cmd > 89)) 
-  back_input (); 
-  else {
-      
-    if (mu)
-    {
-      scan_something_internal(3, false); 
-      if (cur_val_level >= 2){
-  v = mem[cur_val + 1].cint; 
-  delete_glue_ref(cur_val); 
-  cur_val = v; 
-      } 
-      if (cur_val_level != 3){
-      mu_error (); 
-    }
-    } 
+    savecurval = cur_val;
+    do {
+      get_x_token();
+    } while (!(cur_cmd != 10));
+    if ((cur_cmd < 68) || (cur_cmd > 89))
+      back_input();
     else {
-    scan_something_internal(1, false);
-  }
-    v = cur_val; 
-    goto lab40; 
-  } 
-  if (mu)
-  goto lab45; 
-  if (scan_keyword("em"))   /* em */
-  v =(font_info[6 + param_base[eqtb[(hash_size + 1834)].hh.v.RH]].cint); 
-  else if (scan_keyword("ex"))  /* ex */
-  v =(font_info[5 + param_base[eqtb[(hash_size + 1834)].hh.v.RH]].cint); 
-  else goto lab45; 
-  {
-    get_x_token (); 
-    if (cur_cmd != 10)  back_input (); 
-  } 
-  lab40: cur_val = mult_and_add(savecurval, v, xn_over_d(v, f, 65536L), 
-  1073741823L);   /* 2^30 - 1 */
-  goto lab89; 
-  lab45:; 
-  if (mu)
-  if (scan_keyword("mu")) /* mu */
-  goto lab88; 
-  else {
-      print_err("Illegal unit of measure("); 
-    print_string("mu inserted)");
-	help4("The unit of measurement in math glue must be mu.",
-		"To recover gracefully from this error, it's best to",
-		"delete the erroneous units; e.g., type `2' to delete",
-		"two letters. (See Chapter 27 of The TeXbook.)");
-    error (); 
-    goto lab88; 
-  } 
-  if (scan_keyword("true")) /* true */
-  {
-    prepare_mag (); 
-    if (eqtb[(hash_size + 3180)].cint != 1000)
-    {
-      cur_val = xn_over_d(cur_val, 1000, eqtb[(hash_size + 3180)].cint); 
-      f =(1000 * f + 65536L * tex_remainder)/
-          eqtb[(hash_size + 3180)].cint; 
-      cur_val = cur_val +(f / 65536L); 
-/*      cur_val = cur_val +(f >> 16); */   /* f positive ??? */
-      f = f % 65536L; 
-/*      f = f & 65535L; */          /* f positive ??? */
+      if (mu) {
+        scan_something_internal(3, false);
+        if (cur_val_level >= 2) {
+          v = mem[cur_val + 1].cint;
+          delete_glue_ref(cur_val);
+          cur_val = v;
+        }
+        if (cur_val_level != 3) {
+          mu_error();
+        }
+      } else {
+        scan_something_internal(1, false);
+      }
+      v = cur_val;
+      goto lab40;
     } 
-  } 
-  if (scan_keyword("pt"))   /* pt */
-  goto lab88; 
-  if (scan_keyword("in"))   /* in */
+    if (mu)
+      goto lab45; 
+  if (scan_keyword("em"))
+    v =(font_info[6 + param_base[eqtb[(hash_size + 1834)].hh.v.RH]].cint);
+  else if (scan_keyword("ex"))
+    v =(font_info[5 + param_base[eqtb[(hash_size + 1834)].hh.v.RH]].cint); 
+  else
+    goto lab45;
   {
-    num = 7227; 
-    denom = 100; 
-  } 
-  else if (scan_keyword("pc"))  /* pc */
-  {
-    num = 12; 
-    denom = 1; 
-  } 
-  else if (scan_keyword("cm"))  /* cm */
-  {
-    num = 7227; 
-    denom = 254; 
-  } 
-  else if (scan_keyword("mm"))  /* mm */
-  {
-    num = 7227; 
-    denom = 2540; 
-  } 
-  else if (scan_keyword("bp"))  /* bp */
-  {
-    num = 7227; 
-    denom = 7200; 
-  } 
-  else if (scan_keyword("dd"))  /* dd */
-  {
-    num = 1238; 
-    denom = 1157; 
-  } 
-  else if (scan_keyword("cc"))  /* cc */
-  {
-    num = 14856;          /* numerator */
-    denom = 1157;         /* denominator */ 
+    get_x_token();
+    if (cur_cmd != 10)
+      back_input();
   }
-  else if (scan_keyword("Q"))
-  {
-    num = 7227;
-	denom = 10160;
-  }
-  else if (scan_keyword("H"))
-  {
-    num = 7227;
-    denom = 10160;
-  }
-  else if (scan_keyword("sp"))  /* sp */
-  goto lab30; 
-  else {
+lab40:
+  cur_val = mult_and_add(savecurval, v, xn_over_d(v, f, 65536L), 1073741823L);   /* 2^30 - 1 */
+  goto lab89;
+lab45:;
+  if (mu)
+    if (scan_keyword("mu"))
+      goto lab88;
+    else {
       print_err("Illegal unit of measure(");
-    print_string("pt inserted)");
-	help6("Dimensions can be in units of em, ex, in, pt, pc,",
-		"cm, mm, dd, cc, bp, or sp; but yours is a new one!",
-		"I'll assume that you meant to say pt, for printer's points.",
-		"To recover gracefully from this error, it's best to",
-		"delete the erroneous units; e.g., type `2' to delete",
-		"two letters. (See Chapter 27 of The TeXbook.)");
-    error (); 
-    goto lab32; 
-  } 
-  cur_val = xn_over_d(cur_val, num, denom); 
-  f =(num * f + 65536L * tex_remainder)/ denom; 
-  cur_val = cur_val +(f / 65536L); 
-/*  cur_val = cur_val +(f >> 16); */   /* f positive ??? */
-  f = f % 65536L; 
-/*  f = f & 65535L; */          /* f positive ??? */
-  lab32:; 
-  lab88: if (cur_val >= 16384)     /* 2^14 */
-  arith_error = true; 
-  else cur_val = cur_val * 65536L + f; 
-/*  else cur_val = cur_val << 16 + f; */   /* f positive ?? */
-  lab30:; 
-  {
-    get_x_token (); 
-    if (cur_cmd != 10) back_input (); 
-  } 
+      print_string("mu inserted)");
+      help4("The unit of measurement in math glue must be mu.",
+        "To recover gracefully from this error, it's best to",
+        "delete the erroneous units; e.g., type `2' to delete",
+        "two letters. (See Chapter 27 of The TeXbook.)");
+      error();
+      goto lab88;
+    } 
+    if (scan_keyword("true")) {
+      prepare_mag();
+      if (eqtb[(hash_size + 3180)].cint != 1000) {
+        cur_val = xn_over_d(cur_val, 1000, eqtb[(hash_size + 3180)].cint); 
+        f =(1000 * f + 65536L * tex_remainder) / eqtb[(hash_size + 3180)].cint; 
+        cur_val = cur_val + (f / 65536L);
+        f = f % 65536L;
+      }
+    }
+    if (scan_keyword("pt"))
+      goto lab88;
+    if (scan_keyword("in"))
+    {
+      num = 7227;
+      denom = 100;
+    } else if (scan_keyword("pc"))
+    {
+      num = 12; 
+      denom = 1;
+    } else if (scan_keyword("cm"))
+    {
+      num = 7227;
+      denom = 254;
+    } else if (scan_keyword("mm"))
+    {
+      num = 7227;
+      denom = 2540;
+    } else if (scan_keyword("bp"))
+    {
+      num = 7227;
+      denom = 7200;
+    } else if (scan_keyword("dd"))
+    {
+      num = 1238;
+      denom = 1157;
+    } else if (scan_keyword("cc"))
+    {
+      num = 14856;
+      denom = 1157;
+    } else if (scan_keyword("Q"))
+    {
+      num = 7227;
+      denom = 10160;
+    } else if (scan_keyword("H"))
+    {
+      num = 7227;
+      denom = 10160;
+    } else if (scan_keyword("sp"))
+      goto lab30;
+    else {
+      print_err("Illegal unit of measure(");
+      print_string("pt inserted)");
+      help6("Dimensions can be in units of em, ex, in, pt, pc,",
+        "cm, mm, dd, cc, bp, or sp; but yours is a new one!",
+        "I'll assume that you meant to say pt, for printer's points.",
+        "To recover gracefully from this error, it's best to",
+        "delete the erroneous units; e.g., type `2' to delete",
+        "two letters. (See Chapter 27 of The TeXbook.)");
+      error();
+      goto lab32;
+    }
+    cur_val = xn_over_d(cur_val, num, denom);
+    f =(num * f + 65536L * tex_remainder) / denom;
+    cur_val = cur_val +(f / 65536L);
+    f = f % 65536L;
+lab32:;
+lab88:
+    if (cur_val >= 16384)     /* 2^14 */
+      arith_error = true; 
+    else
+      cur_val = cur_val * 65536L + f; 
+lab30:;
+    {
+      get_x_token(); 
+      if (cur_cmd != 10)
+        back_input();
+    }
 lab89:
-  if (arith_error ||(abs(cur_val)>= 1073741824L)) /* 2^30 */
+  if (arith_error || (abs(cur_val)>= 1073741824L)) /* 2^30 */
   {
-	  print_err("Dimension too large");
+    print_err("Dimension too large");
 	  help2("I can't work with sizes bigger than about 19 feet.",
 		  "Continue and I'll use the largest value I can.");
-    error (); 
+    error(); 
     cur_val = 1073741823L;  /* 2^30 - 1 */
-    arith_error = false; 
-  } 
+    arith_error = false;
+  }
   if (negative)
-  cur_val = - (integer) cur_val; 
+    cur_val = - (integer) cur_val; 
 } 
 void scan_glue_(small_number level)
-{/* 10 */ 
+{
   bool negative; 
-  halfword q; 
-  bool mu; 
-  mu =(level == 3); 
-  negative = false; 
+  halfword q;
+  bool mu;
+  mu = (level == 3);
+  negative = false;
   do {
-      do {
-      get_x_token (); 
-    } while(!(cur_cmd != 10)); 
-    if (cur_tok == 3117)
-    {
-      negative = ! negative; 
-      cur_tok = 3115; 
-    } 
-  } while(!(cur_tok != 3115)); 
-  if ((cur_cmd >= 68)&&(cur_cmd <= 89)) 
-  {
-    scan_something_internal(level, negative); 
-    if (cur_val_level >= 2){
-      if (cur_val_level != level){
-      mu_error ();
+    do {
+      get_x_token();
+    } while (!(cur_cmd != 10));
+    if (cur_tok == 3117) {
+      negative = ! negative;
+      cur_tok = 3115;
     }
-      return; 
-    } 
-    if (cur_val_level == 0){
-    scan_dimen(mu, false, true);
+  } while (!(cur_tok != 3115));
+  if ((cur_cmd >= 68) && (cur_cmd <= 89)) {
+    scan_something_internal(level, negative);
+    if (cur_val_level >= 2) {
+      if (cur_val_level != level) {
+        mu_error();
+      }
+      return;
+    }
+    if (cur_val_level == 0) {
+      scan_dimen(mu, false, true);
+    } else if (level == 3) {
+      mu_error();
+    }
+  } else {
+    back_input();
+    scan_dimen(mu, false, false);
+    if (negative)cur_val = - (integer) cur_val;
   }
-    else if (level == 3){
-    mu_error ();
+  q = new_spec(0);
+  mem[q + 1].cint = cur_val;
+  if (scan_keyword("plus")) {
+    scan_dimen(mu, true, false);
+    mem[q + 2].cint = cur_val;
+    mem[q].hh.b0 = cur_order; 
   }
-  } 
-  else {
-    back_input (); 
-    scan_dimen(mu, false, false); 
-    if (negative)cur_val = - (integer) cur_val; 
-  } 
-  q = new_spec(0); 
-  mem[q + 1].cint = cur_val; 
-  if (scan_keyword("plus")) /* plus */
-  {
-    scan_dimen(mu, true, false); 
-    mem[q + 2].cint = cur_val; 
-    mem[q].hh.b0 = cur_order;  
-  } 
-  if (scan_keyword("minus")) /* minus */
-  {
-    scan_dimen(mu, true, false); 
-    mem[q + 3].cint = cur_val; 
-    mem[q].hh.b1 = cur_order;  
-  } 
-  cur_val = q; 
+  if (scan_keyword("minus")) {
+    scan_dimen(mu, true, false);
+    mem[q + 3].cint = cur_val;
+    mem[q].hh.b1 = cur_order; 
+  }
+  cur_val = q;
 } 
 halfword scan_rule_spec (void) 
-{/* 21 */ register halfword Result; 
-  halfword q; 
-  q = new_rule (); 
+{
+  register halfword Result;
+  halfword q;
+  q = new_rule();
 /* if cur_cmd=vrule then width(q):=default_rule */
 /* @d default_rule=26214 {0.4\thinspace pt} */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -487,96 +444,92 @@ halfword scan_rule_spec (void)
 /*  mem[q + 1].cint = 26214; */   /* width := 0.4pt */
   mem[q + 1].cint = default_rule;     /* 95/Oct/9 */
   else {
-      
 /*   mem[q + 3].cint = 26214; */    /* height := 0.4pt */
     mem[q + 3].cint = default_rule;   /* 95/Oct/9 */
     mem[q + 2].cint = 0;        /* depth  := 0.0pt */
   } 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  lab21: if (scan_keyword("width"))    /* width */
-  {
-    scan_dimen(false, false, false); 
-    mem[q + 1].cint = cur_val; 
-    goto lab21; 
-  } 
-  if (scan_keyword("height"))     /* height */
-  {
-    scan_dimen(false, false, false); 
-    mem[q + 3].cint = cur_val; 
-    goto lab21; 
-  } 
-  if (scan_keyword("depth"))     /* depth */
-  {
-    scan_dimen(false, false, false); 
-    mem[q + 2].cint = cur_val; 
-    goto lab21; 
-  } 
-  Result = q; 
-  return Result; 
-} 
+lab21:
+  if (scan_keyword("width")) {
+    scan_dimen(false, false, false);
+    mem[q + 1].cint = cur_val;
+    goto lab21;
+  }
+  if (scan_keyword("height")) {
+    scan_dimen(false, false, false);
+    mem[q + 3].cint = cur_val;
+    goto lab21;
+  }
+  if (scan_keyword("depth")) {
+    scan_dimen(false, false, false);
+    mem[q + 2].cint = cur_val;
+    goto lab21;
+  }
+  Result = q;
+  return Result;
+}
 halfword str_toks_(pool_pointer b)
-{register halfword Result; 
-  halfword p; 
-  halfword q; 
-  halfword t; 
-  pool_pointer k; 
+{
+  register halfword Result;
+  halfword p;
+  halfword q;
+  halfword t;
+  pool_pointer k;
   {
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATESTRING
-  if (pool_ptr + 1 > current_pool_size)
-    str_pool = realloc_str_pool (increment_pool_size);
-  if (pool_ptr + 1 > current_pool_size)  { /* in case it failed 94/Jan/22 */
-    overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
-    return 0;     // abort_flag set
-  }
+    if (pool_ptr + 1 > current_pool_size)
+      str_pool = realloc_str_pool (increment_pool_size);
+    if (pool_ptr + 1 > current_pool_size)  { /* in case it failed 94/Jan/22 */
+      overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
+      return 0;     // abort_flag set
+    }
 #else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    if (pool_ptr + 1 > pool_size){
-    overflow("pool size", pool_size - init_pool_ptr); /* pool size */
-    return;     // abort_flag set
-  }
+    if (pool_ptr + 1 > pool_size) {
+      overflow("pool size", pool_size - init_pool_ptr); /* pool size */
+      return;     // abort_flag set
+    }
 #endif
   } 
   p = temp_head; 
   mem[p].hh.v.RH = 0;   /* link(p):=null l.9135 */
   k = b; 
-  while(k < pool_ptr){
-      
-    t = str_pool[k]; 
+  while (k < pool_ptr) {
+    t = str_pool[k];
     if (t == 32)
-    t = 2592; 
-    else t = 3072 + t; 
+      t = 2592;
+    else
+      t = 3072 + t;
     {
       {
-  q = avail; 
-  if (q == 0)
-  q = get_avail (); 
-  else {
-      
-    avail = mem[q].hh.v.RH; 
-    mem[q].hh.v.RH = 0; 
-  ;
+        q = avail;
+        if (q == 0)
+          q = get_avail();
+        else {
+          avail = mem[q].hh.v.RH;
+          mem[q].hh.v.RH = 0;
+          ;
 #ifdef STAT
-    incr(dyn_used); 
+          incr(dyn_used); 
 #endif /* STAT */
-  } 
+        }
       } 
-      mem[p].hh.v.RH = q; 
-      mem[q].hh.v.LH = t; 
-      p = q; 
-    } 
-    incr(k); 
-  } 
-  pool_ptr = b; 
-  Result = p; 
-  return Result; 
+      mem[p].hh.v.RH = q;
+      mem[q].hh.v.LH = t;
+      p = q;
+    }
+    incr(k);
+  }
+  pool_ptr = b;
+  Result = p;
+  return Result;
 } 
 halfword the_toks (void) 
-{register halfword Result; 
+{
+  register halfword Result; 
   char old_setting; 
   halfword p, q, r; 
   pool_pointer b; 
-  get_x_token (); 
+  get_x_token(); 
   scan_something_internal(5, false); 
   if (cur_val_level >= 4)
   {
@@ -584,7 +537,7 @@ halfword the_toks (void)
     mem[p].hh.v.RH = 0; 
     if (cur_val_level == 4)
     {
-      q = get_avail (); 
+      q = get_avail(); 
       mem[p].hh.v.RH = q; 
       mem[q].hh.v.LH = 4095 + cur_val; 
       p = q; 
@@ -598,7 +551,7 @@ halfword the_toks (void)
     {
       q = avail; 
       if (q == 0)
-      q = get_avail (); 
+      q = get_avail(); 
       else {
     
         avail = mem[q].hh.v.RH; 
@@ -653,7 +606,7 @@ halfword the_toks (void)
 } 
 void ins_the_toks (void) 
 { 
-  mem[lig_trick].hh.v.RH = the_toks (); 
+  mem[lig_trick].hh.v.RH = the_toks(); 
   begin_token_list(mem[temp_head].hh.v.RH, 4); 
 } 
 void conv_toks (void) 
@@ -667,7 +620,7 @@ void conv_toks (void)
   {case 0 : 
   case 1 : 
   {
-    scan_int ();
+    scan_int();
   }
     break; 
   case 2 : 
@@ -675,15 +628,15 @@ void conv_toks (void)
     {
       savescannerstatus = scanner_status;  
       scanner_status = 0; 
-      get_token (); 
+      get_token(); 
       scanner_status = savescannerstatus; 
     } 
     break; 
   case 4 : 
-    scan_font_ident (); 
+    scan_font_ident(); 
     break; 
   case 5 : 
-    if (job_name == 0)open_log_file (); 
+    if (job_name == 0)open_log_file(); 
     break; 
   } 
   old_setting = selector; 
@@ -702,7 +655,7 @@ void conv_toks (void)
     else print_char(cur_chr); 
     break; 
   case 3 : 
-    print_meaning (); 
+    print_meaning(); 
     break; 
   case 4 : 
     {
@@ -735,7 +688,7 @@ halfword scan_toks_(bool macrodef, bool xpand)
   scanner_status = 2; 
   else scanner_status = 5; 
   warning_index = cur_cs; 
-  def_ref = get_avail (); 
+  def_ref = get_avail(); 
   mem[def_ref].hh.v.LH = 0; 
   p = def_ref; 
   hashbrace = 0; 
@@ -743,24 +696,24 @@ halfword scan_toks_(bool macrodef, bool xpand)
   if (macrodef)
   {
     while(true){
-      get_token (); 
+      get_token(); 
       if (cur_tok < 768)
       goto lab31; 
       if (cur_cmd == 6)
       {
   s = 3328 + cur_chr; 
-  get_token (); 
+  get_token(); 
   if (cur_cmd == 1)
   {
     hashbrace = cur_tok; 
     {
-      q = get_avail (); 
+      q = get_avail(); 
       mem[p].hh.v.RH = q; 
       mem[q].hh.v.LH = cur_tok; 
       p = q; 
     } 
     {
-      q = get_avail (); 
+      q = get_avail(); 
       mem[p].hh.v.RH = q; 
       mem[q].hh.v.LH = 3584; 
       p = q; 
@@ -771,31 +724,29 @@ halfword scan_toks_(bool macrodef, bool xpand)
   {
 	  print_err("You already have nine parameters");
 	  help1("I'm going to ignore the # sign you just used."); 
-    error (); 
+    error(); 
   } 
-  else {
-      
+  else { 
     incr(t); 
     if (cur_tok != t)
     {
 		print_err("Parameters must be numbered consecutively");
 		help2("I've inserted the digit you should have used after the #.",
 			"Type `1' to delete what you did use."); 
-      back_error (); 
+      back_error(); 
     } 
     cur_tok = s; 
   } 
       } 
       {
-  q = get_avail (); 
+  q = get_avail(); 
   mem[p].hh.v.RH = q; 
   mem[q].hh.v.LH = cur_tok; 
   p = q; 
       } 
     } 
     lab31: {
-  
-      q = get_avail (); 
+      q = get_avail(); 
       mem[p].hh.v.RH = q; 
       mem[q].hh.v.LH = 3584; 
       p = q; 
@@ -806,26 +757,25 @@ halfword scan_toks_(bool macrodef, bool xpand)
       incr(align_state); 
 	  help2("Where was the left brace? You said something like `\\def\\a}',",
 		  "which I'm going to interpret as `\\def\\a{}'.");
-      error (); 
+      error(); 
       goto lab40; 
     } 
     lab30:; 
   } 
   else {
-    scan_left_brace ();
+    scan_left_brace();
   }
   unbalance = 1; 
   while(true){
     if (xpand){
       while(true){
-      get_next (); 
+      get_next(); 
       if (cur_cmd <= 100) goto lab32; 
       if (cur_cmd != 109){
-        expand ();
+        expand();
       }
-      else {
-        
-    q = the_toks (); 
+      else { 
+    q = the_toks(); 
 /*     if link(temp_head)<>null then l.9376 */
     if (mem[temp_head].hh.v.RH != 0)
     {
@@ -835,9 +785,9 @@ halfword scan_toks_(bool macrodef, bool xpand)
   } 
       } 
 lab32:
-    x_token (); 
+    x_token(); 
     } 
-    else get_token (); 
+    else get_token(); 
     if (cur_tok < 768)
     if (cur_cmd < 2) incr(unbalance); 
     else {
@@ -848,8 +798,8 @@ lab32:
     else if (cur_cmd == 6)
     if (macrodef) {
       s = cur_tok; 
-      if (xpand)get_x_token (); 
-      else get_token (); 
+      if (xpand)get_x_token(); 
+      else get_token(); 
       if (cur_cmd != 6)
       if ((cur_tok <= 3120)||(cur_tok > t))   {
 		  print_err("Illegal parameter number in definition of");
@@ -857,13 +807,13 @@ lab32:
   help3("You meant to type ## instead of #, right?",
 	  "Or maybe a } was forgotten somewhere earlier, and things",
 	  "are all screwed up? I'm going to assume that you meant ##.");
-  back_error (); 
+  back_error(); 
   cur_tok = s; 
       } 
       else cur_tok = 1232 + cur_chr; 
     } 
     {
-      q = get_avail (); 
+      q = get_avail(); 
       mem[p].hh.v.RH = q; 
       mem[q].hh.v.LH = cur_tok; 
       p = q; 
@@ -872,7 +822,7 @@ lab32:
   lab40: scanner_status = 0; 
   if (hashbrace != 0)
   {
-    q = get_avail (); 
+    q = get_avail(); 
     mem[p].hh.v.RH = q; 
     mem[q].hh.v.LH = hashbrace; 
     p = q; 
@@ -890,11 +840,11 @@ void read_toks_(integer n, halfword r)
   int m;            /* 95/Jan/7 */
   scanner_status = 2; 
   warning_index = r; 
-  def_ref = get_avail (); 
+  def_ref = get_avail(); 
   mem[def_ref].hh.v.LH = 0; 
   p = def_ref; 
   {
-    q = get_avail (); 
+    q = get_avail(); 
     mem[p].hh.v.RH = q; 
     mem[q].hh.v.LH = 3584; 
     p = q; 
@@ -904,7 +854,7 @@ void read_toks_(integer n, halfword r)
   s = align_state; 
   align_state = 1000000L; 
   do {
-      begin_file_reading (); 
+      begin_file_reading(); 
     cur_input.name_field = m + 1; 
     if (read_open[m]== 2)
       if (interaction > 1)
@@ -915,7 +865,7 @@ void read_toks_(integer n, halfword r)
         } 
         else {
         ; 
-          print_ln (); 
+          print_ln(); 
           sprint_cs(r); 
           {
           ; 
@@ -940,12 +890,12 @@ void read_toks_(integer n, halfword r)
         (void) a_close(read_file[m]); 
         read_open[m]= 2; 
         if (align_state != 1000000L) {
-          runaway ();
+          runaway();
 		  print_err("File ended within");
           print_esc("read");
 		  help1("This \\read has unbalanced braces.");
           align_state = 1000000L; 
-          error (); 
+          error(); 
         } 
       } 
     } 
@@ -958,32 +908,32 @@ void read_toks_(integer n, halfword r)
     cur_input.loc_field = cur_input.start_field; 
     cur_input.state_field = 33; 
     while(true){
-      get_token (); 
+      get_token(); 
       if (cur_tok == 0)
       goto lab30; 
       if (align_state < 1000000L)
       {
   do {
-      get_token (); 
+      get_token(); 
   } while(!(cur_tok == 0)); 
   align_state = 1000000L; 
   goto lab30; 
       } 
       {
-  q = get_avail (); 
+  q = get_avail(); 
   mem[p].hh.v.RH = q; 
   mem[q].hh.v.LH = cur_tok; 
   p = q; 
       } 
     } 
-    lab30: end_file_reading (); 
+    lab30: end_file_reading(); 
   } while(!(align_state == 1000000L)); 
   cur_val = def_ref; 
   scanner_status = 0; 
   align_state = s; 
 } 
 void pass_text (void) 
-{/* 30 */ 
+{
   integer l; 
   small_number savescannerstatus; 
   savescannerstatus = scanner_status;  
@@ -991,7 +941,7 @@ void pass_text (void)
   l = 0; 
   skip_line = line; 
   while(true){
-    get_next (); 
+    get_next(); 
     if (cur_cmd == 106){
       if (l == 0) goto lab30; 
       if (cur_chr == 2)
@@ -999,16 +949,17 @@ void pass_text (void)
     } 
     else if (cur_cmd == 105) incr(l); 
   } 
-lab30: scanner_status = savescannerstatus; 
+lab30:
+  scanner_status = savescannerstatus; 
 } 
 void change_if_limit_(small_number l, halfword p)
-{/* 10 */ 
+{
   halfword q; 
   if (p == cond_ptr)
   if_limit = l; 
   else {
     q = cond_ptr; 
-    while(true){
+    while (true) {
       if (q == 0)  { /* begin if q=null then confusion("if"); l.9674 */
       confusion("if");
       return;       // abort_flag set
@@ -1024,15 +975,14 @@ void change_if_limit_(small_number l, halfword p)
 } 
 /* called from tex2.c */
 void conditional (void) 
-{/* 10 50 */ 
-  bool b; 
-  char r; 
-  integer m, n; 
-  halfword p, q; 
-  small_number savescannerstatus; 
-  halfword savecondptr; 
-  small_number thisif; 
-
+{
+  bool b;
+  char r;
+  integer m, n;
+  halfword p, q;
+  small_number savescannerstatus;
+  halfword savecondptr;
+  small_number thisif;
   {
 /* begin p:=get_node(if_node_size); */
     p = get_node(2);          /* p <- get_node(if_node_size); p.495*/
@@ -1056,7 +1006,7 @@ void conditional (void)
   case 1 : 
     {
       {
-  get_x_token (); 
+  get_x_token(); 
   if (cur_cmd == 0)    /* if cur_cmd = relax then .. p.506 */
   if (cur_chr == 257)  /* if cur_chr = no_expand_flag then ... p.506 */
   {
@@ -1070,12 +1020,11 @@ void conditional (void)
   n = 256; 
       } 
       else {
-    
   m = cur_cmd; 
   n = cur_chr; 
       } 
       {
-  get_x_token (); 
+  get_x_token(); 
   if (cur_cmd == 0)    /* if cur_cmd = relax then .. p.506 */
   if (cur_chr == 257)  /* if cur_chr = no_expand_flag then ... p.506 */
   {
@@ -1097,14 +1046,14 @@ void conditional (void)
   case 3 : 
     {
       if (thisif == 2){
-      scan_int ();
+      scan_int();
     }
       else {
       scan_dimen(false, false, false);
     }
       n = cur_val; 
       do {
-      get_x_token (); 
+      get_x_token(); 
       } while(!(cur_cmd != 10)); 
       if ((cur_tok >= 3132)&&(cur_tok <= 3134)) 
       r = cur_tok - 3072; 
@@ -1112,11 +1061,11 @@ void conditional (void)
     print_err("Missing = inserted for ");
   print_cmd_chr(105, thisif); /* i */
   help1("I was expecting to see `<', `=', or `>'. Didn't.");
-  back_error (); 
+  back_error(); 
   r = 61; 
       } 
       if (thisif == 2){
-      scan_int ();
+      scan_int();
     }
       else {
       scan_dimen(false, false, false);
@@ -1136,7 +1085,7 @@ void conditional (void)
     break; 
   case 4 : 
     {
-      scan_int (); 
+      scan_int(); 
       b = odd(cur_val); 
     } 
     break; 
@@ -1156,7 +1105,7 @@ void conditional (void)
   case 10 : 
   case 11 : 
     {
-      scan_eight_bit_int (); 
+      scan_eight_bit_int(); 
       p = eqtb[(hash_size + 1578) + cur_val].hh.v.RH; 
       if (thisif == 9)
       b =(p == 0); 
@@ -1171,15 +1120,14 @@ void conditional (void)
     {
       savescannerstatus = scanner_status;  
       scanner_status = 0; 
-      get_next (); 
+      get_next(); 
       n = cur_cs; 
       p = cur_cmd; 
       q = cur_chr; 
-      get_next (); 
+      get_next(); 
       if (cur_cmd != p)  b = false; 
       else if (cur_cmd < 111)  b =(cur_chr == q); 
       else {
-    
   p = mem[cur_chr].hh.v.RH; 
   q = mem[eqtb[n].hh.v.RH].hh.v.RH; 
   if (p == q)
@@ -1190,7 +1138,6 @@ void conditional (void)
     q].hh.v.LH)
     p = 0;  /* p:=null */
     else {
-        
       p = mem[p].hh.v.RH; 
       q = mem[q].hh.v.RH; 
     } 
@@ -1202,7 +1149,7 @@ void conditional (void)
     break; 
   case 13 : 
     {
-      scan_four_bit_int (); 
+      scan_four_bit_int(); 
       b =(read_open[cur_val]== 2); 
     } 
     break; 
@@ -1214,19 +1161,18 @@ void conditional (void)
     break; 
   case 16 : 
     {
-      scan_int (); 
+      scan_int(); 
       n = cur_val; 
       if (eqtb[(hash_size + 3199)].cint > 1)
       {
-  begin_diagnostic (); 
+  begin_diagnostic(); 
   print_string("{case ");
   print_int(n); 
   print_char('}');
   end_diagnostic(false); 
       } 
-      while(n != 0){
-    
-  pass_text (); 
+      while (n != 0) {
+  pass_text(); 
   if (cond_ptr == savecondptr)
   if (cur_chr == 4)
   decr(n); 
@@ -1248,7 +1194,7 @@ void conditional (void)
   } 
   if (eqtb[(hash_size + 3199)].cint > 1)
   {
-    begin_diagnostic (); 
+    begin_diagnostic(); 
     if (b)
     print_string("{true}");
     else print_string("{false}");
@@ -1259,8 +1205,8 @@ void conditional (void)
     change_if_limit(3, savecondptr); 
     return; 
   } 
-  while(true){
-    pass_text (); 
+  while (true) {
+    pass_text(); 
     if (cond_ptr == savecondptr)
     {
       if (cur_chr != 4)
@@ -1268,7 +1214,7 @@ void conditional (void)
 	  print_err("Extra ");
       print_esc("or");
 	  help1("I'm ignoring this; it doesn't match any \\if.");
-      error (); 
+      error(); 
     } 
     else if (cur_chr == 2)
     {
@@ -1302,7 +1248,8 @@ void begin_name (void)
 /* We assume tilde has been converted to pseudo_tilde and space to pseudo_space */
 /* returns false if it is given a space character - end of file name */
 bool more_name_(ASCII_code c) 
-{register bool Result; 
+{
+  register bool Result; 
    
 /*  if (c == 32)*/   /* white space delimits file name ... */
   if (quoted_file_name == 0 && c == 32)
@@ -1310,8 +1257,7 @@ bool more_name_(ASCII_code c)
   else if (quoted_file_name != 0 && c == '"') {
       quoted_file_name = 0; /* catch next space character */
     Result = true;    /* accept ending quote, but throw away */
-  }
-  else {
+  } else {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /*  convert pseudo tilde back to '~' 95/Sep/26 */ /* moved here 97/June/5 */
 /*  if (pseudo_tilde != 0 && c == pseudo_tilde) c = '~'; */
@@ -1336,7 +1282,7 @@ bool more_name_(ASCII_code c)
 #endif
     } 
     {
-      str_pool[pool_ptr]= c; 
+      str_pool[pool_ptr] = c; 
       incr(pool_ptr); 
     } 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -1345,11 +1291,11 @@ bool more_name_(ASCII_code c)
     if ((c == '/' || c == '\\' || c == ':')) /* 94/Mar/1 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     {
-    area_delimiter =(pool_ptr - str_start[str_ptr]); 
+    area_delimiter = (pool_ptr - str_start[str_ptr]); 
     ext_delimiter = 0; 
     } 
     else if (c == 46)    /* . */
-    ext_delimiter =(pool_ptr - str_start[str_ptr]); 
+    ext_delimiter = (pool_ptr - str_start[str_ptr]); 
     Result = true; 
   } 
   return Result; 
@@ -1367,7 +1313,7 @@ bool more_name_(ASCII_code c)
 
 int find_string (int start, int end)
 {
-  int k, nlen=end-start;
+  int k, nlen= end-start;
   char *s;
 
 //  int trace_flag = 1;     // debugging only
@@ -1375,7 +1321,7 @@ int find_string (int start, int end)
   if (trace_flag) {
     sprintf(log_line, "\nLOOKING for string (str_ptr %d nlen %d) ", str_ptr, end-start);
     s = log_line + strlen(log_line);
-    strncpy(s, str_pool+start, nlen);
+    strncpy(s, str_pool + start, nlen);
     strcpy(s+nlen, "");
     show_line(log_line, 0);
   }
@@ -1496,10 +1442,10 @@ void end_name (void)
   if (save_strings_flag &&
       (cur_name = find_string(str_start[str_ptr], pool_ptr)) > 0) {
     remove_string(str_start[str_ptr], pool_ptr);
-//    (void) make_string ();  // test only
+//    (void) make_string();  // test only
   }
   else            // Make string from str_start[str_ptr]to pool_ptr
-    cur_name = make_string ();
+    cur_name = make_string();
   } 
   else {            // did find an extension
   if (save_strings_flag &&
@@ -1516,10 +1462,10 @@ void end_name (void)
   if (save_strings_flag &&
       (cur_ext = find_string(str_start[str_ptr], pool_ptr)) > 0) {
     remove_string(str_start[str_ptr], pool_ptr);
-//    (void) make_string ();  // test only
+//    (void) make_string();  // test only
   }
   else            // Make string from str_start[str_ptr]to pool_ptr
-    cur_ext = make_string ();
+    cur_ext = make_string();
   }
 }
 
@@ -1628,7 +1574,8 @@ void pack_buffered_name_(small_number n, integer a, integer b)
 } 
 
 str_number make_name_string (void) 
-{register str_number Result; 
+{
+  register str_number Result; 
   integer k; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATESTRING
@@ -1647,7 +1594,6 @@ str_number make_name_string (void)
 #endif
   Result = 63; 
   else {
-      
     {register integer for_end; k = 1; for_end = name_length; if (k <=  for_end) do 
       {
       str_pool[pool_ptr]= xord[name_of_file[k]]; 
@@ -1656,26 +1602,29 @@ str_number make_name_string (void)
       incr(pool_ptr); 
       } 
     while(k++ < for_end); } 
-    Result = make_string (); 
+    Result = make_string(); 
   } 
   return Result; 
 } 
 
 str_number a_make_name_string_(alpha_file * f)
-{register str_number Result;
-  Result = make_name_string (); 
+{
+  register str_number Result;
+  Result = make_name_string(); 
   return Result; 
 }   /* f unreferenced ? bkph */
 
 str_number b_make_name_string_(byte_file * f)
-{register str_number Result;
-  Result = make_name_string (); 
+{
+  register str_number Result;
+  Result = make_name_string(); 
   return Result; 
 }   /* f unreferenced ? bkph */
 
 str_number w_make_name_string_(word_file * f)
-{register str_number Result; 
-  Result = make_name_string (); 
+{
+  register str_number Result; 
+  Result = make_name_string(); 
   return Result; 
 }   /* f unreferenced ? bkph */
 
@@ -1683,23 +1632,23 @@ str_number w_make_name_string_(word_file * f)
 /* Also in tex8.c new_font_, open_or_close_in, and do_extension */
 
 void scan_file_name (void) 
-{/* 30 */
+{
   name_in_progress = true; 
-  begin_name (); 
+  begin_name(); 
   do {
-    get_x_token (); 
+    get_x_token(); 
   } while(!(cur_cmd != 10));    /* until cur_cmd != spacer */
   quoted_file_name = 0;         /* 98/March/15 */
   if (allow_quoted_names) {       /* check whether quoted name */
     if (cur_chr == '"') {
       quoted_file_name = 1;
-      get_x_token (); 
+      get_x_token(); 
     } 
   }
   while(true){
     if ((cur_cmd > 12)||(cur_chr > 255)) 
     {         /* (cur_cmd > otherchar) OR (cur_chr > 255) */
-      back_input ();  /* not a character put it back and leave */
+      back_input();  /* not a character put it back and leave */
       goto lab30; 
     } 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -1710,10 +1659,10 @@ void scan_file_name (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */      
     if (! more_name(cur_chr))    /* up to next white space */
     goto lab30; 
-    get_x_token (); 
+    get_x_token(); 
   } 
 lab30:
-  end_name ();
+  end_name();
   name_in_progress = false; 
 } 
 
@@ -1759,7 +1708,7 @@ void show_tex_inputs (void)
 /**********************************************************************/
 
 void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e - default */ 
-{/* 30 */ 
+{
   integer k; 
   if (interaction == 2)
   ; 
@@ -1775,16 +1724,15 @@ void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e
     }
   }
   if (e == 785)    /* .tex */
-    show_context (); 
-  print_nl("Please type another ");    /*  */
+    show_context(); 
+  print_nl("Please type another ");
   print(s); 
   if (interaction < 2){
-      fatal_error("*** (job aborted, file error in nonstop mode)"); /*  */
+      fatal_error("*** (job aborted, file error in nonstop mode)");
     return;     // abort_flag set
   }
   if (! knuth_flag)
 #ifdef _WINDOWS
-//    show_line(" (or ^Z to exit)\n", 0);
     show_line(" (or ^z to exit)", 0);
 #else
     show_line(" (or Ctrl-Z to exit)", 0);
@@ -1796,7 +1744,7 @@ void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e
   } 
 /*  should we deal with tilde and space in file name here ??? */
   {
-    begin_name (); 
+    begin_name(); 
     k = first; 
 /*  step over leading spaces ... */
     while((buffer[k]== 32)&&(k < last)) incr(k); 
@@ -1819,7 +1767,7 @@ void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e
       if (! more_name(buffer[k])) goto lab30; 
       incr(k); 
     } 
-    lab30: end_name (); 
+    lab30: end_name(); 
   } 
   if (cur_ext == 335)    /* "" */
     cur_ext = e;      /* use default extension */
@@ -1854,12 +1802,12 @@ void open_log_file (void)
     strcat(log_line, "\n");
     (void) fputs(log_line, log_file);
 //    show_line(buffer, 0);        // ??? show on screen as well
-//    print_ln (); 
+//    print_ln(); 
     stampcopy(log_line);
     strcat(log_line, "\n");
 //    show_line(buffer, 0);        // ??? show on screen as well
     (void) fputs(log_line, log_file);
-//    print_ln (); 
+//    print_ln(); 
   }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /*  also change following in itex.c - bkph */
@@ -1897,7 +1845,7 @@ void open_log_file (void)
   {register integer for_end; k = 1; for_end = l; if (k <= for_end) do 
     print(buffer[k]); 
   while(k++ < for_end); } 
-  print_ln (); 
+  print_ln(); 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* a good place to show the fmt file name or pool file name ? 94/June/21 */
   if (show_fmt_flag) {
@@ -1955,7 +1903,7 @@ int endnamecopy(void)
       return 0;     // abort_flag set
     }
 #endif
-    return make_string ();
+    return make_string();
 } 
 
 void jobnameappend (void)
@@ -1969,7 +1917,7 @@ void jobnameappend (void)
   k = str_start[cur_ext];
   n = str_start[cur_ext + 1];
   while (k < n) morenamecopy(str_pool[k++]);
-  job_name = endnamecopy ();
+  job_name = endnamecopy();
 }
 
 /**************************** end of insertion 98/Feb/7 **************/
@@ -1977,12 +1925,12 @@ void jobnameappend (void)
 void start_input (void) 
 {/* 30 */
   bool addedextension = false;
-  scan_file_name (); 
+  scan_file_name(); 
   pack_file_name(cur_name, cur_area, cur_ext); 
 
   while(true){        /* loop until we get a valid file name */      
     addedextension = false;
-    begin_file_reading (); 
+    begin_file_reading(); 
 /* *** *** *** *** *** following is new in 3.14159 *** *** *** *** *** *** */
 /*  if current extension is *not* empty, try to open using name as is */
 /*  string 335 is "" the empty string */
@@ -1996,11 +1944,11 @@ void start_input (void)
     if ((cur_ext != 785)&&(name_length + 5 < PATHMAX)&& 
 /*    (! extensionirrelevantp(name_of_file, "tex"))){ */
     (! extensionirrelevantp(name_of_file, name_length, "tex"))){
-      name_of_file[name_length + 1]= 46;  /* .tex  */
-      name_of_file[name_length + 2]= 116; 
-      name_of_file[name_length + 3]= 101; 
-      name_of_file[name_length + 4]= 120; 
-      name_of_file[name_length + 5]= 32;  /* 96/Jan/20 ??? */
+      name_of_file[name_length + 1] = 46;  /* .tex  */
+      name_of_file[name_length + 2] = 116; 
+      name_of_file[name_length + 3] = 101; 
+      name_of_file[name_length + 4] = 120; 
+      name_of_file[name_length + 5] = 32;  /* 96/Jan/20 ??? */
       name_length = name_length + 4; 
     addedextension = true;
 /* *** *** *** ***  following new in 3.14159 *** *** *** *** *** *** *** */
@@ -2020,7 +1968,7 @@ void start_input (void)
       TEXINPUTPATH)) 
     goto lab30; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    end_file_reading (); 
+    end_file_reading(); 
     prompt_file_name(781, 785); /* input file name  .tex */
   }   /* end of while(true)trying to get valid file name */
 
@@ -2032,12 +1980,12 @@ void start_input (void)
     job_name = cur_name;        /* here we set the job_name */
 /*  did file name have an `extension' already and we added ".tex" ? */
   if (cur_ext != 335 && addedextension)     /* 98/Feb/7 */
-    jobnameappend ();   /* append `extension' to job_name */
-    open_log_file (); 
+    jobnameappend();   /* append `extension' to job_name */
+    open_log_file(); 
   } 
   if (term_offset +(str_start[cur_input.name_field + 1]- str_start[
   cur_input.name_field])> max_print_line - 2) /* was 3 ? */  
-  print_ln (); 
+  print_ln(); 
   else if ((term_offset > 0)||(file_offset > 0)) 
   print_char(' ');
   print_char('(');
@@ -2055,7 +2003,7 @@ void start_input (void)
     line = 1; 
     if (input_ln(input_file[cur_input.index_field], false)) 
     ; 
-    firm_up_the_line (); 
+    firm_up_the_line(); 
     if ((eqtb[(hash_size + 3211)].cint < 0)||
     (eqtb[(hash_size + 3211)].cint > 255)) 
     decr(cur_input.limit_field); 
@@ -2069,7 +2017,7 @@ void start_input (void)
 /**********************************************************************/
 /* show TEXFONTS=... or format specific  */
 /* only show this if name was not fully qualified ? */
-void show_tex_fonts(void)
+void show_tex_fonts (void)
 {     /* 98/Jan/28 */
   char *s, *t, *v, *u;
   int n;
@@ -2286,7 +2234,7 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
 		"because my memory for character-size data is too small.",
 		"If you're really stuck, ask a wizard to enlarge me.",
 		"Or maybe try `I\\font<same font id>=<name of loaded font>'.");
-    error (); 
+    error(); 
     goto lab30; 
   } 
   f = font_ptr + 1; 
@@ -2648,29 +2596,29 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
     if ((qw.b0 > 0)) 
     font_false_bchar[f]= 256; 
   } 
-  font_name[f]= nom; 
-  font_area[f]= aire; 
-  font_bc[f]= bc; 
-  font_ec[f]= ec; 
-  font_glue[f]= 0;  /* font_glue[f]:=null; l.11184 */
-  char_base[f]= char_base[f]; 
-  width_base[f]= width_base[f]; 
-  lig_kern_base[f]= lig_kern_base[f]; 
-  kern_base[f]= kern_base[f]; 
-  exten_base[f]= exten_base[f]; 
+  font_name[f] = nom; 
+  font_area[f] = aire; 
+  font_bc[f] = bc; 
+  font_ec[f] = ec; 
+  font_glue[f] = 0;  /* font_glue[f]:=null; l.11184 */
+  char_base[f] = char_base[f]; 
+  width_base[f] = width_base[f]; 
+  lig_kern_base[f] = lig_kern_base[f]; 
+  kern_base[f] = kern_base[f]; 
+  exten_base[f] = exten_base[f]; 
   decr(param_base[f]); 
   fmem_ptr = fmem_ptr + lf; 
   font_ptr = f; 
   g = f; 
-  goto lab30; 
-
-lab11: print_err("Font ");
+  goto lab30;
+lab11:
+  print_err("Font ");
   sprint_cs(u); 
   print_char('=');
   print_file_name(nom, aire, 335);  /* "" */
   if (s >= 0)
   {
-    print_string("at");
+    print_string("at ");
     print_scaled(s); 
     print_string("pt");
   } 
@@ -2689,8 +2637,7 @@ lab11: print_err("Font ");
 	  "[Wizards can fix TFM files using TFtoPL/PLtoTF.]",
 	  "You might try inserting a different font spec;",
 	  "e.g., type `I\\font<same font id>=<substitute font name>'.");
-  error (); 
-
+  error();
 lab30:
   if (fileopened)b_close(tfm_file); 
   Result = g; 

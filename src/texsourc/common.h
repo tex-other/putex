@@ -74,39 +74,39 @@ typedef GLUERATIO_TYPE glueratio;
 
 /* Declarations for the routines we provide ourselves.  */
 
-extern integer zround (double);			/* extern integer zround (); */
+extern integer zround (double);			/* extern integer zround(); */
 
 /* File routines.  */
-extern FILE *xfopen_pas (unsigned char *, char *);	/* extern FILE *xfopen_pas (); */
+extern FILE *xfopen_pas (unsigned char *, char *);	/* extern FILE *xfopen_pas(); */
 extern bool test_eof (FILE *);
-extern bool eoln (FILE *);			/* extern bool eoln (); */
+extern bool eoln (FILE *);			/* extern bool eoln(); */
 extern bool open_input (FILE **, path_constant_type, char *);
-/* extern bool open_input (); */
+/* extern bool open_input(); */
 extern bool open_output (FILE **, char *);
-/* extern bool open_output (); */
+/* extern bool open_output(); */
 extern void fprintreal (FILE *, double, int, int);
-/* extern void fprintreal (); */
-extern void printpascalstring (char *); /* extern void printpascalstring (); */
-extern void errprintpascalstring (char *); /* extern void errprintpascalstring (); */
-extern integer inputint (FILE *);	/* extern integer inputint (); */
+/* extern void fprintreal(); */
+extern void printpascalstring (char *); /* extern void printpascalstring(); */
+extern void errprintpascalstring (char *); /* extern void errprintpascalstring(); */
+extern integer inputint (FILE *);	/* extern integer inputint(); */
 extern void zinput3ints (integer *, integer *, integer *);
-/* extern void zinput3ints (); */
-extern void set_paths (int);		/* extern void set_paths (); */
+/* extern void zinput3ints(); */
+extern void set_paths (int);		/* extern void set_paths(); */
 // extern void check_fclose (FILE *);	/* in openinou.c 93/Nov/20 */
 extern int check_fclose (FILE *);	/* in openinou.c 93/Nov/20 */
 
 /* String routines.  */
-/* extern void makesuffixpas (); */ /* not defined, not used ? bkph */
-extern void make_c_string (char **); /* extern void make_c_string (); */
-extern void make_pascal_string (char **); /* extern void make_pascal_string (); */
-extern void null_terminate (char *); /* extern void null_terminate (); */
-extern void space_terminate (char *); /* extern void space_terminate (); */
+/* extern void makesuffixpas(); */ /* not defined, not used ? bkph */
+extern void make_c_string (char **); /* extern void make_c_string(); */
+extern void make_pascal_string (char **); /* extern void make_pascal_string(); */
+extern void null_terminate (char *); /* extern void null_terminate(); */
+extern void space_terminate (char *); /* extern void space_terminate(); */
 
 
 /* Argument handling, etc.  */
 /* extern int argc; */
 /* extern char **gargv; */
-extern void argv (); 		/* only to prevent accidental use of argv[] ??? */
+extern void argv(); 		/* only to prevent accidental use of argv[] ??? */
 extern char *versionstring;
 extern char *version;
 

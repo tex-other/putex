@@ -24,739 +24,667 @@
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 void align_peek (void) 
-{/* 20 */
-  lab20: align_state = 1000000L; 
+{
+lab20:
+  align_state = 1000000L;
   do {
-      get_x_token (); 
-  } while(!(cur_cmd != 10)); 
-  if (cur_cmd == 34){
-    scan_left_brace (); 
-    new_save_level(7); 
-    if (mode == -1) normal_paragraph (); 
-  } 
-  else if (cur_cmd == 2){
-    fin_align ();
-  }
-  else if ((cur_cmd == 5)&&(cur_chr == 258)) 
-  goto lab20; 
+    get_x_token();
+  } while (!(cur_cmd != 10));
+  if (cur_cmd == 34) {
+    scan_left_brace();
+    new_save_level(7);
+    if (mode == -1)
+      normal_paragraph();
+  } else if (cur_cmd == 2) {
+    fin_align();
+  } else if ((cur_cmd == 5) && (cur_chr == 258))
+    goto lab20;
   else {
-    init_row (); 
-    init_col (); 
-  } 
-} 
+    init_row();
+    init_col();
+  }
+}
 /* used in itex.c only */
 halfword finite_shrink_(halfword p)
-{register halfword Result; 
-  halfword q; 
-  if (noshrinkerroryet){
+{
+  register halfword Result;
+  halfword q;
+  if (noshrinkerroryet) {
     noshrinkerroryet = false;
-	print_err("Infinite glue shrinkage found in a paragraph");
-	help5("The paragraph just ended includes some glue that has",
-		"infinite shrinkability, e.g., `\\hskip 0pt minus 1fil'.",
-		"Such glue doesn't belong there---it allows a paragraph",
-		"of any length to fit on one line. But it's safe to proceed,",
-		"since the offensive shrinkability has been made finite."); 
-    error (); 
-  } 
-  q = new_spec(p); 
-  mem[q].hh.b1 = 0; 
-  delete_glue_ref(p); 
-  Result = q; 
-  return Result; 
-} 
-void try_break_ (integer pi,small_number breaktype)
-{/* 10 30 31 22 60 */
-  halfword r; 
-  halfword prevr; 
-  halfword oldl; 
-  bool nobreakyet; 
-  halfword prevprevr; 
-  halfword s; 
-  halfword q; 
-  halfword v; 
-  integer t; 
-  internal_font_number f; 
-  halfword l; 
-  bool noderstaysactive; 
-  scaled linewidth; 
-  char fitclass; 
+    print_err("Infinite glue shrinkage found in a paragraph");
+    help5("The paragraph just ended includes some glue that has",
+      "infinite shrinkability, e.g., `\\hskip 0pt minus 1fil'.",
+      "Such glue doesn't belong there---it allows a paragraph",
+      "of any length to fit on one line. But it's safe to proceed,",
+      "since the offensive shrinkability has been made finite.");
+    error();
+  }
+  q = new_spec(p);
+  mem[q].hh.b1 = 0;
+  delete_glue_ref(p);
+  Result = q;
+  return Result;
+}
+void try_break_ (integer pi, small_number breaktype)
+{
+  halfword r;
+  halfword prevr;
+  halfword oldl;
+  bool nobreakyet;
+  halfword prevprevr;
+  halfword s;
+  halfword q;
+  halfword v;
+  integer t;
+  internal_font_number f;
+  halfword l;
+  bool noderstaysactive;
+  scaled linewidth;
+  char fitclass;
   halfword b;       /* current badness */
-  integer d; 
-  bool artificialdemerits; 
-  halfword savelink; 
-  scaled shortfall; 
+  integer d;
+  bool artificialdemerits;
+  halfword savelink;
+  scaled shortfall;
   if (abs(pi)>= 10000)
-  if (pi > 0)
-  goto lab10; 
-  else pi = -10000; 
-  nobreakyet = true; 
-  prevr = active; 
-  oldl = 0; 
-  cur_active_width[1]= active_width[1]; 
-  cur_active_width[2]= active_width[2]; 
-  cur_active_width[3]= active_width[3]; 
-  cur_active_width[4]= active_width[4]; 
-  cur_active_width[5]= active_width[5]; 
-  cur_active_width[6]= active_width[6]; 
-  while(true){
-    lab22: r = mem[prevr].hh.v.RH; 
-    if (mem[r].hh.b0 == 2)
-    {
-      cur_active_width[1]= cur_active_width[1]+ mem[r + 1].cint; 
-      cur_active_width[2]= cur_active_width[2]+ mem[r + 2].cint; 
-      cur_active_width[3]= cur_active_width[3]+ mem[r + 3].cint; 
-      cur_active_width[4]= cur_active_width[4]+ mem[r + 4].cint; 
-      cur_active_width[5]= cur_active_width[5]+ mem[r + 5].cint; 
-      cur_active_width[6]= cur_active_width[6]+ mem[r + 6].cint; 
-      prevprevr = prevr; 
-      prevr = r; 
-      goto lab22; 
-    } 
+    if (pi > 0)
+      goto lab10;
+    else
+      pi = -10000;
+  nobreakyet = true;
+  prevr = active;
+  oldl = 0;
+  cur_active_width[1] = active_width[1];
+  cur_active_width[2] = active_width[2];
+  cur_active_width[3] = active_width[3];
+  cur_active_width[4] = active_width[4];
+  cur_active_width[5] = active_width[5];
+  cur_active_width[6] = active_width[6];
+  while (true) {
+lab22:
+    r = mem[prevr].hh.v.RH;
+    if (mem[r].hh.b0 == 2) {
+      cur_active_width[1] = cur_active_width[1] + mem[r + 1].cint;
+      cur_active_width[2] = cur_active_width[2] + mem[r + 2].cint;
+      cur_active_width[3] = cur_active_width[3] + mem[r + 3].cint;
+      cur_active_width[4] = cur_active_width[4] + mem[r + 4].cint;
+      cur_active_width[5] = cur_active_width[5] + mem[r + 5].cint;
+      cur_active_width[6] = cur_active_width[6] + mem[r + 6].cint;
+      prevprevr = prevr;
+      prevr = r;
+      goto lab22;
+    }
     {
       l = mem[r + 1].hh.v.LH; 
-      if (l > oldl)
-      {
-  if ((minimum_demerits < 1073741823L)&&  /* 2^30 - 1 */
-    ((oldl != easyline)||(r == active)))
-  {
-    if (nobreakyet)
-    {
-      nobreakyet = false; 
-      break_width[1]= background[1]; 
-      break_width[2]= background[2]; 
-      break_width[3]= background[3]; 
-      break_width[4]= background[4]; 
-      break_width[5]= background[5]; 
-      break_width[6]= background[6]; 
-      s = cur_p; 
+      if (l > oldl) {
+        if ((minimum_demerits < 1073741823L) &&  /* 2^30 - 1 */
+          ((oldl != easyline)||(r == active))) {
+            if (nobreakyet) {
+              nobreakyet = false; 
+              break_width[1] = background[1];
+              break_width[2] = background[2];
+              break_width[3] = background[3];
+              break_width[4] = background[4];
+              break_width[5] = background[5];
+              break_width[6] = background[6];
+              s = cur_p;
 /* if break_type>unhyphenated then if cur_p<>null then l.16451 */
-      if (breaktype > 0)
-      if (cur_p != 0)
-      {
-        t = mem[cur_p].hh.b1; 
-        v = cur_p; 
-        s = mem[cur_p + 1].hh.v.RH; 
-        while(t > 0){
-      
-    decr(t); 
-    v = mem[v].hh.v.RH; 
-    if ((v >= hi_mem_min)) 
-    {
-      f = mem[v].hh.b0; 
-      break_width[1]= break_width[1]- font_info[width_base[
-      f]+ font_info[char_base[f]+ mem[v].hh.b1].qqqq 
-     .b0].cint; 
-    } 
-    else switch(mem[v].hh.b0)
-    {case 6 : 
-      {
-        f = mem[v + 1].hh.b0; 
-        break_width[1]= break_width[1]- font_info[width_base 
-       [f]+ font_info[char_base[f]+ mem[v + 1].hh.b1]
-        .qqqq.b0].cint; 
-      } 
-      break; 
-    case 0 : 
-    case 1 : 
-    case 2 : 
-    case 11 : 
-      break_width[1]= break_width[1]- mem[v + 1].cint; 
-      break; 
-      default: 
-        {
-          confusion("disc1");
-          return;       // abort_flag set
-        }
-        break; 
-    } 
-        } 
-        while(s != 0){  /* while s<>null do l.16453 */
-      
-    if ((s >= hi_mem_min)) 
-    {
-      f = mem[s].hh.b0; 
-      break_width[1]= break_width[1]+ font_info[width_base[
-      f]+ font_info[char_base[f]+ mem[s].hh.b1].qqqq 
-     .b0].cint; 
-    } 
-    else switch(mem[s].hh.b0)
-    {case 6 : 
-      {
-        f = mem[s + 1].hh.b0; 
-        break_width[1]= break_width[1]+ font_info[width_base 
-       [f]+ font_info[char_base[f]+ mem[s + 1].hh.b1]
-        .qqqq.b0].cint; 
-      } 
-      break; 
-    case 0 : 
-    case 1 : 
-    case 2 : 
+              if (breaktype > 0)
+                if (cur_p != 0)
+                {
+                  t = mem[cur_p].hh.b1;
+                  v = cur_p;
+                  s = mem[cur_p + 1].hh.v.RH;
+                  while (t > 0) {
+                    decr(t);
+                    v = mem[v].hh.v.RH; 
+                    if ((v >= hi_mem_min)) {
+                      f = mem[v].hh.b0; 
+                      break_width[1]= break_width[1]- font_info[width_base[f]+ font_info[char_base[f]+ mem[v].hh.b1].qqqq.b0].cint;
+                    } else switch (mem[v].hh.b0)
+                    {
+                    case 6:
+                      {
+                        f = mem[v + 1].hh.b0;
+                        break_width[1]= break_width[1]- font_info[width_base[f]+ font_info[char_base[f]+ mem[v + 1].hh.b1].qqqq.b0].cint;
+                      }
+                      break;
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 11:
+                      break_width[1]= break_width[1]- mem[v + 1].cint;
+                      break;
+                    default:
+                      {
+                        confusion("disc1");
+                        return;       // abort_flag set
+                      }
+                      break;
+                    }
+                  }
+                  while (s != 0) {  /* while s<>null do l.16453 */
+                    if ((s >= hi_mem_min)) {
+                      f = mem[s].hh.b0;
+                      break_width[1]= break_width[1]+ font_info[width_base[f]+ font_info[char_base[f]+ mem[s].hh.b1].qqqq.b0].cint;
+                    } else switch(mem[s].hh.b0)
+                    {
+                    case 6:
+                      {
+                        f = mem[s + 1].hh.b0;
+                        break_width[1]= break_width[1]+ font_info[width_base[f]+ font_info[char_base[f]+ mem[s + 1].hh.b1].qqqq.b0].cint;
+                      }
+                      break;
+                    case 0:
+                    case 1:
+                    case 2:
 /* didn't used to drop through to case 11 from case 2 in  3.141 */
-    case 11 : 
+                    case 11:
 /* used to be some extra code here in case 11 in 3.141 */
-      break_width[1]= break_width[1]+ mem[s + 1].cint; 
-      break; 
-      default: 
-        {
-          confusion("disc1");
-          return;       // abort_flag set
-        }
-        break; 
-    } 
+                      break_width[1]= break_width[1]+ mem[s + 1].cint;
+                      break;
+                    default:
+                      {
+                        confusion("disc1");
+                        return;       // abort_flag set
+                      }
+                      break;
+                    }
 /* used to be an increment t here in 3.141 */
-    s = mem[s].hh.v.RH; 
-        } 
-        break_width[1]= break_width[1]+ disc_width; 
+                    s = mem[s].hh.v.RH;
+                  }
+                  break_width[1] = break_width[1] + disc_width;
 /* used to be a test on t here instead in 3.141 */
-        if (mem[cur_p + 1].hh.v.RH == 0)
-        s = mem[v].hh.v.RH; 
-      } 
-      while(s != 0){
-    
-        if ((s >= hi_mem_min)) 
-        goto lab30; 
-        switch(mem[s].hh.b0)
-        {case 10 : 
-    {
-      v = mem[s + 1].hh.v.LH; 
-      break_width[1]= break_width[1]- mem[v + 1].cint; 
-      break_width[2 + mem[v].hh.b0]= break_width[2 + mem[
-      v].hh.b0]- mem[v + 2].cint; 
-      break_width[6]= break_width[6]- mem[v + 3].cint; 
-    } 
-    break; 
-        case 12 : 
-    ; 
-    break; 
-        case 9 : 
+                  if (mem[cur_p + 1].hh.v.RH == 0)
+                    s = mem[v].hh.v.RH;
+                } 
+                while (s != 0) {
+                  if ((s >= hi_mem_min))
+                    goto lab30;
+                  switch(mem[s].hh.b0)
+                  {
+                  case 10:
+                    {
+                      v = mem[s + 1].hh.v.LH;
+                      break_width[1]= break_width[1]- mem[v + 1].cint;
+                      break_width[2 + mem[v].hh.b0]= break_width[2 + mem[v].hh.b0]- mem[v + 2].cint;
+                      break_width[6]= break_width[6]- mem[v + 3].cint;
+                    }
+                    break;
+                  case 12:
+                    ;
+                    break;
+                  case 9:
 /* case 9 used to drop through to case 11 in 3.141 */
-    break_width[1]= break_width[1]- mem[s + 1].cint; 
-    break; 
-        case 11 : 
+                    break_width[1]= break_width[1]- mem[s + 1].cint;
+                    break;
+                  case 11:
 /* changes here in nature of test since 3.141 */
-    if (mem[s].hh.b1 != 1)
-    goto lab30; 
-    else break_width[1]= break_width[1]- mem[s + 1].cint 
-    ; 
-    break; 
-    default: 
-    goto lab30; 
-    break; 
-        } 
-        s = mem[s].hh.v.RH; 
-      } 
-      lab30:; 
-    } 
-    if (mem[prevr].hh.b0 == 2)
-    {
-      mem[prevr + 1].cint = mem[prevr + 1].cint - cur_active_width 
-     [1]+ break_width[1]; 
-      mem[prevr + 2].cint = mem[prevr + 2].cint - cur_active_width 
-     [2]+ break_width[2]; 
-      mem[prevr + 3].cint = mem[prevr + 3].cint - cur_active_width 
-     [3]+ break_width[3]; 
-      mem[prevr + 4].cint = mem[prevr + 4].cint - cur_active_width 
-     [4]+ break_width[4]; 
-      mem[prevr + 5].cint = mem[prevr + 5].cint - cur_active_width 
-     [5]+ break_width[5]; 
-      mem[prevr + 6].cint = mem[prevr + 6].cint - cur_active_width 
-     [6]+ break_width[6]; 
-    } 
-    else if (prevr == active)
-    {
-      active_width[1]= break_width[1]; 
-      active_width[2]= break_width[2]; 
-      active_width[3]= break_width[3]; 
-      active_width[4]= break_width[4]; 
-      active_width[5]= break_width[5]; 
-      active_width[6]= break_width[6]; 
-    } 
-    else {
-        
-      q = get_node(7); 
-      mem[q].hh.v.RH = r; 
-      mem[q].hh.b0 = 2; 
-      mem[q].hh.b1 = 0; 
-      mem[q + 1].cint = break_width[1]- cur_active_width[1]; 
-      mem[q + 2].cint = break_width[2]- cur_active_width[2]; 
-      mem[q + 3].cint = break_width[3]- cur_active_width[3]; 
-      mem[q + 4].cint = break_width[4]- cur_active_width[4]; 
-      mem[q + 5].cint = break_width[5]- cur_active_width[5]; 
-      mem[q + 6].cint = break_width[6]- cur_active_width[6]; 
-      mem[prevr].hh.v.RH = q; 
-      prevprevr = prevr; 
-      prevr = q; 
-    } 
-    if (abs(eqtb[(hash_size + 3179)].cint)>= 1073741823L - minimum_demerits)
-    minimum_demerits = 1073741822L; /* 2^30 - 2 */
-    else minimum_demerits = minimum_demerits + abs(eqtb[(hash_size + 3179)].cint 
-  ); 
-    {
-      register integer for_end; 
-      fitclass = 0; 
-      for_end = 3; 
-      if (fitclass <= for_end) do 
-      {
-        if (minimal_demerits[fitclass]<= minimum_demerits)
-        {
-    q = get_node(2); 
-    mem[q].hh.v.RH = passive; 
-    passive = q; 
-    mem[q + 1].hh.v.RH = cur_p; 
-  ;
+                    if (mem[s].hh.b1 != 1)
+                      goto lab30;
+                    else
+                      break_width[1]= break_width[1]- mem[s + 1].cint;
+                    break;
+                  default:
+                    goto lab30;
+                    break;
+                  }
+                  s = mem[s].hh.v.RH;
+                }
+lab30:
+                ;
+            }
+            if (mem[prevr].hh.b0 == 2) {
+              mem[prevr + 1].cint = mem[prevr + 1].cint - cur_active_width[1] + break_width[1];
+              mem[prevr + 2].cint = mem[prevr + 2].cint - cur_active_width[2] + break_width[2];
+              mem[prevr + 3].cint = mem[prevr + 3].cint - cur_active_width[3] + break_width[3];
+              mem[prevr + 4].cint = mem[prevr + 4].cint - cur_active_width[4] + break_width[4];
+              mem[prevr + 5].cint = mem[prevr + 5].cint - cur_active_width[5] + break_width[5];
+              mem[prevr + 6].cint = mem[prevr + 6].cint - cur_active_width[6] + break_width[6];
+            } else if (prevr == active) {
+              active_width[1] = break_width[1];
+              active_width[2] = break_width[2];
+              active_width[3] = break_width[3];
+              active_width[4] = break_width[4];
+              active_width[5] = break_width[5];
+              active_width[6] = break_width[6];
+            } else {
+              q = get_node(7);
+              mem[q].hh.v.RH = r;
+              mem[q].hh.b0 = 2;
+              mem[q].hh.b1 = 0;
+              mem[q + 1].cint = break_width[1]- cur_active_width[1];
+              mem[q + 2].cint = break_width[2]- cur_active_width[2];
+              mem[q + 3].cint = break_width[3]- cur_active_width[3];
+              mem[q + 4].cint = break_width[4]- cur_active_width[4];
+              mem[q + 5].cint = break_width[5]- cur_active_width[5];
+              mem[q + 6].cint = break_width[6]- cur_active_width[6];
+              mem[prevr].hh.v.RH = q;
+              prevprevr = prevr;
+              prevr = q;
+            }
+            if (abs(eqtb[(hash_size + 3179)].cint) >= 1073741823L - minimum_demerits)
+              minimum_demerits = 1073741822L; /* 2^30 - 2 */
+            else
+              minimum_demerits = minimum_demerits + abs(eqtb[(hash_size + 3179)].cint); 
+            {
+              register integer for_end;
+              fitclass = 0;
+              for_end = 3;
+              if (fitclass <= for_end) do {
+                if (minimal_demerits[fitclass] <= minimum_demerits) {
+                  q = get_node(2);
+                  mem[q].hh.v.RH = passive;
+                  passive = q;
+                  mem[q + 1].hh.v.RH = cur_p;
+                  ;
 #ifdef STAT
-    incr(pass_number); 
-    mem[q].hh.v.LH = pass_number; 
+                  incr(pass_number);
+                  mem[q].hh.v.LH = pass_number;
 #endif /* STAT */
-    mem[q + 1].hh.v.LH = best_place[fitclass]; 
-    q = get_node(3); 
-    mem[q + 1].hh.v.RH = passive; 
-    mem[q + 1].hh.v.LH = best_pl_line[fitclass]+ 1; 
-    mem[q].hh.b1 = fitclass; 
-    mem[q].hh.b0 = breaktype; 
-    mem[q + 2].cint = minimal_demerits[fitclass]; 
-    mem[q].hh.v.RH = r; 
-    mem[prevr].hh.v.RH = q; 
-    prevr = q; 
-  ;
+                  mem[q + 1].hh.v.LH = best_place[fitclass];
+                  q = get_node(3);
+                  mem[q + 1].hh.v.RH = passive;
+                  mem[q + 1].hh.v.LH = best_pl_line[fitclass] + 1;
+                  mem[q].hh.b1 = fitclass;
+                  mem[q].hh.b0 = breaktype;
+                  mem[q + 2].cint = minimal_demerits[fitclass];
+                  mem[q].hh.v.RH = r;
+                  mem[prevr].hh.v.RH = q;
+                  prevr = q;
+                  ;
 #ifdef STAT
-    if (eqtb[(hash_size + 3195)].cint > 0)
-    {
-      print_nl("@@");
-      print_int(mem[passive].hh.v.LH); 
-      print_string(": line ");
-      print_int(mem[q + 1].hh.v.LH - 1); 
-      print_char('.');
-      print_int(fitclass); 
-      if (breaktype == 1)
-      print_char('-');
-      print_string("t=");
-      print_int(mem[q + 2].cint); 
-      print_string("-> @@");
-      if (mem[passive + 1].hh.v.LH == 0)
-      print_char('0');
-      else print_int(mem[mem[passive + 1].hh.v.LH].hh.v.LH); 
-    } 
+                  if (eqtb[(hash_size + 3195)].cint > 0) {
+                    print_nl("@@");
+                    print_int(mem[passive].hh.v.LH);
+                    print_string(": line ");
+                    print_int(mem[q + 1].hh.v.LH - 1);
+                    print_char('.');
+                    print_int(fitclass);
+                    if (breaktype == 1)
+                      print_char('-');
+                    print_string("t=");
+                    print_int(mem[q + 2].cint);
+                    print_string("-> @@");
+                    if (mem[passive + 1].hh.v.LH == 0)
+                      print_char('0');
+                    else
+                      print_int(mem[mem[passive + 1].hh.v.LH].hh.v.LH);
+                  } 
 #endif /* STAT */
-        } 
-        minimal_demerits[fitclass]= 1073741823L; /* 2^30 - 1 */
-      } 
-    while(fitclass++ < for_end); } 
-    minimum_demerits = 1073741823L; /* 2^30 - 1 */
-    if (r != active)
-    {
-      q = get_node(7); 
-      mem[q].hh.v.RH = r; 
-      mem[q].hh.b0 = 2; 
-      mem[q].hh.b1 = 0; 
-      mem[q + 1].cint = cur_active_width[1]- break_width[1]; 
-      mem[q + 2].cint = cur_active_width[2]- break_width[2]; 
-      mem[q + 3].cint = cur_active_width[3]- break_width[3]; 
-      mem[q + 4].cint = cur_active_width[4]- break_width[4]; 
-      mem[q + 5].cint = cur_active_width[5]- break_width[5]; 
-      mem[q + 6].cint = cur_active_width[6]- break_width[6]; 
-      mem[prevr].hh.v.RH = q; 
-      prevprevr = prevr; 
-      prevr = q; 
-    } 
-  } 
-  if (r == active)
-  goto lab10; 
-  if (l > easyline)
-  {
-    linewidth = second_width; 
-    oldl = 262142L;       /* 2^18 - 2 ? */
-  } 
-  else {
-      
-    oldl = l; 
-    if (l > last_special_line)
-    linewidth = second_width; 
-    else if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
-    linewidth = first_width; 
-    else linewidth = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * l].cint; 
-  } 
-      } 
-    } 
+                }
+                minimal_demerits[fitclass]= 1073741823L; /* 2^30 - 1 */
+              } while(fitclass++ < for_end);
+            }
+            minimum_demerits = 1073741823L; /* 2^30 - 1 */
+            if (r != active) {
+              q = get_node(7);
+              mem[q].hh.v.RH = r;
+              mem[q].hh.b0 = 2;
+              mem[q].hh.b1 = 0;
+              mem[q + 1].cint = cur_active_width[1] - break_width[1];
+              mem[q + 2].cint = cur_active_width[2] - break_width[2];
+              mem[q + 3].cint = cur_active_width[3] - break_width[3];
+              mem[q + 4].cint = cur_active_width[4] - break_width[4];
+              mem[q + 5].cint = cur_active_width[5] - break_width[5];
+              mem[q + 6].cint = cur_active_width[6] - break_width[6];
+              mem[prevr].hh.v.RH = q;
+              prevprevr = prevr;
+              prevr = q;
+            }
+        }
+        if (r == active)
+          goto lab10;
+        if (l > easyline) {
+          linewidth = second_width; 
+          oldl = 262142L;       /* 2^18 - 2 ? */
+        } else {
+          oldl = l;
+          if (l > last_special_line)
+            linewidth = second_width;
+          else if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
+            linewidth = first_width;
+          else
+            linewidth = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * l].cint;
+        }
+      }
+    }
     {
       artificialdemerits = false; 
       shortfall = linewidth - cur_active_width[1];  /* linewidth may be ... */
       if (shortfall > 0)
-      if ((cur_active_width[3]!= 0)||(cur_active_width[4]!= 0)||(
-      cur_active_width[5]!= 0)) 
-      {
-  b = 0; 
-  fitclass = 2; 
-      } 
-      else {
-    
-  if (shortfall > 7230584L)
-  if (cur_active_width[2]< 1663497L)
-  {
-    b = 10000; 
-    fitclass = 0; 
-    goto lab31; 
-  } 
-  b = badness(shortfall, cur_active_width[2]); 
-  if (b > 12)
-  if (b > 99)
-  fitclass = 0; 
-  else fitclass = 1; 
-  else fitclass = 2; 
-  lab31:; 
-      } 
-      else {
-    
-  if (- (integer) shortfall > cur_active_width[6])
-  b = 10001; 
-  else b = badness(- (integer) shortfall, cur_active_width[6]); 
-  if (b > 12)
-  fitclass = 3; 
-  else fitclass = 2; 
-      } 
-      if ((b > 10000)||(pi == -10000)) 
-      {
-  if (final_pass &&(minimum_demerits == 1073741823L)&&  /* 2^30 - 1 */
-    (mem[r].hh.v.RH == active)&&(prevr == active)) 
-  artificialdemerits = true; 
-  else if (b > threshold)
-  goto lab60; 
-  noderstaysactive = false; 
-      } 
-      else {
-    
-  prevr = r; 
-  if (b > threshold)
-  goto lab22; 
-  noderstaysactive = true; 
-      } 
+        if ((cur_active_width[3]!= 0) || (cur_active_width[4]!= 0) || (cur_active_width[5]!= 0)) {
+          b = 0;
+          fitclass = 2;
+        } else {
+          if (shortfall > 7230584L)
+            if (cur_active_width[2]< 1663497L) {
+              b = 10000;
+              fitclass = 0;
+              goto lab31;
+            }
+          b = badness(shortfall, cur_active_width[2]);
+          if (b > 12)
+            if (b > 99)
+              fitclass = 0;
+            else
+              fitclass = 1;
+          else fitclass = 2;
+lab31:
+          ;
+        } else {
+          if (- (integer) shortfall > cur_active_width[6])
+            b = 10001;
+          else
+            b = badness(- (integer) shortfall, cur_active_width[6]);
+          if (b > 12)
+            fitclass = 3;
+          else
+            fitclass = 2;
+        }
+      if ((b > 10000)||(pi == -10000)) {
+        if (final_pass && (minimum_demerits == 1073741823L) &&  /* 2^30 - 1 */
+            (mem[r].hh.v.RH == active) && (prevr == active))
+          artificialdemerits = true;
+        else if (b > threshold)
+          goto lab60;
+        noderstaysactive = false;
+      } else {
+        prevr = r;
+        if (b > threshold)
+          goto lab22;
+        noderstaysactive = true;
+      }
       if (artificialdemerits)
-      d = 0; 
+        d = 0;
       else {
-    
-  d = eqtb[(hash_size + 3165)].cint + b; 
-  if (abs(d)>= 10000)
-  d = 100000000L; 
-  else d = d * d; 
-  if (pi != 0)
-  if (pi > 0)
-  d = d + pi * pi; 
-  else if (pi > -10000)
-  d = d - pi * pi; 
-  if ((breaktype == 1)&&(mem[r].hh.b0 == 1)) 
-  if (cur_p != 0)
-  d = d + eqtb[(hash_size + 3177)].cint; 
-  else d = d + eqtb[(hash_size + 3178)].cint; 
-  if (abs(toint(fitclass)- toint(mem[r].hh.b1)) > 1)
-  d = d + eqtb[(hash_size + 3179)].cint; 
-      } 
-  ;
+        d = eqtb[(hash_size + 3165)].cint + b;
+        if (abs(d)>= 10000)
+          d = 100000000L;
+        else
+          d = d * d;
+        if (pi != 0)
+          if (pi > 0)
+            d = d + pi * pi;
+          else if (pi > -10000)
+            d = d - pi * pi;
+        if ((breaktype == 1) && (mem[r].hh.b0 == 1))
+          if (cur_p != 0)
+            d = d + eqtb[(hash_size + 3177)].cint;
+          else
+            d = d + eqtb[(hash_size + 3178)].cint;
+        if (abs(toint(fitclass)- toint(mem[r].hh.b1)) > 1)
+          d = d + eqtb[(hash_size + 3179)].cint;
+      }
+      ;
 #ifdef STAT
-      if (eqtb[(hash_size + 3195)].cint > 0)
-      {
-  if (printed_node != cur_p)
-  {
-    print_nl("");    /*  */
-    if (cur_p == 0)
-    short_display(mem[printed_node].hh.v.RH); 
-    else {
-        
-      savelink = mem[cur_p].hh.v.RH; 
-      mem[cur_p].hh.v.RH = 0; 
-      print_nl("");  /*  */
-      short_display(mem[printed_node].hh.v.RH); 
-      mem[cur_p].hh.v.RH = savelink; 
-    } 
-    printed_node = cur_p; 
-  } 
-  print_nl("@");   /* @ */
-  if (cur_p == 0)
-    print_esc("par");
-  else if (mem[cur_p].hh.b0 != 10)
-  {
-    if (mem[cur_p].hh.b0 == 12)
-      print_esc("penalty");
-    else if (mem[cur_p].hh.b0 == 7)
-      print_esc("discretionary");
-    else if (mem[cur_p].hh.b0 == 11)
-      print_esc("kern");
-    else print_esc("math");
-  } 
-  print_string("via @@");   /*  */
-  if (mem[r + 1].hh.v.RH == 0)
-  print_char('0');
-  else print_int(mem[mem[r + 1].hh.v.RH].hh.v.LH); 
-  print_string("b=");
-  if (b > 10000)
-  print_char('*');
-  else print_int(b); 
-  print_string("p=");
-  print_int(pi); 
-  print_string("d=");
-  if (artificialdemerits)
-  print_char('*');
-  else print_int(d); 
-      } 
+      if (eqtb[(hash_size + 3195)].cint > 0) {
+        if (printed_node != cur_p) {
+          print_nl("");
+          if (cur_p == 0)
+            short_display(mem[printed_node].hh.v.RH);
+          else {
+            savelink = mem[cur_p].hh.v.RH;
+            mem[cur_p].hh.v.RH = 0;
+            print_nl("");
+            short_display(mem[printed_node].hh.v.RH);
+            mem[cur_p].hh.v.RH = savelink;
+          }
+          printed_node = cur_p;
+        }
+        print_nl("@");
+        if (cur_p == 0)
+          print_esc("par");
+        else if (mem[cur_p].hh.b0 != 10) {
+          if (mem[cur_p].hh.b0 == 12)
+            print_esc("penalty");
+          else if (mem[cur_p].hh.b0 == 7)
+            print_esc("discretionary");
+          else if (mem[cur_p].hh.b0 == 11)
+            print_esc("kern");
+          else
+            print_esc("math");
+        }
+        print_string("via @@");
+        if (mem[r + 1].hh.v.RH == 0)
+          print_char('0');
+        else
+          print_int(mem[mem[r + 1].hh.v.RH].hh.v.LH);
+        print_string("b=");
+        if (b > 10000)
+          print_char('*');
+        else print_int(b);
+        print_string("p=");
+        print_int(pi);
+        print_string("d=");
+        if (artificialdemerits)
+          print_char('*');
+        else print_int(d);
+      }
 #endif /* STAT */
       d = d + mem[r + 2].cint; 
-      if (d <= minimal_demerits[fitclass])
-      {
-  minimal_demerits[fitclass]= d; 
-  best_place[fitclass]= mem[r + 1].hh.v.RH; 
-  best_pl_line[fitclass]= l; 
-  if (d < minimum_demerits)
-  minimum_demerits = d; 
-      } 
+      if (d <= minimal_demerits[fitclass]) {
+        minimal_demerits[fitclass]= d;
+        best_place[fitclass]= mem[r + 1].hh.v.RH;
+        best_pl_line[fitclass]= l;
+        if (d < minimum_demerits)
+          minimum_demerits = d;
+      }
       if (noderstaysactive)
-      goto lab22; 
-      lab60: mem[prevr].hh.v.RH = mem[r].hh.v.RH; 
-      free_node(r, 3); 
-      if (prevr == active)
-      {
-  r = mem[active].hh.v.RH; 
-  if (mem[r].hh.b0 == 2)
-  {
-    active_width[1]= active_width[1]+ mem[r + 1].cint; 
-    active_width[2]= active_width[2]+ mem[r + 2].cint; 
-    active_width[3]= active_width[3]+ mem[r + 3].cint; 
-    active_width[4]= active_width[4]+ mem[r + 4].cint; 
-    active_width[5]= active_width[5]+ mem[r + 5].cint; 
-    active_width[6]= active_width[6]+ mem[r + 6].cint; 
-    cur_active_width[1]= active_width[1]; 
-    cur_active_width[2]= active_width[2]; 
-    cur_active_width[3]= active_width[3]; 
-    cur_active_width[4]= active_width[4]; 
-    cur_active_width[5]= active_width[5]; 
-    cur_active_width[6]= active_width[6]; 
-    mem[active].hh.v.RH = mem[r].hh.v.RH; 
-    free_node(r, 7); 
-  } 
-      } 
-      else if (mem[prevr].hh.b0 == 2)
-      {
-  r = mem[prevr].hh.v.RH; 
-  if (r == active)
-  {
-    cur_active_width[1]= cur_active_width[1]- mem[prevr + 1]
-   .cint; 
-    cur_active_width[2]= cur_active_width[2]- mem[prevr + 2]
-   .cint; 
-    cur_active_width[3]= cur_active_width[3]- mem[prevr + 3]
-   .cint; 
-    cur_active_width[4]= cur_active_width[4]- mem[prevr + 4]
-   .cint; 
-    cur_active_width[5]= cur_active_width[5]- mem[prevr + 5]
-   .cint; 
-    cur_active_width[6]= cur_active_width[6]- mem[prevr + 6]
-   .cint; 
-    mem[prevprevr].hh.v.RH = active; /* prevprevr may be used ... */
-    free_node(prevr, 7); 
-    prevr = prevprevr; 
-  } 
-  else if (mem[r].hh.b0 == 2)
-  {
-    cur_active_width[1]= cur_active_width[1]+ mem[r + 1].cint; 
-    cur_active_width[2]= cur_active_width[2]+ mem[r + 2].cint; 
-    cur_active_width[3]= cur_active_width[3]+ mem[r + 3].cint; 
-    cur_active_width[4]= cur_active_width[4]+ mem[r + 4].cint; 
-    cur_active_width[5]= cur_active_width[5]+ mem[r + 5].cint; 
-    cur_active_width[6]= cur_active_width[6]+ mem[r + 6].cint; 
-    mem[prevr + 1].cint = mem[prevr + 1].cint + mem[r + 1]
-   .cint; 
-    mem[prevr + 2].cint = mem[prevr + 2].cint + mem[r + 2]
-   .cint; 
-    mem[prevr + 3].cint = mem[prevr + 3].cint + mem[r + 3]
-   .cint; 
-    mem[prevr + 4].cint = mem[prevr + 4].cint + mem[r + 4]
-   .cint; 
-    mem[prevr + 5].cint = mem[prevr + 5].cint + mem[r + 5]
-   .cint; 
-    mem[prevr + 6].cint = mem[prevr + 6].cint + mem[r + 6]
-   .cint; 
-    mem[prevr].hh.v.RH = mem[r].hh.v.RH; 
-    free_node(r, 7); 
-  } 
-      } 
-    } 
-  } 
-  lab10: 
+        goto lab22;
+lab60:
+      mem[prevr].hh.v.RH = mem[r].hh.v.RH;
+      free_node(r, 3);
+      if (prevr == active) {
+        r = mem[active].hh.v.RH;
+        if (mem[r].hh.b0 == 2) {
+          active_width[1] = active_width[1] + mem[r + 1].cint;
+          active_width[2] = active_width[2] + mem[r + 2].cint;
+          active_width[3] = active_width[3] + mem[r + 3].cint;
+          active_width[4] = active_width[4] + mem[r + 4].cint;
+          active_width[5] = active_width[5] + mem[r + 5].cint;
+          active_width[6] = active_width[6] + mem[r + 6].cint;
+          cur_active_width[1] = active_width[1];
+          cur_active_width[2] = active_width[2];
+          cur_active_width[3] = active_width[3];
+          cur_active_width[4] = active_width[4];
+          cur_active_width[5] = active_width[5];
+          cur_active_width[6] = active_width[6];
+          mem[active].hh.v.RH = mem[r].hh.v.RH;
+          free_node(r, 7);
+        }
+      } else if (mem[prevr].hh.b0 == 2) {
+        r = mem[prevr].hh.v.RH;
+        if (r == active) {
+          cur_active_width[1] = cur_active_width[1] - mem[prevr + 1].cint;
+          cur_active_width[2] = cur_active_width[2] - mem[prevr + 2].cint;
+          cur_active_width[3] = cur_active_width[3] - mem[prevr + 3].cint;
+          cur_active_width[4] = cur_active_width[4] - mem[prevr + 4].cint;
+          cur_active_width[5] = cur_active_width[5] - mem[prevr + 5].cint;
+          cur_active_width[6] = cur_active_width[6] - mem[prevr + 6].cint;
+          mem[prevprevr].hh.v.RH = active; /* prevprevr may be used ... */
+          free_node(prevr, 7);
+          prevr = prevprevr;
+        } else if (mem[r].hh.b0 == 2) {
+          cur_active_width[1] = cur_active_width[1] + mem[r + 1].cint;
+          cur_active_width[2] = cur_active_width[2] + mem[r + 2].cint;
+          cur_active_width[3] = cur_active_width[3] + mem[r + 3].cint;
+          cur_active_width[4] = cur_active_width[4] + mem[r + 4].cint;
+          cur_active_width[5] = cur_active_width[5] + mem[r + 5].cint;
+          cur_active_width[6] = cur_active_width[6] + mem[r + 6].cint;
+          mem[prevr + 1].cint = mem[prevr + 1].cint + mem[r + 1].cint;
+          mem[prevr + 2].cint = mem[prevr + 2].cint + mem[r + 2].cint;
+          mem[prevr + 3].cint = mem[prevr + 3].cint + mem[r + 3].cint;
+          mem[prevr + 4].cint = mem[prevr + 4].cint + mem[r + 4].cint;
+          mem[prevr + 5].cint = mem[prevr + 5].cint + mem[r + 5].cint;
+          mem[prevr + 6].cint = mem[prevr + 6].cint + mem[r + 6].cint;
+          mem[prevr].hh.v.RH = mem[r].hh.v.RH;
+          free_node(r, 7);
+        }
+      }
+    }
+  }
+lab10:
   ;
 #ifdef STAT
   if (cur_p == printed_node)
-  if (cur_p != 0)
-  if (mem[cur_p].hh.b0 == 7){
-    t = mem[cur_p].hh.b1; 
-    while(t > 0){
-      decr(t); 
-      printed_node = mem[printed_node].hh.v.RH; 
-    } 
-  } 
+    if (cur_p != 0)
+      if (mem[cur_p].hh.b0 == 7) {
+        t = mem[cur_p].hh.b1;
+        while (t > 0) {
+          decr(t);
+          printed_node = mem[printed_node].hh.v.RH;
+        }
+      } 
 #endif /* STAT */
 /*  must exit here, there are no internal return - except for confusion */
 /*  savedbadness = b; */      /* 96/Feb/9 - for test in itex.c */
-} 
+}
 /* end of the old tex5.c here */
 void post_line_break_(integer finalwidowpenalty)
-{/* 30 31 */ 
-  halfword q, r, s; 
-  bool discbreak; 
-  bool postdiscbreak; 
-  scaled curwidth; 
-  scaled curindent; 
-  quarterword t; 
-  integer pen; 
-  halfword curline; 
-  q = mem[best_bet + 1].hh.v.RH; 
-  cur_p = 0; 
+{
+  halfword q, r, s;
+  bool discbreak;
+  bool postdiscbreak;
+  scaled curwidth;
+  scaled curindent;
+  quarterword t;
+  integer pen;
+  halfword curline;
+  q = mem[best_bet + 1].hh.v.RH;
+  cur_p = 0;
   do {
-      r = q; 
-    q = mem[q + 1].hh.v.LH; 
-    mem[r + 1].hh.v.LH = cur_p; 
-    cur_p = r; 
-  } while(!(q == 0)); 
-  curline = prev_graf + 1; 
+    r = q;
+    q = mem[q + 1].hh.v.LH;
+    mem[r + 1].hh.v.LH = cur_p;
+    cur_p = r;
+  } while (!(q == 0));
+  curline = prev_graf + 1;
   do {
-      q = mem[cur_p + 1].hh.v.RH; 
-    discbreak = false; 
-    postdiscbreak = false; 
+    q = mem[cur_p + 1].hh.v.RH;
+    discbreak = false;
+    postdiscbreak = false;
     if (q != 0)
-    if (mem[q].hh.b0 == 10)
-    {
-      delete_glue_ref(mem[q + 1].hh.v.LH); 
-      mem[q + 1].hh.v.LH = eqtb[(hash_size + 790)].hh.v.RH; 
-      mem[q].hh.b1 = 9; 
-      incr(mem[eqtb[(hash_size + 790)].hh.v.RH].hh.v.RH); 
-      goto lab30; 
-    } 
-    else {
-  
-      if (mem[q].hh.b0 == 7)
-      {
-  t = mem[q].hh.b1; 
-  if (t == 0)
-  r = mem[q].hh.v.RH; 
-  else {
-      
-    r = q; 
-    while(t > 1){
-        
-      r = mem[r].hh.v.RH; 
-      decr(t); 
-    } 
-    s = mem[r].hh.v.RH; 
-    r = mem[s].hh.v.RH; 
-    mem[s].hh.v.RH = 0; 
-    flush_node_list(mem[q].hh.v.RH); 
-    mem[q].hh.b1 = 0; 
-  } 
-  if (mem[q + 1].hh.v.RH != 0)
-  {
-    s = mem[q + 1].hh.v.RH; 
-    while(mem[s].hh.v.RH != 0)s = mem[s].hh.v.RH; 
-    mem[s].hh.v.RH = r; 
-    r = mem[q + 1].hh.v.RH; 
-    mem[q + 1].hh.v.RH = 0; 
-    postdiscbreak = true; 
-  } 
-  if (mem[q + 1].hh.v.LH != 0)
-  {
-    s = mem[q + 1].hh.v.LH; 
-    mem[q].hh.v.RH = s; 
-    while(mem[s].hh.v.RH != 0)s = mem[s].hh.v.RH; 
-    mem[q + 1].hh.v.LH = 0; 
-    q = s; 
-  } 
-  mem[q].hh.v.RH = r; 
-  discbreak = true; 
-      } 
-      else if ((mem[q].hh.b0 == 9)||(mem[q].hh.b0 == 11)) 
-      mem[q + 1].cint = 0; 
-    } 
-    else {
-  
-      q = temp_head; 
-      while(mem[q].hh.v.RH != 0)q = mem[q].hh.v.RH; 
-    } 
-    r = new_param_glue(8); 
-    mem[r].hh.v.RH = mem[q].hh.v.RH; 
-    mem[q].hh.v.RH = r; 
-    q = r; 
-    lab30:; 
-    r = mem[q].hh.v.RH; 
-    mem[q].hh.v.RH = 0; 
-    q = mem[temp_head].hh.v.RH; 
-    mem[temp_head].hh.v.RH = r; 
-    if (eqtb[(hash_size + 789)].hh.v.RH != 0)
-    {
-      r = new_param_glue(7); 
-      mem[r].hh.v.RH = q; 
-      q = r; 
-    } 
-    if (curline > last_special_line)
-    {
-      curwidth = second_width; 
-      curindent = second_indent; 
-    } 
-    else if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
-    {
-      curwidth = first_width; 
-      curindent = first_indent; 
-    } 
-    else {
-  
-      curwidth = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * curline].cint; 
-      curindent = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * curline - 1].cint; 
-    } 
-    adjust_tail = adjust_head; 
-    just_box = hpack(q, curwidth, 0); 
-    mem[just_box + 4].cint = curindent; 
-    append_to_vlist(just_box); 
+      if (mem[q].hh.b0 == 10) {
+        delete_glue_ref(mem[q + 1].hh.v.LH);
+        mem[q + 1].hh.v.LH = eqtb[(hash_size + 790)].hh.v.RH;
+        mem[q].hh.b1 = 9;
+        incr(mem[eqtb[(hash_size + 790)].hh.v.RH].hh.v.RH);
+        goto lab30;
+      } else {
+        if (mem[q].hh.b0 == 7) {
+          t = mem[q].hh.b1;
+          if (t == 0)
+            r = mem[q].hh.v.RH;
+          else {
+            r = q;
+            while (t > 1) {
+              r = mem[r].hh.v.RH;
+              decr(t);
+            }
+            s = mem[r].hh.v.RH;
+            r = mem[s].hh.v.RH;
+            mem[s].hh.v.RH = 0;
+            flush_node_list(mem[q].hh.v.RH);
+            mem[q].hh.b1 = 0;
+          }
+          if (mem[q + 1].hh.v.RH != 0) {
+            s = mem[q + 1].hh.v.RH;
+            while (mem[s].hh.v.RH != 0)
+              s = mem[s].hh.v.RH;
+            mem[s].hh.v.RH = r;
+            r = mem[q + 1].hh.v.RH;
+            mem[q + 1].hh.v.RH = 0;
+            postdiscbreak = true;
+          }
+          if (mem[q + 1].hh.v.LH != 0) {
+            s = mem[q + 1].hh.v.LH;
+            mem[q].hh.v.RH = s;
+            while (mem[s].hh.v.RH != 0)
+              s = mem[s].hh.v.RH;
+            mem[q + 1].hh.v.LH = 0;
+            q = s;
+          }
+          mem[q].hh.v.RH = r;
+          discbreak = true;
+        } else if ((mem[q].hh.b0 == 9)||(mem[q].hh.b0 == 11))
+          mem[q + 1].cint = 0;
+      } else {
+        q = temp_head;
+        while (mem[q].hh.v.RH != 0)
+          q = mem[q].hh.v.RH;
+      }
+    r = new_param_glue(8);
+    mem[r].hh.v.RH = mem[q].hh.v.RH;
+    mem[q].hh.v.RH = r;
+    q = r;
+lab30:
+    ;
+    r = mem[q].hh.v.RH;
+    mem[q].hh.v.RH = 0;
+    q = mem[temp_head].hh.v.RH;
+    mem[temp_head].hh.v.RH = r;
+    if (eqtb[(hash_size + 789)].hh.v.RH != 0) {
+      r = new_param_glue(7);
+      mem[r].hh.v.RH = q;
+      q = r;
+    }
+    if (curline > last_special_line) {
+      curwidth = second_width;
+      curindent = second_indent;
+    } else if (eqtb[(hash_size + 1312)].hh.v.RH == 0) {
+      curwidth = first_width;
+      curindent = first_indent;
+    } else {
+      curwidth = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * curline].cint;
+      curindent = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * curline - 1].cint;
+    }
+    adjust_tail = adjust_head;
+    just_box = hpack(q, curwidth, 0);
+    mem[just_box + 4].cint = curindent;
+    append_to_vlist(just_box);
 /* if adjust_head<>adjust_tail then l.17346 */
-    if (adjust_head != adjust_tail)
-    {
-      mem[tail].hh.v.RH = mem[adjust_head].hh.v.RH; 
-      tail = adjust_tail; 
-    } 
+    if (adjust_head != adjust_tail) {
+      mem[tail].hh.v.RH = mem[adjust_head].hh.v.RH;
+      tail = adjust_tail;
+    }
     adjust_tail = 0; /* adjust_tail:=null */
-    if (curline + 1 != best_line)
-    {
-      pen = eqtb[(hash_size + 3176)].cint; 
+    if (curline + 1 != best_line) {
+      pen = eqtb[(hash_size + 3176)].cint;
       if (curline == prev_graf + 1)
-      pen = pen + eqtb[(hash_size + 3168)].cint; 
+        pen = pen + eqtb[(hash_size + 3168)].cint;
       if (curline + 2 == best_line)
-      pen = pen + finalwidowpenalty; 
+        pen = pen + finalwidowpenalty;
       if (discbreak)
-      pen = pen + eqtb[(hash_size + 3171)].cint; 
-      if (pen != 0)
-      {
-  r = new_penalty(pen); 
-  mem[tail].hh.v.RH = r; 
-  tail = r; 
-      } 
-    } 
-    incr(curline); 
-    cur_p = mem[cur_p + 1].hh.v.LH; 
+        pen = pen + eqtb[(hash_size + 3171)].cint;
+      if (pen != 0) {
+        r = new_penalty(pen);
+        mem[tail].hh.v.RH = r;
+        tail = r;
+      }
+    }
+    incr(curline);
+    cur_p = mem[cur_p + 1].hh.v.LH;
     if (cur_p != 0)
-    if (! postdiscbreak)
-    {
-      r = temp_head; 
-      while(true){
-  q = mem[r].hh.v.RH; 
-  if (q == mem[cur_p + 1].hh.v.RH)
-  goto lab31; 
-  if ((q >= hi_mem_min)) 
-  goto lab31; 
-  if ((mem[q].hh.b0 < 9)) 
-  goto lab31; 
+      if (!postdiscbreak) {
+        r = temp_head;
+        while (true) {
+          q = mem[r].hh.v.RH;
+          if (q == mem[cur_p + 1].hh.v.RH)
+            goto lab31;
+          if ((q >= hi_mem_min))
+            goto lab31;
+          if ((mem[q].hh.b0 < 9))
+            goto lab31;
 /* change in tests here from 3.141 != 1 instead of == 2 */
-  if (mem[q].hh.b0 == 11)
-  if (mem[q].hh.b1 != 1)
-  goto lab31; 
-  r = q; 
-      } 
-      lab31: if (r != temp_head)
-      {
-  mem[r].hh.v.RH = 0; 
+          if (mem[q].hh.b0 == 11)
+            if (mem[q].hh.b1 != 1)
+              goto lab31;
+          r = q;
+        }
+lab31:
+        if (r != temp_head) {
+          mem[r].hh.v.RH = 0;
   flush_node_list(mem[temp_head].hh.v.RH); 
   mem[temp_head].hh.v.RH = q; 
       } 
@@ -795,7 +723,7 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
     while(p != 0){          /* 94/Mar/22 BUG FIX */
       {
 /*    append_charnode_to_t(character(p)); */ 
-  mem[t].hh.v.RH = get_avail (); 
+  mem[t].hh.v.RH = get_avail(); 
   t = mem[t].hh.v.RH; 
   mem[t].hh.b0 = hf; 
   mem[t].hh.b1 = mem[p].hh.b1; 
@@ -805,7 +733,7 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
   } 
   else if (cur_l < 256)
   {
-    mem[t].hh.v.RH = get_avail (); 
+    mem[t].hh.v.RH = get_avail(); 
     t = mem[t].hh.v.RH; 
     mem[t].hh.b0 = hf; 
     mem[t].hh.b1 = cur_l; 
@@ -873,7 +801,7 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
       rt_hit = true; 
   {
     if (interrupt != 0){
-      pause_for_instructions ();
+      pause_for_instructions();
     }
   } 
   switch(q.b2)  /* case op_byte(q) of */
@@ -897,7 +825,7 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
         if (j == n)
         bchar = 256; 
         else {
-    p = get_avail (); 
+    p = get_avail(); 
     mem[lig_stack + 1].hh.v.RH = p; 
     mem[p].hh.b1 = hu[j + 1]; 
     mem[p].hh.b0 = hf; 
@@ -974,7 +902,7 @@ small_number reconstitute_(small_number j, small_number n, halfword bchar, halfw
       else {
     
         {
-    mem[t].hh.v.RH = get_avail (); 
+    mem[t].hh.v.RH = get_avail(); 
     t = mem[t].hh.v.RH; 
     mem[t].hh.b0 = hf; 
     mem[t].hh.b1 = cur_r; 
@@ -1413,7 +1341,7 @@ void new_hyph_exceptions (void)
   halfword q; 
   str_number s, t; 
   pool_pointer u, v; 
-  scan_left_brace (); 
+  scan_left_brace(); 
   if (eqtb[(hash_size + 3213)].cint <= 0)
     cur_lang = 0; 
   else if (eqtb[(hash_size + 3213)].cint > 255)
@@ -1423,7 +1351,7 @@ void new_hyph_exceptions (void)
   p = 0; 
 
   while(true){
-    get_x_token (); 
+    get_x_token(); 
 
 lab21: switch(cur_cmd){
     case 11 : 
@@ -1433,7 +1361,7 @@ lab21: switch(cur_cmd){
       {
   if (n < 63)
   {
-    q = get_avail (); 
+    q = get_avail(); 
     mem[q].hh.v.RH = p; 
     mem[q].hh.v.LH = n; 
     p = q; 
@@ -1446,7 +1374,7 @@ lab21: switch(cur_cmd){
 	  print_err("Not a letter");
 	  help2("Letters in \\hyphenation words must have \\lccode>0.",
 		  "Proceed; I'll ignore the character I just read.");
-    error (); 
+    error(); 
   } 
   else if (n < 63)
   {
@@ -1457,7 +1385,7 @@ lab21: switch(cur_cmd){
       break; 
     case 16 : 
       {
-  scan_char_num (); 
+  scan_char_num(); 
   cur_chr = cur_val; 
   cur_cmd = 68; 
   goto lab21; 
@@ -1504,7 +1432,7 @@ lab21: switch(cur_cmd){
       } 
       while(j++ < for_end);
     } 
-    s = make_string (); 
+    s = make_string(); 
 /*    if (hyph_count == 607)*/
     if (hyph_count == hyphen_prime){
 /*      overflow(942, 607);  */ 
@@ -1560,7 +1488,7 @@ lab21: switch(cur_cmd){
   print_string("will be flushed");
   help2("Hyphenation exceptions must contain only letters",
 	  "and hyphens. But continue; I'll forgive and forget.");
-  error (); 
+  error(); 
     }
       break; 
   } /* end of switch */
@@ -1724,7 +1652,7 @@ halfword vert_break_(halfword p, scaled h, scaled d)
 			  "shrinkable glue, e.g., `\\vss' or `\\vskip 0pt minus 1fil'.",
 			  "Such glue doesn't belong there; but you can safely proceed,",
 			  "since the offensive shrinkability has been made finite.");
-  error (); 
+  error(); 
   r = new_spec(q); 
   mem[r].hh.b1 = 0; 
   delete_glue_ref(q); 
@@ -1772,7 +1700,7 @@ halfword vsplit_(eight_bits n, scaled h)
     print_esc("vbox");
 	help2("The box you are trying to split is an \\hbox.",
 		"I can't split such a box, so I'll leave it alone.");
-    error (); 
+    error(); 
     Result = 0; 
     return(Result); 
   } 
@@ -1861,7 +1789,7 @@ void freeze_page_specs_(small_number s)
 #ifdef STAT
   if (eqtb[(hash_size + 3196)].cint > 0)
   {
-    begin_diagnostic (); 
+    begin_diagnostic(); 
     print_nl("might split");  /*  */
     print_scaled(page_so_far[0]); 
     print_string(", max depth=");
@@ -1872,8 +1800,8 @@ void freeze_page_specs_(small_number s)
 } 
 void box_error_(eight_bits n)
 {
-    error (); 
-  begin_diagnostic (); 
+    error(); 
+  begin_diagnostic(); 
   print_nl("The following box has been deleted:");  /*  */
   show_box(eqtb[(hash_size + 1578) + n].hh.v.RH); 
   end_diagnostic(true); 
@@ -1944,7 +1872,7 @@ void fire_up_(halfword c)
   ensure_vbox(n); 
 /*    if box(n)=null then box(n):=new_null_box; l.19759 */
   if (eqtb[(hash_size + 1578) + n].hh.v.RH == 0)
-  eqtb[(hash_size + 1578) + n].hh.v.RH = new_null_box (); 
+  eqtb[(hash_size + 1578) + n].hh.v.RH = new_null_box(); 
   p = eqtb[(hash_size + 1578) + n].hh.v.RH + 5; 
   while(mem[p].hh.v.RH != 0)p = mem[p].hh.v.RH; 
   mem[r + 2].hh.v.RH = p; 
@@ -2099,19 +2027,19 @@ void fire_up_(halfword c)
 	help3("I've concluded that your \\output is awry; it never does",
 		"\\ship_out, so I'm shipping \box255 out myself. Next ",
 		"increase \\maxdeadcycles if you want me to be more patient!");
-    error (); 
+    error(); 
   } 
   else {
     output_active = true; 
     incr(dead_cycles); 
-    push_nest (); 
+    push_nest(); 
     mode = -1; 
     cur_list.aux_field.cint = ignore_depth; 
     mode_line = - (integer) line; 
     begin_token_list(eqtb[(hash_size + 1313)].hh.v.RH, 6); /* output */
     new_save_level(8); 
-    normal_paragraph (); 
-    scan_left_brace (); 
+    normal_paragraph(); 
+    scan_left_brace(); 
     return; 
   } 
   {

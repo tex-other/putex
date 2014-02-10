@@ -76,7 +76,7 @@
 
 #include <time.h>		// needed for time, struct tm etc.
 
-extern struct tm *localtime ();
+extern struct tm *localtime();
 
 /* Catch interrupts.  */
 #include <signal.h>		// needed for signal, SIGINT, SIG_IGN, SIG_ERR etc.
@@ -180,7 +180,7 @@ int main (int ac, char *av[])
 	jump_used = 0;
 	ret = setjmp(jumpbuffer);
 	if (ret == 0) {	// get here when setting up jumpbuffer
-		flag = main_program ();		// texbody in itex.c
+		flag = main_program();		// texbody in itex.c
 		if (trace_flag) {
 			sprintf(log_line, "EXITING at %s %d %d %d\n", "MAIN", flag, ret, jump_used);
 			show_line(log_line, 0);
@@ -330,7 +330,7 @@ void get_date_and_time (integer *minutes, integer *pday, integer *pmonth, intege
 		}
 	}
 #else
-    RETSIGTYPE (*old_handler) ();
+    RETSIGTYPE (*old_handler)();
 
     if ((old_handler = signal (SIGINT, catch_interrupt)) != SIG_DFL)
       (void) signal (SIGINT, old_handler);
@@ -1011,24 +1011,24 @@ void funny_core_dump () {
 #endif
 
 #ifdef MSDOS
-extern mf_pm_initscreen (), mf_pm_updatescreen ();
-extern mf_pm_blankrectangle (), mf_pm_paintrow ();
+extern mf_pm_initscreen (), mf_pm_updatescreen();
+extern mf_pm_blankrectangle (), mf_pm_paintrow();
 #endif
 
 
 #ifdef HP2627WIN
-extern mf_hp2627_initscreen (), mf_hp2627_updatescreen ();
-extern mf_hp2627_blankrectangle (), mf_hp2627_paintrow ();
+extern mf_hp2627_initscreen (), mf_hp2627_updatescreen();
+extern mf_hp2627_blankrectangle (), mf_hp2627_paintrow();
 #endif
 
 #ifdef SUNWIN
-extern mf_sun_initscreen (), mf_sun_updatescreen ();
-extern mf_sun_blankrectangle (), mf_sun_paintrow ();
+extern mf_sun_initscreen (), mf_sun_updatescreen();
+extern mf_sun_blankrectangle (), mf_sun_paintrow();
 #endif
 
 #ifdef TEKTRONIXWIN
-extern mf_tektronix_initscreen (), mf_tektronix_updatescreen ();
-extern mf_tektronix_blankrectangle (), mf_tektronix_paintrow ();
+extern mf_tektronix_initscreen (), mf_tektronix_updatescreen();
+extern mf_tektronix_blankrectangle (), mf_tektronix_paintrow();
 #endif
 
 #ifdef UNITERMWIN
@@ -1037,13 +1037,13 @@ extern mf_uniterm_blankrectangle(), mf_uniterm_paintrow();
 #endif
 
 #ifdef X10WIN
-extern mf_x10_initscreen (), mf_x10_updatescreen ();
-extern mf_x10_blankrectangle (), mf_x10_paintrow ();
+extern mf_x10_initscreen (), mf_x10_updatescreen();
+extern mf_x10_blankrectangle (), mf_x10_paintrow();
 #endif
 
 #ifdef X11WIN
-extern mf_x11_initscreen (), mf_x11_updatescreen ();
-extern mf_x11_blankrectangle (), mf_x11_paintrow ();
+extern mf_x11_initscreen (), mf_x11_updatescreen();
+extern mf_x11_blankrectangle (), mf_x11_paintrow();
 #endif
 
 
@@ -1055,10 +1055,10 @@ extern mf_x11_blankrectangle (), mf_x11_paintrow ();
 struct mfwin_sw
 {
   char *mfwsw_type;		/* Name of terminal a la TERMCAP.  */
-  int (*mfwsw_initscreen) ();
-  int (*mfwsw_updatescrn) ();
-  int (*mfwsw_blankrect) ();
-  int (*mfwsw_paintrow) ();
+  int (*mfwsw_initscreen)();
+  int (*mfwsw_updatescrn)();
+  int (*mfwsw_blankrect)();
+  int (*mfwsw_paintrow)();
 } mfwsw[] =
 
 /* Now we have the initializer for all the devices we support.  */

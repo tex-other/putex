@@ -575,7 +575,7 @@ unsigned int heap_dump (FILE *output, int verbose)
 /*  if ((n = _heapchk ()) != _HEAPOK) { */
   n = _HEAPOK;
 #ifdef SHOWHEAPERROR
-  n = _heapchk ();
+  n = _heapchk();
 #endif
   if (n != _HEAPOK) { 
     fprintf(stderr, "WARNING: Heap corrupted (%d)\n", n);
@@ -788,7 +788,7 @@ int allocate_tries (int trie_max)
   update_statistics ((int) trie_trc, nc, 0);
 /*  sprintf(log_line, "trie_size %d trie_max %d\n", trie_size, trie_max); */ /* debug */
   trie_size = trie_max;           /* BUG FIX 98/Jan/5 */
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return 0;               // success
 }
 #endif
@@ -857,7 +857,7 @@ int realloc_hyphen (int hyphen_prime)
     update_statistics ((int) hyph_list, nl, 0);
   }
   currentprime = hyphen_prime;
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return 0;               // success
 }
 #endif
@@ -925,7 +925,7 @@ memory_word *allocate_main_memory (int size)
     (current_mem_size + 1) * sizeof (memory_word));
 /*  current_mem_size = (mem_max - mem_start + 1); */
   current_mem_size = mem_max - mem_start;   /* total number of words - 1 */
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return zzzaa;             /* same as zmem, mem 94/Jan/24 */
 }
 #endif  /* end of ALLOCATEMAIN */
@@ -1031,7 +1031,7 @@ memory_word *realloc_main (int losize, int hisize)
   }
   if (mem_start != 0) zzzaa = mainmemory - mem_start; /* ??? sign ??? */
   else zzzaa = mainmemory;
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return zzzaa;
 }
 #endif
@@ -1089,7 +1089,7 @@ fmemoryword *realloc_font_info (int size)
   }
   update_statistics ((int) font_info, n, current_font_mem_size * sizeof(fmemoryword));
   current_font_mem_size = newsize;
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return font_info;
 }
 #endif
@@ -1141,7 +1141,7 @@ packed_ASCII_code *realloc_str_pool (int size)
     sprintf(log_line, "New Address %s == %d\n", "string pool", str_pool);
     show_line(log_line, 0);
   }
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return str_pool;
 }
 #endif
@@ -1193,7 +1193,7 @@ pool_pointer *realloc_str_start (int size)
     sprintf(log_line, "New Address %s == %d\n", "string start", str_start);
     show_line(log_line, 0);
   }
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return str_start;
 }
 #endif
@@ -1242,7 +1242,7 @@ int allocate_ini (int size)
     update_statistics ((int) trie_hash, nh, 0);
     update_statistics ((int) trie_taken, nt, 0);
 /*    trie_size = size; */ /* ??? */
-    if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+    if (trace_flag)  probe_show();     /* 94/Mar/25 */
     return 0;               // success
 }
 #endif
@@ -1293,7 +1293,7 @@ memory_word *realloc_save_stack (int size)
     sprintf(log_line, "New Address %s == %d\n", "save stack", save_stack);
     show_line(log_line, 0);
   }
-  if (trace_flag) probe_show ();      /* 94/Mar/25 */
+  if (trace_flag) probe_show();      /* 94/Mar/25 */
   return save_stack;
 }
 #endif
@@ -1344,7 +1344,7 @@ in_state_record *realloc_input_stack (int size)
     sprintf(log_line, "New Address %s == %d\n", "input stack", input_stack);
     show_line(log_line, 0);
   }
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return input_stack;
 }
 #endif
@@ -1395,7 +1395,7 @@ list_state_record *realloc_nest_stack (int size)
     sprintf(log_line, "New Address %s == %d\n", "nest stack", nest);
     show_line(log_line, 0);
   }
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return nest;
 }
 #endif
@@ -1446,7 +1446,7 @@ halfword *realloc_param_stack (int size)
     sprintf(log_line, "New Address %s == %d\n", "param stack", param_stack);
     show_line(log_line, 0);
   }
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return param_stack;
 }
 #endif
@@ -1502,7 +1502,7 @@ ASCII_code *realloc_buffer (int size)
     sprintf(log_line, "New Address %s == %d\n", "buffer", buffer);
     show_line(log_line, 0);
   }
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return buffer;
 }
 #endif
@@ -1528,7 +1528,7 @@ eight_bits *allocatedvibuf (int size)
     show_line(log_line, 0);
   }
   update_statistics ((int) dvi_buf, n, 0);
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return dvi_buf;
 }
 #endif
@@ -1554,7 +1554,7 @@ memory_word *allocatezeqtb (int k)
     show_line(log_line, 0);
   }
   update_statistics ((int) zeqtb, n, 0);
-  if (trace_flag)  probe_show ();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return zeqtb;
 }
 #endif
@@ -2456,7 +2456,7 @@ int analyze_flag (int c, char *optarg)
     case 'T': interaction = 3; /* tex mode */
               break;
     case 'K': backwardflag = true; /* 94/Jun/15 */
-              knuthify ();         /* revert to `standard' Knuth TeX */
+              knuthify();         /* revert to `standard' Knuth TeX */
               break;
     case 'L': c_style_flag = true; /* C style error msg 94/Mar/21 */
               break;
@@ -3261,7 +3261,7 @@ int init (int ac, char **av)
 
 /*   Print version *after* banner ? */ /* does this get in log file ? */
 
-  probe_memory ();             /* show top address */
+  probe_memory();             /* show top address */
   ini_max_address = max_address;       /* initial max address */
   if (trace_flag) show_maximums(stdout);
 #ifdef HEAPWALK

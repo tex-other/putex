@@ -95,7 +95,7 @@ void print_char_ (ASCII_code s)
 {
   if (s == eqtb[(hash_size + 3212)].cint)
     if (selector < pseudo) {
-      print_ln ();
+      print_ln();
       return;
     }
   switch (selector) {
@@ -119,14 +119,14 @@ void print_char_ (ASCII_code s)
       {
         (void) putc(Xchr(s), log_file);
         incr(file_offset);
-        if (file_offset == max_print_line) print_ln ();
+        if (file_offset == max_print_line) print_ln();
       }
       break;
     case term_only:
       {
         (void) show_char(Xchr(s));
         incr(term_offset); 
-        if (term_offset == max_print_line) print_ln ();
+        if (term_offset == max_print_line) print_ln();
       }
       break;
     case no_print:
@@ -176,7 +176,7 @@ void print_ (integer s)
       }
       if ((s == eqtb[(hash_size + 3212)].cint))
         if (selector < 20) {
-          print_ln ();
+          print_ln();
           return;
         }
       nl = eqtb[(hash_size + 3212)].cint; /* save eol */
@@ -239,7 +239,7 @@ void print_nl_ (char * s)
 {
   if (((term_offset > 0) && (odd(selector))) ||
       ((file_offset > 0) && (selector >= log_only)))
-    print_ln ();
+    print_ln();
   print_string(s);
 }
 /* sec 0063 */
@@ -384,7 +384,7 @@ void print_write_whatsit_(str_number s, halfword p)
 // now uses uses non-local goto (longjmp) 1999/Nov/7
 void jump_out (void) 
 {
-  close_files_and_terminate (); 
+  close_files_and_terminate(); 
   {
     int code;
 #ifndef _WINDOWS
@@ -423,7 +423,7 @@ void error (void)
   if (interaction == 3)
     while (true) {
 lab22:          /* loop */
-      clear_for_error_prompt ();
+      clear_for_error_prompt();
       {
         ;
         print_string("? ");
@@ -456,7 +456,7 @@ lab22:          /* loop */
             else
               c = (unsigned char) (c - 48);
             while (c > 0) {
-              get_token ();
+              get_token();
               decr(c);
             }
             cur_tok = s1;
@@ -466,7 +466,7 @@ lab22:          /* loop */
             OK_to_interrupt = true;
             help2("I have just deleted some text, as you asked.",
                 "You can now delete more, or insert, or whatever.");
-            show_context ();
+            show_context();
             goto lab22;     /* loop again */
           } 
           break; 
@@ -474,7 +474,7 @@ lab22:          /* loop */
 #ifdef DEBUG
         case 'D':
           {
-            debug_help ();
+            debug_help();
             goto lab22;       /* loop again */
           }
           break; 
@@ -493,7 +493,7 @@ lab22:          /* loop */
           {
             if (use_err_help)
             {
-              give_err_help ();
+              give_err_help();
               use_err_help = false;
             } else {
               if (help_ptr == 0)
@@ -502,7 +502,7 @@ lab22:          /* loop */
               do {
                 decr(help_ptr); 
                 print_string(help_line[help_ptr]);
-                print_ln ();
+                print_ln();
               } while (!(help_ptr == 0));
             }
             help4("Sorry, I already gave what help I could...",
@@ -514,7 +514,7 @@ lab22:          /* loop */
           break;
         case 'I':
           {
-            begin_file_reading ();
+            begin_file_reading();
             if (last > first + 1)
             {
               cur_input.loc_field = first + 1;
@@ -554,7 +554,7 @@ lab22:          /* loop */
               break; 
           } 
           print_string("...");
-          print_ln (); 
+          print_ln(); 
 #ifndef _WINDOWS
           fflush(stdout); 
 #endif
@@ -591,31 +591,31 @@ lab22:          /* loop */
   } 
   if (interaction > 0) decr(selector); 
   if (use_err_help) {
-    print_ln (); 
-    give_err_help (); 
+    print_ln(); 
+    give_err_help(); 
   } 
   else while(help_ptr > 0){
     decr(help_ptr); 
     print_nl(help_line[help_ptr]); 
   } 
-  print_ln (); 
+  print_ln(); 
   if (interaction > 0)incr(selector); 
-  print_ln (); 
+  print_ln(); 
 } 
 
 void fatal_error_(char * s)
 {
-  normalize_selector ();
+  normalize_selector();
   print_err("Emergency stop");
   help1(s); 
   {
     if (interaction == 3)interaction = 2; 
     if (log_opened){
-      error ();
+      error();
     }
     ;
 #ifdef DEBUG
-    if (interaction > 0)debug_help (); 
+    if (interaction > 0)debug_help(); 
 #endif /* DEBUG */
     history = 3; 
     jump_out();
@@ -625,7 +625,7 @@ void fatal_error_(char * s)
 /* sec 0094 */
 void overflow_(char * s, integer n)
 {
-  normalize_selector ();
+  normalize_selector();
   print_err("TeX capacity exceeded, sorry[");
   print_string(s); 
   print_char('=');
@@ -645,12 +645,12 @@ void overflow_(char * s, integer n)
   if (interaction == 3)
     interaction = 2;
   if (log_opened) {
-    error ();
+    error();
   }
   ;
 #ifdef DEBUG
   if (interaction > 0)
-    debug_help ();
+    debug_help();
 #endif
   history = 3;
   jump_out();
@@ -658,7 +658,7 @@ void overflow_(char * s, integer n)
 /* sec 0095 */
 void confusion_(char * s)
 {
-  normalize_selector (); 
+  normalize_selector(); 
   if (history < 2) {
     print_err("This can't happen(");
     print_string(s); 
@@ -1006,7 +1006,7 @@ void term_input (int promptstr, int nhelplines)
     print(buffer[k]); 
   while(k++ < for_end);
     } 
-  print_ln (); 
+  print_ln(); 
 #else
   decr(selector);     // shut off echo
   if (last != first)
@@ -1015,7 +1015,7 @@ void term_input (int promptstr, int nhelplines)
     print(buffer[k]); 
   while(k++ < for_end);
     } 
-  print_ln (); 
+  print_ln(); 
   incr(selector);     // reset selector again
 #endif
 }
@@ -1051,7 +1051,7 @@ void pause_for_instructions (void)
         "Try to insert some instructions for me (e.g.,`I\\showlists'),",
         "unless you just want to quit by typing `X'.");
     deletions_allowed = false;
-    error ();
+    error();
     deletions_allowed = true;
     interrupt = 0;
   }
@@ -1215,7 +1215,7 @@ void print_word_(memory_word w)
   print_scaled(w.cint); 
   print_char(' ');
   print_scaled(round(65536L * w.gr));
-  print_ln ();
+  print_ln();
   print_int(w.hh.v.LH);
   print_char('=');
   print_int(w.hh.b0);
@@ -1240,7 +1240,7 @@ void zprintfword(fmemoryword w)
   print_scaled(w.cint);
   print_char(' ');
   print_scaled(round(65536L * w.gr));
-  print_ln ();
+  print_ln();
   print_int(w.hh.v.LH);
   print_char('=');
   print_int(w.hh.b0);
@@ -1378,7 +1378,7 @@ void runaway (void)
         break;
     }
     print_char('?');
-    print_ln ();
+    print_ln();
 /*  p may be used without being initialized -- OK */
     show_token_list(mem[p].hh.v.RH, 0, error_line - 10); 
   }
@@ -1415,7 +1415,7 @@ halfword get_avail (void)
       }
 /* presumably now mem_end < mem_max - but need test in case allocation fails */
       if (mem_end >= mem_max) {
-        runaway ();
+        runaway();
         overflow("main memory size", mem_max + 1 - mem_min); /* main memory size */
         return 0;           // abort_flag set
       }
@@ -2163,21 +2163,21 @@ void print_subsidiary_data_(halfword p, ASCII_code c)
     {
       case 1:
         {
-          print_ln ();
-          print_current_string ();
+          print_ln();
+          print_current_string();
           print_fam_and_char(p);
         }
         break;
       case 2:
-        show_info ();
+        show_info();
         break;
       case 3:
         if (mem[p].hh.v.LH == 0)
         {
-          print_ln ();
-          print_current_string ();
+          print_ln();
+          print_current_string();
           print_string("{}");
-        } else show_info ();
+        } else show_info();
         break;
       default:
         ;
@@ -2290,8 +2290,8 @@ void show_node_list_(integer p)
 /*  while(p > mem_min){ */  /* was p>mem_min !!! line 3667 in tex.web */
   while(p != 0){      /* want p != null - bkph 93/Dec/15 */
                 /* NOTE: still not fixed in 3.14159 ! */
-    print_ln (); 
-    print_current_string (); 
+    print_ln(); 
+    print_current_string(); 
     if (p > mem_end)
     {
       print_string("Bad link, display aborted.");
