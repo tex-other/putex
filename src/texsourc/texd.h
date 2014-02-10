@@ -1655,7 +1655,7 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define every_vbox                    equiv(every_vbox_loc)
 #define every_job                     equiv(every_job_loc)
 #define every_cr                      equiv(every_cr_loc)
-#define err_help                      equiv(err_help_code)
+#define err_help                      equiv(err_help_loc)
 #define toks(a)                       equiv(toks_base + a)
 #define box(a)                        equiv(box_base + a)
 #define cur_font                      equiv(cur_font_loc)
@@ -1666,65 +1666,65 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define sf_code(a)                    equiv(sf_code_bas + a)
 #define math_code(a)                  equiv(math_code_base + a)
 /* sec 0236 */
-#define pretolerance_code             0
-#define tolerance_code                1
-#define line_penalty_code             2
-#define hyphen_penalty_code           3
-#define ex_hyphen_penalty_code        4
-#define club_penalty_code             5
-#define widow_penalty_code            6
-#define display_widow_penalty_code    7
-#define broken_penalty_code           8
-#define bin_op_penalty_code           9
-#define rel_penalty_code              10
-#define pre_display_penalty_code      11
-#define post_display_penalty_code     12
-#define inter_line_penalty_code       13
-#define double_hyphen_demerits_code   14
-#define final_hyphen_demerits_code    15
-#define adj_demerits_code             16
-#define mag_code                      17
-#define delimiter_factor_code         18
-#define looseness_code                19
-#define time_code                     20
-#define day_code                      21
-#define month_code                    22
-#define year_code                     23
-#define show_box_breadth_code         24
-#define show_box_depth_code           25
-#define hbadness_code                 26
-#define vbadness_code                 27
-#define pausing_code                  28
-#define tracing_online_code           29
-#define tracing_macros_code           30
-#define tracing_stats_code            31
-#define tracing_paragraphs_code       32
-#define tracing_pages_code            33
-#define tracing_output_code           34
-#define tracing_lost_chars_code       35
-#define tracing_commands_code         36
-#define tracing_restores_code         37
-#define uc_hyph_code                  38
-#define output_penalty_code           39
-#define max_dead_cycles_code          40
-#define hang_after_code               41
-#define floating_penalty_code         42
-#define global_defs_code              43
-#define cur_fam_code                  44
-#define escape_char_code              45
-#define default_hyphen_char_code      46
-#define default_skew_char_code        47
-#define end_line_char_code            48
-#define new_line_char_code            49
-#define language_code                 50
-#define left_hyphen_min_code          51
-#define right_hyphen_min_code         52
-#define holding_inserts_code          53
-#define error_context_lines_code      54
+#define pretolerance_code             0  // 3163
+#define tolerance_code                1  // 3164
+#define line_penalty_code             2  // 3165
+#define hyphen_penalty_code           3  // 3166
+#define ex_hyphen_penalty_code        4  // 3167
+#define club_penalty_code             5  // 3168
+#define widow_penalty_code            6  // 3169
+#define display_widow_penalty_code    7  // 3170
+#define broken_penalty_code           8  // 3171
+#define bin_op_penalty_code           9  // 3172
+#define rel_penalty_code              10 // 3173
+#define pre_display_penalty_code      11 // 3174
+#define post_display_penalty_code     12 // 3175
+#define inter_line_penalty_code       13 // 3176
+#define double_hyphen_demerits_code   14 // 3177
+#define final_hyphen_demerits_code    15 // 3178
+#define adj_demerits_code             16 // 3179
+#define mag_code                      17 // 3180
+#define delimiter_factor_code         18 // 3181
+#define looseness_code                19 // 3182
+#define time_code                     20 // 3183
+#define day_code                      21 // 3184
+#define month_code                    22 // 3185
+#define year_code                     23 // 3186
+#define show_box_breadth_code         24 // 3187
+#define show_box_depth_code           25 // 3188
+#define hbadness_code                 26 // 3189
+#define vbadness_code                 27 // 3190
+#define pausing_code                  28 // 3191
+#define tracing_online_code           29 // 3192
+#define tracing_macros_code           30 // 3193
+#define tracing_stats_code            31 // 3194
+#define tracing_paragraphs_code       32 // 3195
+#define tracing_pages_code            33 // 3196
+#define tracing_output_code           34 // 3197
+#define tracing_lost_chars_code       35 // 3198
+#define tracing_commands_code         36 // 3199 
+#define tracing_restores_code         37 // 3200
+#define uc_hyph_code                  38 // 3201
+#define output_penalty_code           39 // 3202 NOT USED.
+#define max_dead_cycles_code          40 // 3203
+#define hang_after_code               41 // 3204
+#define floating_penalty_code         42 // 3205
+#define global_defs_code              43 // 3206
+#define cur_fam_code                  44 // 3207
+#define escape_char_code              45 // 3208
+#define default_hyphen_char_code      46 // 3209
+#define default_skew_char_code        47 // 3210
+#define end_line_char_code            48 // 3211
+#define new_line_char_code            49 // 3212
+#define language_code                 50 // 3213
+#define left_hyphen_min_code          51 // 3214
+#define right_hyphen_min_code         52 // 3215
+#define holding_inserts_code          53 // 3216
+#define error_context_lines_code      54 // 3217
 #define int_pars                      55
-#define count_base                    int_base + int_pars
-#define del_code_base                 count_base + 256
-#define dimen_base                    del_code_base + 256
+#define count_base                    int_base + int_pars // 3218
+#define del_code_base                 count_base + 256    // 
+#define dimen_base                    del_code_base + 256 // 3730
 // #
 #define del_code(a)                   eqtb[del_code_base + a].cint
 #define count(a)                      eqtb[count_base + a].cint
@@ -1785,33 +1785,33 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define holding_inserts               int_par(holding_inserts_code)
 #define error_context_lines           int_par(error_context_lines_code)
 /* sec 0247 */
-#define par_indent_code               0
-#define math_surround_code            1
-#define line_skip_limit_code          2
-#define hsize_code                    3
-#define vsize_code                    4
-#define max_depth_code                5
-#define split_max_depth_code          6
-#define box_max_depth_code            7
-#define hfuzz_code                    8
-#define vfuzz_code                    9
-#define delimiter_shortfall_code      10
-#define null_delimiter_space_code     11
-#define script_space_code             12
-#define pre_display_size_code         13
-#define display_width_code            14
-#define display_indent_code           15
-#define overfull_rule_code            16
-#define hang_indent_code              17
-#define h_offset_code                 18
-#define v_offset_code                 19
-#define emergency_stretch_code        20
+#define par_indent_code               0  // 3730
+#define math_surround_code            1  // 3731
+#define line_skip_limit_code          2  // 3732
+#define hsize_code                    3  // 3733
+#define vsize_code                    4  // 3734
+#define max_depth_code                5  // 3735
+#define split_max_depth_code          6  // 3736
+#define box_max_depth_code            7  // 3737
+#define hfuzz_code                    8  // 3738
+#define vfuzz_code                    9  // 3739
+#define delimiter_shortfall_code      10 // 3740
+#define null_delimiter_space_code     11 // 3741
+#define script_space_code             12 // 3742
+#define pre_display_size_code         13 // 3743
+#define display_width_code            14 // 3744
+#define display_indent_code           15 // 3745
+#define overfull_rule_code            16 // 3746
+#define hang_indent_code              17 // 3747
+#define h_offset_code                 18 // 3748
+#define v_offset_code                 19 // 3749
+#define emergency_stretch_code        20 // 3750
 #define dimen_pars                    21
 #define scaled_base                   dimen_base + dimen_pars
 #define eqtb_size                     scaled_base + 255
 // #
-#define dimen(a)                      eqtb[scaled_base + a].sc
-#define dimen_par(a)                  eqtb[dimen_base + a].sc
+#define dimen(a)                      eqtb[scaled_base + a].cint
+#define dimen_par(a)                  eqtb[dimen_base + a].cint
 #define par_indent                    dimen_par(par_indent_code)
 #define math_surround                 dimen_par(math_surround_code)
 #define line_skip_limit               dimen_par(line_skip_limit_code)
@@ -1845,7 +1845,9 @@ extern void append_char(ASCII_code c);
 #define help5(...)  tex_help(5, __VA_ARGS__)
 #define help6(...)  tex_help(6, __VA_ARGS__)
 /********BINDING WITH LIBHARU*********/
-EXTERN HPDF_Doc yandy_pdf;
+/*
+EXTERN HPDF_Doc  yandy_pdf;
 EXTERN HPDF_Page yandy_page;
 EXTERN HPDF_Font yandy_font;
+*/
 /********BINDING WITH LIBHARU*********/

@@ -178,7 +178,7 @@ lab22:
             mem[r + 3].cint = mem[r + 3].cint + best_height_plus_depth;
             ;
 #ifdef STAT
-            if (eqtb[(hash_size + 3196)].cint > 0)
+            if (tracing_pages > 0)
             {
               begin_diagnostic(); 
               print_nl("% split");
@@ -242,7 +242,7 @@ lab22:
         c = 1073741823L;  /* 2^30 - 1 */
       ;
 #ifdef STAT
-      if (eqtb[(hash_size + 3196)].cint > 0)
+      if (tracing_pages > 0)
       {
         begin_diagnostic(); 
         print_nl("%");
@@ -419,7 +419,7 @@ bool its_all_over (void)
       mem[tail].hh.v.RH = new_null_box(); 
       tail = mem[tail].hh.v.RH; 
     } 
-    mem[tail + 1].cint = eqtb[(hash_size + 3733)].cint; 
+    mem[tail + 1].cint = hsize; 
     {
       mem[tail].hh.v.RH = new_glue(8); 
       tail = mem[tail].hh.v.RH; 
@@ -569,11 +569,11 @@ void extra_right_brace (void)
 void normal_paragraph (void) 
 { 
 /* if looseness<>0 then eq_word_define(int_base+looseness_code,0); */
-  if (eqtb[(hash_size + 3182)].cint != 0)
+  if (looseness != 0)
     eq_word_define((hash_size + 3182), 0);
-  if (eqtb[(hash_size + 3747)].cint != 0)
+  if (hang_indent != 0)
     eq_word_define((hash_size + 3747), 0);
-  if (eqtb[(hash_size + 3204)].cint != 1)
+  if (hang_after != 1)
     eq_word_define((hash_size + 3204), 1);
   if (eqtb[(hash_size + 1312)].hh.v.RH != 0)
     eq_define((hash_size + 1312), 118, 0); 
@@ -828,21 +828,21 @@ void new_graf_(bool indented)
   mode = 102; 
   space_factor = 1000; 
 /* changes here since 3.141 */
-  if (eqtb[(hash_size + 3213)].cint <= 0)
+  if (language <= 0)
   cur_lang = 0; 
-  else if (eqtb[(hash_size + 3213)].cint > 255)
+  else if (language > 255)
   cur_lang = 0; 
-  else cur_lang = eqtb[(hash_size + 3213)].cint; 
+  else cur_lang = language; 
   clang = cur_lang; 
-  prev_graf =(norm_min(eqtb[(hash_size + 3214)].cint)* 64 + 
-     norm_min(eqtb[(hash_size + 3215)].cint)) * 65536L + cur_lang; 
+  prev_graf =(norm_min(left_hyphen_min)* 64 + 
+     norm_min(right_hyphen_min)) * 65536L + cur_lang; 
 /* eqtb ??? hash_size ? hash_size + hash_extra ? norm_min etc */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (indented)
   {
     tail = new_null_box(); 
     mem[head].hh.v.RH = tail; 
-    mem[tail + 1].cint = eqtb[(hash_size + 3730)].cint; 
+    mem[tail + 1].cint = par_indent; 
   } 
   if (eqtb[(hash_size + 1314)].hh.v.RH != 0)  /* everypar */
     begin_token_list(eqtb[(hash_size + 1314)].hh.v.RH, 7); 
@@ -858,7 +858,7 @@ void indent_in_hmode (void)
   if (cur_chr > 0)
   {
     p = new_null_box(); 
-    mem[p + 1].cint = eqtb[(hash_size + 3730)].cint; 
+    mem[p + 1].cint = par_indent; 
     if (abs(mode)== 102)
     space_factor = 1000; 
     else {
@@ -901,7 +901,7 @@ void end_graf (void)
   {
     if (head == tail)
     pop_nest(); 
-    else line_break(eqtb[(hash_size + 3169)].cint); 
+    else line_break(widow_penalty); 
     normal_paragraph(); 
     error_count = 0; 
   } 
@@ -1315,7 +1315,7 @@ void init_math (void)
       pop_nest();
       w = -1073741823L; /* - (2^30 - 1) */
     } else {
-      line_break(eqtb[(hash_size + 3170)].cint); 
+      line_break(display_widow_penalty); 
       v = mem[just_box + 4].cint + 2 * font_info[6 + param_base[eqtb[(hash_size + 1834)].hh.v.RH]].cint;
       w = -1073741823L;  /* - (2^30 - 1) */
       p = mem[just_box + 5].hh.v.RH; 
@@ -1388,16 +1388,16 @@ lab45:
 lab30:; 
     } 
     if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
-      if ((eqtb[(hash_size + 3747)].cint != 0) &&
-        (((eqtb[(hash_size + 3204)].cint >= 0) &&
-        (prev_graf + 2 > eqtb[(hash_size + 3204)].cint)) ||(prev_graf + 1 < - (integer) eqtb[(hash_size + 3204)].cint))) {
-          l = eqtb[(hash_size + 3733)].cint - abs(eqtb[(hash_size + 3747)].cint); 
-          if (eqtb[(hash_size + 3747)].cint > 0)
-            s = eqtb[(hash_size + 3747)].cint; 
+      if ((hang_indent != 0) &&
+        (((hang_after >= 0) &&
+        (prev_graf + 2 > hang_after)) ||(prev_graf + 1 < - (integer) hang_after))) {
+          l = hsize - abs(hang_indent); 
+          if (hang_indent > 0)
+            s = hang_indent; 
           else
             s = 0;
       } else {
-        l = eqtb[(hash_size + 3733)].cint;
+        l = hsize;
         s = 0; 
       }
     else {
@@ -1509,9 +1509,8 @@ lab21:
   mem[p].hh.b1 = c % 256;
 /* mem[p].hh.b1 = c & 255; */ /* last 8 bits */
   if ((c >= 28672) && /* 32768 - 4096 ??? if (c>=var_code) and ... */
-    ((eqtb[(hash_size + 3207)].cint >= 0) &&
-    (eqtb[(hash_size + 3207)].cint < 16)))
-    mem[p].hh.b0 = eqtb[(hash_size + 3207)].cint; 
+    ((cur_fam >= 0) && (cur_fam < 16)))
+    mem[p].hh.b0 = cur_fam; 
   else
     mem[p].hh.b0 =(c / 256)% 16;
 /*  else mem[p].hh.b0 =(c >> 8)& 15; */ /* 4 bits to left */
@@ -1537,8 +1536,8 @@ void set_math_char_(integer c)
 /*    mem[p + 1].hh.b0 =(c >> 8)& 15;  */ /* 4 bits to left */
     if (c >= 28672)  /* 32768 - 4096 ? */
     {
-      if (((eqtb[(hash_size + 3207)].cint >= 0) && (eqtb[(hash_size + 3207)].cint < 16)))
-        mem[p + 1].hh.b0 = eqtb[(hash_size + 3207)].cint;
+      if (((cur_fam >= 0) && (cur_fam < 16)))
+        mem[p + 1].hh.b0 = cur_fam;
       mem[p].hh.b0 = 16;
     } else
       mem[p].hh.b0 = 16 +(c / 4096);  
@@ -1643,9 +1642,9 @@ void math_ac (void)
   mem[tail + 4].hh.b1 = cur_val % 256;
 /*  mem[tail + 4].hh.b1 = cur_val & 255; */
   if ((cur_val >= 28672) && /* 32768 - 4096 ? */
-    ((eqtb[(hash_size + 3207)].cint >= 0) &&
-    (eqtb[(hash_size + 3207)].cint < 16)))
-    mem[tail + 4].hh.b0 = eqtb[(hash_size + 3207)].cint;
+    ((cur_fam >= 0) &&
+    (cur_fam < 16)))
+    mem[tail + 4].hh.b0 = cur_fam;
   else
     mem[tail + 4].hh.b0 =(cur_val / 256) % 16;
 /*  else mem[tail + 4].hh.b0 =(cur_val >> 8)& 15; */
@@ -1761,7 +1760,7 @@ void package_(small_number c)
   scaled h;
   halfword p;
   scaled d;
-  d = eqtb[(hash_size + 3737)].cint;
+  d = box_max_depth;
   unsave();
   save_ptr = save_ptr - 3;
   if (mode == -102)

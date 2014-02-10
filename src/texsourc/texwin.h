@@ -58,4 +58,4 @@ MYLIBAPI int yandytex(HWND, char *, int (*) (char *, char *, char *));
 //////////////////////////////////////////////////////////
 
 extern char log_line[];
-#include "hpdf.h"
+//#include "hpdf.h"

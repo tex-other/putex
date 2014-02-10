@@ -73,7 +73,7 @@ void unsave (void)
     eq_destroy(save_stack[save_ptr]); 
   ;
 #ifdef STAT
-    if (eqtb[(hash_size + 3200)].cint > 0)
+    if (tracing_restores > 0)
     restore_trace(p, "retaining");
 #endif /* STAT */
   } 
@@ -82,7 +82,7 @@ void unsave (void)
     eqtb[p]= save_stack[save_ptr]; 
   ;
 #ifdef STAT
-    if (eqtb[(hash_size + 3200)].cint > 0)
+    if (tracing_restores > 0)
     restore_trace(p, "restoring");
 #endif /* STAT */
   } else if (xeq_level[p]!= 1)
@@ -91,14 +91,14 @@ void unsave (void)
     xeq_level[p]= l;     /* l may be used without having been ... */
   ;
 #ifdef STAT
-    if (eqtb[(hash_size + 3200)].cint > 0)
+    if (tracing_restores > 0)
     restore_trace(p, "restoring");
 #endif /* STAT */
   } 
   else {
   ;
 #ifdef STAT
-    if (eqtb[(hash_size + 3200)].cint > 0)
+    if (tracing_restores > 0)
     restore_trace(p, "retaining");
 #endif /* STAT */
   } 
@@ -115,10 +115,10 @@ void unsave (void)
 /* This is where the old tex2.c used to start */
 void prepare_mag (void) 
 {
-  if ((mag_set > 0)&&(eqtb[(hash_size + 3180)].cint != mag_set)) 
+  if ((mag_set > 0) && (mag != mag_set)) 
   {
     print_err("Incompatible magnification(");
-    print_int(eqtb[(hash_size + 3180)].cint); 
+    print_int(mag); 
     print_string(");");
     print_nl(" the previous value will be retained");
     help2("I can handle only one magnification ratio per job.",
@@ -126,15 +126,13 @@ void prepare_mag (void)
     int_error(mag_set); 
     geq_word_define((hash_size + 3180), mag_set); 
   } 
-  if ((eqtb[(hash_size + 3180)].cint <= 0)||
-    (eqtb[(hash_size + 3180)].cint > 32768L)) 
-  {
+  if ((mag <= 0) || (mag > 32768L)) {
     print_err("Illegal magnification has been changed to 1000");
     help1("The magnification ratio must be between 1 and 32768.");
-    int_error(eqtb[(hash_size + 3180)].cint); 
+    int_error(mag); 
     geq_word_define((hash_size + 3180), 1000); 
   } 
-  mag_set = eqtb[(hash_size + 3180)].cint; 
+  mag_set = mag; 
 } 
 void token_show_ (halfword p)  
 {
@@ -194,7 +192,7 @@ void show_context (void)
     if ((cur_input.name_field > 17)||(base_ptr == 0)) 
     bottomline = true; 
     if ((base_ptr == input_ptr)|| bottomline ||
-    (nn < eqtb[(hash_size + 3217)].cint)) 
+    (nn < error_context_lines)) 
     {
 /* begin if (base_ptr=input_ptr) or (state<>token_list) or
    (token_type<>backed_up) or (loc<>null) then
@@ -245,7 +243,7 @@ void show_context (void)
       selector = 20; 
       trick_count = 1000000L; 
     } 
-    if (buffer[cur_input.limit_field]== eqtb[(hash_size + 3211)].cint)
+    if (buffer[cur_input.limit_field] == end_line_char)
     j = cur_input.limit_field; 
     else j = cur_input.limit_field + 1; 
     if (j > 0)
@@ -390,9 +388,9 @@ void show_context (void)
   incr(nn); 
       } 
     } 
-    else if (nn == eqtb[(hash_size + 3217)].cint)
+    else if (nn == error_context_lines)
     {
-      print_nl("...");      /*  */
+      print_nl("...");
       incr(nn); 
     } 
     if (bottomline)
@@ -436,7 +434,7 @@ void begin_token_list_ (halfword p, quarterword t)
     else {
   
       cur_input.loc_field = mem[p].hh.v.RH; 
-      if (eqtb[(hash_size + 3193)].cint > 1)
+      if (tracing_macros > 1)
       {
   begin_diagnostic(); 
   print_nl("");   /* */
@@ -717,7 +715,7 @@ void firm_up_the_line (void)
 { 
   integer k; 
   cur_input.limit_field = last; 
-  if (eqtb[(hash_size + 3191)].cint > 0)
+  if (pausing > 0)
     if (interaction > 1) {
     ; 
       print_ln(); 
@@ -778,7 +776,7 @@ void macro_call (void)
   refcount = cur_chr; 
   r = mem[refcount].hh.v.RH; 
   n = 0; 
-  if (eqtb[(hash_size + 3193)].cint > 0)
+  if (tracing_macros > 0)
   {
     begin_diagnostic(); 
     print_ln(); 
@@ -1017,7 +1015,7 @@ void macro_call (void)
   } 
   else pstack[n]= mem[temp_head].hh.v.RH; 
   incr(n); 
-  if (eqtb[(hash_size + 3193)].cint > 0)
+  if (tracing_macros > 0)
   {
     begin_diagnostic(); 
     print_nl(matchchr); /* matchchar may be used without ... */
@@ -1096,7 +1094,7 @@ void expand (void)
   backupbackup = mem[mem_top - 13].hh.v.RH; 
   if (cur_cmd < 111)
   {
-    if (eqtb[(hash_size + 3199)].cint > 1)
+    if (tracing_commands > 1)
     show_cur_cmd_chr(); 
     switch(cur_cmd)
     {case 110 : 
@@ -2166,11 +2164,11 @@ lab20:
         check_outer_validity(); 
         goto lab20; 
       } 
-      if ((eqtb[(hash_size + 3211)].cint < 0)||
-        (eqtb[(hash_size + 3211)].cint > 255)) 
+      if ((end_line_char < 0)||
+        (end_line_char > 255)) 
         decr(cur_input.limit_field); 
 /*    long to unsigned char ... */
-      else buffer[cur_input.limit_field]= eqtb[(hash_size + 3211)].cint; 
+      else buffer[cur_input.limit_field] = end_line_char; 
       first = cur_input.limit_field + 1; 
       cur_input.loc_field = cur_input.start_field; 
     } 
@@ -2186,8 +2184,8 @@ lab20:
       } 
       if (selector < 18) open_log_file(); 
       if (interaction > 1){
-        if ((eqtb[(hash_size + 3211)].cint < 0)||
-          (eqtb[(hash_size + 3211)].cint > 255)
+        if ((end_line_char < 0)||
+          (end_line_char > 255)
         )
           incr(cur_input.limit_field); 
         if (cur_input.limit_field == cur_input.start_field)
@@ -2200,12 +2198,12 @@ lab20:
           term_input(42, 0); 
         } 
         cur_input.limit_field = last; 
-        if ((eqtb[(hash_size + 3211)].cint < 0)||
-          (eqtb[(hash_size + 3211)].cint > 255)
+        if ((end_line_char < 0)||
+          (end_line_char > 255)
         )
           decr(cur_input.limit_field); 
 /*    long to unsigned char ... */
-        else buffer[cur_input.limit_field]= eqtb[(hash_size + 3211)].cint; 
+        else buffer[cur_input.limit_field]= end_line_char; 
         first = cur_input.limit_field + 1; 
         cur_input.loc_field = cur_input.start_field; 
       } 

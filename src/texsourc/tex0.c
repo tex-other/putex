@@ -40,7 +40,6 @@ void print_err (const char * s)
     print_nl("! ");
   print_string(s);
 }
-
 void tex_help (unsigned int n, ...)
 {
   unsigned int i;
@@ -55,6 +54,7 @@ void tex_help (unsigned int n, ...)
 }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
+/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 // print newline
 /* sec 0058 */
 void print_ln (void)
@@ -93,7 +93,7 @@ void print_ln (void)
 /* sec 0059 */
 void print_char_ (ASCII_code s)
 {
-  if (s == eqtb[(hash_size + 3212)].cint)
+  if (s == new_line_char)
     if (selector < pseudo) {
       print_ln();
       return;
@@ -174,13 +174,13 @@ void print_ (integer s)
         print_char(s);
         return;
       }
-      if ((s == eqtb[(hash_size + 3212)].cint))
+      if ((s == new_line_char))
         if (selector < 20) {
           print_ln();
           return;
         }
-      nl = eqtb[(hash_size + 3212)].cint; /* save eol */
-      eqtb[(hash_size + 3212)].cint = -1; 
+      nl = new_line_char; /* save eol */
+      new_line_char = -1; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /*    if (!show_in_hex && s < 256)  */      /* show control chars also ?? */
       if (!show_in_hex && s < 256 && s >= 32) {      /* 94/Jan/26 */
@@ -203,7 +203,7 @@ void print_ (integer s)
           incr(j); 
         } 
       }
-      eqtb[(hash_size + 3212)].cint = nl; /* restore eol */
+      new_line_char = nl; /* restore eol */
       return; 
     }
 /*  we get here with s > 256 - i.e. not a single character */
@@ -247,7 +247,7 @@ void print_nl_ (char * s)
 void print_esc_ (char * s)
 {
   integer c;
-  c = eqtb[(hash_size + 3208)].cint;
+  c = escape_char;
   if (c >= 0)
     if (c < 256) print(c);
   //slow_print(s);

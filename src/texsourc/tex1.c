@@ -26,8 +26,8 @@
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 void show_box_(halfword p)
 {
-  depth_threshold = eqtb[(hash_size + 3188)].cint;
-  breadth_max = eqtb[(hash_size + 3187)].cint;
+  depth_threshold = show_box_depth;
+  breadth_max = show_box_breadth;
   if (breadth_max <= 0)
     breadth_max = 5; 
 #ifdef ALLOCATESTRING
@@ -755,7 +755,7 @@ void print_param_(integer n)
 void begin_diagnostic (void)
 {
   old_setting = selector;
-  if ((eqtb[(hash_size + 3192)].cint <= 0) && (selector == 19)) {
+  if ((tracing_online <= 0) && (selector == 19)) {
     decr(selector);
     if (history == 0) history = 1;
   }

@@ -418,30 +418,30 @@ void line_break_ (integer finalwidowpenalty)
   minimal_demerits[1]= 1073741823L; 
   minimal_demerits[0]= 1073741823L; 
   if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
-  if (eqtb[(hash_size + 3747)].cint == 0)
+  if (hang_indent == 0)
   {
     last_special_line = 0; 
-    second_width = eqtb[(hash_size + 3733)].cint; 
+    second_width = hsize; 
     second_indent = 0; 
   } 
   else { 
-    last_special_line = abs(eqtb[(hash_size + 3204)].cint); 
-    if (eqtb[(hash_size + 3204)].cint < 0)
+    last_special_line = abs(hang_after); 
+    if (hang_after < 0)
     {
-      first_width = eqtb[(hash_size + 3733)].cint -
-		  abs(eqtb[(hash_size + 3747)].cint); 
-      if (eqtb[(hash_size + 3747)].cint >= 0)
-      first_indent = eqtb[(hash_size + 3747)].cint; 
+      first_width = hsize -
+		  abs(hang_indent); 
+      if (hang_indent >= 0)
+      first_indent = hang_indent; 
       else first_indent = 0; 
-      second_width = eqtb[(hash_size + 3733)].cint; 
+      second_width = hsize; 
       second_indent = 0; 
     } else {
-      first_width = eqtb[(hash_size + 3733)].cint; 
+      first_width = hsize; 
       first_indent = 0; 
-      second_width = eqtb[(hash_size + 3733)].cint -
-		   abs(eqtb[(hash_size + 3747)].cint); 
-      if (eqtb[(hash_size + 3747)].cint >= 0)
-      second_indent = eqtb[(hash_size + 3747)].cint; 
+      second_width = hsize -
+		   abs(hang_indent); 
+      if (hang_indent >= 0)
+      second_indent = hang_indent; 
       else second_indent = 0; 
     } 
   } 
@@ -451,18 +451,18 @@ void line_break_ (integer finalwidowpenalty)
     second_indent = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * last_special_line + 1].cint; 
   } 
 /* if looseness=0 then easy_line:=last_special_line */
-  if (eqtb[(hash_size + 3182)].cint == 0)
+  if (looseness == 0)
   easyline = last_special_line; 
 /*  else easyline = 262143L;  */ /* NO! */
   else easyline = empty_flag; 
 /* threshold:=pretolerance; */
-  threshold = eqtb[(hash_size + 3163)].cint; 
+  threshold = pretolerance; 
   if (threshold >= 0)
   {
 	;
 #ifdef STAT
 /*   if tracing_paragraphs>0 then */
-    if (eqtb[(hash_size + 3195)].cint > 0)
+    if (tracing_paragraphs > 0)
     {
       begin_diagnostic(); 
       print_nl("@firstpass");
@@ -474,13 +474,13 @@ void line_break_ (integer finalwidowpenalty)
   } 
   else {
 /*  threshold:=tolerance; second_pass:=true; */      
-    threshold = eqtb[(hash_size + 3164)].cint; 
+    threshold = tolerance; 
     second_pass = true; 
 /*   final_pass:=(emergency_stretch<=0); */
-    final_pass =(eqtb[(hash_size + 3750)].cint <= 0); 
+    final_pass =(emergency_stretch <= 0); 
 	;
 #ifdef STAT
-    if (eqtb[(hash_size + 3195)].cint > 0)
+    if (tracing_paragraphs > 0)
     begin_diagnostic(); 
 #endif /* STAT */
   } 
@@ -619,7 +619,7 @@ void line_break_ (integer finalwidowpenalty)
 		if (eqtb[(hash_size + 2139) + c].hh.v.RH != 0)
 /*		signed unsigned mismatch ? (c is unsigned) */
 		if ((eqtb[(hash_size + 2139) + c].hh.v.RH == c)|| 
-			(eqtb[(hash_size + 3201)].cint > 0)) 
+			(uc_hyph > 0)) 
 		goto lab32; 
 		else goto lab31; 
 		lab22: prevs = s; 
@@ -754,9 +754,8 @@ void line_break_ (integer finalwidowpenalty)
 	  s = mem[cur_p + 1].hh.v.LH; 
 	  disc_width = 0; 
 	  if (s == 0)
-	  try_break(eqtb[(hash_size + 3167)].cint, 1); 
+	  try_break(ex_hyphen_penalty, 1); 
 	  else {
-	      
 	    do {
 		if ((s >= hi_mem_min)) 
 	      {
@@ -789,7 +788,7 @@ void line_break_ (integer finalwidowpenalty)
 	      s = mem[s].hh.v.RH; 
 	    } while(!(s == 0)); 
 	    active_width[1]= active_width[1]+ disc_width; 
-	    try_break(eqtb[(hash_size + 3166)].cint, 1); 
+	    try_break(hyphen_penalty, 1); 
 	    active_width[1]= active_width[1]- disc_width; 
 	  } 
 	  r = mem[cur_p].hh.b1; 
@@ -880,7 +879,7 @@ void line_break_ (integer finalwidowpenalty)
 	} while(!(r == active)); 
 	best_line = mem[best_bet + 1].hh.v.LH; 
 /*  if looseness=0 then goto done; */
-	if (eqtb[(hash_size + 3182)].cint == 0){
+	if (looseness == 0){
 /*		if (final_pass && eqtb[(hash_size + 3750)].cint > 0){ */
 /*			paragraph_failed++; */
 /*		} */
@@ -898,10 +897,8 @@ void line_break_ (integer finalwidowpenalty)
 	    ); 
 /*   if ((line_diff<actual_looseness)and(looseness<=line_diff))or@|
         ((line_diff>actual_looseness)and(looseness>=line_diff)) then */
-	      if (((line_diff < actual_looseness)&&
-				(eqtb[(hash_size + 3182)].cint 
-	      <= line_diff)) ||((line_diff > actual_looseness)&&
-				(eqtb[(hash_size + 3182)].cint >= line_diff)))
+	      if (((line_diff < actual_looseness) && (looseness <= line_diff)) ||
+          ((line_diff > actual_looseness) && (looseness >= line_diff)))
 	      {
 		best_bet = r; 
 		actual_looseness = line_diff; 
@@ -920,7 +917,7 @@ void line_break_ (integer finalwidowpenalty)
 	} 
 /*  if (actual_looseness=looseness)or final_pass then goto done; */
 /*	if ((actual_looseness == eqtb[(hash_size + 3182)].cint)|| final_pass)*/
-	if ((actual_looseness == eqtb[(hash_size + 3182)].cint)) {
+	if ((actual_looseness == looseness)) {
 		goto lab30;
 	}
 	if (final_pass){
@@ -946,26 +943,26 @@ void line_break_ (integer finalwidowpenalty)
     {
 	;
 #ifdef STAT
-      if (eqtb[(hash_size + 3195)].cint > 0)
-      print_nl("@second_pass");			/*  */
+      if (tracing_paragraphs > 0)
+      print_nl("@secondpass");			/*  */
 #endif /* STAT */
 /* threshold:=tolerance; */
-      threshold = eqtb[(hash_size + 3164)].cint; 
+      threshold = tolerance; 
       second_pass = true; 
 	  second_pass_count++;					/* 96 Feb 9 */
 /*   final_pass:=(emergency_stretch<=0); */
-      final_pass =(eqtb[(hash_size + 3750)].cint <= 0); 
+      final_pass =(emergency_stretch <= 0); 
     } 
     else {
 	
 	;
 #ifdef STAT
-      if (eqtb[(hash_size + 3195)].cint > 0)	/* tracing_paragraphs */
+      if (tracing_paragraphs > 0)
       print_nl("@emergencypass");			/*  */
 #endif /* STAT */
 /*     can only get here is \emergencystretch has been set positive */
 /*     background[2]:=background[2]+emergency_stretch; final_pass:=true; */
-      background[2]= background[2]+ eqtb[(hash_size + 3750)].cint;
+      background[2]= background[2]+ emergency_stretch;
 	  final_pass = true; 
 	  final_pass_count++;					/* 96 Feb 9 */
 	} /* end of if second_pass */
@@ -983,7 +980,7 @@ void line_break_ (integer finalwidowpenalty)
 	  if (best_line == 2) singleline++;
 	;
 #ifdef STAT
-  if (eqtb[(hash_size + 3195)].cint > 0)
+  if (tracing_paragraphs > 0)
   {
     end_diagnostic(true); 
     normalize_selector(); 
@@ -1044,8 +1041,8 @@ void prefixed_command (void)
 	help1("I'll pretend you didn't say \\long or \\outer here.");
     error(); 
   } 
-  if (eqtb[(hash_size + 3206)].cint != 0)
-  if (eqtb[(hash_size + 3206)].cint < 0)
+  if (global_defs != 0)
+  if (global_defs < 0)
   {
     if ((a >= 4)) 
     a = a - 4; 
@@ -1066,7 +1063,7 @@ void prefixed_command (void)
   case 97 : 
     {
       if (odd(cur_chr)&& !(a >= 4)&& 
-		  (eqtb[(hash_size + 3206)].cint >= 0)) 
+		  (global_defs >= 0)) 
       a = a + 4; 
       e =(cur_chr >= 2); 
       get_r_token(); 
@@ -2320,10 +2317,7 @@ int texbody (void)					/* now returns a value --- bkph */
 	  init_prim(); 
 	  init_str_ptr = str_ptr; 
 	  init_pool_ptr = pool_ptr; 
-	  dateandtime(eqtb[(hash_size + 3183)].cint,
-			eqtb[(hash_size + 3184)].cint,
-				eqtb[(hash_size + 3185)].cint,
-					eqtb[(hash_size + 3186)].cint); 
+	  dateandtime(tex_time, day, month,	year); 
   }
 #endif /* INITEX */
   ready_already = 314159L;			/* magic number */
@@ -2403,15 +2397,12 @@ lab1:			/* get here directly if ready_already already set ... */
 #ifdef CHECKEQTB
 	if (debug_flag) check_eqtb("after format");	/* debugging 94/Apr/5 */
 #endif
-    if ((eqtb[(hash_size + 3211)].cint < 0)|| 
-		(eqtb[(hash_size + 3211)].cint > 255)) 
+    if ((end_line_char < 0)|| 
+		(end_line_char > 255)) 
 		decr(cur_input.limit_field); 
 /*	long to unsigned char ... */
-    else buffer[cur_input.limit_field]= eqtb[(hash_size + 3211)].cint; 
-    dateandtime(eqtb[(hash_size + 3183)].cint,
-		eqtb[(hash_size + 3184)].cint,
-			  eqtb[(hash_size + 3185)].cint,
-				  eqtb[(hash_size + 3186)].cint); 
+    else buffer[cur_input.limit_field] = end_line_char; 
+    dateandtime(tex_time, day, month, year); 
     magic_offset = str_start[886]- 9 * 16;	/* following: */
 /*	"0234000122*4000133**3**344*0400400*000000234000111*1111112341011" */
     if (interaction == 0)	selector = 16; 
@@ -2793,12 +2784,12 @@ void do_initex (void)
 			  eqtb[k].cint = 0; 
 	  while(k++ < for_end);
   } 
-  eqtb[(hash_size + 3180)].cint = 1000; 
-  eqtb[(hash_size + 3164)].cint = 10000; 
-  eqtb[(hash_size + 3204)].cint = 1; 
-  eqtb[(hash_size + 3203)].cint = 25; 
-  eqtb[(hash_size + 3208)].cint = 92; 
-  eqtb[(hash_size + 3211)].cint = 13; 
+  mag = 1000; 
+  tolerance = 10000; 
+  hang_after = 1; 
+  max_dead_cycles = 25; 
+  escape_char = 92; 
+  end_line_char = 13; 
 /*  {register integer for_end; k = 13230; for_end = 13506; if (k <= for_end) */
   {
 	  register integer for_end;
@@ -3381,11 +3372,11 @@ void new_patterns (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (trie_not_ready)
   {
-    if (eqtb[(hash_size + 3213)].cint <= 0)
+    if (language <= 0)
     cur_lang = 0; 
-    else if (eqtb[(hash_size + 3213)].cint > 255)
+    else if (language > 255)
     cur_lang = 0; 
-    else cur_lang = eqtb[(hash_size + 3213)].cint; 
+    else cur_lang = language; 
     scan_left_brace(); 
     k = 0; 
     hyf[0]= 0; 
@@ -3658,19 +3649,19 @@ void store_fmt_file (void)
   selector = 21; 
   print_string(" (format=");
   print(job_name); 
-  print_char(32);	/*   */
+  print_char(' ');
 /*  print_int(eqtb[(hash_size + 3186)].cint % 100);  */	/* Y2K */
-  print_int(eqtb[(hash_size + 3186)].cint);		/* 98/Oct/12 */
+  print_int(year);		/* 98/Oct/12 */
 /*  {
 	  int n= eqtb[(hash_size + 3186)].cint;
 	  sprintf(log_line, "YEAR: %ld\n", n);
 	  show_line(log_line, 0);
   } */
-  print_char(46); /* . */
-  print_int(eqtb[(hash_size + 3185)].cint); 
-  print_char(46); /* . */
-  print_int(eqtb[(hash_size + 3184)].cint); 
-  print_char(41); /*)*/
+  print_char('.');
+  print_int(month); 
+  print_char('.');
+  print_int(day); 
+  print_char(')');
   if (interaction == 0)selector = 18; 
   else selector = 19; 
   {
@@ -3965,7 +3956,7 @@ void store_fmt_file (void)
   dump_int(interaction); 
   dump_int(format_ident); 
   dump_int(ENDFMTCHECKSUM);	/* magic checksum end of FMT file --- change ??? */ 
-  eqtb[(hash_size + 3194)].cint = 0;	/* tracingstats  */
+  tracing_stats = 0;
   w_close(fmt_file); 
 //  return 0;
 } /* end of store_fmt_file */

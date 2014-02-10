@@ -586,8 +586,8 @@ small_number make_left_right_(halfword q, small_number style, scaled maxd, scale
   delta1 = max_h + maxd - delta2; 
   if (delta2 > delta1)
   delta1 = delta2; 
-  delta =(delta1 / 500)* eqtb[(hash_size + 3181)].cint; 
-  delta2 = delta1 + delta1 - eqtb[(hash_size + 3740)].cint; 
+  delta =(delta1 / 500) * delimiter_factor; 
+  delta2 = delta1 + delta1 - delimiter_shortfall; 
   if (delta < delta2)
   delta = delta2; 
   mem[q + 1].cint = var_delimiter(q + 1, cur_size, delta); 
@@ -908,13 +908,13 @@ void mlist_to_hlist (void)
     case 18 : 
       {
   t = 18; 
-  pen = eqtb[(hash_size + 3172)].cint; 
+  pen = bin_op_penalty; 
       } 
       break; 
     case 19 : 
       {
   t = 19; 
-  pen = eqtb[(hash_size + 3173)].cint; 
+  pen = rel_penalty; 
       } 
       break; 
     case 16 : 
@@ -1102,7 +1102,7 @@ void get_preamble_token (void)
   {
     scan_optional_equals(); 
     scan_glue(2); 
-    if (eqtb[(hash_size + 3206)].cint > 0)
+    if (global_defs > 0)
     geq_define((hash_size + 793), 117, cur_val); 
     else eq_define((hash_size + 793), 117, cur_val); 
     goto lab20; 
@@ -1303,7 +1303,7 @@ void fin_align (void)
   }
   unsave(); 
   if (nest[nest_ptr - 1].mode_field == 203)
-  o = eqtb[(hash_size + 3745)].cint; 
+  o = display_indent; 
   else o = 0; 
   q = mem[mem[align_head].hh.v.RH].hh.v.RH; 
   do {
@@ -1368,11 +1368,10 @@ void fin_align (void)
   pack_begin_line = - (integer) mode_line; 
   if (mode == -1)
   {
-    rulesave = eqtb[(hash_size + 3746)].cint; 
-    eqtb[(hash_size + 3746)].cint = 0; 
-    p = hpack(mem[align_head].hh.v.RH, save_stack[save_ptr + 1].cint 
-   , save_stack[save_ptr + 0].cint); 
-    eqtb[(hash_size + 3746)].cint = rulesave; 
+    rulesave = overfull_rule; 
+    overfull_rule = 0; 
+    p = hpack(mem[align_head].hh.v.RH, save_stack[save_ptr + 1].cint, save_stack[save_ptr + 0].cint); 
+    overfull_rule = rulesave; 
   } 
   else {
       
@@ -1576,8 +1575,7 @@ void fin_align (void)
   }
     pop_nest(); 
     {
-      mem[tail].hh.v.RH = new_penalty(eqtb[(hash_size + 3174)].cint 
-    ); 
+      mem[tail].hh.v.RH = new_penalty(pre_display_penalty); 
       tail = mem[tail].hh.v.RH; 
     } 
     {
@@ -1588,8 +1586,7 @@ void fin_align (void)
     if (p != 0)
     tail = q; 
     {
-      mem[tail].hh.v.RH = new_penalty(eqtb[(hash_size + 3175)].cint 
-    ); 
+      mem[tail].hh.v.RH = new_penalty(post_display_penalty); 
       tail = mem[tail].hh.v.RH; 
     } 
     {
@@ -1917,7 +1914,7 @@ void make_scripts_(halfword q, scaled delta)
   if (mem[q + 2].hh.v.RH == 0)
   {
     x = clean_box(q + 3, 2 *(cur_style / 4)+ 5); 
-    mem[x + 1].cint = mem[x + 1].cint + eqtb[(hash_size + 3742)].cint; 
+    mem[x + 1].cint = mem[x + 1].cint + script_space; 
     if (shiftdown < font_info[16 + param_base[eqtb[(hash_size + 1837) + cur_size].hh 
    .v.RH]].cint)
     shiftdown = font_info[16 + param_base[eqtb[(hash_size + 1837) + cur_size].hh.v.RH 
@@ -1932,7 +1929,7 @@ void make_scripts_(halfword q, scaled delta)
       
     {
       x = clean_box(q + 2, 2 *(cur_style / 4)+ 4 +(cur_style % 2)); 
-      mem[x + 1].cint = mem[x + 1].cint + eqtb[(hash_size + 3742)].cint; 
+      mem[x + 1].cint = mem[x + 1].cint + script_space; 
       if (odd(cur_style)) 
       clr = font_info[15 + param_base[eqtb[(hash_size + 1837) + cur_size].hh.v.RH]] 
      .cint; 
@@ -1951,9 +1948,8 @@ void make_scripts_(halfword q, scaled delta)
     if (mem[q + 3].hh.v.RH == 0)
     mem[x + 4].cint = - (integer) shiftup; 
     else {
-  
       y = clean_box(q + 3, 2 *(cur_style / 4)+ 5); 
-      mem[y + 1].cint = mem[y + 1].cint + eqtb[(hash_size + 3742)].cint; 
+      mem[y + 1].cint = mem[y + 1].cint + script_space; 
       if (shiftdown < font_info[17 + param_base[eqtb[(hash_size + 1837) + cur_size]
      .hh.v.RH]].cint)
       shiftdown = font_info[17 + param_base[eqtb[(hash_size + 1837) + cur_size].hh 

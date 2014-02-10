@@ -152,7 +152,7 @@ void close_files_and_terminate (void)
 #ifdef STAT
 /* if tracing_stats>0 then @<Output statistics about this job@>; */
 /*  if (eqtb[(hash_size + 3194)].cint > 0) */
-  if (eqtb[(hash_size + 3194)].cint > 0 ||
+  if (tracing_stats > 0 ||
      verbose_flag != 0)  /* 93/Nov/30 - bkph */
   if (log_opened) {
 /*   used to output paragraph breaking statistics here */
@@ -262,11 +262,11 @@ void close_files_and_terminate (void)
     secondcount = second_pass_count-final_pass_count;
     thirdcount = final_pass_count-paragraph_failed;
     if (first_count != 0 || secondcount != 0 || thirdcount != 0) 
-      (void) fprintf(log_file, "\n %d first pass (\\pretolerance = %d)", first_count, eqtb[(hash_size + 3163)].cint);
+      (void) fprintf(log_file, "\n %d first pass (\\pretolerance = %d)", first_count, pretolerance);
     if (secondcount != 0 || thirdcount != 0) 
-      (void) fprintf(log_file, "\n %d second pass (\\tolerance = %d)", secondcount, eqtb[(hash_size + 3164)].cint);
-    if (final_pass_count > 0 || eqtb[(hash_size + 3750)].cint  > 0) {
-      (void) fprintf(log_file, "\n %d third pass (\\emergencystretch = %lgpt)", thirdcount, (double) eqtb[(hash_size + 3750)].cint / 65536.0);
+      (void) fprintf(log_file, "\n %d second pass (\\tolerance = %d)", secondcount, tolerance);
+    if (final_pass_count > 0 || emergency_stretch > 0) {
+      (void) fprintf(log_file, "\n %d third pass (\\emergencystretch = %lgpt)", thirdcount, (double) emergency_stretch / 65536.0);
 /*      above converted from scaled points to printer's points */
     }
     if (paragraph_failed > 0)
@@ -315,7 +315,7 @@ void close_files_and_terminate (void)
     dvi_four(25400000L);     /* magic DVI scale factor */ 
     dvi_four(473628672L);    /* 7227 * 65536 */
     prepare_mag();         /* in tex2.c */
-    dvi_four(eqtb[(hash_size + 3180)].cint);   /* mag */
+    dvi_four(mag);   /* mag */
     dvi_four(max_v);        /* max height + depth */
     dvi_four(max_h);        /* max width */
     {

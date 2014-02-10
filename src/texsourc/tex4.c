@@ -29,7 +29,7 @@
 
 void char_warning_(internal_font_number f, eight_bits c)
 { 
-  if (eqtb[(hash_size + 3198)].cint > 0)
+  if (tracing_lost_chars > 0)
   {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (show_missing == 0)            /* show on screen 94/June/10 */
@@ -762,7 +762,8 @@ void hlist_out (void)
   {
     dvi_buf[dvi_ptr]= 141; 
     incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
+    if (dvi_ptr == dvi_limit)
+      dvi_swap(); 
   } 
   if (cur_s > max_push)
   max_push = cur_s; 
@@ -1288,34 +1289,34 @@ void vlist_out (void)
   decr(cur_s); 
 }
 /****************HPDF******************/
-void error_handler (HPDF_STATUS   error_no,
-               HPDF_STATUS   detail_no,
-               void         *user_data)
+/*
+void error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void * user_data)
 {
-    printf ("ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no,
-                (HPDF_UINT)detail_no);
+    printf ("ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no, (HPDF_UINT)detail_no);
 }
+*/
 /****************HPDF******************/
+/* sec 0638 */
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
 void ship_out_(halfword p)
-{/* 30 */ 
-  integer pageloc; 
-  char j, k; 
-  pool_pointer s; 
-  char old_setting; 
-  if (eqtb[(hash_size + 3197)].cint > 0)
-  {
+{
+  integer pageloc;
+  char j, k;
+  pool_pointer s;
+  char old_setting;
+  if (tracing_output > 0) {
     print_nl("");
-    print_ln(); 
+    print_ln();
     print_string("Completed box being shipped out");
-  } 
+  }
   if (term_offset > max_print_line - 9)
-  print_ln(); 
-  else if ((term_offset > 0)||(file_offset > 0)) 
-  print_char(' ');
+    print_ln(); 
+  else if ((term_offset > 0)||(file_offset > 0))
+    print_char(' ');
   print_char('[');
-  j = 9; 
-  while((eqtb[(hash_size + 3218) + j].cint == 0)&&(j > 0)) decr(j); 
+  j = 9;
+  while((eqtb[(hash_size + 3218) + j].cint == 0) && (j > 0))
+    decr(j);
   {
     register integer for_end; 
     k = 0; 
@@ -1325,13 +1326,12 @@ void ship_out_(halfword p)
       print_int(eqtb[(hash_size + 3218) + k].cint); 
       if (k < j)
         print_char('.');
-    } 
-    while(k++ < for_end);
+    } while(k++ < for_end);
   } 
 #ifndef _WINDOWS
   fflush(stdout); 
 #endif
-  if (eqtb[(hash_size + 3197)].cint > 0)
+  if (tracing_output > 0)
   {
     print_char(']');
     begin_diagnostic(); 
@@ -1341,14 +1341,14 @@ void ship_out_(halfword p)
   if ((mem[p + 3].cint > 1073741823L)|| /* 2^30 - 1 */
     (mem[p + 2].cint > 1073741823L)||
     (mem[p + 3].cint + mem[p + 2].cint +
-     eqtb[(hash_size + 3749)].cint > 1073741823L)||
-    (mem[p + 1].cint + eqtb[(hash_size + 3748)].cint > 1073741823L)) 
+     v_offset > 1073741823L)||
+    (mem[p + 1].cint + h_offset > 1073741823L)) 
   {
 	  print_err("Huge page cannot be shipped out");
 	  help2("The page just created is more than 18 feet tall or",
 		  "more than 18 feet wide, so I suspect something went wrong.");
     error(); 
-    if (eqtb[(hash_size + 3197)].cint <= 0)
+    if (tracing_output <= 0)
     {
       begin_diagnostic(); 
       print_nl("The following box has been deleted:");
@@ -1357,14 +1357,14 @@ void ship_out_(halfword p)
     } 
     goto lab30; 
   } 
-  if (mem[p + 3].cint + mem[p + 2].cint + eqtb[(hash_size + 3749)].cint > max_v 
+  if (mem[p + 3].cint + mem[p + 2].cint + v_offset > max_v 
 )
-  max_v = mem[p + 3].cint + mem[p + 2].cint + eqtb[(hash_size + 3749)].cint; 
-  if (mem[p + 1].cint + eqtb[(hash_size + 3748)].cint > max_h)
-  max_h = mem[p + 1].cint + eqtb[(hash_size + 3748)].cint; 
+  max_v = mem[p + 3].cint + mem[p + 2].cint + v_offset; 
+  if (mem[p + 1].cint + h_offset > max_h)
+  max_h = mem[p + 1].cint + h_offset; 
   dvi_h = 0; 
   dvi_v = 0; 
-  cur_h = eqtb[(hash_size + 3748)].cint; 
+  cur_h = h_offset; 
   dvi_f = 0; 
   if (output_file_name == 0)
   {
@@ -1389,6 +1389,7 @@ void ship_out_(halfword p)
       if (dvi_ptr == dvi_limit)dvi_swap(); 
     }
 /********BINDING WITH LIBHARU*********/
+/*
     yandy_pdf = HPDF_New(error_handler, NULL);
     yandy_page = HPDF_AddPage(yandy_pdf);
     HPDF_SetInfoAttr(yandy_pdf, HPDF_INFO_PRODUCER, "Y&Y TeX with ApTeX");
@@ -1397,27 +1398,28 @@ void ship_out_(halfword p)
     yandy_font = HPDF_GetFont (yandy_pdf, "Times-Roman", NULL);
     HPDF_Page_BeginText (yandy_page);
     HPDF_Page_SetFontAndSize (yandy_page, yandy_font, 16);
-    HPDF_Page_TextOut (yandy_page, 60, HPDF_Page_GetHeight (yandy_page)-90,  "This is the alpha page.");
+    HPDF_Page_TextOut (yandy_page, 60, HPDF_Page_GetHeight (yandy_page)-90,  "This is the \xAErst page.");
     HPDF_Page_TextOut (yandy_page, 60, HPDF_Page_GetHeight (yandy_page)-180, "Wait for ...");
     HPDF_Page_EndText (yandy_page);
     HPDF_SaveToFile (yandy_pdf, "NOTICE.pdf");
     HPDF_Free(yandy_pdf);
+ */
 /********BINDING WITH LIBHARU*********/
     dvi_four(25400000L);  /* magic DVI scale factor */
     dvi_four(473628672L); /* 7227 * 65536 */
     prepare_mag(); 
-    dvi_four(eqtb[(hash_size + 3180)].cint); 
+    dvi_four(mag); 
     old_setting = selector; 
     selector = 21; 
     print_string(" TeX output ");
-    print_int(eqtb[(hash_size + 3186)].cint); 
+    print_int(year); 
     print_char('.');
-    print_two(eqtb[(hash_size + 3185)].cint); 
+    print_two(month); 
     print_char('.');
-    print_two(eqtb[(hash_size + 3184)].cint); 
+    print_two(day);
     print_char(':');
-    print_two(eqtb[(hash_size + 3183)].cint / 60); 
-    print_two(eqtb[(hash_size + 3183)].cint % 60); 
+    print_two(tex_time / 60); 
+    print_two(tex_time % 60); 
     selector = old_setting; 
     {
 /*    long to unsigned char ... */
@@ -1456,7 +1458,7 @@ void ship_out_(halfword p)
   } 
   dvi_four(last_bop); 
   last_bop = pageloc; 
-  cur_v = mem[p + 3].cint + eqtb[(hash_size + 3749)].cint; 
+  cur_v = mem[p + 3].cint + v_offset; 
   temp_ptr = p; 
   if (mem[p].hh.b0 == 1)vlist_out(); 
   else hlist_out(); 
@@ -1468,7 +1470,7 @@ void ship_out_(halfword p)
   incr(total_pages); 
   cur_s = -1; 
   lab30:; 
-  if (eqtb[(hash_size + 3197)].cint <= 0)
+  if (tracing_output <= 0)
   print_char(']');
   dead_cycles = 0; 
 #ifndef _WINDOWS
@@ -1476,7 +1478,7 @@ void ship_out_(halfword p)
 #endif
   ;
 #ifdef STAT
-  if (eqtb[(hash_size + 3194)].cint > 1)
+  if (tracing_stats > 1)
   {
     print_nl("Memory usage before: ");
     print_int(var_used); 
@@ -1488,7 +1490,7 @@ void ship_out_(halfword p)
   flush_node_list(p); 
   ;
 #ifdef STAT
-  if (eqtb[(hash_size + 3194)].cint > 1)
+  if (tracing_stats > 1)
   {
     print_string("after");
     print_int(var_used); 
@@ -1690,7 +1692,7 @@ lab21:
       if (mem[r + 5].hh.v.RH != 0)
       {
         last_badness = badness(x, totalstretch[0]);
-        if (last_badness > eqtb[(hash_size + 3189)].cint) {
+        if (last_badness > hbadness) {
           print_ln();
           if (last_badness > 100)
             print_nl("Underfull");
@@ -1727,13 +1729,13 @@ lab21:
 /*   set_glue_ratio_one(glue_set(r)); {use the maximum shrinkage} */
       mem[r + 6].gr = 1.0;
 /* if (-x-total_shrink[normal]>hfuzz)or(hbadness<100) then */
-      if ((- (integer) x - totalshrink[0] > eqtb[(hash_size + 3738)].cint) || 
-        (eqtb[(hash_size + 3189)].cint < 100)) {
-          if ((eqtb[(hash_size + 3746)].cint > 0) &&
-            (- (integer) x - totalshrink[0] > eqtb[(hash_size + 3738)].cint)) {
+      if ((- (integer) x - totalshrink[0] > hfuzz) || 
+        (hbadness < 100)) {
+          if ((overfull_rule > 0) &&
+            (- (integer) x - totalshrink[0] > hfuzz)) {
               while(mem[q].hh.v.RH != 0)q = mem[q].hh.v.RH;
               mem[q].hh.v.RH = new_rule();
-              mem[mem[q].hh.v.RH + 1].cint = eqtb[(hash_size + 3746)].cint;
+              mem[mem[q].hh.v.RH + 1].cint = overfull_rule;
           }
           print_ln();
           print_nl("Overfull \\hbox(");
@@ -1745,7 +1747,7 @@ lab21:
     } else if (o == 0)
       if (mem[r + 5].hh.v.RH != 0) {
         last_badness = badness(- (integer) x, totalshrink[0]);
-        if (last_badness > eqtb[(hash_size + 3189)].cint) {
+        if (last_badness > hbadness) {
           print_ln();
           print_nl("Tight \\hbox (badness ");
           print_int(last_badness);
@@ -1891,7 +1893,7 @@ halfword vpackage_(halfword p, scaled h, small_number m, scaled l)
     if (o == 0)
       if (mem[r + 5].hh.v.RH != 0) {
         last_badness = badness(x, totalstretch[0]);
-        if (last_badness > eqtb[(hash_size + 3190)].cint) {
+        if (last_badness > vbadness) {
           print_ln();
           if (last_badness > 100)
             print_nl("Underfull");
@@ -1927,7 +1929,7 @@ halfword vpackage_(halfword p, scaled h, small_number m, scaled l)
       last_badness = 1000000L;
       mem[r + 6].gr = 1.0;
       if ((- (integer) x - totalshrink[0] > eqtb[(hash_size + 3739)].cint) || 
-        (eqtb[(hash_size + 3190)].cint < 100)) {
+        (vbadness < 100)) {
           print_ln();
           print_nl("Overfull \\vbox(");
           print_scaled(- (integer) x - totalshrink[0]);
@@ -1940,7 +1942,7 @@ halfword vpackage_(halfword p, scaled h, small_number m, scaled l)
     else if (o == 0)
       if (mem[r + 5].hh.v.RH != 0) {
         last_badness = badness(- (integer) x, totalshrink[0]); 
-        if (last_badness > eqtb[(hash_size + 3190)].cint) {
+        if (last_badness > vbadness) {
           print_ln();
           print_nl("Tight \\vbox (badness ");
           print_int(last_badness);
@@ -1974,7 +1976,7 @@ void append_to_vlist_(halfword b)
   halfword p; 
   if (cur_list.aux_field.cint > ignore_depth) {
     d = mem[eqtb[(hash_size + 783)].hh.v.RH + 1].cint - cur_list.aux_field.cint - mem[b + 3].cint;
-    if (d < eqtb[(hash_size + 3732)].cint)
+    if (d < line_skip_limit)
       p = new_param_glue(0);
     else {
       p = new_skip_param(1);
@@ -2214,7 +2216,7 @@ lab40:
     } else b = char_box(f, c);
   else {    /* c may be used without ... */
     b = new_null_box();
-    mem[b + 1].cint = eqtb[(hash_size + 3741)].cint;
+    mem[b + 1].cint = null_delimiter_space;
   } 
   mem[b + 4].cint = half(mem[b + 3].cint - mem[b + 2].cint) - font_info[22 + param_base[eqtb[(hash_size + 1837) + s].hh.v.RH]].cint; 
   Result = b;

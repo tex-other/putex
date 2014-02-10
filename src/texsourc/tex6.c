@@ -263,10 +263,10 @@ lab30:
               prevprevr = prevr;
               prevr = q;
             }
-            if (abs(eqtb[(hash_size + 3179)].cint) >= 1073741823L - minimum_demerits)
+            if (abs(adj_demerits) >= 1073741823L - minimum_demerits)
               minimum_demerits = 1073741822L; /* 2^30 - 2 */
             else
-              minimum_demerits = minimum_demerits + abs(eqtb[(hash_size + 3179)].cint); 
+              minimum_demerits = minimum_demerits + abs(adj_demerits); 
             {
               register integer for_end;
               fitclass = 0;
@@ -294,7 +294,7 @@ lab30:
                   prevr = q;
                   ;
 #ifdef STAT
-                  if (eqtb[(hash_size + 3195)].cint > 0) {
+                  if (tracing_paragraphs > 0) {
                     print_nl("@@");
                     print_int(mem[passive].hh.v.LH);
                     print_string(": line ");
@@ -303,9 +303,9 @@ lab30:
                     print_int(fitclass);
                     if (breaktype == 1)
                       print_char('-');
-                    print_string("t=");
+                    print_string(" t=");
                     print_int(mem[q + 2].cint);
-                    print_string("-> @@");
+                    print_string(" -> @@");
                     if (mem[passive + 1].hh.v.LH == 0)
                       print_char('0');
                     else
@@ -398,7 +398,7 @@ lab31:
       if (artificialdemerits)
         d = 0;
       else {
-        d = eqtb[(hash_size + 3165)].cint + b;
+        d = line_penalty + b;
         if (abs(d)>= 10000)
           d = 100000000L;
         else
@@ -410,15 +410,15 @@ lab31:
             d = d - pi * pi;
         if ((breaktype == 1) && (mem[r].hh.b0 == 1))
           if (cur_p != 0)
-            d = d + eqtb[(hash_size + 3177)].cint;
+            d = d + double_hyphen_demerits;
           else
-            d = d + eqtb[(hash_size + 3178)].cint;
+            d = d + final_hyphen_demerits;
         if (abs(toint(fitclass)- toint(mem[r].hh.b1)) > 1)
-          d = d + eqtb[(hash_size + 3179)].cint;
+          d = d + adj_demerits;
       }
       ;
 #ifdef STAT
-      if (eqtb[(hash_size + 3195)].cint > 0) {
+      if (tracing_paragraphs > 0) {
         if (printed_node != cur_p) {
           print_nl("");
           if (cur_p == 0)
@@ -445,18 +445,18 @@ lab31:
           else
             print_esc("math");
         }
-        print_string("via @@");
+        print_string(" via @@");
         if (mem[r + 1].hh.v.RH == 0)
           print_char('0');
         else
           print_int(mem[mem[r + 1].hh.v.RH].hh.v.LH);
-        print_string("b=");
+        print_string(" b=");
         if (b > 10000)
           print_char('*');
         else print_int(b);
-        print_string("p=");
+        print_string(" p=");
         print_int(pi);
-        print_string("d=");
+        print_string(" d=");
         if (artificialdemerits)
           print_char('*');
         else print_int(d);
@@ -650,13 +650,13 @@ lab30:
     }
     adjust_tail = 0; /* adjust_tail:=null */
     if (curline + 1 != best_line) {
-      pen = eqtb[(hash_size + 3176)].cint;
+      pen = inter_line_penalty;
       if (curline == prev_graf + 1)
-        pen = pen + eqtb[(hash_size + 3168)].cint;
+        pen = pen + club_penalty;
       if (curline + 2 == best_line)
         pen = pen + finalwidowpenalty;
       if (discbreak)
-        pen = pen + eqtb[(hash_size + 3171)].cint;
+        pen = pen + broken_penalty;
       if (pen != 0) {
         r = new_penalty(pen);
         mem[tail].hh.v.RH = r;
@@ -1342,11 +1342,11 @@ void new_hyph_exceptions (void)
   str_number s, t; 
   pool_pointer u, v; 
   scan_left_brace(); 
-  if (eqtb[(hash_size + 3213)].cint <= 0)
+  if (language <= 0)
     cur_lang = 0; 
-  else if (eqtb[(hash_size + 3213)].cint > 255)
+  else if (language > 255)
     cur_lang = 0; 
-  else cur_lang = eqtb[(hash_size + 3213)].cint; 
+  else cur_lang = language; 
   n = 0; 
   p = 0; 
 
@@ -1704,7 +1704,7 @@ halfword vsplit_(eight_bits n, scaled h)
     Result = 0; 
     return(Result); 
   } 
-  q = vert_break(mem[v + 5].hh.v.RH, h, eqtb[(hash_size + 3736)].cint); 
+  q = vert_break(mem[v + 5].hh.v.RH, h, split_max_depth); 
   p = mem[v + 5].hh.v.RH; 
   if (p == q)
   mem[v + 5].hh.v.RH = 0; 
@@ -1736,7 +1736,7 @@ halfword vsplit_(eight_bits n, scaled h)
   eqtb[(hash_size + 1578) + n].hh.v.RH = 0;  /* then box(n):=null */
   else eqtb[(hash_size + 1578) + n].hh.v.RH =
     vpackage(q, 0, 1, 1073741823L);  /* 2^30 - 1 */
-  Result = vpackage(p, h, 0, eqtb[(hash_size + 3736)].cint); 
+  Result = vpackage(p, h, 0, split_max_depth); 
   return Result; 
 } 
 void print_totals (void) 
@@ -1775,8 +1775,8 @@ void print_totals (void)
 void freeze_page_specs_(small_number s)
 { 
   page_contents = s; 
-  page_so_far[0]= eqtb[(hash_size + 3734)].cint; 
-  page_max_depth = eqtb[(hash_size + 3735)].cint; 
+  page_so_far[0]= vsize; 
+  page_max_depth = max_depth; 
   page_so_far[7]= 0; 
   page_so_far[1]= 0; 
   page_so_far[2]= 0; 
@@ -1787,7 +1787,7 @@ void freeze_page_specs_(small_number s)
   least_page_cost = 1073741823L;  /* 2^30 - 1 */
   ;
 #ifdef STAT
-  if (eqtb[(hash_size + 3196)].cint > 0)
+  if (tracing_pages > 0)
   {
     begin_diagnostic(); 
     print_nl("might split");  /*  */
@@ -1861,7 +1861,7 @@ void fire_up_(halfword c)
   } 
   insert_penalties = 0; 
   savesplittopskip = eqtb[(hash_size + 792)].hh.v.RH; 
-  if (eqtb[(hash_size + 3216)].cint <= 0)
+  if (holding_inserts <= 0)
   {
     r = mem[mem_top].hh.v.RH; 
     while(r != mem_top){
@@ -1888,7 +1888,7 @@ void fire_up_(halfword c)
       
     if (mem[p].hh.b0 == 3)
     {
-      if (eqtb[(hash_size + 3216)].cint <= 0)
+      if (holding_inserts <= 0)
       {
   r = mem[mem_top].hh.v.RH; 
   while(mem[r].hh.b1 != mem[p].hh.b1)r = mem[r].hh.v.RH 
@@ -1978,13 +1978,13 @@ void fire_up_(halfword c)
     mem[contrib_head].hh.v.RH = p; 
     mem[prevp].hh.v.RH = 0; /*   link(prev_p):=null; */
   } 
-  savevbadness = eqtb[(hash_size + 3190)].cint; 
-  eqtb[(hash_size + 3190)].cint = 10000; 
+  savevbadness = vbadness; 
+  vbadness = 10000; 
   savevfuzz = eqtb[(hash_size + 3739)].cint; 
   eqtb[(hash_size + 3739)].cint = 1073741823L;  /* 2^30 - 1 */
   eqtb[(hash_size + 1833)].hh.v.RH = vpackage(mem[page_head].hh.v.RH, 
   best_size, 0, page_max_depth); 
-  eqtb[(hash_size + 3190)].cint = savevbadness; 
+  vbadness = savevbadness; 
   eqtb[(hash_size + 3739)].cint = savevfuzz; 
 /*  if (last_glue != 262143L) */
   if (last_glue != empty_flag)
@@ -2019,7 +2019,7 @@ void fire_up_(halfword c)
   } 
 /* if output_routine<>null then */
   if (eqtb[(hash_size + 1313)].hh.v.RH != 0)
-  if (dead_cycles >= eqtb[(hash_size + 3203)].cint)
+  if (dead_cycles >= max_dead_cycles)
   {
 	  print_err("Output loop---");
     print_int(dead_cycles); 

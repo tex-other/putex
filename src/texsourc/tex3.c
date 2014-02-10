@@ -296,9 +296,9 @@ lab45:;
     } 
     if (scan_keyword("true")) {
       prepare_mag();
-      if (eqtb[(hash_size + 3180)].cint != 1000) {
-        cur_val = xn_over_d(cur_val, 1000, eqtb[(hash_size + 3180)].cint); 
-        f =(1000 * f + 65536L * tex_remainder) / eqtb[(hash_size + 3180)].cint; 
+      if (mag != 1000) {
+        cur_val = xn_over_d(cur_val, 1000, mag); 
+        f =(1000 * f + 65536L * tex_remainder) / mag; 
         cur_val = cur_val + (f / 65536L);
         f = f % 65536L;
       }
@@ -900,10 +900,10 @@ void read_toks_(integer n, halfword r)
       } 
     } 
     cur_input.limit_field = last; 
-    if ((eqtb[(hash_size + 3211)].cint < 0)||(eqtb[(hash_size + 3211)].cint > 255)) 
+    if ((end_line_char < 0)||(end_line_char > 255)) 
     decr(cur_input.limit_field); 
 /*  long to unsigned char ... */
-    else buffer[cur_input.limit_field]= eqtb[(hash_size + 3211)].cint; 
+    else buffer[cur_input.limit_field]= end_line_char; 
     first = cur_input.limit_field + 1; 
     cur_input.loc_field = cur_input.start_field; 
     cur_input.state_field = 33; 
@@ -1163,7 +1163,7 @@ void conditional (void)
     {
       scan_int(); 
       n = cur_val; 
-      if (eqtb[(hash_size + 3199)].cint > 1)
+      if (tracing_commands > 1)
       {
   begin_diagnostic(); 
   print_string("{case ");
@@ -1192,7 +1192,7 @@ void conditional (void)
     } 
     break; 
   } 
-  if (eqtb[(hash_size + 3199)].cint > 1)
+  if (tracing_commands > 1)
   {
     begin_diagnostic(); 
     if (b)
@@ -1816,26 +1816,26 @@ void open_log_file (void)
   if (format_ident > 0) slow_print(format_ident);     /* bkph */
     print_string("  ");
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if (civilize_flag) print_int(eqtb[(hash_size + 3186)].cint); /* year */
+  if (civilize_flag) print_int(year); /* year */
     else 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    print_int(eqtb[(hash_size + 3184)].cint);   /* day */
+    print_int(day);
     print_char(' ');
     months = " JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC"; 
-    {register integer for_end; k = 3 * eqtb[(hash_size + 3185)].cint - 2; for_end = 3 
-    * eqtb[(hash_size + 3185)].cint; if (k <= for_end) do 
+    {register integer for_end; k = 3 * month - 2; for_end = 3 
+    * month; if (k <= for_end) do 
       (void) putc(months[k],  log_file);
     while(k++ < for_end); }       /* month */
     print_char(' ');
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if (civilize_flag) print_int(eqtb[(hash_size + 3184)].cint);/* day */
+  if (civilize_flag) print_int(day);
   else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    print_int(eqtb[(hash_size + 3186)].cint); /* year */
+    print_int(year); /* year */
     print_char(' ');
-    print_two(eqtb[(hash_size + 3183)].cint / 60);  /* hour */
+    print_two(tex_time / 60);  /* hour */
     print_char(':');
-    print_two(eqtb[(hash_size + 3183)].cint % 60);  /* minute */
+    print_two(tex_time % 60);  /* minute */
   } 
   input_stack[input_ptr]= cur_input; 
   print_nl("**");
@@ -2004,11 +2004,11 @@ void start_input (void)
     if (input_ln(input_file[cur_input.index_field], false)) 
     ; 
     firm_up_the_line(); 
-    if ((eqtb[(hash_size + 3211)].cint < 0)||
-    (eqtb[(hash_size + 3211)].cint > 255)) 
+    if ((end_line_char < 0)||
+    (end_line_char > 255)) 
     decr(cur_input.limit_field); 
 /*  long to unsigned char ... */
-    else buffer[cur_input.limit_field] = eqtb[(hash_size + 3211)].cint; 
+    else buffer[cur_input.limit_field] = end_line_char; 
     first = cur_input.limit_field + 1; 
     cur_input.loc_field = cur_input.start_field; 
   } 
@@ -2580,8 +2580,8 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
   if (np >= 7)
   font_params[f]= np; 
   else font_params[f]= 7; 
-  hyphen_char[f]= eqtb[(hash_size + 3209)].cint; /*  default_hyphen_char */
-  skew_char[f]= eqtb[(hash_size + 3210)].cint; /*  default_skew_char */
+  hyphen_char[f] = default_hyphen_char;
+  skew_char[f] = default_skew_char;
   if (bchlabel < nl)
   bchar_label[f]= bchlabel + lig_kern_base[f]; 
 /* bchar_label[f]:=non_address; */ /* 3.14159 */

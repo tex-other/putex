@@ -224,8 +224,7 @@ void after_math (void)
   if (m < 0)
   {
     {
-      mem[tail].hh.v.RH = new_math(eqtb[(hash_size + 3731)].cint, 
-      0); 
+      mem[tail].hh.v.RH = new_math(math_surround, 0); 
       tail = mem[tail].hh.v.RH; 
     } 
     cur_mlist = p; 
@@ -236,8 +235,7 @@ void after_math (void)
     while(mem[tail].hh.v.RH != 0)tail = 
     mem[tail].hh.v.RH; 
     {
-      mem[tail].hh.v.RH = new_math(eqtb[(hash_size + 3731)].cint, 
-      1); 
+      mem[tail].hh.v.RH = new_math(math_surround, 1); 
       tail = mem[tail].hh.v.RH; 
     } 
     space_factor = 1000; 
@@ -266,8 +264,8 @@ void after_math (void)
     t = adjust_tail; 
     adjust_tail = 0; 
     w = mem[b + 1].cint; 
-    z = eqtb[(hash_size + 3744)].cint; 
-    s = eqtb[(hash_size + 3745)].cint; 
+    z = display_width; 
+    s = display_indent; 
     if ((a == 0)|| danger)
     {
       e = 0; 
@@ -308,11 +306,10 @@ void after_math (void)
       d = 0; 
     } 
     {
-      mem[tail].hh.v.RH = new_penalty(eqtb[(hash_size + 3174)].cint 
-    ); 
+      mem[tail].hh.v.RH = new_penalty(pre_display_penalty); 
       tail = mem[tail].hh.v.RH; 
     } 
-    if ((d + s <= eqtb[(hash_size + 3743)].cint)|| l)
+    if ((d + s <= pre_display_size)|| l)
     {
       g1 = 3; 
       g2 = 4; 
@@ -371,8 +368,7 @@ void after_math (void)
       tail = t; 
     } 
     {
-      mem[tail].hh.v.RH = new_penalty(eqtb[(hash_size + 3175)].cint 
-    ); 
+      mem[tail].hh.v.RH = new_penalty(post_display_penalty); 
       tail = mem[tail].hh.v.RH; 
     } 
     if (g2 > 0)
@@ -398,14 +394,14 @@ void resume_after_display (void)
   space_factor = 1000; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* was   clang = 0; etc in 3.141 new stuff follows */
-  if (eqtb[(hash_size + 3213)].cint <= 0)
+  if (language <= 0)
   cur_lang = 0; 
-  else if (eqtb[(hash_size + 3213)].cint > 255)
+  else if (language > 255)
   cur_lang = 0; 
-  else cur_lang = eqtb[(hash_size + 3213)].cint; 
+  else cur_lang = language; 
   clang = cur_lang; 
-  prev_graf =(norm_min(eqtb[(hash_size + 3214)].cint)* 64 +
-     norm_min(eqtb[(hash_size + 3215)].cint)) * 65536L + cur_lang; 
+  prev_graf =(norm_min(left_hyphen_min) * 64 +
+     norm_min(right_hyphen_min)) * 65536L + cur_lang; 
 /* eqtb ??? hash_size ? hash_size + hash_extra ? norm_min etc */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   {
@@ -1076,7 +1072,7 @@ void show_whatever (void)
   end_diagnostic(true);
   print_err("OK");
   if (selector == 19)
-  if (eqtb[(hash_size + 3192)].cint <= 0)
+  if (tracing_online <= 0)
   {
     selector = 17;
     print_string(" (see the transcript file)");
@@ -1086,7 +1082,7 @@ lab50:
   if (interaction < 3) {
     help_ptr = 0;
     decr(error_count);
-  } else if (eqtb[(hash_size + 3192)].cint > 0) {
+  } else if (tracing_online > 0) {
 	  help3("This isn't an error message; I'm just \\showing something.",
 		  "Type `I\\show...' to show more (e.g., \\show\\cs,",
 		  "\\showthe\\count10, \\showbox255, \\showlists).");
@@ -1192,8 +1188,8 @@ void do_extension (void)
       clang = 0; 
       else clang = cur_val; 
       mem[tail + 1].hh.v.RH = clang; 
-      mem[tail + 1].hh.b0 = norm_min(eqtb[(hash_size + 3214)].cint); 
-      mem[tail + 1].hh.b1 = norm_min(eqtb[(hash_size + 3215)].cint); 
+      mem[tail + 1].hh.b0 = norm_min(left_hyphen_min); 
+      mem[tail + 1].hh.b1 = norm_min(right_hyphen_min); 
     } 
     break; 
     default: 
@@ -1209,17 +1205,17 @@ void fix_language (void)
 { 
 /*  ASCII_code l;  */
   int l;                  /* 95/Jan/7 */
-  if (eqtb[(hash_size + 3213)].cint <= 0)
+  if (language <= 0)
     l = 0; 
-  else if (eqtb[(hash_size + 3213)].cint > 255)
+  else if (language > 255)
     l = 0;
-  else l = eqtb[(hash_size + 3213)].cint;
+  else l = language;
   if (l != clang) {
     new_whatsit(4, 2);
     mem[tail + 1].hh.v.RH = l;
     clang = l;
-    mem[tail + 1].hh.b0 = norm_min(eqtb[(hash_size + 3214)].cint);
-    mem[tail + 1].hh.b1 = norm_min(eqtb[(hash_size + 3215)].cint);
+    mem[tail + 1].hh.b0 = norm_min(left_hyphen_min);
+    mem[tail + 1].hh.b1 = norm_min(right_hyphen_min);
   }
 }
 /* sec 1068 */
@@ -1272,8 +1268,8 @@ void handle_right_brace (void)
       end_graf(); 
       q = eqtb[(hash_size + 792)].hh.v.RH; 
       incr(mem[q].hh.v.RH); 
-      d = eqtb[(hash_size + 3736)].cint; 
-      f = eqtb[(hash_size + 3205)].cint; 
+      d = split_max_depth; 
+      f = floating_penalty; 
       unsave(); 
       decr(save_ptr); 
       p = vpackage(mem[head].hh.v.RH, 0, 1, 1073741823L);  /* 2^30 - 1 */
@@ -1463,7 +1459,7 @@ lab21:
 #ifdef DEBUG
   if (panicking)check_mem(false); 
 #endif /* DEBUG */
-  if (eqtb[(hash_size + 3199)].cint > 0)
+  if (tracing_commands > 0)
     show_cur_cmd_chr(); 
 
 /*  the big switch --- don't bother to test abort_flag ??? */
@@ -2037,7 +2033,7 @@ lab70:
   bchar = font_bchar[main_f]; 
   false_bchar = font_false_bchar[main_f]; 
   if (mode > 0)
-  if (eqtb[(hash_size + 3213)].cint != clang)
+  if (language != clang)
   fix_language(); 
   {
     lig_stack = avail; 
