@@ -133,17 +133,10 @@ void close_files_and_terminate (void)
   if (trace_flag)
     show_line("\nclose_files_and_terminate ", 0);
 //  close all open files
-  {
-    register integer for_end; 
-    k = 0; 
-    for_end = 15;        /* CHECK LIMIT */
-    if (k <= for_end) do 
-      if (write_open[k]) {
-        (void) a_close(write_file[k]);
-      }
-    while(k++ < for_end);
-  }
-  ;
+  for (k = 0; k <= 15; k++)
+    if (write_open[k]) {
+      (void) a_close(write_file[k]);
+    }
 
 #ifdef STAT
 /* if tracing_stats>0 then @<Output statistics about this job@>; */
@@ -379,9 +372,9 @@ void close_files_and_terminate (void)
 void debug_help (void) 
 {/* 888 10 */ 
   integer k, l, m, n; 
-  while(true){
+  while (true) {
  ; 
-    print_nl(" debug # (-1 to exit):");  /*  */
+    print_nl(" debug # (-1 to exit):");
 #ifndef _WINDOWS
     fflush(stdout); 
 #endif
@@ -475,7 +468,7 @@ void debug_help (void)
   } 
   break; 
       case 16 : 
-  panicking = ! panicking; 
+  panicking = !panicking; 
   break; 
   default: 
   print(63);    /* ? */

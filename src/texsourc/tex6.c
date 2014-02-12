@@ -1044,9 +1044,9 @@ void hyphenate (void)
     k = hyph_word[h]; 
     if (k == 0)
     goto lab45; 
-    if ((str_start[k + 1]- str_start[k])< hn)
+    if (length(k) < hn)
     goto lab45; 
-    if ((str_start[k + 1]- str_start[k])== hn)
+    if (length(k) == hn)
     {
       j = 1; 
       u = str_start[k]; 
@@ -1441,15 +1441,12 @@ lab21: switch(cur_cmd){
       return;     // abort_flag set
     }
     incr(hyph_count); 
-    while(hyph_word[h]!= 0){
-        
-      k = hyph_word[h]; 
-      if ((str_start[k + 1]- str_start[k])<(str_start[s + 1 
-    ]- str_start[s])) 
-      goto lab40; 
-      if ((str_start[k + 1]- str_start[k])>(str_start[s + 1 
-    ]- str_start[s])) 
-      goto lab45; 
+    while (hyph_word[h]!= 0) {
+      k = hyph_word[h];
+      if (length(k) < length(s))
+        goto lab40;
+      if (length(k) > length(s))
+        goto lab45; 
       u = str_start[k]; 
       v = str_start[s]; 
       do {

@@ -840,12 +840,11 @@ void macro_call (void)
     incr(m); 
     u = mem[t].hh.v.RH; 
     v = s; 
-    while(true){
+    while (true) {
       if (u == r)
       if (cur_tok != mem[v].hh.v.LH)
       goto lab30; 
       else {
-    
         r = mem[v].hh.v.RH; 
         goto lab22; 
       } 
@@ -888,7 +887,7 @@ void macro_call (void)
       if (cur_tok < 512)
       {
   unbalance = 1; 
-  while(true){
+  while (true) {
     {
       {
         q = avail; 
@@ -990,8 +989,7 @@ void macro_call (void)
       goto lab22; 
       lab40: if (s != 0)
       {
-  if ((m == 1)&&(mem[p].hh.v.LH < 768)&&(p != temp_head 
-  ))
+  if ((m == 1) && (mem[p].hh.v.LH < 768) && (p != temp_head))
   {
     mem[rbraceptr].hh.v.RH = 0; /* rbraceptr may be used without ... */
     {
@@ -1079,28 +1077,28 @@ void insert_relax (void)
 } 
 void expand (void) 
 {
-  halfword t; 
-  halfword p, q, r; 
-  integer j; 
-  integer cvbackup; 
-  small_number cvlbackup, radixbackup, cobackup; 
-  halfword backupbackup; 
-  small_number savescannerstatus; 
+  halfword t;
+  halfword p, q, r;
+  integer j;
+  integer cvbackup;
+  small_number cvlbackup, radixbackup, cobackup;
+  halfword backupbackup;
+  small_number savescannerstatus;
 
-  cvbackup = cur_val; 
-  cvlbackup = cur_val_level;  
-  radixbackup = radix;  
-  cobackup = cur_order;  
-  backupbackup = mem[mem_top - 13].hh.v.RH; 
+  cvbackup = cur_val;
+  cvlbackup = cur_val_level;
+  radixbackup = radix;
+  cobackup = cur_order;
+  backupbackup = mem[mem_top - 13].hh.v.RH;
   if (cur_cmd < 111)
   {
     if (tracing_commands > 1)
-    show_cur_cmd_chr(); 
+    show_cur_cmd_chr();
     switch(cur_cmd)
-    {case 110 : 
+    {case 110:
       {
 /* begin if cur_mark[cur_chr]<>null then l.7881 */
-  if (cur_mark[cur_chr]!= 0)
+  if (cur_mark[cur_chr] != 0)
   begin_token_list(cur_mark[cur_chr], 14); 
       } 
       break; 
@@ -1109,7 +1107,7 @@ void expand (void)
   get_token(); 
   t = cur_tok; 
   get_token(); 
-  if (cur_cmd > 100){
+  if (cur_cmd > 100) {
     expand();
   }
   else back_input(); 
@@ -1309,7 +1307,7 @@ void scan_left_brace (void)
 { 
   do {
       get_x_token(); 
-  } while(!((cur_cmd != 10)&&(cur_cmd != 0))); 
+  } while(!((cur_cmd != 10) && (cur_cmd != 0))); 
   if (cur_cmd != 1)
   {
 	print_err("Missing { inserted"); 
@@ -1327,107 +1325,103 @@ void scan_left_brace (void)
 void scan_optional_equals (void) 
 {
   do {
-      get_x_token(); 
-  } while(!(cur_cmd != 10)); 
-  if (cur_tok != 3133)back_input(); 
-} 
+      get_x_token();
+  } while(!(cur_cmd != 10));
+  if (cur_tok != 3133)
+    back_input();
+}
+/* sec 0407 */
 bool scan_keyword_(char * s)
-{/* 10 */ register bool Result; 
-  halfword p; 
-  halfword q; 
-  char * k; 
-  p = mem_top - 13; 
-  mem[p].hh.v.RH = 0; 
-  k = s; 
-  while(*k) {
+{
+  register bool Result;
+  halfword p;
+  halfword q;
+  char * k;
+  p = mem_top - 13;
+  mem[p].hh.v.RH = 0;
+  k = s;
+  while (*k) {
     get_x_token(); 
-    if ((cur_cs == 0) && ((cur_chr == (*k))||(cur_chr == (*k)- 32))) {
+    if ((cur_cs == 0) && ((cur_chr == (*k)) || (cur_chr == (*k) - 32))) {
       {
-  q = get_avail(); 
-  mem[p].hh.v.RH = q; 
-  mem[q].hh.v.LH = cur_tok; 
-  p = q; 
-      } 
-      incr(k); 
-    } 
-    else if ((cur_cmd != 10)||(p != mem_top - 13)) 
-    {
-      back_input(); 
+        q = get_avail();
+        mem[p].hh.v.RH = q;
+        mem[q].hh.v.LH = cur_tok;
+        p = q;
+      }
+      incr(k);
+    } else if ((cur_cmd != 10) || (p != mem_top - 13)) {
+      back_input();
       if (p != mem_top - 13)
-      begin_token_list(mem[mem_top - 13].hh.v.RH, 3); 
-      Result = false; 
-      return(Result); 
-    } 
-  } 
-  flush_list(mem[mem_top - 13].hh.v.RH); 
-  Result = true; 
-  return Result; 
-} 
+        begin_token_list(mem[mem_top - 13].hh.v.RH, 3);
+      Result = false;
+      return(Result);
+    }
+  }
+  flush_list(mem[mem_top - 13].hh.v.RH);
+  Result = true;
+  return Result;
+}
 void mu_error (void) 
-{ 
+{
   print_err("Incompatible glue units");
-  help1("I'm going to assume that 1mu=1pt when they're mixed."); 
-  error(); 
-} 
-void scan_eight_bit_int (void) 
-{ 
-  scan_int(); 
-  if ((cur_val < 0)||(cur_val > 255)) 
-  {
-	  print_err("Bad register code");
+  help1("I'm going to assume that 1mu=1pt when they're mixed.");
+  error();
+}
+void scan_eight_bit_int (void)
+{
+  scan_int();
+  if ((cur_val < 0) || (cur_val > 255)) {
+    print_err("Bad register code");
 	  help2("A register number must be between 0 and 255.",
 		  "I changed this one to zero.");
-    int_error(cur_val); 
-    cur_val = 0; 
-  } 
-} 
+    int_error(cur_val);
+    cur_val = 0;
+  }
+}
 void scan_char_num (void) 
 {
-  scan_int(); 
-  if ((cur_val < 0)||(cur_val > 255)) 
-  {
+  scan_int();
+  if ((cur_val < 0) || (cur_val > 255)) {
 	  print_err("Bad character code");
 	  help2("A character number must be between 0 and 255.",
 		  "I changed this one to zero.");
-    int_error(cur_val); 
-    cur_val = 0; 
-  } 
-} 
-void scan_four_bit_int (void) 
+    int_error(cur_val);
+    cur_val = 0;
+  }
+}
+void scan_four_bit_int (void)
 {
-  scan_int(); 
-  if ((cur_val < 0)||(cur_val > 15)) 
-  {
+  scan_int();
+  if ((cur_val < 0) || (cur_val > 15)) {
 	  print_err("Bad number");
 	  help2("Since I expected to read a number between 0 and 15,",
 		  "I changed this one to zero.");
-    int_error(cur_val); 
-    cur_val = 0; 
-  } 
-} 
+    int_error(cur_val);
+    cur_val = 0;
+  }
+}
 void scan_fifteen_bit_int (void) 
-{ 
-    scan_int(); 
-  if ((cur_val < 0)||(cur_val > 32767)) 
-  {
+{
+  scan_int();
+  if ((cur_val < 0) || (cur_val > 32767)) {
 	  print_err("Bad mathchar");
 	  help2("A mathchar number must be between 0 and 32767.",
 		  "I changed this one to zero.");
-    int_error(cur_val); 
-    cur_val = 0; 
-  } 
-} 
+    int_error(cur_val);
+    cur_val = 0;
+  }
+}
 void scan_twenty_seven_bit_int (void) 
-{ 
-    scan_int(); 
-  if ((cur_val < 0)||(cur_val > 134217727L)) /* 2^27 - 1 */
-  {
-	  print_err("Bad delimiter code");
+{
+  scan_int();
+  if ((cur_val < 0) || (cur_val > 134217727L)) /* 2^27 - 1 */ {
+    print_err("Bad delimiter code");
 	  help2("A numeric delimiter code must be between 0 and 2^{27}-1.",
 		  "I changed this one to zero.");
-    int_error(cur_val); 
-    cur_val = 0; 
-  } 
+    int_error(cur_val);
+    cur_val = 0;
+  }
 }
 /* sec 0577 */
 void scan_font_ident (void) 
@@ -1530,10 +1524,10 @@ void find_font_dimen_(bool writing)
 /* The above gets the value byte order reversed ... 98/Oct/5 */
 /* sec 0413 */
 void scan_something_internal_(small_number level, bool negative)
-{ 
-  halfword m; 
-  integer p; 
-  m = cur_chr; 
+{
+  halfword m;
+  integer p;
+  m = cur_chr;
   switch(cur_cmd)
   {
   case def_code: 
@@ -1841,7 +1835,7 @@ void scan_something_internal_(small_number level, bool negative)
 /* Moved here to avoid question about pragma optimize 96/Sep/12 */
 
 void get_next (void) 
-{/* 20 25 21 26 40 10 */ 
+{
   integer k; 
   halfword t; 
 /*  char cat; */    /* make this an int ? */

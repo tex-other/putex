@@ -212,11 +212,11 @@ void print_mark_(integer);
 void print_rule_dimen_(scaled); 
 #define print_rule_dimen(d) print_rule_dimen_((scaled) (d))
 #define printruledimen_regmem
-void print_glue_(scaled, integer, str_number); 
-#define print_glue(d, order, s) print_glue_((scaled) (d), (integer) (order), (str_number) (s))
+void print_glue_(scaled, integer, char *); 
+#define print_glue(d, order, s) print_glue_((scaled) (d), (integer) (order), (char *) (s))
 #define printglue_regmem
-void print_spec_(integer, str_number); 
-#define print_spec(p, s) print_spec_((integer) (p), (str_number) (s))
+void print_spec_(integer, char *);
+#define print_spec(p, s) print_spec_((integer) (p), (char *) (s))
 #define printspec_regmem register memory_word *mem=zmem;
 void print_fam_and_char_(halfword); 
 #define print_fam_and_char(p) print_fam_and_char_((halfword) (p))
@@ -1001,10 +1001,10 @@ void print_mark_(integer);
 #define print_mark(p) print_mark_((integer) (p))
 void print_rule_dimen_(scaled);
 #define print_rule_dimen(d) print_rule_dimen_((scaled) (d))
-void print_glue_(scaled, integer, str_number);
-#define print_glue(d, order, s) print_glue_((scaled) (d), (integer) (order), (str_number) (s))
-void print_spec_(integer, str_number);
-#define print_spec(p, s) print_spec_((integer) (p), (str_number) (s))
+void print_glue_(scaled, integer, char *);
+#define print_glue(d, order, s) print_glue_((scaled) (d), (integer) (order), (char *) (s))
+void print_spec_(integer, char *);
+#define print_spec(p, s) print_spec_((integer) (p), (char *) (s))
 void print_fam_and_char_(halfword);
 #define print_fam_and_char(p) print_fam_and_char_((halfword) (p))
 void print_delimiter_(halfword);

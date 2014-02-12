@@ -142,7 +142,7 @@ void initialize (void)
   }
   if (interaction < 0) /* may now set in local.c bkph */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    interaction = 3;
+    interaction = error_stop_mode;
   deletions_allowed = true;
   set_box_allowed = true;
   error_count = 0;
@@ -153,24 +153,24 @@ void initialize (void)
   ;
 /* darn, need to know mem_top, mem_max etc for the following ... */
 #ifdef DEBUG
-  was_mem_end = mem_min; 
-/*  was_lo_max = mem_min;  */
-  was_lo_max = mem_bot; 
+  was_mem_end = mem_min;
+/*  was_lo_max = mem_min; */
+  was_lo_max = mem_bot;
 /*  was_hi_min = mem_max; */
-  was_hi_min = mem_top; 
-  panicking = false; 
+  was_hi_min = mem_top;
+  panicking = false;
 #endif /* DEBUG */
-  nest_ptr = 0; 
-  max_nest_stack = 0; 
-  mode = 1; 
-  head = contrib_head; 
+  nest_ptr = 0;
+  max_nest_stack = 0;
+  mode = 1;
+  head = contrib_head;
   tail = contrib_head; 
-  cur_list.aux_field.cint = ignore_depth; 
+  cur_list.aux_field.cint = ignore_depth;
   mode_line = 0;
-  prev_graf = 0; 
-  shown_mode = 0; 
-  page_contents = 0; 
-  page_tail = page_head; 
+  prev_graf = 0;
+  shown_mode = 0;
+  page_contents = 0;
+  page_tail = page_head;
 #ifdef ALLOCATEMAIN
   if (is_initex) /* in iniTeX we did already allocate mem [] */
 #endif
@@ -179,65 +179,36 @@ void initialize (void)
   last_glue = empty_flag;
   last_penalty = 0;
   last_kern = 0;
-  page_so_far[7]= 0;
+  page_so_far[7] = 0;
   page_max_depth = 0;
-/* from int_base to eqtb_size */
-  {
-    register integer for_end;
-    k = (hash_size + 3163);
-    for_end = (hash_size + 4006);
-    if (k <= for_end)
-      do  xeq_level[k]= 1;
-      while(k++ < for_end);
-  }
+  for (k = int_base; k <= eqtb_size; k++) xeq_level[k] = 1;
   no_new_control_sequence = true; 
   hash[514].v.LH = 0; /* next(hash_base):= 0 */
   hash[514].v.RH = 0; /* text(hash_base):= 0 */
 /* 514 + hash_size + 266 = hashbase + hashsize + 10 + font_max  */
 /* for k <- hashbase+1 to undefined_control_sequence - 1 do ... p.257 */
-  {
-	  register integer for_end;
-	  k = 515;
-	  for_end = (hash_size + 780);
-	  if (k <= for_end) 
-		  do hash[k]= hash[514]; 
-	  while(k++ < for_end);
-  } 
-  save_ptr = 0; 
-  cur_level = 1; 
-  cur_group = 0; 
-  cur_boundary = 0; 
-  max_save_stack = 0; 
-  mag_set = 0; 
-  cur_mark[0]= 0; 
-  cur_mark[1]= 0; 
-  cur_mark[2]= 0; 
-  cur_mark[3]= 0; 
-  cur_mark[4]= 0; 
-  cur_val = 0; 
-  cur_val_level = 0; 
-  radix = 0; 
-  cur_order = 0; 
-  {
-	  register integer for_end;
-	  k = 0;
-	  for_end = 16;
-	  if (k <= for_end)
-		  do read_open[k]= 2; 
-	  while (k++ < for_end);
-  } 
-  cond_ptr = 0; 
-  if_limit = 0; 
-  cur_if = 0; 
-  if_line = 0; 
-  {
-	  register integer for_end;
-	  k = 0;
-	  for_end = font_max;
-	  if (k <= for_end) 
-		  do font_used[k]= false; 
-	  while (k++ < for_end);
-  } 
+  for (k = hash_base + 1; k <= undefined_control_sequence - 1; k++) hash[k] = hash[hash_base];
+  save_ptr = 0;
+  cur_level = 1;
+  cur_group = 0;
+  cur_boundary = 0;
+  max_save_stack = 0;
+  mag_set = 0;
+  cur_mark[0] = 0;
+  cur_mark[1] = 0;
+  cur_mark[2] = 0;
+  cur_mark[3] = 0;
+  cur_mark[4] = 0;
+  cur_val = 0;
+  cur_val_level = 0;
+  radix = 0;
+  cur_order = 0;
+  for (k = 0; k <= 16; k++) read_open[k] = 2;
+  cond_ptr = 0;
+  if_limit = 0;
+  cur_if = 0;
+  if_line = 0;
+  for (k = 0; k <= font_max; k++) font_used[k] = false;
   null_character.b0 = 0; 
   null_character.b1 = 0; 
   null_character.b2 = 0; 
@@ -276,17 +247,10 @@ void initialize (void)
 /*	*not* OK with ALLOCATEHYPHEN, since may not be allocated yet */
 #ifndef ALLOCATEHYPHEN
 /*  {register integer for_end; z = 0; for_end = 607; if (z <= for_end) do */
-  {
-	  register integer for_end;
-	  z = 0;
-	  for_end = hyphen_prime;
-	  if (z <= for_end) do 
-	  {
-		  hyph_word[z]= 0; 
-		  hyph_list[z]= 0; 
-	  } 
-	  while(z++ < for_end);
-  } 
+  for (z = 0; z <= hyphen_prime; z++) {
+    hyph_word[z]= 0;
+    hyph_list[z]= 0;
+  }
 #endif
   hyph_count = 0; 
   output_active = false; 
@@ -298,15 +262,8 @@ void initialize (void)
   ins_disc = false; 
   after_token = 0; 
   long_help_seen = false; 
-  format_ident = 0; 
-  {
-	  register integer for_end;
-	  k = 0;
-	  for_end = 17;
-	  if (k <= for_end)
-		  do  write_open[k]= false; 
-	  while(k++ < for_end);
-  } 
+  format_ident = 0;
+  for (k = 0; k <= 17; k++) write_open[k]= false;
   edit_name_start = 0; 
 	;
 #ifdef INITEX
@@ -2146,7 +2103,7 @@ int checkpool (char *task)
 	}
 	for (k = 0; k < str_ptr; k++) {
 		if (str_start[k+1] == 0) break;
-		n = str_start[k+1] - str_start[k];
+		n = length(k);
 		if (n < 0) break;
 		st = str_start[k];
 		flag = 0;
@@ -2624,184 +2581,76 @@ void do_initex (void)
   hi_mem_min = mem_top - 13;				/* hi_mem_min <- hi_mem_stat_min */
   var_used = 20;						/* var_used <- lo_mem_stat_max */
   dyn_used = 14;						/* dyn_used <- hi_mem_stat_usage */
-/* eq_type(undefined_control_sequence) <- undefined_cs; */
-/* equiv(undefined_control_sequence) <- null; */
-/* eq_level(undefined_control_sequence) <- level_zero; */
-  eqtb[(hash_size + 781)].hh.b0 = 101; 
-  eqtb[(hash_size + 781)].hh.v.RH = 0; 
-  eqtb[(hash_size + 781)].hh.b1 = 0; 
-/* for k <- active_base to undefined_control_sequence -1 do */
-/*				eqtb[k] <- eqtb(undefined_control_sequence); */
-/*  {register integer for_end; k = 1; for_end = 10280; if (k <= for_end) do */
-  {
-	  register integer for_end;
-	  k = 1;
-	  for_end = (hash_size + 780);
-	  if (k <= for_end) do 
-		  eqtb[k]= eqtb[(hash_size + 781)]; 
-	  while(k++ < for_end);
-  } 
+  eq_type(undefined_control_sequence) = undefined_cs;
+  equiv(undefined_control_sequence) = 0;
+  eq_level(undefined_control_sequence) = level_zero;
+  for (k = active_base; k <= undefined_control_sequence - 1; k++) eqtb[k]= eqtb[undefined_control_sequence];
   eqtb[(hash_size + 782)].hh.v.RH = 0; /* glue_base (hash_size + 782) */
   eq_level(glue_base) = level_one;
-  eqtb[(hash_size + 782)].hh.b0 = 117; 
-/* equiv(glue_base):=zero_glue; eq_level(glue_base):=level_one; */
-/* eq_type(glue_base):=glue_ref; */
-/*  {register integer for_end; k = 10283; for_end = 10811; if (k <= for_end) */
-  {
-	  register integer for_end;
-	  k = (hash_size + 783);
-	  for_end = (hash_size + 1311);
-	  if (k <= for_end) 
-		  do eqtb[k]= eqtb[(hash_size + 782)]; 
-	  while(k++ < for_end);
-  } 
+  eqtb[(hash_size + 782)].hh.b0 = 117;
+  for (k = glue_base + 1; k <= local_base - 1; k++) eqtb[k]= eqtb[glue_base];
 /* glue_ref_count(zero_glue):=glue_ref_count(zero_glue)+local_base-glue_base; */
 /* local_base - glue_base = 530 = 17 glue_pars + 256 skip + 256 mu_skip */
   mem[0].hh.v.RH = mem[0].hh.v.RH + 530; /* mem[mem_bot]? */
 /* box(0):=null; eq_type(box_base):=box_ref; eq_level(box_base):=level_one; */
   eqtb[(hash_size + 1312)].hh.v.RH = 0; 
-  eqtb[(hash_size + 1312)].hh.b0 = 118; 
-  eqtb[(hash_size + 1312)].hh.b1 = 1; 
-/* for k:=box_base+1 to box_base+255 do eqtb[k]:=eqtb[box_base]; */
-/*  {register integer for_end; k = 10813; for_end = 11077; if (k <= for_end) */
-  {
-	  register integer for_end;
-	  k = (hash_size + 1313);
-	  for_end = (hash_size + 1577);
-	  if (k <= for_end) 
-		  do  eqtb[k]= eqtb[(hash_size + 781)]; 
-	  while(k++ < for_end);
-  } 
-  eqtb[(hash_size + 1578)].hh.v.RH = 0; 
-  eqtb[(hash_size + 1578)].hh.b0 = 119; 
-  eqtb[(hash_size + 1578)].hh.b1 = 1; 
-/*  {register integer for_end; k = 11079; for_end = 11333; if (k <= for_end) */
-  {
-	  register integer for_end;
-	  k = (hash_size + 1579);
-	  for_end = (hash_size + 1833);
-	  if (k <= for_end) 
-		  do eqtb[k]= eqtb[(hash_size + 1578)]; 
-	  while(k++ < for_end);
-  } 
-  eqtb[(hash_size + 1834)].hh.v.RH = 0; 
-  eqtb[(hash_size + 1834)].hh.b0 = 120; 
-  eqtb[(hash_size + 1834)].hh.b1 = 1; 
-/*  {register integer for_end; k = 11335; for_end = 11382; if (k <= for_end) */
-  {
-	  register integer for_end;
-	  k = (hash_size + 1835);
-	  for_end = (hash_size + 1882);
-	  if (k <= for_end) 
-		  do  eqtb[k]= eqtb[(hash_size + 1834)]; 
-	  while(k++ < for_end);
-  } 
-  eqtb[(hash_size + 1883)].hh.v.RH = 0; 
-  eqtb[(hash_size + 1883)].hh.b0 = 120; 
-  eqtb[(hash_size + 1883)].hh.b1 = 1; 
-/* initialize cat_code, lc_code, uc_code, sf_code, math_code 256 * 5 */
-/*  {register integer for_end; k = 11384; for_end = 12662; if (k <= for_end) */
-  {
-	  register integer for_end;
-	  k = (hash_size + 1884);
-	  for_end = (hash_size + 3162);
-	  if (k <= for_end) 
-		  do eqtb[k]= eqtb[(hash_size + 1883)]; 
-	  while(k++ < for_end);
-  } 
-/* cat_code(k) <- other_char; math_code(k) <- hi(k); sf_code(k) = 1000; */
-  {
-	  register integer for_end;
-	  k = 0;
-	  for_end = 255;
-	  if (k <= for_end) do 
-	  {
-		  eqtb[(hash_size + 1883) + k].hh.v.RH = 12; 
-		  eqtb[(hash_size + 2907) + k].hh.v.RH = k; 
-		  eqtb[(hash_size + 2651) + k].hh.v.RH = 1000; 
-	  } 
-	  while(k++ < for_end);
-  } 
-/* cat_base == 11383 */
-/* cat_code(carriage_return) <- car_ret; cat_code(" ") <- space */
-/* cat_code("\") <- escape; cat_code("%") <- comment; ... */  
-  eqtb[(hash_size + 1896)].hh.v.RH = 5; 
-  eqtb[(hash_size + 1915)].hh.v.RH = 10; 
-  eqtb[(hash_size + 1975)].hh.v.RH = 0; 
-  eqtb[(hash_size + 1920)].hh.v.RH = 14; 
-  eqtb[(hash_size + 2010)].hh.v.RH = 15; 
-  eqtb[(hash_size + 1883)].hh.v.RH = 9; 
+  eqtb[(hash_size + 1312)].hh.b0 = 118;
+  eqtb[(hash_size + 1312)].hh.b1 = 1;
+  for (k = output_routine_loc; k <= toks_base + 255; k++) eqtb[k]= eqtb[undefined_control_sequence];
+  eqtb[(hash_size + 1578)].hh.v.RH = 0;
+  eqtb[(hash_size + 1578)].hh.b0 = 119;
+  eqtb[(hash_size + 1578)].hh.b1 = 1;
+  for (k = box_base + 1; k <= box_base + 255; k++) eqtb[k]= eqtb[box_base];
+  eqtb[(hash_size + 1834)].hh.v.RH = 0;
+  eqtb[(hash_size + 1834)].hh.b0 = 120;
+  eqtb[(hash_size + 1834)].hh.b1 = 1;
+  for (k = math_font_base; k <= math_font_base + 47; k++) eqtb[k]= eqtb[cur_font_loc];
+  eqtb[(hash_size + 1883)].hh.v.RH = 0;
+  eqtb[(hash_size + 1883)].hh.b0 = 120;
+  eqtb[(hash_size + 1883)].hh.b1 = 1;
+  for (k = cat_code_base; k <= int_base - 1; k++) eqtb[k]= eqtb[cat_code_base];
+  for (k = 0; k <= 255; k++) {
+    eqtb[(hash_size + 1883) + k].hh.v.RH = 12;
+    eqtb[(hash_size + 2907) + k].hh.v.RH = k;
+    eqtb[(hash_size + 2651) + k].hh.v.RH = 1000;
+  }
+/* cat_base == 11383 */ 
+  eqtb[(hash_size + 1896)].hh.v.RH = car_ret; 
+  eqtb[(hash_size + 1915)].hh.v.RH = spacer; 
+  eqtb[(hash_size + 1975)].hh.v.RH = escape; 
+  eqtb[(hash_size + 1920)].hh.v.RH = comment; 
+  eqtb[(hash_size + 2010)].hh.v.RH = invalid_char; 
+  eqtb[(hash_size + 1883)].hh.v.RH = ignore; 
 /* for k:="0" to "9" do math_code(k):=hi(k+var_code); */
-  {
-	  register integer for_end;
-	  k = 48;
-	  for_end = 57;
-	  if (k <= for_end) do 
-		  eqtb[(hash_size + 2907) + k].hh.v.RH = k + 28672; /* '70000 */
-	  while(k++ < for_end);
-  } 
+  for (k = '0'; k <= '9'; k++) eqtb[(hash_size + 2907) + k].hh.v.RH = k + 28672;
 /* cat_code of uppercase and lowercase letters ... */
-  {
-	  register integer for_end;
-	  k = 65;
-	  for_end = 90;
-	  if (k <= for_end) do 
-    {
+  for (k = 'A'; k <= 'Z'; k++) {
 /* cat_code ... */
-      eqtb[(hash_size + 1883) + k].hh.v.RH = 11; 
-      eqtb[(hash_size + 1883) + k + 32].hh.v.RH = 11; 
+    eqtb[(hash_size + 1883) + k].hh.v.RH = 11;
+    eqtb[(hash_size + 1883) + k + 32].hh.v.RH = 11;
 /* mathcode(k) = hi(k + var_code + "100); */ /* '70000 + 256 */
-      eqtb[(hash_size + 2907) + k].hh.v.RH =
-		  k + 28928; 	/* '70000 + 256 */
+    eqtb[(hash_size + 2907) + k].hh.v.RH = k + 28928; /* '70000 + 256 */
 /* mathcode(k + "a" - "A") = hi(k + "a" - "A" + var_code + "100); */
-      eqtb[(hash_size + 2907) + k + 32].hh.v.RH =
-		  k + 28960;  	/* '70000 + 256 + 32 */
+    eqtb[(hash_size + 2907) + k + 32].hh.v.RH = k + 28960; /* '70000 + 256 + 32 */
 /* lc_code ... */
-      eqtb[(hash_size + 2139) + k].hh.v.RH = k + 32; 
-      eqtb[(hash_size + 2139) + k + 32].hh.v.RH = k + 32; 
+    eqtb[(hash_size + 2139) + k].hh.v.RH = k + 32;
+    eqtb[(hash_size + 2139) + k + 32].hh.v.RH = k + 32;
 /* uc_code ... */
-      eqtb[(hash_size + 2395) + k].hh.v.RH = k; 
-      eqtb[(hash_size + 2395) + k + 32].hh.v.RH = k; 
+    eqtb[(hash_size + 2395) + k].hh.v.RH = k;
+    eqtb[(hash_size + 2395) + k + 32].hh.v.RH = k;
 /* sf_code */
-      eqtb[(hash_size + 2651) + k].hh.v.RH = 999; 
-    } 
-  while(k++ < for_end);
-  } 
-/*  {register integer for_end; k = 12663; for_end = 12973; if (k <= for_end) */
-  {
-	  register integer for_end;
-	  k = (hash_size + 3163);
-	  for_end = (hash_size + 3473);
-	  if (k <= for_end) 
-		  do 
-			  eqtb[k].cint = 0; 
-	  while(k++ < for_end);
-  } 
-  mag = 1000; 
-  tolerance = 10000; 
-  hang_after = 1; 
-  max_dead_cycles = 25; 
-  escape_char = 92; 
-  end_line_char = 13; 
-/*  {register integer for_end; k = 13230; for_end = 13506; if (k <= for_end) */
-  {
-	  register integer for_end;
-	  k = 0;
-	  for_end = 255;
-	  if (k <= for_end) do 
-		  eqtb[(hash_size + 3474) + k].cint = -1; 
-	  while(k++ < for_end);
-  } 
-  eqtb[(hash_size + 3520)].cint = 0; 
-/*  {register integer for_end; k = 13230; for_end = 13506; if (k <= for_end) */
-  {
-	  register integer for_end;
-	  k = (hash_size + 3730);
-	  for_end = (hash_size + 4006);
-	  if (k <= for_end) 
-		  do  eqtb[k].cint = 0; 
-	  while(k++ < for_end);
-  } 
+    eqtb[(hash_size + 2651) + k].hh.v.RH = 999;
+  }
+  for (k = int_base; k <= del_code_base - 1; k++) eqtb[k].cint = 0;
+  mag = 1000;
+  tolerance = 10000;
+  hang_after = 1;
+  max_dead_cycles = 25;
+  escape_char = 92;
+  end_line_char = 13;
+  for (k = 0; k <= 255; k++) eqtb[(hash_size + 3474) + k].cint = -1; 
+  eqtb[(hash_size + 3520)].cint = 0;
+  for (k = dimen_base; k <= eqtb_size; k++) eqtb[k].cint = 0;
 /*  hash_used = 10014;  */ /*   hash_used = frozen_control_sequence */
 /* frozen_control_sequence =  hashsize + hashbase p.222 */
 /*  hash_used = (hash_size + 514);  */
@@ -2817,10 +2666,10 @@ void do_initex (void)
 /* @<Initialize table...@>= l.10750 */
   font_ptr = 0;				/* font_ptr:=null_font; */
   fmem_ptr = 7;				/* fmem_ptr:=7; */
-  font_name[0]= 795;	/* nullfont */
-  font_area[0]= 335;	/* "" */
-  hyphen_char[0]= 45;	/* - */
-  skew_char[0]= -1; 
+  font_name[0] = 795;	/* nullfont */
+  font_area[0] = 335;	/* "" */
+  hyphen_char[0] = 45;	/* - */
+  skew_char[0] = -1; 
 /* ************************************************************************ */
 /* bchar_label[null_font]:=non_address; */ /* 3.14159 */
 /*  bchar_label[0]= font_mem_size; */	/* OK ? 93/Nov/26 */
@@ -2913,18 +2762,18 @@ bool get_strings_started (void)
           else {
             l = k / 16;
             if (l < 10) {
-              str_pool[pool_ptr]= l + 48; /* '0' */
+              str_pool[pool_ptr] = l + 48; /* '0' */
               incr(pool_ptr);
             } else {
-              str_pool[pool_ptr]= l + 87; /* 'a' - 10 */
+              str_pool[pool_ptr] = l + 87; /* 'a' - 10 */
               incr(pool_ptr);
             }
             l = k % 16;
             if (l < 10) {
-              str_pool[pool_ptr]= l + 48; /* '0' */
+              str_pool[pool_ptr] = l + 48; /* '0' */
               incr(pool_ptr);
             } else {
-              str_pool[pool_ptr]= l + 87; /* 'a' - 10 */
+              str_pool[pool_ptr] = l + 87; /* 'a' - 10 */
               incr(pool_ptr);
             }
           }
@@ -3134,11 +2983,8 @@ void primitive_s (char * s, quarterword c, halfword o)
     k = str_start[prim_str]; l = str_start[prim_str] - k;
     for (j = 0; j < l; incr(j)) buffer[j] = str_pool[k + j];
     cur_val = id_lookup(0, l);
-    {
-      decr(str_ptr);
-      pool_ptr = str_start[str_ptr];
-    }
-     hash[cur_val].v.RH = prim_str;
+    flush_string();
+    hash[cur_val].v.RH = prim_str;
   }
   eq_level(cur_val) = level_one; eq_type(cur_val) = c; equiv(cur_val) = o;
 }
@@ -3164,13 +3010,11 @@ void primitive_ (str_number s, quarterword c, halfword o)
         while(j++ < for_end);
     }
     cur_val = id_lookup(0, l);
-    {
-      decr(str_ptr);
-      pool_ptr = str_start[str_ptr];
-    }
+    flush_string();
 /* **********************  debugging only  96/Jan/20 should not happen */
 #ifdef SHORTHASH
-    if (s > 65535L) show_line("ERROR: hash entry too large\n", 1);
+    if (s > 65535L)
+      show_line("ERROR: hash entry too large\n", 1);
 #endif
     hash[cur_val].v.RH = s;
   }
@@ -3674,11 +3518,8 @@ void store_fmt_file (void)
 	  prompt_file_name(1267, 780); /* format file name  .fmt */
   }
   print_nl(" Beginning to dump on file ");
-  slow_print(w_make_name_string(fmt_file)); 
-  {
-    decr(str_ptr); 
-    pool_ptr = str_start[str_ptr]; 
-  } 
+  slow_print(w_make_name_string(fmt_file));
+  flush_string();
   print_nl("");
   slow_print(format_ident); 
   dump_int(BEGINFMTCHECKSUM); /* magic FMT file start 4C 20 E6 15 hex */
@@ -3869,7 +3710,7 @@ lab32:
   }
   print_ln();
   print_int(fmem_ptr - 7);
-  print_string(" words of font info for");
+  print_string(" words of font info for ");
   print_int(font_ptr - 0);
   print_string(" preloaded font");
   if (font_ptr != 1)
@@ -3910,7 +3751,7 @@ lab32:
   print_string(" op");
   if (trie_op_ptr != 1)
     print_char('s');
-  print_string("out of");
+  print_string(" out of ");
   print_int(trie_op_size); 
   {
 	  register integer for_end;

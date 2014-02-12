@@ -658,10 +658,9 @@ void call_edit (ASCII_code *stringpool, pool_pointer fnstart,
 
 	if (log_opened) {						/* 1994/Aug/10 */
 		lgstart = str_start[texmf_log_name];
-		lglength = str_start[texmf_log_name + 1]- str_start[texmf_log_name];
+		lglength = length(texmf_log_name);
 		log_file_name = stringpool + lgstart;
-	}
-	else {								/* 1994/Aug/10 */
+	} else {								/* 1994/Aug/10 */
 		lglength = 0;
 		log_file_name = (unsigned char *) "";
 	}

@@ -1314,6 +1314,10 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #include "coerce.h"
 
 /****************************************************************************/
+/* sec 0040 */
+#define length(s) (str_start[(s) + 1] - str_start[(s)])
+/* sec 0041 */
+#define cur_length (pool_ptr - str_start[str_ptr])
 /* sec 0054 */
 #define no_print     16
 #define term_only    17
@@ -1729,7 +1733,7 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define error_context_lines_code      54 // 3217
 #define int_pars                      55
 #define count_base                    int_base + int_pars // 3218
-#define del_code_base                 count_base + 256    // 
+#define del_code_base                 count_base + 256    // 3473
 #define dimen_base                    del_code_base + 256 // 3730
 // #
 #define del_code(a)                   eqtb[del_code_base + a].cint
@@ -1813,8 +1817,8 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define v_offset_code                 19 // 3749
 #define emergency_stretch_code        20 // 3750
 #define dimen_pars                    21
-#define scaled_base                   dimen_base + dimen_pars
-#define eqtb_size                     scaled_base + 255
+#define scaled_base                   dimen_base + dimen_pars // 3751
+#define eqtb_size                     scaled_base + 255 // 4006
 // #
 #define dimen(a)                      eqtb[scaled_base + a].cint
 #define dimen_par(a)                  eqtb[dimen_base + a].cint
@@ -1846,6 +1850,7 @@ extern void append_char(ASCII_code c);
 extern void succumb(void);
 extern void dvi_out_ (ASCII_code op);
 #define dvi_out(op) dvi_out_((ASCII_code) (op))
+extern void flush_string (void);
 #define help0()     tex_help(0)
 #define help1(...)  tex_help(1, __VA_ARGS__)
 #define help2(...)  tex_help(2, __VA_ARGS__)

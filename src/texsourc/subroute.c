@@ -667,18 +667,18 @@ bool test_read_access (unsigned char *name, int path_index)
 /*  then use cached full path / file name 96/Nov/16 */
   if (cache_file_flag) {
     if (path_index == last_path_index &&
-        strcmp(name, last_name) == 0 && *last_filename != '\0') { 
+        strcmp((const char *)name, last_name) == 0 && *last_filename != '\0') { 
       if (open_trace_flag) {
         sprintf(log_line, "\nFOUND `%s' (%d) IN CACHE: `%s' ",
             name, path_index, last_filename); 
 /*            name+1, path_index, last_filename); */
         show_line(log_line, 0);
       }
-      strcpy(name, last_filename); 
+      strcpy((char *)name, last_filename); 
       return TRUE;
     }
     last_path_index = path_index;
-    strcpy(last_name, name);
+    strcpy(last_name, (const char *)name);
     *last_filename = '\0';          /* in case not found */
   }
 #endif
@@ -1651,7 +1651,7 @@ void convertexclam (string env_value) { /* 97/Mar/22 */
    If ENV_NAME is null, only parse DEFAULT_PATH.  If both are null, do
    nothing and return NULL.  */
 
-string *initialize_path_list (string env_name,  string default_path)
+string * initialize_path_list (string env_name,  string default_path)
 {
   string dir, path;
   string *dir_list;
@@ -1768,8 +1768,7 @@ string *initialize_path_list (string env_name,  string default_path)
         }
         add_directory (&dir_list, &dir_count, dir);
 /* local variable 'findt' used without having been initialized ? &findt ? */
-        expand_subdir (&dir_list, &dir_count, dir,
-            findt, 1);  /* 95/Jan/31 */
+        expand_subdir (&dir_list, &dir_count, dir, findt, 1);  /* 95/Jan/31 */
       }
     }
 /* following is new to find only directories to one level 1994/Jan/24 */

@@ -2445,16 +2445,16 @@ int analyze_flag (int c, char *optarg)
       is_initex = true;
       break;
     case 'Q':
-      interaction = 0; /* quiet mode */
+      interaction = batch_mode; /* quiet mode */
       break;
     case 'R':
-      interaction = 1; /* run mode */
+      interaction = nonstop_mode; /* run mode */
       break;
     case 'S':
-      interaction = 2; /* scroll mode */
+      interaction = scroll_mode; /* scroll mode */
       break;
     case 'T':
-      interaction = 3; /* tex mode */
+      interaction = error_stop_mode; /* tex mode */
       break;
     case 'K':
       backwardflag = true; /* 94/Jun/15 */
@@ -3500,7 +3500,7 @@ void print_cs_name (FILE *output, int h)
   
   textof = hash[h].v.RH;
   if (textof == 0) return;  /* ignore if text() == 0 */
-  n = str_start[textof + 1] - str_start[textof];
+  n = length(textof);
   if (textcolumn != 0) {
     sprintf(log_line, ", ");
     if (output != NULL) fprintf(output, log_line);
@@ -3535,8 +3535,8 @@ int comparecs (const void *cp1, const void *cp2)
   c2 = *(int *)cp2;
   textof1 = hash[c1].v.RH;
   textof2 = hash[c2].v.RH;
-  l1 =(str_start[textof1 + 1] - str_start[textof1]); 
-  l2 =(str_start[textof2 + 1] - str_start[textof2]); 
+  l1 = length(textof1); 
+  l2 = length(textof2); 
   k1 = str_start[textof1]; 
   k2 = str_start[textof2]; 
 /*  showstring (k1, l1); */
@@ -3653,8 +3653,8 @@ int comparefnt (const void *fp1, const void *fp2)
   int f1, f2, l1, l2, k1, k2, s;
   f1 = *(short *)fp1;
   f2 = *(short *)fp2;
-  l1 =(str_start[font_name[f1]+ 1] - str_start[font_name[f1]]); 
-  l2 =(str_start[font_name[f2]+ 1] - str_start[font_name[f2]]); 
+  l1 = length(font_name[f1]);
+  l2 = length(font_name[f2]);
   k1 = str_start[font_name[f1]]; 
   k2 = str_start[font_name[f2]]; 
 /*  showstring (k1, l1); */
@@ -3672,8 +3672,8 @@ int comparefnt (const void *fp1, const void *fp2)
 int comparefntname (int f1, int f2)
 {
   int l1, l2, k1, k2, s;
-  l1 =(str_start[font_name[f1]+ 1] - str_start[font_name[f1]]); 
-  l2 =(str_start[font_name[f2]+ 1] - str_start[font_name[f2]]); 
+  l1 = length(font_name[f1]);
+  l2 = length(font_name[f2]); 
   k1 = str_start[font_name[f1]]; 
   k2 = str_start[font_name[f2]]; 
 /*  showstring (k1, l1); */
@@ -3744,8 +3744,8 @@ void dvi_font_show(internal_font_number f, int suppressname)
 /*  suppressname = 0; */
   putc(' ', log_file);
   if (suppressname == 0) {
-    a = (str_start[font_area[f]+ 1]- str_start[font_area[f]]); 
-    l = (str_start[font_name[f]+ 1]- str_start[font_name[f]]); 
+    a = length(font_area[f]); 
+    l = length(font_name[f]); 
     k = str_start[font_area[f]];
     for_end = str_start[font_area[f]+ 1]- 1;
     if (k <= for_end) do {

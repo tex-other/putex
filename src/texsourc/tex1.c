@@ -44,17 +44,17 @@ void show_box_(halfword p)
 } 
 void delete_token_ref_(halfword p)
 {
-  if (mem[p].hh.v.LH == 0)
+  if (info(p) == 0)
     flush_list(p);
   else
-    decr(mem[p].hh.v.LH);
+    decr(info(p));
 }
 void delete_glue_ref_(halfword p)
 {
-  if (mem[p].hh.v.RH == 0)
+  if (link(p) == 0)
     free_node(p, 4);
   else
-    decr(mem[p].hh.v.RH);
+    decr(link(p));
 }
 void flush_node_list_(halfword p)
 {
@@ -1728,20 +1728,20 @@ void show_eqtb_(halfword n)
       print_skip_param(n - (hash_size + 782));  /* lineskip */
       print_char('=');
       if (n < (hash_size + 797))
-        print_spec(eqtb[n].hh.v.RH, 394); /* pt */
+        print_spec(eqtb[n].hh.v.RH, "pt");
       else
-        print_spec(eqtb[n].hh.v.RH, 334);  /* mu */
+        print_spec(eqtb[n].hh.v.RH, "mu");
     } else if (n < (hash_size + 1056))
     {
       print_esc("skip");
       print_int(n - (hash_size + 800));
       print_char('=');
-      print_spec(eqtb[n].hh.v.RH, 394);   /* pt */
+      print_spec(eqtb[n].hh.v.RH, "pt");
     } else {
       print_esc("muskip");
       print_int(n - (hash_size + 1056));
       print_char('=');
-      print_spec(eqtb[n].hh.v.RH, 334);   /* mu */
+      print_spec(eqtb[n].hh.v.RH, "mu");
     } else if (n < (hash_size + 3163))
       if (n == (hash_size + 1312))
       {
@@ -1757,17 +1757,17 @@ void show_eqtb_(halfword n)
         print_char('=');
         if (eqtb[n].hh.v.RH != 0)
           show_token_list(mem[eqtb[n].hh.v.RH].hh.v.RH, 0, 32);
-      } else if (n < (hash_size + 1578))
+      } else if (n < box_base)
       {
         print_esc("toks");
         print_int(n - toks_base);
         print_char('=');
         if (eqtb[n].hh.v.RH != 0)
           show_token_list(mem[eqtb[n].hh.v.RH].hh.v.RH, 0, 32);
-      } else if (n < (hash_size + 1834))
+      } else if (n < cur_font_loc)
       {
         print_esc("box");
-        print_int(n - (hash_size + 1578));
+        print_int(n - box_base);
         print_char('=');
         if (eqtb[n].hh.v.RH == 0)
           print_string("void");
@@ -1776,21 +1776,21 @@ void show_eqtb_(halfword n)
           breadth_max = 1;
           show_node_list(eqtb[n].hh.v.RH);
         }
-      } else if (n < (hash_size + 1883))   /* cat_code_base ... */
+      } else if (n < cat_code_base)   /* cat_code_base ... */
       {
-        if (n == (hash_size + 1834))
+        if (n == cur_font_loc)
           print_string("current font");
-        else if (n < (hash_size + 1851))
+        else if (n < math_font_base + 16)
         {
           print_esc("textfont");
-          print_int(n - (hash_size + 1835));
-        } else if (n < (hash_size + 1867))
+          print_int(n - math_font_base);
+        } else if (n < math_font_base + 32)
         {
           print_esc("scriptfont");
-          print_int(n - (hash_size + 1851));
+          print_int(n - math_font_base - 16);
         } else {
           print_esc("scriptscriptfont");
-          print_int(n - (hash_size + 1867));
+          print_int(n - math_font_base - 32);
         } 
         print_char('=');
 /*    print_esc(hash[(hash_size + 524) + eqtb[n].hh.v.RH].v.RH); */
@@ -1798,21 +1798,21 @@ void show_eqtb_(halfword n)
         print_esc("");print(hash[(hash_size + hash_extra + 524) + eqtb[n].hh.v.RH].v.RH);
       } else if (n < (hash_size + 2907))
       {
-        if (n < (hash_size + 2139))
+        if (n < math_code_base)
         {
           print_esc("catcode");
-          print_int(n - (hash_size + 1883));
-        } else if (n < (hash_size + 2395))
+          print_int(n - cat_code_base);
+        } else if (n < uc_code_base)
         {
           print_esc("lccode");
-          print_int(n - (hash_size + 2139));
+          print_int(n - lc_code_base);
         } else if (n < (hash_size + 2651))
         {
           print_esc("uccode");
-          print_int(n - (hash_size + 2395));
+          print_int(n - uc_code_base);
         } else {
           print_esc("sfcode");
-          print_int(n - (hash_size + 2651));
+          print_int(n - sf_code_base);
         } 
         print_char('=');
         print_int(eqtb[n].hh.v.RH);
@@ -1821,33 +1821,33 @@ void show_eqtb_(halfword n)
         print_int(n - (hash_size + 2907));
         print_char('=');
         print_int(eqtb[n].hh.v.RH);
-      } else if (n < (hash_size + 3730))
+      } else if (n < dimen_base)
       {
-        if (n < (hash_size + 3218))
-          print_param(n - (hash_size + 3163));
-        else if (n < (hash_size + 3474))
+        if (n < count_base)
+          print_param(n - int_base);
+        else if (n < del_code_base)
         {
           print_esc("count");
-          print_int(n - (hash_size + 3218));
+          print_int(n - count_base);
         } else {
           print_esc("delcode");
-          print_int(n - (hash_size + 3474));
+          print_int(n - del_code_base);
         }
         print_char('=');
         print_int(eqtb[n].cint);
-      } else if (n <= (hash_size + 4006))
+      } else if (n <= eqtb_size)
       {
-        if (n < (hash_size + 3751))
-          print_length_param(n - (hash_size + 3730)); 
+        if (n < scaled_base)
+          print_length_param(n - dimen_base); 
         else {
           print_esc("dimen");
-          print_int(n - (hash_size + 3751));
+          print_int(n - scaled_base);
         }
         print_char('=');
         print_scaled(eqtb[n].cint);
         print_string("pt");
       } else print_char('?');
-} 
+}
 #endif /* STAT */
 
 halfword id_lookup_(integer j, integer l)
@@ -1871,7 +1871,7 @@ halfword id_lookup_(integer j, integer l)
   p = h + 514;            /* h + hash_base */
   while (true) {
     if (hash[p].v.RH > 0)
-      if ((str_start[hash[p].v.RH + 1]- str_start[hash[p].v.RH]) == l)
+      if (length(hash[p].v.RH) == l)
         if (str_eq_buf(hash[p].v.RH, j))
           goto lab40;
     if (hash[p].v.LH == 0) {
@@ -1916,7 +1916,7 @@ halfword id_lookup_(integer j, integer l)
           }
 #endif
         } 
-        d =(pool_ptr - str_start[str_ptr]);
+        d = cur_length;
         while (pool_ptr > str_start[str_ptr]) {
           decr(pool_ptr);
           str_pool[pool_ptr + l]= str_pool[pool_ptr];

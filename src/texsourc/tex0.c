@@ -36,12 +36,11 @@ void append_char (ASCII_code c)
 }
 void succumb (void)
 {
-  if (interaction == 3)
-    interaction = 2;
+  if (interaction == error_stop_mode)
+    interaction = scroll_mode;
   if (log_opened) {
     error();
   }
-  ;
 #ifdef DEBUG
   if (interaction > 0)
     debug_help();
@@ -55,6 +54,11 @@ void dvi_out_ (ASCII_code op)
   incr(dvi_ptr);
   if (dvi_ptr == dvi_limit)
     dvi_swap();
+}
+void flush_string (void)
+{
+  decr(str_ptr);
+  pool_ptr = str_start[str_ptr];
 }
 void print_err (const char * s)
 {
@@ -437,7 +441,7 @@ void error (void)
   print_char('.');
   show_context();
 
-  if (interaction == 3)
+  if (interaction == error_stop_mode)
     while (true) {
 lab22:          /* loop */
       clear_for_error_prompt();
@@ -579,7 +583,7 @@ lab22:          /* loop */
         break; 
         case 'X':
         {
-          interaction = 2; 
+          interaction = scroll_mode; 
           jump_out();
         } 
         break; 
@@ -763,7 +767,7 @@ bool str_eq_str_ (str_number s, str_number t)
   pool_pointer j, k;
   bool result;
   result = false;
-  if ((str_start[s + 1] - str_start[s]) != (str_start[t + 1] - str_start[t]))
+  if (length(s) != length(t))
     goto lab45;
   j = str_start[s];
   k = str_start[t];
@@ -1016,14 +1020,14 @@ void normalize_selector (void)
     selector = 17;
   if (job_name == 0)
     open_log_file();
-  if (interaction == 0)
+  if (interaction == batch_mode)
     decr(selector);
 }
 /* sec 0098 */
 void pause_for_instructions (void)
 {
    if (OK_to_interrupt) {
-    interaction = 3;
+    interaction = error_stop_mode;
     if ((selector == 18)||(selector == 16))
       incr(selector);
     print_err("Interruption");
@@ -2071,38 +2075,35 @@ void print_rule_dimen_ (scaled d)
     print_scaled(d);
 }
 
-void print_glue_(scaled d, integer order, str_number s)
+void print_glue_(scaled d, integer order, char * s)
 {
   print_scaled(d); 
-  if ((order < 0)||(order > 3))
+  if ((order < 0) || (order > 3))
     print_string("foul");
-  else if (order > 0)
-  {
+  else if (order > 0) {
     print_string("fil");
     while (order > 1) {
       print_char('l');
       decr(order);
     }
-  } else if (s != 0)
-    print(s);
+  } else if (*s)
+    print_string(s);
 }
 
-void print_spec_(integer p, str_number s)
+void print_spec_(integer p, char * s)
 {
-  if ((p < mem_min)||(p >= lo_mem_max)) 
+  if ((p < mem_min) || (p >= lo_mem_max)) 
     print_char('*');
   else {
     print_scaled(mem[p + 1].cint);
-    if (s != 0)
-      print(s);
-    if (mem[p + 2].cint != 0)
-    {
-      print_string("plus");
+    if (*s)
+      print_string(s);
+    if (mem[p + 2].cint != 0) {
+      print_string(" plus ");
       print_glue(mem[p + 2].cint, mem[p].hh.b0, s);
     }
-    if (mem[p + 3].cint != 0)
-    {
-      print_string("minus");
+    if (mem[p + 3].cint != 0) {
+      print_string(" minus ");
       print_glue(mem[p + 3].cint, mem[p].hh.b1, s);
     }
   }
@@ -2129,15 +2130,12 @@ void print_delimiter_(halfword p)
 
 void print_subsidiary_data_(halfword p, ASCII_code c)
 {
-  if ((pool_ptr - str_start[str_ptr]) >= depth_threshold)
+  if (cur_length >= depth_threshold)
   {
     if (mem[p].hh.v.RH != 0)
       print_string("[]");
   } else {
-    {
-      str_pool[pool_ptr]= c;
-      incr(pool_ptr);
-    }
+    append_char(c);
     temp_ptr = p;
     switch (mem[p].hh.v.RH)
     {
@@ -2152,8 +2150,7 @@ void print_subsidiary_data_(halfword p, ASCII_code c)
         show_info();
         break;
       case 3:
-        if (mem[p].hh.v.LH == 0)
-        {
+        if (info(p) == 0) {
           print_ln();
           print_current_string();
           print_string("{}");
@@ -2249,37 +2246,33 @@ void print_skip_param_(integer n)
       break;
     default:
       print_string("[unknown glue parameter!]");
-      break; 
-  } 
-} 
+      break;
+  }
+}
 
 void show_node_list_(integer p)
-{/* 10 */ 
-  integer n; 
-  real g; 
-/* begin if cur_length>depth_threshold then */
-  if ((pool_ptr - str_start[str_ptr]) > depth_threshold)
+{
+  integer n;
+  real g;
+
+  if (cur_length > depth_threshold)
   {
-/*    if (p > 0) */  /* was p>null !!! line 3662 in tex.web */
-    if (p != 0)    /* fixed 94/Mar/23 BUG FIX */
-            /* NOTE: still not fixed in 3.14159 ! */
-    print_string("[]");
-    return; 
-  } 
+/*  if (p > 0) */  /* was p>null !!! line 3662 in tex.web */
+    if (p != 0)    /* fixed 94/Mar/23 BUG FIX *//* NOTE: still not fixed in 3.14159 ! */
+      print_string("[]");
+    return;
+  }
   n = 0; 
 /*  while(p > mem_min){ */  /* was p>mem_min !!! line 3667 in tex.web */
-  while(p != 0){      /* want p != null - bkph 93/Dec/15 */
-                /* NOTE: still not fixed in 3.14159 ! */
+  while (p != 0) {      /* want p != null - bkph 93/Dec/15 *//* NOTE: still not fixed in 3.14159 ! */
     print_ln(); 
     print_current_string(); 
-    if (p > mem_end)
-    {
+    if (p > mem_end) {
       print_string("Bad link, display aborted.");
       return;
     }
     incr(n);
-    if (n > breadth_max)
-    {
+    if (n > breadth_max) {
       print_string("etc.");
       return;
     }
@@ -2369,7 +2362,7 @@ void show_node_list_(integer p)
           print_string(",natural size ");
           print_scaled(mem[p + 3].cint);
           print_string("; split(");
-          print_spec(mem[p + 4].hh.v.RH, 0);
+          print_spec(mem[p + 4].hh.v.RH, "");
           print_char(',');
           print_scaled(mem[p + 2].cint);
           print_string("(; float cost");
@@ -2434,7 +2427,7 @@ void show_node_list_(integer p)
           else if (mem[p].hh.b1 == 102)
             print_char('x');
           print_string("leaders ");
-          print_spec(mem[p + 1].hh.v.LH, 0);
+          print_spec(mem[p + 1].hh.v.LH, "");
           {
             {
               str_pool[pool_ptr]= 46;
@@ -2459,9 +2452,9 @@ void show_node_list_(integer p)
           {
             print_char(' ');
             if (mem[p].hh.b1 < 98)
-              print_spec(mem[p + 1].hh.v.LH, 0);
+              print_spec(mem[p + 1].hh.v.LH, "");
             else
-              print_spec(mem[p + 1].hh.v.LH, 334); /* mu */
+              print_spec(mem[p + 1].hh.v.LH, "mu");
           }
         }
         break;

@@ -177,9 +177,9 @@ void dvi_font_def_(internal_font_number f)
   dvi_four(font_size[f]); 
   dvi_four(font_dsize[f]);
 /*  long to unsigned char ... */
-  dvi_out((str_start[font_area[f]+ 1]- str_start[font_area[f]]));
+  dvi_out(length(font_area[f]));
 /*  long to unsigned char ... */
-  dvi_out((str_start[font_name[f]+ 1]- str_start[font_name[f]]));
+  dvi_out(length(font_name[f]));
 /* sec 0603 */
   for (k = str_start[font_area[f]]; k <= str_start[font_area[f]+ 1] - 1; k++)
     dvi_out(str_pool[k]);
@@ -416,14 +416,14 @@ void special_out_(halfword p)
   }
 #endif
   } 
-  if ((pool_ptr - str_start[str_ptr])< 256)  /* can use xxx1 ? */
+  if (cur_length < 256)  /* can use xxx1 ? */
   {
     dvi_out(239);
 /* long to unsigned char ... */
-    dvi_out((pool_ptr - str_start[str_ptr]));
+    dvi_out(cur_length);
   } else { /* use xxx4 instead */
     dvi_out(242);
-    dvi_four((pool_ptr - str_start[str_ptr])); 
+    dvi_four(cur_length); 
   } 
 
 #ifdef IGNORED
@@ -1206,7 +1206,7 @@ void ship_out_(halfword p)
     print_two(tex_time % 60); 
     selector = old_setting; 
 /* long to unsigned char ... */
-    dvi_out((pool_ptr - str_start[str_ptr]));
+    dvi_out(cur_length);
     {
     register integer for_end; 
     s = str_start[str_ptr]; 
