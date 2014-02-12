@@ -342,10 +342,10 @@ lab30:
           oldl = l;
           if (l > last_special_line)
             linewidth = second_width;
-          else if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
+          else if (par_shape_ptr == 0)
             linewidth = first_width;
           else
-            linewidth = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * l].cint;
+            linewidth = mem[par_shape_ptr + 2 * l].cint;
         }
       }
     }
@@ -632,12 +632,12 @@ lab30:
     if (curline > last_special_line) {
       curwidth = second_width;
       curindent = second_indent;
-    } else if (eqtb[(hash_size + 1312)].hh.v.RH == 0) {
+    } else if (par_shape_ptr == 0) {
       curwidth = first_width;
       curindent = first_indent;
     } else {
-      curwidth = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * curline].cint;
-      curindent = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * curline - 1].cint;
+      curwidth = mem[par_shape_ptr + 2 * curline].cint;
+      curindent = mem[par_shape_ptr + 2 * curline - 1].cint;
     }
     adjust_tail = adjust_head;
     just_box = hpack(q, curwidth, 0);
@@ -2018,7 +2018,7 @@ void fire_up_(halfword c)
     incr(mem[cur_mark[0]].hh.v.LH); 
   } 
 /* if output_routine<>null then */
-  if (eqtb[(hash_size + 1313)].hh.v.RH != 0)
+  if (output_routine != 0)
   if (dead_cycles >= max_dead_cycles)
   {
 	  print_err("Output loop---");
@@ -2036,7 +2036,7 @@ void fire_up_(halfword c)
     mode = -1; 
     cur_list.aux_field.cint = ignore_depth; 
     mode_line = - (integer) line; 
-    begin_token_list(eqtb[(hash_size + 1313)].hh.v.RH, 6); /* output */
+    begin_token_list(output_routine, 6); /* output */
     new_save_level(8); 
     normal_paragraph(); 
     scan_left_brace(); 

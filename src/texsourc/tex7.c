@@ -368,7 +368,7 @@ void insert_dollar_sign (void)
 { 
   back_input();
   cur_tok = 804;
-  print_err("Proceed; I'll discard its present contents.");
+  print_err("Missing $ inserted");
   help2("I've inserted a begin-math/end-math symbol since I think",
 	  "you left one out. Proceed, with fingers crossed.");
   ins_error(); 
@@ -575,7 +575,7 @@ void normal_paragraph (void)
     eq_word_define((hash_size + 3747), 0);
   if (hang_after != 1)
     eq_word_define((hash_size + 3204), 1);
-  if (eqtb[(hash_size + 1312)].hh.v.RH != 0)
+  if (par_shape_ptr != 0)
     eq_define((hash_size + 1312), 118, 0); 
 }
 /* sec 1075 */
@@ -760,12 +760,12 @@ lab30:;
       if (k == 1)
       {
         cur_list.aux_field.cint = ignore_depth;
-        if (eqtb[(hash_size + 1318)].hh.v.RH != 0)/* everyhbox */
-          begin_token_list(eqtb[(hash_size + 1318)].hh.v.RH, 11);
+        if (every_vbox != 0)
+          begin_token_list(every_vbox, 11);
       } else {
         space_factor = 1000; 
-        if (eqtb[(hash_size + 1317)].hh.v.RH != 0)/* everyhbox */
-          begin_token_list(eqtb[(hash_size + 1317)].hh.v.RH, 10); 
+        if (every_hbox != 0)
+          begin_token_list(every_hbox, 10); 
       }
       return;
     }
@@ -844,8 +844,8 @@ void new_graf_(bool indented)
     mem[head].hh.v.RH = tail; 
     mem[tail + 1].cint = par_indent; 
   } 
-  if (eqtb[(hash_size + 1314)].hh.v.RH != 0)  /* everypar */
-    begin_token_list(eqtb[(hash_size + 1314)].hh.v.RH, 7); 
+  if (every_par != 0)
+    begin_token_list(every_par, 7); 
   if (nest_ptr == 1){
     build_page();
   }
@@ -1387,7 +1387,7 @@ lab45:
       } 
 lab30:; 
     } 
-    if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
+    if (par_shape_ptr == 0)
       if ((hang_indent != 0) &&
         (((hang_after >= 0) &&
         (prev_graf + 2 > hang_after)) ||(prev_graf + 1 < - (integer) hang_after))) {
@@ -1401,11 +1401,11 @@ lab30:;
         s = 0; 
       }
     else {
-      n = mem[eqtb[(hash_size + 1312)].hh.v.RH].hh.v.LH; 
+      n = mem[par_shape_ptr].hh.v.LH; 
       if (prev_graf + 2 >= n)
-        p = eqtb[(hash_size + 1312)].hh.v.RH + 2 * n; 
+        p = par_shape_ptr + 2 * n; 
       else
-        p = eqtb[(hash_size + 1312)].hh.v.RH + 2 *(prev_graf + 2);
+        p = par_shape_ptr + 2 *(prev_graf + 2);
       s = mem[p - 1].cint;
       l = mem[p].cint;
     } 
@@ -1415,8 +1415,8 @@ lab30:;
     eq_word_define((hash_size + 3743), w); 
     eq_word_define((hash_size + 3744), l); 
     eq_word_define((hash_size + 3745), s); 
-    if (eqtb[(hash_size + 1316)].hh.v.RH != 0)/* everydisplay */
-      begin_token_list(eqtb[(hash_size + 1316)].hh.v.RH, 9); 
+    if (every_display != 0)/* everydisplay */
+      begin_token_list(every_display, 9); 
     if (nest_ptr == 1) {
       build_page();
     }
@@ -1425,8 +1425,8 @@ lab30:;
     {
       push_math(15);
       eq_word_define((hash_size + 3207), -1);
-      if (eqtb[(hash_size + 1315)].hh.v.RH != 0)/* everymath */
-        begin_token_list(eqtb[(hash_size + 1315)].hh.v.RH, 8);
+      if (every_math != 0)/* everymath */
+        begin_token_list(every_math, 8);
     } 
   }
 }
@@ -1438,8 +1438,8 @@ void start_eq_no (void)
   {
     push_math(15); 
     eq_word_define((hash_size + 3207), -1); 
-    if (eqtb[(hash_size + 1315)].hh.v.RH != 0)/* everymath */
-      begin_token_list(eqtb[(hash_size + 1315)].hh.v.RH, 8);
+    if (every_math != 0)/* everymath */
+      begin_token_list(every_math, 8);
   }
 }
 /* sec 1151 */

@@ -34,6 +34,28 @@ void append_char (ASCII_code c)
   str_pool[pool_ptr] = c;
   incr(pool_ptr);
 }
+void succumb (void)
+{
+  if (interaction == 3)
+    interaction = 2;
+  if (log_opened) {
+    error();
+  }
+  ;
+#ifdef DEBUG
+  if (interaction > 0)
+    debug_help();
+#endif
+  history = 3;
+  jump_out();
+}
+void dvi_out_ (ASCII_code op)
+{
+  dvi_buf[dvi_ptr] = op;
+  incr(dvi_ptr);
+  if (dvi_ptr == dvi_limit)
+    dvi_swap();
+}
 void print_err (const char * s)
 {
   if (interaction == error_stop_mode);
@@ -392,30 +414,25 @@ void jump_out (void)
 #endif
     ready_already = 0;
 
-    if (trace_flag) show_line("EXITING at JUMPOUT\n", 0);
-
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-//    if (endit(history) != 0) history = 2; /* 93/Dec/26 in local.c */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-
-//    abort_flag++;       // TURN OFF THE POWER ???
+    if (trace_flag)
+      show_line("EXITING at JUMPOUT\n", 0);
 
     if ((history != 0) && (history != 1))
-      code = 1;
+      uexit(1);
     else
-      code = 0;
-    uexit(code); 
-//    longjmp(jumpbuffer, code+1);
+      uexit(0);
   }
 }
 /* sec 0082 */
 // deal with error by asking for user response 0-9, D, E, H, I, X, Q, R, S
 // NOTE: this may JUMPOUT either via X, or because of too many errors
 void error (void)
-{/* 22 10 */ 
-  ASCII_code c; 
-  integer s1, s2, s3, s4; 
-  if (history < 2) history = 2;
+{
+  ASCII_code c;
+  integer s1, s2, s3, s4;
+
+  if (history < 2)
+    history = 2;
 
   print_char('.');
   show_context();
@@ -486,7 +503,6 @@ lab22:          /* loop */
               str_start[input_stack[base_ptr].name_field];
             edit_line = line;
             jump_out();
-//            return;     // can drop through now 99/Oct/20
           }
           break;
         case 'H':
@@ -561,11 +577,10 @@ lab22:          /* loop */
           return; 
         } 
         break; 
-        case 88 :       /* X */
+        case 'X':
         {
           interaction = 2; 
           jump_out();
-//          return;     // can drop through now 99/Oct/20   
         } 
         break; 
         default: 
@@ -594,12 +609,13 @@ lab22:          /* loop */
     print_ln(); 
     give_err_help(); 
   } 
-  else while(help_ptr > 0){
+  else while(help_ptr > 0) {
     decr(help_ptr); 
     print_nl(help_line[help_ptr]); 
   } 
   print_ln(); 
-  if (interaction > 0)incr(selector); 
+  if (interaction > 0)
+    incr(selector); 
   print_ln(); 
 } 
 
@@ -608,25 +624,13 @@ void fatal_error_(char * s)
   normalize_selector();
   print_err("Emergency stop");
   help1(s); 
-  {
-    if (interaction == 3)interaction = 2; 
-    if (log_opened){
-      error();
-    }
-    ;
-#ifdef DEBUG
-    if (interaction > 0)debug_help(); 
-#endif /* DEBUG */
-    history = 3; 
-    jump_out();
-//    return;     // can drop through now 99/Oct/20   
-  } 
+  succumb();
 }
 /* sec 0094 */
 void overflow_(char * s, integer n)
 {
   normalize_selector();
-  print_err("TeX capacity exceeded, sorry[");
+  print_err("TeX capacity exceeded, sorry [");
   print_string(s); 
   print_char('=');
   print_int(n); 
@@ -642,18 +646,7 @@ void overflow_(char * s, integer n)
       show_line(log_line, 0);
     }
   }
-  if (interaction == 3)
-    interaction = 2;
-  if (log_opened) {
-    error();
-  }
-  ;
-#ifdef DEBUG
-  if (interaction > 0)
-    debug_help();
-#endif
-  history = 3;
-  jump_out();
+  succumb();
 }
 /* sec 0095 */
 void confusion_(char * s)
@@ -669,20 +662,7 @@ void confusion_(char * s)
     help2("One of your faux pas seems to have wounded me deeply...",
         "in fact, I'm barely conscious. Please fix it and try again.");
   }
-  {
-    if (interaction == 3)
-      interaction = 2;
-    if (log_opened) {
-      error();
-    }
-    ;
-#ifdef DEBUG
-    if (interaction > 0)
-      debug_help();
-#endif
-    history = 3;
-    jump_out();
-  }
+  succumb();
 }
 /* sec 0037 */
 bool init_terminal (void) 

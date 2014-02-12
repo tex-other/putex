@@ -63,7 +63,7 @@ void char_warning_(internal_font_number f, eight_bits c)
 /*    print_char(32); */
   }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    print_string("in font");
+    print_string(" in font ");
     slow_print(font_name[f]); 
     print_char('!');
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -122,59 +122,32 @@ void dvi_swap (void)
 void dvi_four_(integer x)    /* attempt at speeding up bkph - is compiler smart ? */
 { 
   if (x >= 0)
-  {
-/*    dvi_buf[dvi_ptr]= x / 16777216L;  */ /* 2^24 */
-/*    dvi_buf[dvi_ptr]=(x >> 24);  */
-    dvi_buf[dvi_ptr]= (unsigned char)(x >> 24); 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+    // dvi_out(x % 16777216L);
+    dvi_out((x >> 24));
   else {
     x = x + 1073741824L;    /* 2^30 40000000 hex */ 
-    x = x + 1073741824L; 
-    {
-/*      dvi_buf[dvi_ptr]=(x / 16777216L)+ 128;   */  /* 2^24 */
-      dvi_buf[dvi_ptr]=(x >> 24)+ 128;      /* set sign bit */
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
+    x = x + 1073741824L;
+    //dvi_out((x / 16777216L) + 128);
+    dvi_out((x >> 24) + 128);
   } 
 /*  x = x % 16777216L;  */  /* % 2^24 */
-  x = x & 16777215L; 
-  {
-/*    dvi_buf[dvi_ptr]= x / 65536L;  */
-/*    dvi_buf[dvi_ptr]=(x >> 16);  */
-    dvi_buf[dvi_ptr]= (unsigned char)(x >> 16); 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+  x = x & 16777215L;
+  //dvi_out(x / 65536L);
+  dvi_out((x >> 16));
 /*  x = x % 65536L;  */ /* % 2^16 */
   x = x & 65535L;
-  {
-/*    dvi_buf[dvi_ptr]= x / 256;  */
-/*    dvi_buf[dvi_ptr]=(x >> 8);  */
-    dvi_buf[dvi_ptr]= (unsigned char)(x >> 8); 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
-  {
-/*    dvi_buf[dvi_ptr]= x % 256; */ /* % 2^8 */
-    dvi_buf[dvi_ptr]= x & 255; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+  //dvi_out(x / 256);
+  dvi_out((x >> 8));
+  //dvi_out(x % 256);
+  dvi_out(x & 255);
 } 
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
 void zdvipop(integer l)
 { 
-  if ((l == dvi_offset + dvi_ptr)&&(dvi_ptr > 0)) 
-  decr(dvi_ptr); 
-  else {
-      
-    dvi_buf[dvi_ptr]= 142; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+  if ((l == dvi_offset + dvi_ptr) && (dvi_ptr > 0))
+    decr(dvi_ptr); 
+  else
+    dvi_out(142);
 } 
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
 void dvi_font_def_(internal_font_number f)
@@ -183,108 +156,35 @@ void dvi_font_def_(internal_font_number f)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef INCREASEFONTS
   if (f <= 256) {
-  {
-    dvi_buf[dvi_ptr]= 243; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
-  {
-    dvi_buf[dvi_ptr]= f - 1; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+    dvi_out(243);
+    dvi_out(f - 1);
   }
   else {
-  {
-    dvi_buf[dvi_ptr]= 244; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
-  {
-    dvi_buf[dvi_ptr]= (f - 1) >> 8; /* top byte */
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
-  {
-    dvi_buf[dvi_ptr]= (f - 1) & 255; /* bottom byte */
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+    dvi_out(244);
+    dvi_out(((f - 1) >> 8));
+    dvi_out(((f - 1) & 255));
   }
 #else
-  {
-    dvi_buf[dvi_ptr]= 243; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
-  {
-    dvi_buf[dvi_ptr]= f - 1; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+  dvi_out(243);
+  dvi_out(f - 1);
 #endif
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* spit out the font checksum now */
-  {
-    dvi_buf[dvi_ptr]= font_check[f].b0; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
-  {
-    dvi_buf[dvi_ptr]= font_check[f].b1; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
-  {
-    dvi_buf[dvi_ptr]= font_check[f].b2; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
-  {
-    dvi_buf[dvi_ptr]= font_check[f].b3; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+  dvi_out(font_check[f].b0);
+  dvi_out(font_check[f].b1);
+  dvi_out(font_check[f].b2);
+  dvi_out(font_check[f].b3);
   dvi_four(font_size[f]); 
-  dvi_four(font_dsize[f]); 
-  {
+  dvi_four(font_dsize[f]);
 /*  long to unsigned char ... */
-    dvi_buf[dvi_ptr]=
-      (str_start[font_area[f]+ 1]- str_start[font_area[f]]); 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
-  {
+  dvi_out((str_start[font_area[f]+ 1]- str_start[font_area[f]]));
 /*  long to unsigned char ... */
-    dvi_buf[dvi_ptr]=
-      (str_start[font_name[f]+ 1]- str_start[font_name[f]]); 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
-  {
-    register integer for_end; 
-    k = str_start[font_area[f]]; 
-    for_end = str_start[font_area[f]+ 1]- 1; 
-    if (k <= for_end) do 
-    {
-      dvi_buf[dvi_ptr]= str_pool[k]; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    while(k++ < for_end);
-  } 
-  {
-    register integer for_end; 
-    k = str_start[font_name[f]]; 
-    for_end =   str_start[font_name[f]+ 1]- 1;
-    if (k <= for_end) do 
-    {
-      dvi_buf[dvi_ptr]= str_pool[k]; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    while(k++ < for_end);
-  } 
+  dvi_out((str_start[font_name[f]+ 1]- str_start[font_name[f]]));
+/* sec 0603 */
+  for (k = str_start[font_area[f]]; k <= str_start[font_area[f]+ 1] - 1; k++)
+    dvi_out(str_pool[k]);
+  for (k = str_start[font_name[f]]; k <= str_start[font_name[f]+ 1] - 1; k++)
+    dvi_out(str_pool[k]);
 } 
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
 void zmovement(scaled w, eight_bits o) 
@@ -301,7 +201,6 @@ void zmovement(scaled w, eight_bits o)
     down_ptr = q; 
   } 
   else {              /* 143 == right1 */
-      
     mem[q].hh.v.RH = right_ptr; 
     right_ptr = q; 
   } 
@@ -372,77 +271,44 @@ void zmovement(scaled w, eight_bits o)
   mem[q].hh.v.LH = 3; 
   if (abs(w)>= 8388608L) /* 2^23 */
   {
-    {
-      dvi_buf[dvi_ptr]= o + 3; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
+    dvi_out(o + 3);
     dvi_four(w); 
     return; 
   } 
   if (abs(w)>= 32768L)
   {
-    {
-      dvi_buf[dvi_ptr]= o + 2; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
+    dvi_out(o + 2);
     if (w < 0)
     w = w + 16777216L;  /* 2^24 */
-    {
-/*      dvi_buf[dvi_ptr]= w / 65536L;  */
-/*      dvi_buf[dvi_ptr]=(w >> 16);  */
-      dvi_buf[dvi_ptr]= (unsigned char)(w >> 16); 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
+    //dvi_out(w / 65536L);
+    dvi_out((w >> 16));
 /*    w = w % 65536L; */
   w = w & 65535L; 
     goto lab2; 
   } 
   if (abs(w)>= 128)
   {
-    {
-      dvi_buf[dvi_ptr]= o + 1; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
+    dvi_out(o + 1);
     if (w < 0)
     w = w + 65536L; 
     goto lab2; 
-  } 
-  {
-    dvi_buf[dvi_ptr]= o; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+  }
+  dvi_out(o);
   if (w < 0)
   w = w + 256; 
-  goto lab1; 
-  lab2: {
-/*    dvi_buf[dvi_ptr]= w / 256;  */
-/*    dvi_buf[dvi_ptr]=(w >> 8);  */
-    dvi_buf[dvi_ptr]= (unsigned char)(w >> 8); 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
-  lab1: {
-/*    dvi_buf[dvi_ptr]= w % 256;  */
-    dvi_buf[dvi_ptr]= w & 255; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+  goto lab1;
+lab2:
+  //dvi_out(w / 256);
+  dvi_out((w >> 8));
+lab1:
+  //dvi_out(w % 256);
+  dvi_out(w & 255);
   return; 
   lab40: mem[q].hh.v.LH = mem[p].hh.v.LH; 
   if (mem[q].hh.v.LH == 1)
   {
-    {
-      dvi_buf[dvi_ptr]= o + 4; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    while(mem[q].hh.v.RH != p){
-  
+    dvi_out(o + 4);
+    while (mem[q].hh.v.RH != p) {
       q = mem[q].hh.v.RH; 
       switch(mem[q].hh.v.LH)
       {case 3 : 
@@ -457,13 +323,8 @@ void zmovement(scaled w, eight_bits o)
       } 
     } 
   } else {
-    {
-      dvi_buf[dvi_ptr]= o + 9; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    while(mem[q].hh.v.RH != p){
-  
+    dvi_out(o + 9);
+    while (mem[q].hh.v.RH != p) {
       q = mem[q].hh.v.RH; 
       switch(mem[q].hh.v.LH)
       {case 3 : 
@@ -482,22 +343,22 @@ void zmovement(scaled w, eight_bits o)
 void prune_movements_(integer l) 
 {/* 30 10 */ 
   halfword p; 
-  while(down_ptr != 0){ /* while down_ptr<>null do l.12206 */
-      
+  while (down_ptr != 0) { /* while down_ptr<>null do l.12206 */
     if (mem[down_ptr + 2].cint < l)
     goto lab30; 
     p = down_ptr; 
     down_ptr = mem[p].hh.v.RH; 
     free_node(p, 3); 
-  } 
-  lab30: while(right_ptr != 0){ /* done: while right_ptr<>null do */
+  }
+lab30:
+  while (right_ptr != 0) { /* done: while right_ptr<>null do */
     if (mem[right_ptr + 2].cint < l)
-    return; 
-    p = right_ptr; 
-    right_ptr = mem[p].hh.v.RH; 
-    free_node(p, 3); 
-  } 
-} 
+      return;
+    p = right_ptr;
+    right_ptr = mem[p].hh.v.RH;
+    free_node(p, 3);
+  }
+}
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
 void special_out_(halfword p)
 {
@@ -557,24 +418,11 @@ void special_out_(halfword p)
   } 
   if ((pool_ptr - str_start[str_ptr])< 256)  /* can use xxx1 ? */
   {
-    {
-      dvi_buf[dvi_ptr]= 239;    /* xxx1 */
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    {
-/*    long to unsigned char ... */
-      dvi_buf[dvi_ptr]=(pool_ptr - str_start[str_ptr]); 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-  } 
-  else {              /* use xxx4 instead */ 
-    {
-      dvi_buf[dvi_ptr]= 242;    /* xxx4 */
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
+    dvi_out(239);
+/* long to unsigned char ... */
+    dvi_out((pool_ptr - str_start[str_ptr]));
+  } else { /* use xxx4 instead */
+    dvi_out(242);
     dvi_four((pool_ptr - str_start[str_ptr])); 
   } 
 
@@ -618,12 +466,8 @@ void special_out_(halfword p)
     register integer for_end; 
     k = str_start[str_ptr]; 
     for_end = pool_ptr - 1; 
-    if (k <= for_end) do 
-    {
-      dvi_buf[dvi_ptr]= str_pool[k]; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
+    if (k <= for_end) do
+      dvi_out(str_pool[k]);
     while(k++ < for_end);
   } 
   pool_ptr = str_start[str_ptr]; 
@@ -734,7 +578,7 @@ void out_what_(halfword p)
 } 
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
 void hlist_out (void) 
-{/* 21 13 14 15 */ 
+{
   scaled baseline; 
   scaled leftedge; 
   scaled saveh, savev; 
@@ -759,12 +603,7 @@ void hlist_out (void)
   p = mem[thisbox + 5].hh.v.RH; 
   incr(cur_s); 
   if (cur_s > 0)
-  {
-    dvi_buf[dvi_ptr]= 141; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)
-      dvi_swap(); 
-  } 
+    dvi_out(141);
   if (cur_s > max_push)
   max_push = cur_s; 
   saveloc = dvi_offset + dvi_ptr; 
@@ -785,8 +624,8 @@ lab21: if ((p >= hi_mem_min))
       dvi_v = cur_v; 
     } 
     do {
-  f = mem[p].hh.b0; 
-      c = mem[p].hh.b1; 
+      f = mem[p].hh.b0;
+      c = mem[p].hh.b1;
       if (f != dvi_f)
       {
   if (! font_used[f])
@@ -795,11 +634,7 @@ lab21: if ((p >= hi_mem_min))
     font_used[f]= true; 
   } 
   if (f <= 64)
-  {               /* fnt_num_0 --- fnt_num_63 */
-    dvi_buf[dvi_ptr]= f + 170; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+    dvi_out(f + 170); /* fnt_num_0 --- fnt_num_63 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef INCREASEFONTS
   else if (f <= 256){      /* if we allow greater than 256 fonts */
@@ -807,59 +642,28 @@ lab21: if ((p >= hi_mem_min))
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   else {              /* normal TeX 82 case */
 #endif
-    {               /* fnt1 followed by f */
-      dvi_buf[dvi_ptr]= 235; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    {
-      dvi_buf[dvi_ptr]= f - 1; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
+    dvi_out(235); /* fnt1 followed by f */
+    dvi_out(f - 1);
   } 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef INCREASEFONTS
   else {              /* fnt2 followed by f / 256,  f % 256 */
-    {
-      dvi_buf[dvi_ptr]= 236;
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    {
-      dvi_buf[dvi_ptr]= (f - 1) >> 8;   /* top byte */
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    }
-    {
-      dvi_buf[dvi_ptr]= (f - 1) & 255;    /* bottom byte */
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    }     
+    dvi_out(236);
+    dvi_out(((f - 1) >> 8)); /* top byte */
+    dvi_out(((f - 1) & 255)); /* bottom byte */     
   }
 #endif
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     dvi_f = f; 
       } 
       if (c >= 128)
-      {
-  dvi_buf[dvi_ptr]= 128; 
-  incr(dvi_ptr); 
-  if (dvi_ptr == dvi_limit)dvi_swap(); 
-      } 
-      {
-  dvi_buf[dvi_ptr]= c; 
-  incr(dvi_ptr); 
-  if (dvi_ptr == dvi_limit)dvi_swap(); 
-      } 
-      cur_h = cur_h + font_info[width_base[f]+ font_info[char_base[f]+ c 
-    ].qqqq.b0].cint; 
+        dvi_out(128);
+      dvi_out(c); 
+      cur_h = cur_h + font_info[width_base[f] + font_info[char_base[f] + c].qqqq.b0].cint; 
       p = mem[p].hh.v.RH; 
     } while(!(!(p >= hi_mem_min))); 
     dvi_h = cur_h; 
-  } 
-  else {
-      
+  } else {
     switch(mem[p].hh.b0)
     {case 0 : 
     case 1 : 
@@ -1035,12 +839,8 @@ lab21: if ((p >= hi_mem_min))
       {
   movement(cur_v - dvi_v, 157);   /* 157 == down1 */
   dvi_v = cur_v; 
-      } 
-      {
-  dvi_buf[dvi_ptr]= 132; 
-  incr(dvi_ptr); 
-  if (dvi_ptr == dvi_limit)dvi_swap(); 
-      } 
+      }
+      dvi_out(132);
       dvi_four(rule_ht); 
       dvi_four(rule_wd); 
       cur_v = baseline; 
@@ -1081,11 +881,7 @@ void vlist_out (void)
   p = mem[thisbox + 5].hh.v.RH; 
   incr(cur_s); 
   if (cur_s > 0)
-  {
-    dvi_buf[dvi_ptr]= 141; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+    dvi_out(141);
   if (cur_s > max_push)
   max_push = cur_s; 
   saveloc = dvi_offset + dvi_ptr; 
@@ -1269,12 +1065,8 @@ void vlist_out (void)
   {
     movement(cur_v - dvi_v, 157);   /* 157 == down1 */
     dvi_v = cur_v; 
-  } 
-  {
-    dvi_buf[dvi_ptr]= 137; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+  }
+  dvi_out(137);
   dvi_four(rule_ht); 
   dvi_four(rule_wd); 
       } 
@@ -1378,16 +1170,8 @@ void ship_out_(halfword p)
 
   if (total_pages == 0)
   {
-    {
-      dvi_buf[dvi_ptr]= 247; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    {
-      dvi_buf[dvi_ptr]= 2; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    }
+    dvi_out(247);
+    dvi_out(2);
 /********BINDING WITH LIBHARU*********/
 /*
     yandy_pdf = HPDF_New(error_handler, NULL);
@@ -1421,33 +1205,21 @@ void ship_out_(halfword p)
     print_two(tex_time / 60); 
     print_two(tex_time % 60); 
     selector = old_setting; 
-    {
-/*    long to unsigned char ... */
-      dvi_buf[dvi_ptr]=(pool_ptr - str_start[str_ptr]); 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
+/* long to unsigned char ... */
+    dvi_out((pool_ptr - str_start[str_ptr]));
     {
     register integer for_end; 
     s = str_start[str_ptr]; 
     for_end = pool_ptr - 1; 
-    if (s <= for_end) do 
-    {
-      dvi_buf[dvi_ptr]= str_pool[s]; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
+    if (s <= for_end) do
+      dvi_out(str_pool[s]);
     while(s++ < for_end);
   } 
     pool_ptr = str_start[str_ptr]; 
   } // end of if total_pages == 0
 
-  pageloc = dvi_offset + dvi_ptr; 
-  {
-    dvi_buf[dvi_ptr]= 139; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+  pageloc = dvi_offset + dvi_ptr;
+  dvi_out(139);
   {
     register integer for_end; 
     k = 0; 
@@ -1461,12 +1233,8 @@ void ship_out_(halfword p)
   cur_v = mem[p + 3].cint + v_offset; 
   temp_ptr = p; 
   if (mem[p].hh.b0 == 1)vlist_out(); 
-  else hlist_out(); 
-  {
-    dvi_buf[dvi_ptr]= 140; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
+  else hlist_out();
+  dvi_out(140); 
   incr(total_pages); 
   cur_s = -1; 
   lab30:; 
@@ -1762,9 +1530,9 @@ lab50:
   else {
     if (pack_begin_line != 0) {
       if (pack_begin_line > 0)
-        print_string(")in paragraph at lines ");
+        print_string(") in paragraph at lines ");
       else
-        print_string(")in alignment at lines ");
+        print_string(") in alignment at lines ");
       print_int(abs(pack_begin_line));
       print_string("--");
     } else print_string(")detected at line ");

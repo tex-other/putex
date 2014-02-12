@@ -67,21 +67,21 @@
 
 typedef struct map_element_struct
 {
-  char *key;
-  char *value;
-  struct map_element_struct *next;
+  char * key;
+  char * value;
+  struct map_element_struct * next;
 } map_element_type;
 
 typedef map_element_type **map_type;
 
-extern bool usesourcedirectory;     /* in local.c */
+extern bool usesourcedirectory; /* in local.c */
 
-extern bool workingdirectory;     /* in local.c */
+extern bool workingdirectory;   /* in local.c */
 
 bool absolute_p (string filename);
 string readable (string name);
 string truncate_pathname (string name);
-char *file_p(string fn);
+char * file_p(string fn);
 bool dir_p(string fn);
 string *find_dir_list (string path);
 void add_directory (string **dir_list_ptr, unsigned *dir_count_ptr, string dir);
@@ -96,7 +96,7 @@ char *map_lookup (map_type map, char *key);
 
 // the following do *not* use MALLOC
 
-extern char * xconcat (char *buffer, char *s1, char *s2);            /* openinou.c */
+extern char * xconcat  (char *buffer, char *s1, char *s2);            /* openinou.c */
 extern char * xconcat3 (char *buffer, char *s1, char *s2, char *s3); /* openinou.c */
 
 /////////////////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ void uexit (int unix_code)
   }
   jump_used++;
   // I removed the longjmp.
-  //longjmp(jumpbuffer, code+1);    // 1999/Nov/7
+  //longjmp(jumpbuffer, final_code + 1);    // 1999/Nov/7
   exit(final_code);
 }
 
@@ -182,7 +182,7 @@ address xcalloc (unsigned nelem, unsigned elsize)
   return new_mem;
 }
 
-/* Return a copy of s in new storage.  */ /* xmalloc does error checking */
+/* Return a copy of s in new storage. */ /* xmalloc does error checking */
 
 string xstrdup (string s)
 {
@@ -265,12 +265,12 @@ string concat3 (string s1, string s2, string s3)
 
 // following used only in itex.c on pool file
 
-/* Return true if we're at the end of FILE, else false.  This implements
-   Pascal's `eof' builtin.  */
+/* Return true if we're at the end of FILE, else false.  This implements */
+/*  Pascal's `eof' builtin.                                              */
 /* It differs from C feof in that the latter is not true at end of file
-   unless an attempt has actually been made to read past EOF */
+   unless an attempt has actually been made to read past EOF             */
 
-bool test_eof (FILE *file)
+bool test_eof (FILE * file)
 {
   int c;
 /* Maybe we're already at the end?  */
@@ -285,7 +285,7 @@ bool test_eof (FILE *file)
 
 /* Return true on end-of-line in FILE or at the end of FILE, else false.  */
 
-bool eoln (FILE *file)
+bool eoln (FILE * file)
 {
   int c;
   if (feof (file))
@@ -403,7 +403,7 @@ string extend_filename (string name, string default_suffix)
 
 // this returns newly allocated character string
 
-char *read_line (FILE *f)
+char *read_line (FILE * f)
 {
   int c;
   unsigned int limit = BLOCK_SIZE;
@@ -495,7 +495,7 @@ static string *path_dirs[LAST_PATH];
 
 void set_paths (int path_bits)
 {
-  int n;                      /* 97/Apr/2 */
+  int n;                          /* 97/Apr/2 */
   char *s, *t, *u;                /* 94/Jan/6 */
   char buffer[PATH_MAX];
 
@@ -631,9 +631,9 @@ void set_paths (int path_bits)
 }
 
 #ifdef CACHEFILENAME
-  char last_filename[PATH_MAX]="";  /* last full path / file name found C */
-  char last_name[PATH_MAX]="";      /* last file name searched for C */
-  int last_path_index=-1;           /* last path_index */
+  char last_filename[PATH_MAX] = "";  /* last full path / file name found C */
+  char last_name[PATH_MAX]     = "";  /* last file name searched for C */
+  int last_path_index          = -1;  /* last path_index */
 #endif
 
 /* Look for NAME, a C string (no longer Pascal), in the colon-separated list 
@@ -788,7 +788,7 @@ bool test_read_access (unsigned char *name, int path_index)
 
 /* The hash function.  We go for simplicity here.  */
 
-static unsigned map_hash (char *key)
+static unsigned map_hash (char * key)
 {
   unsigned n = 0;
 
@@ -1196,7 +1196,7 @@ bool dir_p (string fn)
 
 /* this string allocation / concatination is silly - use fixed buffer! */
 
-int xfind_path_filename (string buffer, string filename,  string * dir_list)
+int xfind_path_filename (string buffer, string filename, string * dir_list)
 {
   string found_name = NULL;
 

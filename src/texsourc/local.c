@@ -78,7 +78,7 @@
 #ifndef _WINDOWS
   #include <conio.h>            /* for _getch() */
 #endif
-#pragma warning(default:4032) // different type when promoted`
+#pragma warning(default:4032) // different type when promoted
 
 
 /* Argument handling, etc.  */ /* from common.h - setup `main' in texmf.c */
@@ -127,50 +127,47 @@ bool reorder_arg_flag = true; /* put command line flags/arguments first */
 /* Used in tex0.c with wintodos[c-128]                      */
 
 unsigned char wintodos[128] = {
-    0,   0,   0, 159,   0,   0,   0,   0, 
-   94,   0,   0,   0,   0,   0,   0,   0, 
+    0,   0,   0, 159,   0,   0,   0,   0,
+   94,   0,   0,   0,   0,   0,   0,   0,
     0,  96,  39,   0,   0,   7,   0,   0,
-  126,   0,   0,   0,   0,   0,   0,   0, 
-   32, 173, 189, 156, 207, 190, 221,  21, 
-    0, 184, 166, 174, 170,  45, 169,   0, 
-  248, 241, 253, 252,   0, 230,  20, 250, 
-    0, 251, 167, 175, 172, 171, 243, 168, 
-  183, 181, 182, 199, 142, 143, 146, 128, 
-  212, 144, 210, 211, 222, 214, 215, 216, 
-  209, 165, 227, 224, 226, 229, 153, 158, 
-  157, 235, 233, 234, 154, 237, 232, 225, 
-  133, 160, 131, 198, 132, 134, 145, 135, 
-  138, 130, 136, 137, 141, 161, 140, 139, 
+  126,   0,   0,   0,   0,   0,   0,   0,
+   32, 173, 189, 156, 207, 190, 221,  21,
+    0, 184, 166, 174, 170,  45, 169,   0,
+  248, 241, 253, 252,   0, 230,  20, 250,
+    0, 251, 167, 175, 172, 171, 243, 168,
+  183, 181, 182, 199, 142, 143, 146, 128,
+  212, 144, 210, 211, 222, 214, 215, 216,
+  209, 165, 227, 224, 226, 229, 153, 158,
+  157, 235, 233, 234, 154, 237, 232, 225,
+  133, 160, 131, 198, 132, 134, 145, 135,
+  138, 130, 136, 137, 141, 161, 140, 139,
   208, 164, 149, 162, 147, 228, 148, 246,
   155, 151, 163, 150, 129, 236, 231, 152
 };  
 
 void show_usage (char * program) {
   char * s = log_line;
-  sprintf (s, "\n\
-%s [-?ivnwdrzpK] [-m=ini_mem] [-e=hyph_size] [-h=trie_size]\n\
-\t[-x=xchr_file] [-k=key_file] [-o=dvi_dir] [-l=log_dir] [-a=aux_dir]\n\
-\t[+format_file] [tex_file]\n\
-", program);
-  s += strlen(s);
-  sprintf (s, "\
-    -?    show this usage summary\n\
-    -i    start up as iniTeX (create format file)\n\
-    -v    be verbose (show implementation version number)\n\
-    -n    do not allow `non ASCII' characters in input files (complain instead)\n\
-    -w    do not show `non ASCII' characters in hexadecimal (show as is)\n\
-    -d    do not allow DOS style file names - i.e. do not convert \\ to /\n\
-    -r    do not allow Mac style termination - i.e. do not convert \\r to \\n\n\
-    -p    allow use of \\patterns after loading format (iniTeX only)\n\
-    -K    disable all extensions to basic TeX\n\
-    -m    initial main memory size in kilo words (iniTeX only)\n\
-    -e    hyphenation exception dictionary size (iniTeX only)\n\
-    -h    hyphenation pattern trie size (iniTeX only)\n\
-    -x    use `non ASCII' character mapping (xchr[]) defined in file\n\
-    -k    use `key replacement' defined in file\n\
-    -o    write DVI file in specified directory (default current directory)\n\
-    -l    write LOG file in specified directory (default current directory)\n\
-    -a    write AUX file in specified directory (default current directory)");
+  sprintf (s, "\n"
+      " yandytex [-?ivnwdrzpK] [-m=ini_mem] [-e=hyph_size] [-h=trie_size]\n"
+      "          [-x=xchr_file] [-k=key_file] [-o=dvi_dir] [-l=log_dir] [-a=aux_dir]\n"
+      "          [+format_file] [tex_file]\n\n"
+      "    -?    show this usage summary\n"
+      "    -i    start up as iniTeX (create format file)\n"
+      "    -v    be verbose (show implementation version number)\n"
+      "    -n    do not allow `non ASCII' characters in input files (complain instead)\n"
+      "    -w    do not show `non ASCII' characters in hexadecimal (show as is)\n"
+      "    -d    do not allow DOS style file names - i.e. do not convert \\ to /\n"
+      "    -r    do not allow Mac style termination - i.e. do not convert \\r to \\n\n"
+      "    -p    allow use of \\patterns after loading format (iniTeX only)\n"
+      "    -K    disable all extensions to basic TeX\n"
+      "    -m    initial main memory size in kilo words (iniTeX only)\n"
+      "    -e    hyphenation exception dictionary size (iniTeX only)\n"
+      "    -h    hyphenation pattern trie size (iniTeX only)\n"
+      "    -x    use `non ASCII' character mapping (xchr[]) defined in file\n"
+      "    -k    use `key replacement' defined in file\n"
+      "    -o    write DVI file in specified directory (default current directory)\n"
+      "    -l    write LOG file in specified directory (default current directory)\n"
+      "    -a    write AUX file in specified directory (default current directory)");
   strcat(s, "\n");
   show_line(log_line, 1);
 #ifndef _WINDOWS
@@ -247,7 +244,7 @@ void stampcopy (char *s)
 #define MAXCHRS 256
 #define NOTDEF 127
 
-void read_xchr_sub (FILE *pinput)
+void read_xchr_sub (FILE * xchr_input)
 {
   char buffer[PATH_MAX];
   int k, from, to, count = 0;
@@ -265,9 +262,9 @@ void read_xchr_sub (FILE *pinput)
 #endif
 
 #ifdef ALLOCATEBUFFER
-  while (fgets(buffer, current_buf_size, pinput) != NULL) 
+  while (fgets(buffer, current_buf_size, xchr_input) != NULL) 
 #else
-  while (fgets(buffer, sizeof(buffer), pinput) != NULL)
+  while (fgets(buffer, sizeof(buffer), xchr_input) != NULL)
 #endif
   {
     if (*buffer == '%' || *buffer == ';' || *buffer == '\n') continue;
@@ -316,7 +313,7 @@ void read_xchr_sub (FILE *pinput)
 
 char *replacement[MAXCHRS];     /* pointers to replacement strings */
 
-void read_repl_sub (FILE *pinput)
+void read_repl_sub (FILE * repl_input)
 {
   int k, n, m, chrs;
   char buffer[PATH_MAX];
@@ -330,7 +327,7 @@ void read_repl_sub (FILE *pinput)
   for (k = 0; k < MAXCHRS; k++) replacement[k] = NULL; 
 #endif
 
-  while (fgets(buffer, PATH_MAX, pinput) != NULL) {
+  while (fgets(buffer, PATH_MAX, repl_input) != NULL) {
     if (*buffer == '%' || *buffer == ';' || *buffer == '\n') continue;
     if ((m = sscanf (buffer, "%d%n %s", &chrs, &n, &charname)) == 0)
       continue; 
@@ -788,7 +785,8 @@ int allocate_tries (int trie_max)
   update_statistics ((int) trie_trc, nc, 0);
 /*  sprintf(log_line, "trie_size %d trie_max %d\n", trie_size, trie_max); */ /* debug */
   trie_size = trie_max;           /* BUG FIX 98/Jan/5 */
-  if (trace_flag)  probe_show();     /* 94/Mar/25 */
+  if (trace_flag)
+    probe_show();     /* 94/Mar/25 */
   return 0;               // success
 }
 #endif
@@ -830,8 +828,7 @@ int realloc_hyphen (int hyphen_prime)
     return -1;
   }
   if (trace_flag) {
-    sprintf(log_line, "Addresses hyph_word %d hyph_list %d\n", 
-         hyph_word, hyph_list);
+    sprintf(log_line, "Addresses hyph_word %d hyph_list %d\n", hyph_word, hyph_list);
     show_line(log_line, 0);
   }
 /*  cannot preserve old contents when hyphen prime is changed */
@@ -940,9 +937,9 @@ memory_word *allocate_main_memory (int size)
 memory_word *realloc_main (int losize, int hisize)
 {  
   int k, minsize;
-  int newsize=0;        /* to quieten compiler */
-  int n=0;          /* to quieten compiler */
-  memory_word *newmemory = NULL; /* to quieten compiler */
+  int newsize = 0;        /* to quieten compiler */
+  int n = 0;          /* to quieten compiler */
+  memory_word * newmemory = NULL; /* to quieten compiler */
 
 /*  if (losize == 0 && hisize > 0) runawayflag = 1;     
   else runawayflag = 0; */ /* 94/Jan/22 */
@@ -1793,11 +1790,11 @@ int free_memory (void)
 #ifdef ALLOCATEINI
   if (is_initex) {
     if (trie_taken != NULL) free(trie_taken);
-    if (trie_hash != NULL) free(trie_hash);
-    if (trie_r != NULL) free(trie_r);
-    if (trie_c != NULL) free(trie_c);
-    if (trie_o != NULL) free(trie_o);
-    if (trie_l != NULL) free(trie_l);
+    if (trie_hash  != NULL) free(trie_hash);
+    if (trie_r     != NULL) free(trie_r);
+    if (trie_c     != NULL) free(trie_c);
+    if (trie_o     != NULL) free(trie_o);
+    if (trie_l     != NULL) free(trie_l);
     trie_taken = NULL;
     trie_hash = trie_l = trie_r = NULL;
     trie_c = NULL;
@@ -2156,8 +2153,7 @@ void showaddresses (void)
   show_line(log_line, 0);
   sprintf(log_line, "eqtb %d hash %d ", zeqtb, zzzae);
   show_line(log_line, 0);
-  sprintf(log_line, "dvi_buf %d xchr %d xord %d nest %d\n",
-      zdvibuf, xchr, xord, nest);
+  sprintf(log_line, "dvi_buf %d xchr %d xord %d nest %d\n", zdvibuf, xchr, xord, nest);
   show_line(log_line, 0);
   sprintf(log_line, "save_stack %d input_stack %d line_stack %d param_stack %d\n",
        save_stack, input_stack, line_stack, param_stack);
@@ -2173,20 +2169,19 @@ void showaddresses (void)
 
 /* *** *** *** *** *** *** *** NEW APPROACH TO `ENV VARS' *** *** *** *** */
 
-/* grab `env var' from `dviwindo.ini' - or from DOS environment 94/May/19 */
-/* controlled by USEDVIWINDOINI environment variable 94/June/19 */
+/* grab `env var' from `dviwindo.ini' - or from DOS environment 94/May/19  */
+/* controlled by USEDVIWINDOINI environment variable            94/June/19 */
 
-bool usedviwindo = true;    /* use [Environment] section in `dviwindo.ini' */
-bool backwardflag = false;           /* don't cripple all advanced features */
-bool shorten_file_name = false;        /* don't shorten file names to 8+3 for DOS */
-char *inifilename = "dviwindo.ini";   /* name of ini file we look for */
-char *dviwindo = "";      /* full file name for dviwindo.ini with path */
-char *envsection = "[Environment]";   /* Env var section in `dviwindo.ini' */
-char *wndsection = "[Window]";      /* Window section in `dviwindo.ini' */
-char *workdirect = "WorkingDirectory";  /* key in [Window] section */
-bool usesourcedirectory = true;   /* use source file directory as local */
-                    /* when WorkingDirectory is set */
-bool workingdirectory = false;    /* if working directory set in ini */
+bool usedviwindo        = true;               /* use [Environment] section in `dviwindo.ini' */
+bool backwardflag       = false;              /* don't cripple all advanced features */
+bool shorten_file_name  = false;              /* don't shorten file names to 8+3 for DOS */
+char *inifilename       = "dviwindo.ini";     /* name of ini file we look for */
+char *dviwindo          = "";                 /* full file name for dviwindo.ini with path */
+char *envsection        = "[Environment]";    /* Env var section in `dviwindo.ini' */
+char *wndsection        = "[Window]";         /* Window section in `dviwindo.ini' */
+char *workdirect        = "WorkingDirectory"; /* key in [Window] section */
+bool usesourcedirectory = true;               /* use source file directory as local when WorkingDirectory is set */
+bool workingdirectory   = false;              /* if working directory set in ini */
 /* set up full file name for dviwindo.ini and check for [Environment] */
 
 bool setupdviwindo (void)
@@ -2420,7 +2415,7 @@ void knuthify (void)
 
 /* ........ */
 
-int nohandler=0;    /* experiment to avoid Ctrl-C interrupt handler */
+int nohandler = 0;    /* experiment to avoid Ctrl-C interrupt handler */
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
@@ -2442,75 +2437,106 @@ char *replfile = NULL;/* save space use xstrdup */
 int analyze_flag (int c, char *optarg)
 {
   switch (c)  {
-    case 'v': want_version = true;
-              verbose_flag = true;
-              break;
-    case 'i': is_initex = true;
-              break;
-    case 'Q': interaction = 0; /* quiet mode */
-              break;
-    case 'R': interaction = 1; /* run mode */
-              break;
-    case 'S': interaction = 2; /* scroll mode */
-              break;
-    case 'T': interaction = 3; /* tex mode */
-              break;
-    case 'K': backwardflag = true; /* 94/Jun/15 */
-              knuthify();         /* revert to `standard' Knuth TeX */
-              break;
-    case 'L': c_style_flag = true; /* C style error msg 94/Mar/21 */
-              break;
-    case 'Z': show_tfm_flag = true; /* show TFM in log file 94/Jun/21 */
-              break;
-    case 'c': current_tfm = false; /* not look current dir for TFM */
-              break;
-    case 'C': current_flag = false; /* not look current dir for files */
-              break;
-    case 'M': show_missing = false; /* do not show missing 94/June/10 */
-              break;
-    case 'd': deslash = false; /* flipped 93/Nov/18 */
-              /* pseudo_tilde = 0; */ /* new 95/Sep/26 */
-              break;
-    case 'p': allow_patterns = true; /* 93/Nov/26 */
-              /* reset_exceptions = true; */ /* 93/Dec/23 */
-              break;
+    case 'v':
+      want_version = true;
+      verbose_flag = true;
+      break;
+    case 'i':
+      is_initex = true;
+      break;
+    case 'Q':
+      interaction = 0; /* quiet mode */
+      break;
+    case 'R':
+      interaction = 1; /* run mode */
+      break;
+    case 'S':
+      interaction = 2; /* scroll mode */
+      break;
+    case 'T':
+      interaction = 3; /* tex mode */
+      break;
+    case 'K':
+      backwardflag = true; /* 94/Jun/15 */
+      knuthify();         /* revert to `standard' Knuth TeX */
+      break;
+    case 'L':
+      c_style_flag = true; /* C style error msg 94/Mar/21 */
+      break;
+    case 'Z':
+      show_tfm_flag = true; /* show TFM in log file 94/Jun/21 */
+      break;
+    case 'c':
+      current_tfm = false; /* not look current dir for TFM */
+      break;
+    case 'C':
+      current_flag = false; /* not look current dir for files */
+      break;
+    case 'M':
+      show_missing = false; /* do not show missing 94/June/10 */
+      break;
+    case 'd':
+      deslash = false; /* flipped 93/Nov/18 */
+      /* pseudo_tilde = 0; */ /* new 95/Sep/26 */
+      break;
+    case 'p':
+      allow_patterns = true; /* 93/Nov/26 */
+      /* reset_exceptions = true; */ /* 93/Dec/23 */
+      break;
 /*  case 'w':  show_in_hex = false; */ /* 94/Jan/26 */
-    case 'w': show_in_hex = true; /* flipped 00/Jun/18 */
-              break;
-    case 'j': show_in_dos = true; /* 96/Jan/26 */
-              break;
-    case 'n': restrict_to_ascii = true; /* 0 - 127 1994/Jan/21 */
-              break;
-    case '6': workingdirectory = true; /* use source dir 98/Sep/29 */
-              break;
-    case '7': usesourcedirectory = false; /* use working dir 98/Sep/29 */
-              break;
-    case 'f': show_fonts_used = false; /* 97/Dec/24 */
-              break;
-    case '8': shorten_file_name = true; /* 95/Feb/20 */
-              break;
-    case '9': show_cs_names = true; /* 98/Mar/31 */
-              break;
-    case '4': ignore_frozen = true; /* 98/Oct/5 */
-              break;
-    case '5': font_dimen_zero = false; /* 98/Oct/5 */
-              break;
-    case 'F': show_texinput_flag = false; /* 98/Jan/28 */
-              break;
+    case 'w':
+      show_in_hex = true; /* flipped 00/Jun/18 */
+      break;
+    case 'j':
+      show_in_dos = true; /* 96/Jan/26 */
+      break;
+    case 'n':
+      restrict_to_ascii = true; /* 0 - 127 1994/Jan/21 */
+      break;
+    case '6':
+      workingdirectory = true; /* use source dir 98/Sep/29 */
+      break;
+    case '7':
+      usesourcedirectory = false; /* use working dir 98/Sep/29 */
+      break;
+    case 'f':
+      show_fonts_used = false; /* 97/Dec/24 */
+      break;
+    case '8':
+      shorten_file_name = true; /* 95/Feb/20 */
+      break;
+    case '9':
+      show_cs_names = true; /* 98/Mar/31 */
+      break;
+    case '4':
+      ignore_frozen = true; /* 98/Oct/5 */
+      break;
+    case '5':
+      font_dimen_zero = false; /* 98/Oct/5 */
+      break;
+    case 'F':
+      show_texinput_flag = false; /* 98/Jan/28 */
+      break;
 /*  case 'X':  truncate_long_lines = false; */ /* 98/Feb/2 */
               /* break; */
-    case 'W': usedviwindo = false; /* 94/May/19 */
-              break;
-    case 'J': show_line_break_stats = false; /* 96/Feb/8 */
-              break;
-    case 'O': show_fmt_flag = false; /* 94/Jun/21 */
-              break;
-    case 'I': format_specific = false; /* 95/Jan/7 */
-              break;
-    case '3': encoding_specific = false; /* 98/Oct/5 */
-              break;
-    case '2': suppress_f_ligs = true; /* 99/Jan/5 f-lig */
-              break;
+    case 'W':
+      usedviwindo = false; /* 94/May/19 */
+      break;
+    case 'J':
+      show_line_break_stats = false; /* 96/Feb/8 */
+      break;
+    case 'O':
+      show_fmt_flag = false; /* 94/Jun/21 */
+      break;
+    case 'I':
+      format_specific = false; /* 95/Jan/7 */
+      break;
+    case '3':
+      encoding_specific = false; /* 98/Oct/5 */
+      break;
+    case '2':
+      suppress_f_ligs = true; /* 99/Jan/5 f-lig */
+      break;
 /* following are pretty obscure */
 /*  case 'y': cache_file_flag = false; */ /* 96/Nov/16 */
 /*            break; */
@@ -2518,95 +2544,177 @@ int analyze_flag (int c, char *optarg)
 /*            break; */
 /*  case 'z': trimeof = false; */ /* 93/Nov/24 */
 /*            break; */
-    case 'z': full_file_name_flag = false; // 00 Jun 18
-              break;
-    case 'X': save_strings_flag = false; // 00 Aug 15
-              break;
+    case 'z':
+      full_file_name_flag = false; // 00 Jun 18
+      break;
+    case 'X':
+      save_strings_flag = false; // 00 Aug 15
+      break;
 /* following are unannounced options */ /* some may be recycled ... */
-    case 't': trace_flag = true;
-              break;
-    case 'q': quitflag++; /* 93/Dec/16 */
-              break;
+    case 't':
+      trace_flag = true;
+      break;
+    case 'q':
+      quitflag++; /* 93/Dec/16 */
+      break;
 /* The following are really obscure and should not be advertized */
-    case 's': show_current = false; /* tex8 93/Dec/14 */
-              break;
-    case 'N': show_numeric = false; /* 93/Dec/21 */
-              break;
-    case 'A': civilize_flag = false; /* 93/Dec/16 */
-              break; 
-    case 'B': open_trace_flag = true; /* openinou 1994/Jan/8 */
-              break;
-    case 'Y': reorder_arg_flag = false; /* local */
-              break;
-    case 'b': test_dir_access = false; /* 94/Feb/10 */
-              break;
-    case 'D': dir_method = false; /* 94/Feb/10 */
-              break;
-    case 'G': file_method = false; /* 94/Feb/13 */
-              break;
+    case 's':
+      show_current = false; /* tex8 93/Dec/14 */
+      break;
+    case 'N':
+      show_numeric = false; /* 93/Dec/21 */
+      break;
+    case 'A':
+      civilize_flag = false; /* 93/Dec/16 */
+      break; 
+    case 'B':
+      open_trace_flag = true; /* openinou 1994/Jan/8 */
+      break;
+    case 'Y':
+      reorder_arg_flag = false; /* local */
+      break;
+    case 'b':
+      test_dir_access = false; /* 94/Feb/10 */
+      break;
+    case 'D':
+      dir_method = false; /* 94/Feb/10 */
+      break;
+    case 'G':
+      file_method = false; /* 94/Feb/13 */
+      break;
 //  case 'V': share_flag = _SH_DENYNO; break; /* 0x40 - deny none mode */ 
 /*  case 'X': nohandler++; break; */
 /*  case 'f': waitflush = false; break; */
 /*  case 'F': floating = true; break; */
 /* *********** following command line options take arguments **************  */
-    case 'm': if (optarg == 0) mem_initex = mem_top; else mem_initex = atoi(optarg) * 1024; /* 93 Dec/1 */
-              if (mem_initex == 0) complainarg(c, optarg);
-              mem_spec_flag = 1;
-              break;
+    case 'm':
+      if (optarg == 0)
+        mem_initex = mem_top;
+      else
+        mem_initex = atoi(optarg) * 1024; /* 93 Dec/1 */
+      if (mem_initex == 0)
+        complainarg(c, optarg);
+      mem_spec_flag = 1;
+      break;
 #ifdef VARIABLETRIESIZE
-    case 'h': if (optarg == 0) trie_size = default_trie_size; else trie_size = atoi(optarg); /* 93 Dec/1 */
-              if (trie_size == 0) complainarg(c, optarg);
-              break;
+    case 'h':
+      if (optarg == 0)
+        trie_size = default_trie_size;
+      else
+        trie_size = atoi(optarg); /* 93 Dec/1 */
+      if (trie_size == 0)
+        complainarg(c, optarg);
+      break;
 #endif
 #ifdef ALLOCATEHYPHEN
-    case 'e': if (optarg == 0) new_hyphen_prime = hyphen_prime * 2; else new_hyphen_prime = atoi(optarg); /* 93/Nov/26 */
-              if (new_hyphen_prime == 0) complainarg(c, optarg);
-              break;
+    case 'e':
+      if (optarg == 0)
+        new_hyphen_prime = hyphen_prime * 2;
+      else
+        new_hyphen_prime = atoi(optarg); /* 93/Nov/26 */
+      if (new_hyphen_prime == 0)
+        complainarg(c, optarg);
+      break;
 #endif
 #ifdef ALLOCATEDVIBUF
-    case 'u': if (optarg == 0) dvi_buf_size = default_dvi_buf_size; else dvi_buf_size = atoi(optarg); /* 94/Mar/24 */
-              if (dvi_buf_size == 0) complainarg(c, optarg);
-              break;
+    case 'u':
+      if (optarg == 0)
+        dvi_buf_size = default_dvi_buf_size;
+      else
+        dvi_buf_size = atoi(optarg); /* 94/Mar/24 */
+      if (dvi_buf_size == 0)
+        complainarg(c, optarg);
+      break;
 #endif
-    case 'g': if (optarg == 0) percent_grow = 62; else percent_grow = atoi(optarg); /* 93/Dec/11 */
-              if (percent_grow == 0) complainarg(c, optarg);
-              break;
-    case 'U': if (optarg == 0) pseudo_tilde = 0; else pseudo_tilde = atoi(optarg); /* 95/Sep/26 */
-              if (pseudo_tilde > 255) pseudo_tilde = 255; else if (pseudo_tilde < 128) pseudo_tilde = 128;
-              break;
+    case 'g':
+      if (optarg == 0)
+        percent_grow = 62;
+      else
+        percent_grow = atoi(optarg); /* 93/Dec/11 */
+      if (percent_grow == 0)
+        complainarg(c, optarg);
+      break;
+    case 'U':
+      if (optarg == 0)
+        pseudo_tilde = 0;
+      else
+        pseudo_tilde = atoi(optarg); /* 95/Sep/26 */
+      if (pseudo_tilde > 255)
+        pseudo_tilde = 255;
+      else if (pseudo_tilde < 128)
+        pseudo_tilde = 128;
+      break;
 /*  case 'H':  if (optarg == 0) heapthreshold = 1024; else heapthreshold = atoi(optarg);
  *             if (heapthreshold == 0) complainarg(c, optarg); else heap_flag = 1;
  *             break; */
-    case 'H': if (optarg == 0) tab_step = 8; else tab_step = atoi(optarg); /* 94/July/3 */
-              if (tab_step == 0) complainarg(c, optarg);
-              break;
-    case 'x': if (optarg == 0) xchrfile=xstrdup("xchr.map"); else xchrfile = xstrdup(optarg);
-              if (xchrfile == NULL || *xchrfile == '\0') complainarg(c, optarg);
-              break;
-    case 'k': if (optarg == 0) replfile =xstrdup("repl.key"); else replfile = xstrdup(optarg);
-              if (replfile == NULL || *replfile == '\0')
-                complainarg(c, optarg);
-              break;
+    case 'H':
+      if (optarg == 0)
+        tab_step = 8;
+      else
+        tab_step = atoi(optarg); /* 94/July/3 */
+      if (tab_step == 0)
+        complainarg(c, optarg);
+      break;
+    case 'x':
+      if (optarg == 0)
+        xchrfile = xstrdup("xchr.map");
+      else
+        xchrfile = xstrdup(optarg);
+      if (xchrfile == NULL || *xchrfile == '\0')
+        complainarg(c, optarg);
+      break;
+    case 'k':
+      if (optarg == 0)
+        replfile = xstrdup("repl.key");
+      else
+        replfile = xstrdup(optarg);
+      if (replfile == NULL || *replfile == '\0')
+        complainarg(c, optarg);
+      break;
 /* more obscure stuff - ppssibly recycle */
-    case 'P': if (optarg == 0) default_rule = 26214; /* 95/Oct/9 */
-              else default_rule = atoi(optarg); /* 95/Oct/9 */
-              if (default_rule == 0) complainarg(c, optarg);
-              break;
-    case 'E': if (optarg != 0) putenv(optarg); else complainarg(c, optarg);
-              break;
-    case 'o': if (optarg == 0) dvi_directory = ""; else dvi_directory = xstrdup(optarg);
-              if (strcmp(dvi_directory, "") == 0) complainarg(c, optarg);
-              break;
-    case 'l': if (optarg == 0) log_directory = ""; else log_directory = xstrdup(optarg);
-              if (strcmp(log_directory, "") == 0) complainarg(c, optarg);
-              break;
-    case 'a': if (optarg == 0) aux_directory = ""; else aux_directory = xstrdup(optarg);
-              if (strcmp(aux_directory, "") == 0) complainarg(c, optarg);
-              break;
+    case 'P':
+      if (optarg == 0)
+        default_rule = 26214; /* 95/Oct/9 */
+      else
+        default_rule = atoi(optarg); /* 95/Oct/9 */
+      if (default_rule == 0)
+        complainarg(c, optarg);
+      break;
+    case 'E':
+      if (optarg != 0)
+        putenv(optarg);
+      else
+        complainarg(c, optarg);
+      break;
+    case 'o':
+      if (optarg == 0)
+        dvi_directory = "";
+      else
+        dvi_directory = xstrdup(optarg);
+      if (strcmp(dvi_directory, "") == 0)
+        complainarg(c, optarg);
+      break;
+    case 'l':
+      if (optarg == 0)
+        log_directory = "";
+      else
+        log_directory = xstrdup(optarg);
+      if (strcmp(log_directory, "") == 0)
+        complainarg(c, optarg);
+      break;
+    case 'a':
+      if (optarg == 0)
+        aux_directory = "";
+      else
+        aux_directory = xstrdup(optarg);
+      if (strcmp(aux_directory, "") == 0)
+        complainarg(c, optarg);
+      break;
     case '?':
-    default : show_use = true;
-              return -1; // failed to recognize
-              break;
+    default:
+      show_use = true;
+      return -1; // failed to recognize
+      break;
   }
   return 0;
 }
@@ -2740,9 +2848,9 @@ int read_command_line (int ac, char **av)
 /*  WARNING: if adding flags, change also `allowedargs' and  `takeargs' !!!! */
   while ((c = getopt(ac, av, allowedargs)) != EOF) {
     if (optarg != 0 && *optarg == '=')
-		optargnew = optarg+1;
+      optargnew = optarg+1;
     else
-		optargnew = optarg;
+      optargnew = optarg;
     analyze_flag (c, optargnew);
   }
   if (show_use || quitflag == 3) {
@@ -2801,7 +2909,7 @@ int init_commands (int ac, char **av)
   is_initex = trace_flag = deslash = non_ascii = false; */
   is_initex         = false; /* check for dumping format file */
   allow_patterns    = false; /* using \pattern after format file loaded */
-  reset_exceptions  = false; 
+  reset_exceptions  = false;
   non_ascii         = false;
   key_replace       = false;
   want_version      = false;
@@ -2915,8 +3023,7 @@ void initial_memory (void)
         mem_extra_high = 0;   mem_extra_low = 0;
       }
  #endif
-    }
-    else {
+    } else {
       if (mem_initex != 0) {
         show_line("ERROR: Can only set initial main memory size in iniTeX\n", 1);
         mem_initex = 0;
@@ -3239,9 +3346,9 @@ int init (int ac, char **av)
 
   check_fixed_align(trace_flag);       /* sanity check 1994/Jan/8 */
 
-  format_file = NULL;        /* to be set in openinou.c 94/Jun/21 */
-  string_file = NULL;        /* to be set in openinou.c 96/Jan/15 */
-  source_direct = NULL;      /* to be set in openinou.c 98/Sep/29 */
+  format_file   = NULL;       /* to be set in openinou.c 94/Jun/21 */
+  string_file   = NULL;       /* to be set in openinou.c 96/Jan/15 */
+  source_direct = NULL;       /* to be set in openinou.c 98/Sep/29 */
   dvi_file_name = NULL;       /* to be set in openinou.c 00/Jun/18 */
   log_file_name = NULL;       /* to be set in openinou.c 00/Jun/18 */
 

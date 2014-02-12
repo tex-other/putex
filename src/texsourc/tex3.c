@@ -662,7 +662,7 @@ void conv_toks (void)
       print(font_name[cur_val]); 
       if (font_size[cur_val]!= font_dsize[cur_val])
       {
-      print_string("at ");
+      print_string(" at ");
       print_scaled(font_size[cur_val]); 
       print_string("pt");
       } 
@@ -2618,7 +2618,7 @@ lab11:
   print_file_name(nom, aire, 335);  /* "" */
   if (s >= 0)
   {
-    print_string("at ");
+    print_string(" at ");
     print_scaled(s); 
     print_string("pt");
   } 
@@ -2627,8 +2627,8 @@ lab11:
     print_string("scaled");
     print_int(- (integer) s); 
   } 
-  if (fileopened)print_string("not loadable: Bad metric (TFM) file");
-  else print_string("not loadable: Metric (TFM) file not found");
+  if (fileopened)print_string(" not loadable: Bad metric (TFM) file");
+  else print_string(" not loadable: Metric (TFM) file not found");
   if (aire == 335) {    /* "" only if path not specified */
     if (show_texinput_flag) show_tex_fonts();   /* 98/Jan/31 */
   }

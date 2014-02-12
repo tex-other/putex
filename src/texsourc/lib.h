@@ -126,4 +126,3 @@ extern address xcalloc (unsigned nelem, unsigned elsize);
 #define XRETALLOC(addr, n, t) ((addr) = (t *) xrealloc (addr, (n) * sizeof(t)))
 
 #endif /* not LIB_H */
-

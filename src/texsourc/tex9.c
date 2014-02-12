@@ -29,14 +29,14 @@
 /* sec 1284 */
 void give_err_help (void) 
 {
-  token_show(eqtb[(hash_size + 1321)].hh.v.RH); 
+  token_show(err_help); 
 }
 /* sec 0524 */
 bool open_fmt_file (void) 
-{/* 40 10 */
-  register bool Result; 
-  integer j; 
-  j = cur_input.loc_field; 
+{
+  register bool Result;
+  integer j;
+  j = cur_input.loc_field;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* For Windows NT, lets allow + instead of & for format specification */
 /* if (buffer[cur_input.loc_field]== 38) */  /* 95/Jan/22 */
@@ -44,26 +44,23 @@ bool open_fmt_file (void)
   {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /*  User specified a format name on the command line */
-    incr(cur_input.loc_field); 
-    j = cur_input.loc_field; 
-    buffer[last]= 32; 
-    while (buffer[j]!= 32) incr(j); 
+    incr(cur_input.loc_field);
+    j = cur_input.loc_field;
+    buffer[last]= 32;
+    while (buffer[j]!= 32) incr(j);
     pack_buffered_name(0, cur_input.loc_field, j - 1);
-    if (w_open_in(fmt_file)) 
+    if (w_open_in(fmt_file))
       goto lab40;  // format file opened OK
   
 //  format file open failed
   if (knuth_flag) {
     (void) sprintf(log_line, "%s;%s\n", "Sorry, I can't find that format", " will try the default.");
     show_line(log_line, 1);
-  }
-  else {
-    char *s=log_line;
-/*    null_terminate (name_of_file + 1); */
-    name_of_file[name_length + 1] = '\0';  /* null terminate */
+  } else {
+    char *s = log_line;
+    name_of_file[name_length + 1] = '\0';
     (void) sprintf(s, "%s (%s);%s\n", "Sorry, I can't find that format", name_of_file+1, " will try the default."); 
-/*    space_terminate (name_of_file + 1); */
-    name_of_file[name_length + 1] = ' '; /* space terminate */
+    name_of_file[name_length + 1] = ' ';
     s += strlen(s);
     (void) sprintf(s, "(Perhaps your %s environment variable is not set correctly)\n", "TEXFORMATS");
     s += strlen(s);
@@ -83,39 +80,37 @@ bool open_fmt_file (void)
   } 
 /*  Try the default format (either because no format specified or failed) */
   pack_buffered_name(format_default_length - 4, 1, 0); 
-  if (! w_open_in(fmt_file)) 
-  {
- ; 
-  if (knuth_flag) {
+  if (! w_open_in(fmt_file)) {
+    ;
+    if (knuth_flag) {
       (void) sprintf(log_line, "%s!\n", "I can't find the default format file");
       show_line(log_line, 1);
-  } else {
-    char *s=log_line;
-/*    null_terminate (name_of_file + 1); */
-    name_of_file[name_length + 1] = '\0';  /* null terminate */
-    (void) sprintf(s, "%s (%s)!\n", "I can't find the default format file", name_of_file + 1);
-/*    space_terminate (name_of_file + 1); */
-    name_of_file[name_length + 1] = ' '; /* space terminate */
-    s += strlen(s);
-    (void) sprintf(s, "(Perhaps your %s environment variable is not set correctly)\n", "TEXFORMATS");
-    s += strlen(s);
-    {
-      char *t;            /* extra info 97/June/13 */
-      if ((t = grabenv("TEXFORMATS")) != NULL) {
-        sprintf(s, "(%s=%s)\n", "TEXFORMATS", t);
-      } else {
-        sprintf(s, "%s environment variable not set\n", "TEXFORMATS");
+    } else {
+      char *s = log_line;
+      name_of_file[name_length + 1] = '\0';
+      (void) sprintf(s, "%s (%s)!\n", "I can't find the default format file", name_of_file + 1);
+      name_of_file[name_length + 1] = ' ';
+      s += strlen(s);
+      (void) sprintf(s, "(Perhaps your %s environment variable is not set correctly)\n", "TEXFORMATS");
+      s += strlen(s);
+      {
+        char *t;            /* extra info 97/June/13 */
+        if ((t = grabenv("TEXFORMATS")) != NULL) {
+          sprintf(s, "(%s=%s)\n", "TEXFORMATS", t);
+        } else {
+          sprintf(s, "%s environment variable not set\n", "TEXFORMATS");
+        }
       }
+      show_line(log_line, 1);   // show all three lines at once
     }
-    show_line(log_line, 1);   // show all three lines at once
-  }
-    Result = false; 
+    Result = false;
     return(Result); 
-  } 
-  lab40: cur_input.loc_field = j; 
-  Result = true; 
-  return Result; 
-} 
+  }
+lab40:
+  cur_input.loc_field = j;
+  Result = true;
+  return Result;
+}
 /**************************************************************************/
 void print_char_string (unsigned char *s)
 {
@@ -135,19 +130,20 @@ void close_files_and_terminate (void)
     show_line("close_files_and_terminated already ", 0);
     return;     // sanity check
   }
-  if (trace_flag) show_line("\nclose_files_and_terminate ", 0);
+  if (trace_flag)
+    show_line("\nclose_files_and_terminate ", 0);
 //  close all open files
   {
     register integer for_end; 
     k = 0; 
     for_end = 15;        /* CHECK LIMIT */
     if (k <= for_end) do 
-      if (write_open[k]){
+      if (write_open[k]) {
         (void) a_close(write_file[k]);
       }
     while(k++ < for_end);
-  } 
-;
+  }
+  ;
 
 #ifdef STAT
 /* if tracing_stats>0 then @<Output statistics about this job@>; */
@@ -286,112 +282,75 @@ void close_files_and_terminate (void)
 /************************************************************************/
   } /* end of if (log_opened) */ 
 #endif /* STAT */
-  while(cur_s > -1){
-    if (cur_s > 0){
-      dvi_buf[dvi_ptr]= 142; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
+  while (cur_s > -1) {
+    if (cur_s > 0) 
+      dvi_out(142);
     else {
-      {
-      dvi_buf[dvi_ptr]= 140; 
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-      } 
-      incr(total_pages); 
-    } 
-    decr(cur_s); 
-  } 
+      dvi_out(140);
+      incr(total_pages);
+    }
+    decr(cur_s);
+  }
 
-  if (total_pages == 0) print_nl("No pages of output.");  /*  */
+  if (total_pages == 0)
+    print_nl("No pages of output.");
   else {
-    {
-    dvi_buf[dvi_ptr]= 248;   /* post - start of postamble */
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-  } 
-    dvi_four(last_bop); 
-    last_bop = dvi_offset + dvi_ptr - 5; 
+    dvi_out(248); /* post - start of postamble */
+    dvi_four(last_bop);
+    last_bop = dvi_offset + dvi_ptr - 5;
     dvi_four(25400000L);     /* magic DVI scale factor */ 
     dvi_four(473628672L);    /* 7227 * 65536 */
     prepare_mag();         /* in tex2.c */
     dvi_four(mag);   /* mag */
     dvi_four(max_v);        /* max height + depth */
     dvi_four(max_h);        /* max width */
-    {
-    dvi_buf[dvi_ptr]= max_push / 256; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    {
-    dvi_buf[dvi_ptr]= max_push % 256;  
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-  if (total_pages >= 65536) {    // 99/Oct/10 dvi_t 16 bit problem
-    sprintf(
-        log_line,
-        "\nWARNING: page count (dvi_t) in DVI file will be %ld not %ld\n",
-        (total_pages % 65536),
-        total_pages);
-    if (log_opened) fputs (log_line, log_file);
-    show_line(log_line, 1);
-  }
-    {
-    dvi_buf[dvi_ptr]=(total_pages / 256)% 256;  
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    {
-    dvi_buf[dvi_ptr]= total_pages % 256;  
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit) dvi_swap(); 
-    } 
+    dvi_out(max_push / 256);
+    dvi_out(max_push % 256);
+    if (total_pages >= 65536) {    // 99/Oct/10 dvi_t 16 bit problem
+      sprintf(log_line, "\nWARNING: page count (dvi_t) in DVI file will be %ld not %ld\n",
+        (total_pages % 65536), total_pages);
+      if (log_opened)
+        (void) fputs (log_line, log_file);
+      show_line(log_line, 1);
+    }
+    dvi_out((total_pages / 256) % 256);
+    dvi_out(total_pages % 256);
+    if (show_fonts_used && log_opened)     /* 97/Dec/24 */
+      show_font_info();           // now in local.c
 
-  if (show_fonts_used && log_opened)     /* 97/Dec/24 */
-    show_font_info();           // now in local.c
-
-    while(font_ptr > 0){
-    if (font_used[font_ptr])dvi_font_def(font_ptr);
-    decr(font_ptr); 
-    } 
-    {
-    dvi_buf[dvi_ptr]= 249;   /* post_post end of postamble */
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    dvi_four(last_bop); 
-    {
-    dvi_buf[dvi_ptr]= 2; 
-    incr(dvi_ptr); 
-    if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    k = 4 +((dvi_buf_size - dvi_ptr)% 4); 
-    while(k > 0){
-      {
-      dvi_buf[dvi_ptr]= 223; /* four to seven bytes of 223 */
-      incr(dvi_ptr); 
-      if (dvi_ptr == dvi_limit)dvi_swap(); 
-    } 
-    decr(k); 
-    } 
+    while (font_ptr > 0) {
+      if (font_used[font_ptr])
+        dvi_font_def(font_ptr);
+      decr(font_ptr);
+    }
+    dvi_out(249); /* post_post end of postamble */
+    dvi_four(last_bop);
+    dvi_out(2);
+    k = 4 + ((dvi_buf_size - dvi_ptr) % 4);
+    while (k > 0) {
+      dvi_out(223); /* four to seven bytes of 223 */
+      decr(k);
+    }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (trace_flag) {          /* 93/Dec/28 - bkph */
     sprintf(log_line, "\ndviwrite %d", dvi_gone);
     show_line(log_line, 0);
   }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    if (dvi_limit == half_buf)writedvi(half_buf, dvi_buf_size - 1); 
-    if (dvi_ptr > 0)writedvi(0, dvi_ptr - 1); 
+    if (dvi_limit == half_buf)
+      writedvi(half_buf, dvi_buf_size - 1); 
+    if (dvi_ptr > 0)
+      writedvi(0, dvi_ptr - 1); 
     print_nl("Output written on ");
-	if (full_file_name_flag && dvi_file_name != NULL) 
-		print_char_string((unsigned char *) dvi_file_name);
-	else
-		slow_print(output_file_name); 
+    if (full_file_name_flag && dvi_file_name != NULL)
+      print_char_string((unsigned char *) dvi_file_name);
+    else
+      slow_print(output_file_name);
     print_string(" (");
     print_int(total_pages); 
     print_string(" page");
-    if (total_pages != 1) print_char('s');
+    if (total_pages != 1)
+      print_char('s');
     print_string(", ");
     print_int(dvi_offset + dvi_ptr); 
     print_string(" bytes).");
@@ -402,15 +361,15 @@ void close_files_and_terminate (void)
     (void) a_close(log_file); 
     selector = selector - 2; 
     if (selector == 17) {
-    print_nl("Transcript written on ");
-    if (full_file_name_flag && log_file_name != NULL)
-		print_char_string((unsigned char *) log_file_name);
-    else
-		slow_print(texmf_log_name); 
-    print_char('.');
-    } 
-  } 
-  print_ln(); 
+      print_nl("Transcript written on ");
+      if (full_file_name_flag && log_file_name != NULL)
+        print_char_string((unsigned char *) log_file_name);
+      else
+        slow_print(texmf_log_name);
+      print_char('.');
+    }
+  }
+  print_ln();
   if ((edit_name_start != 0) && (interaction > 0)) {
     call_edit(str_pool, edit_name_start, edit_name_length, edit_line);
   }

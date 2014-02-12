@@ -118,22 +118,22 @@ void initialize (void)
   
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* Now invert the xchr mapping to get xord mapping */
-  for (i = 0; i < 255; i++) xord[xchr[i]] = (char) i;
+  for (i = 0; i <= 255; i++) xord[xchr[i]] = (char) i;
 
-  xord[127]= 127; /* hmm, a fixed point ? why ? */
+  xord[127] = 127; /* hmm, a fixed point ? why ? */
 
   flag = 0; /* 93/Dec/28 - bkph */
 
   if (trace_flag != 0) {
     for (k = 0; k < 256; k++) /*  entries in xord / xchr */
-      if (xord[k]!= k) {
+      if (xord[k] != k) {
         flag = 1;
         break;
       }
     if (flag) { /* 127 here means mapping undefined */
       show_line("Inverted mapping xord[] pairs:\n", 0);
       for (k = 0; k < 256; k++) {/*  entries in xord / xchr */
-        if (xord[k]!= 127) {
+        if (xord[k] != 127) {
           sprintf(log_line, "%d => %d\n", k, xord[k]);
           show_line(log_line, 0);
         }
@@ -224,7 +224,7 @@ void initialize (void)
 	  for_end = 16;
 	  if (k <= for_end)
 		  do read_open[k]= 2; 
-	  while(k++ < for_end);
+	  while (k++ < for_end);
   } 
   cond_ptr = 0; 
   if_limit = 0; 
@@ -236,7 +236,7 @@ void initialize (void)
 	  for_end = font_max;
 	  if (k <= for_end) 
 		  do font_used[k]= false; 
-	  while(k++ < for_end);
+	  while (k++ < for_end);
   } 
   null_character.b0 = 0; 
   null_character.b1 = 0; 
@@ -385,39 +385,36 @@ void line_break_ (integer finalwidowpenalty)
 /* following is new in 3.14159 */
   init_cur_lang = prev_graf % 65536L; 
   init_l_hyf = prev_graf / 4194304L; /* 2^22 */
-  init_r_hyf =(prev_graf / 65536L)% 64; 
+  init_r_hyf = (prev_graf / 65536L)% 64; 
 /* *********************************************************************** */
   pop_nest(); 
   noshrinkerroryet = true; 
   if ((mem[eqtb[(hash_size + 789)].hh.v.RH].hh.b1 != 0) &&
 	  (mem[eqtb[(hash_size + 789)].hh.v.RH + 3].cint != 0)) 
   {
-    eqtb[(hash_size + 789)].hh.v.RH =
-		finite_shrink(eqtb[(hash_size + 789)].hh.v.RH); 
+    eqtb[(hash_size + 789)].hh.v.RH = finite_shrink(eqtb[(hash_size + 789)].hh.v.RH); 
   } 
   if ((mem[eqtb[(hash_size + 790)].hh.v.RH].hh.b1 != 0) &&
 	  (mem[eqtb[(hash_size + 790)].hh.v.RH + 3].cint != 0)) 
   {
-    eqtb[(hash_size + 790)].hh.v.RH =
-		finite_shrink(eqtb[(hash_size + 790)].hh.v.RH); 
+    eqtb[(hash_size + 790)].hh.v.RH = finite_shrink(eqtb[(hash_size + 790)].hh.v.RH); 
   } 
   q = eqtb[(hash_size + 789)].hh.v.RH; 
   r = eqtb[(hash_size + 790)].hh.v.RH; 
-  background[1]= mem[q + 1].cint + mem[r + 1].cint; 
-  background[2]= 0; 
-  background[3]= 0; 
-  background[4]= 0; 
-  background[5]= 0; 
-  background[2 + mem[q].hh.b0]= mem[q + 2].cint; 
-  background[2 + mem[r].hh.b0]= background[2 + mem[r].hh.b0]+ 
-  mem[r + 2].cint; 
-  background[6]= mem[q + 3].cint + mem[r + 3].cint; 
+  background[1] = mem[q + 1].cint + mem[r + 1].cint; 
+  background[2] = 0;
+  background[3] = 0;
+  background[4] = 0;
+  background[5] = 0;
+  background[2 + mem[q].hh.b0] = mem[q + 2].cint;
+  background[2 + mem[r].hh.b0] = background[2 + mem[r].hh.b0] + mem[r + 2].cint; 
+  background[6] = mem[q + 3].cint + mem[r + 3].cint; 
   minimum_demerits = 1073741823L; /* 2^30 - 1 *//* 40000000 hex - 1 */
-  minimal_demerits[3]= 1073741823L; 
-  minimal_demerits[2]= 1073741823L; 
-  minimal_demerits[1]= 1073741823L; 
-  minimal_demerits[0]= 1073741823L; 
-  if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
+  minimal_demerits[3] = 1073741823L; 
+  minimal_demerits[2] = 1073741823L; 
+  minimal_demerits[1] = 1073741823L; 
+  minimal_demerits[0] = 1073741823L; 
+  if (par_shape_ptr == 0)
   if (hang_indent == 0)
   {
     last_special_line = 0; 
@@ -446,9 +443,9 @@ void line_break_ (integer finalwidowpenalty)
     } 
   } 
   else {   
-    last_special_line = mem[eqtb[(hash_size + 1312)].hh.v.RH].hh.v.LH - 1; 
-    second_width = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 *(last_special_line + 1)].cint; 
-    second_indent = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * last_special_line + 1].cint; 
+    last_special_line = mem[par_shape_ptr].hh.v.LH - 1; 
+    second_width = mem[par_shape_ptr + 2 *(last_special_line + 1)].cint; 
+    second_indent = mem[par_shape_ptr + 2 * last_special_line + 1].cint; 
   } 
 /* if looseness=0 then easy_line:=last_special_line */
   if (looseness == 0)
@@ -1003,7 +1000,7 @@ void line_break_ (integer finalwidowpenalty)
   } 
   pack_begin_line = 0; 
 } 
-
+/* sec 1211 */
 void prefixed_command (void) 
 {
   small_number a; 
@@ -1014,23 +1011,22 @@ void prefixed_command (void)
   integer n; 
   bool e; 
   a = 0; 
-  while(cur_cmd == 93){
-    if (! odd(a / cur_chr)) 
-    a = a + cur_chr;			/*   small_number a;  */
+  while (cur_cmd == prefix) {
+    if (!odd(a / cur_chr))
+      a = a + cur_chr;			/*   small_number a;  */
     do {
-	get_x_token(); 
-    } while(!((cur_cmd != 10)&&(cur_cmd != 0))); 
-    if (cur_cmd <= 70)
-    {
+      get_x_token();
+    } while(!((cur_cmd != spacer) && (cur_cmd != relax))); 
+    if (cur_cmd <= max_non_prefixed_command) {
       print_err("You can't use a prefix with `");
-      print_cmd_chr(cur_cmd, cur_chr); 
-      print_char(39);	/* ' */
-	  help1("I'll pretend you didn't say \\long or \\outer or \\global.");
-      back_error(); 
-      return; 
-    } 
-  } 
-  if ((cur_cmd != 97)&&(a % 4 != 0)) {
+      print_cmd_chr(cur_cmd, cur_chr);
+      print_char('\'');
+      help1("I'll pretend you didn't say \\long or \\outer or \\global.");
+      back_error();
+      return;
+    }
+  }
+  if ((cur_cmd != 97) && (a % 4 != 0)) {
     print_err("You can't use `");
     print_esc("long");
     print_string("' or `");
@@ -1038,7 +1034,7 @@ void prefixed_command (void)
     print_string("' with `");
     print_cmd_chr(cur_cmd, cur_chr); 
     print_char(39);		/* ' */
-	help1("I'll pretend you didn't say \\long or \\outer here.");
+    help1("I'll pretend you didn't say \\long or \\outer here.");
     error(); 
   } 
   if (global_defs != 0)
@@ -1046,94 +1042,91 @@ void prefixed_command (void)
   {
     if ((a >= 4)) 
     a = a - 4; 
-  } 
-  else {
-      
+  } else {
     if (!(a >= 4)) 
     a = a + 4; 
   } 
 
-  switch(cur_cmd){
-	  case 87 : 
+  switch (cur_cmd) {
+	  case 87:
 /* set_font: define(cur_font_loc,data,cur_chr); */
     if ((a >= 4)) 
     geq_define((hash_size + 1834), 120, cur_chr); 
     else eq_define((hash_size + 1834), 120, cur_chr); 
     break; 
-  case 97 : 
+  case 97:
     {
-      if (odd(cur_chr)&& !(a >= 4)&& 
-		  (global_defs >= 0)) 
-      a = a + 4; 
-      e =(cur_chr >= 2); 
-      get_r_token(); 
-      p = cur_cs; 
-      q = scan_toks(true, e); 
-      if ((a >= 4)) geq_define(p, 111 +(a % 4), def_ref); 
-      else eq_define(p, 111 +(a % 4), def_ref); 
-    } 
-    break; 
-  case 94 : 
+      if (odd(cur_chr) && !(a >= 4) && (global_defs >= 0))
+        a = a + 4;
+      e = (cur_chr >= 2);
+      get_r_token();
+      p = cur_cs;
+      q = scan_toks(true, e);
+      if ((a >= 4)) geq_define(p, 111 +(a % 4), def_ref);
+      else eq_define(p, 111 +(a % 4), def_ref);
+    }
+    break;
+  case 94:
     {
-      n = cur_chr; 
-      get_r_token(); 
-      p = cur_cs; 
-      if (n == 0)
-      {
-	do {
-	    get_token(); 
-	} while(!(cur_cmd != 10)); 
-	if (cur_tok == 3133)
-	{
-	  get_token(); 
-	  if (cur_cmd == 10)
-	  get_token(); 
-	} 
-      } 
-      else {
-	  
-	get_token(); 
-	q = cur_tok; 
-	get_token(); 
-	back_input(); 
-	cur_tok = q; 
-	back_input(); 
-      } 
+      n = cur_chr;
+      get_r_token();
+      p = cur_cs;
+      if (n == 0) {
+        do {
+          get_token();
+        } while (!(cur_cmd != 10));
+        if (cur_tok == 3133) {
+          get_token();
+          if (cur_cmd == 10)
+            get_token();
+        }
+      } else {
+        get_token();
+        q = cur_tok;
+        get_token();
+        back_input();
+        cur_tok = q;
+        back_input();
+      }
       if (cur_cmd >= 111)
-      incr(mem[cur_chr].hh.v.LH); 
-      if ((a >= 4)) 
-      geq_define(p, cur_cmd, cur_chr); 
-      else eq_define(p, cur_cmd, cur_chr); 
-    } 
-    break; 
-  case 95 : 
+        incr(mem[cur_chr].hh.v.LH);
+      if ((a >= 4))
+        geq_define(p, cur_cmd, cur_chr);
+      else
+        eq_define(p, cur_cmd, cur_chr);
+    }
+    break;
+  case 95:
     {
-      n = cur_chr; 
-      get_r_token(); 
-      p = cur_cs; 
-      if ((a >= 4))  geq_define(p, 0, 256); 
-      else eq_define(p, 0, 256); 
-      scan_optional_equals(); 
-      switch(n){
-		  case 0 : 
-	{
-	  scan_char_num(); 
-	  if ((a >= 4)) 
-	  geq_define(p, 68, cur_val); 
-	  else eq_define(p, 68, cur_val); 
-	} 
-	break; 
-      case 1 : 
-	{
-	  scan_fifteen_bit_int(); 
-	  if ((a >= 4)) 
-	  geq_define(p, 69, cur_val); 
-	  else eq_define(p, 69, cur_val); 
-	} 
-	break; 
-	default: 
-	{
-	  scan_eight_bit_int(); 
+      n = cur_chr;
+      get_r_token();
+      p = cur_cs;
+      if ((a >= 4))
+        geq_define(p, 0, 256);
+      else
+        eq_define(p, 0, 256);
+      scan_optional_equals();
+      switch (n) {
+      case 0:
+        {
+          scan_char_num();
+          if ((a >= 4))
+            geq_define(p, 68, cur_val);
+          else eq_define(p, 68, cur_val);
+        }
+        break;
+      case 1:
+        {
+          scan_fifteen_bit_int();
+          if ((a >= 4))
+            geq_define(p, 69, cur_val);
+          else
+            eq_define(p, 69, cur_val);
+        }
+        break;
+      default:
+        {
+          scan_eight_bit_int();
 	  switch(n){
 		  case 2 : 
 	    if ((a >= 4)) 
@@ -1157,8 +1150,8 @@ void prefixed_command (void)
 	    break; 
 	  case 6 : 
 	    if ((a >= 4)) 
-	    geq_define(p, 72, (hash_size + 1322) + cur_val); 
-	    else eq_define(p, 72, (hash_size + 1322) + cur_val); 
+	    geq_define(p, 72, toks_base + cur_val); 
+	    else eq_define(p, 72, toks_base + cur_val); 
 	    break; 
 	  } 
 	} 
@@ -1191,7 +1184,7 @@ void prefixed_command (void)
       if (cur_cmd == 71)
       {
 	scan_eight_bit_int(); 
-	p = (hash_size + 1322) + cur_val; 
+	p = toks_base + cur_val; 
       } 
       else p = cur_chr; 
       scan_optional_equals(); 
@@ -1204,7 +1197,7 @@ void prefixed_command (void)
 	{
 	  scan_eight_bit_int(); 
 	  cur_cmd = 72; 
-	  cur_chr = (hash_size + 1322) + cur_val; 
+	  cur_chr = toks_base + cur_val; 
 	} 
 	if (cur_cmd == 72)
 	{
@@ -1489,10 +1482,10 @@ void bad_formator_pool (char *name, char *defaultname, char *envvar)
 	if (name == NULL) name = defaultname;
 	sprintf(log_line, "(Perhaps %s is for an older version of TeX)\n", name); 
 	show_line(log_line, 0);
-	name_of_file[name_length + 1] = '\0';	/* null terminate */
+	name_of_file[name_length + 1] = '\0';
 	sprintf(log_line, "(Alternatively, %s may have been corrupted)\n", name_of_file+1);
 	show_line(log_line, 0);
-	name_of_file[name_length + 1] = ' ';	/* space terminate */
+	name_of_file[name_length + 1] = ' ';
 	sprintf(log_line,
 		"(Perhaps your %s environment variable is not set correctly)\n", envvar);
 	show_line(log_line, 0);
@@ -1513,7 +1506,7 @@ void bad_formator_pool (char *name, char *defaultname, char *envvar)
 } 
 /* sec 1303 */
 bool load_fmt_file (void) 
-{/* 6666 10 */
+{
   register bool Result;
   integer j, k;
   halfword p, q;
@@ -2649,7 +2642,7 @@ void do_initex (void)
 	  while(k++ < for_end);
   } 
   eqtb[(hash_size + 782)].hh.v.RH = 0; /* glue_base (hash_size + 782) */
-  eqtb[(hash_size + 782)].hh.b1 = 1; 
+  eq_level(glue_base) = level_one;
   eqtb[(hash_size + 782)].hh.b0 = 117; 
 /* equiv(glue_base):=zero_glue; eq_level(glue_base):=level_one; */
 /* eq_type(glue_base):=glue_ref; */
@@ -2891,66 +2884,64 @@ void do_initex (void)
 /* I have added a texpool file, but I need merge the pool to the binary  */
 /* lots of things updates the kpathsea sources -- Clerk Ma               */
 bool get_strings_started (void)
-{/* 30 10 */
+{
   register bool Result;
-  unsigned char k, l; 
-  ASCII_code m, n; 
-  str_number g; 
-  integer a; 
-  bool c; 
+  unsigned char k, l;
+  ASCII_code m, n;
+  str_number g;
+  integer a;
+  bool c;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   int flag; /* 95/Feb/19 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  pool_ptr = 0; 
-  str_ptr = 0; 
-  str_start[0]= 0; 
+  pool_ptr = 0;
+  str_ptr = 0;
+  str_start[0] = 0;
   {
     register integer for_end;
     k = 0;
     for_end = 255;
-    if (k <= for_end) do 
-    {
-      if (((k < 32)||(k > 126)))
-      {
-        append_char('^');
-		append_char('^');
-        if (k < 64) append_char(k + 64);
-        else if (k < 128) append_char(k - 64);
-		else {
-          l = k / 16;
-          if (l < 10)
-          {
-            str_pool[pool_ptr]= l + 48; /* '0' */
-            incr(pool_ptr);
-          } else {
-            str_pool[pool_ptr]= l + 87; /* 'a' - 10 */
-            incr(pool_ptr);
+    if (k <= for_end) 
+      do {
+        if (((k < 32)||(k > 126))) {
+          append_char('^');
+          append_char('^');
+          if (k < 64)
+            append_char(k + 64);
+          else if (k < 128)
+            append_char(k - 64);
+          else {
+            l = k / 16;
+            if (l < 10) {
+              str_pool[pool_ptr]= l + 48; /* '0' */
+              incr(pool_ptr);
+            } else {
+              str_pool[pool_ptr]= l + 87; /* 'a' - 10 */
+              incr(pool_ptr);
+            }
+            l = k % 16;
+            if (l < 10) {
+              str_pool[pool_ptr]= l + 48; /* '0' */
+              incr(pool_ptr);
+            } else {
+              str_pool[pool_ptr]= l + 87; /* 'a' - 10 */
+              incr(pool_ptr);
+            }
           }
-          l = k % 16;
-          if (l < 10)
-          {
-            str_pool[pool_ptr]= l + 48; /* '0' */
-            incr(pool_ptr); 
-          } else {
-            str_pool[pool_ptr]= l + 87; /* 'a' - 10 */
-            incr(pool_ptr);
-          }
-        }
-      } else append_char(k);
-      g = make_string();
-    }
-    while(k++ < for_end);
-  } 
-  vstrcpy((char *) name_of_file + 1, pool_name); 
-  name_of_file[0]= ' '; 
-  name_of_file[strlen(pool_name) + 1]= ' '; 
-  name_length = strlen(pool_name); 
+        } else append_char(k);
+        g = make_string();
+      } while(k++ < for_end);
+  }
+  vstrcpy((char *) name_of_file + 1, pool_name);
+  name_of_file[0] = ' ';
+  name_of_file[strlen(pool_name) + 1] = ' '; 
+  name_length = strlen(pool_name);
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /*  if (a_open_in(pool_file, TEXPOOLPATH))  */
   flag = a_open_in(pool_file, TEXPOOLPATH);
   if (flag == 0) { /* 95/Feb/19 */
     pool_name [name_length - 1] = '\0'; /* `tex.pool' => `tex.poo' */
-    vstrcpy((char *) name_of_file + 1, pool_name); 
+    vstrcpy((char *) name_of_file + 1, pool_name);
     name_of_file[0]= ' ';
     name_of_file[strlen(pool_name)+ 1]= ' ';
     name_length = strlen(pool_name);
@@ -2959,10 +2950,9 @@ bool get_strings_started (void)
   if (flag) {
     c = false;
     do {
-      { 
+      {
 /* if (eof(pool_file)) */ /* feof(pool_file)??? */
-        if (test_eof(pool_file)) 
-        {
+        if (test_eof(pool_file)) {
           ;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
           show_line("! string pool file has no check sum.\n", 1);
@@ -2978,16 +2968,15 @@ bool get_strings_started (void)
         read(pool_file, n);
         if (m == '*') /* last line starts with * */
         {
-          a = 0; 
+          a = 0;
           k = 1;
           while (true) {
-            if ((xord[n]< 48)||(xord[n]> 57)) 
-            {
+            if ((xord[n]< 48)||(xord[n]> 57)) {
               ; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
               show_line("! string pool file check sum doesn't have nine digits.\n", 1);
 /* added following bit of explanation 96/Jan/16 */
-              if (! knuth_flag)
+              if (!knuth_flag)
                 bad_formator_pool(string_file, "the pool file", "TEXPOOL");
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
               (void) a_close(pool_file);
@@ -3007,7 +2996,7 @@ lab30:
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
             show_line("! string pool check sum doesn't match; tangle me again.\n", 1);
 /* added following bit of explanation 96/Jan/16 */
-            if (! knuth_flag)
+            if (!knuth_flag)
               bad_formator_pool(string_file, "the pool file", "TEXPOOL");
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
             (void) a_close(pool_file);
@@ -3034,8 +3023,9 @@ lab30:
 #ifdef ALLOCATESTRING
 /* can freely extend memory, so we need not be paranoid - stringvacancies */
 /* if (pool_ptr + l + stringvacancies > current_pool_size)*/
-          if (pool_ptr + l + stringmargin > current_pool_size){
-            if (trace_flag) show_line("String margin reallocation\n", 0);
+          if (pool_ptr + l + stringmargin > current_pool_size) {
+            if (trace_flag)
+              show_line("String margin reallocation\n", 0);
 /* str_pool =  realloc_str_pool (pool_ptr + l + stringvacancies */
             str_pool =  realloc_str_pool (pool_ptr + l + stringmargin - current_pool_size  + increment_pool_size);
           }
@@ -3045,118 +3035,148 @@ lab30:
           if (pool_ptr + l + stringvacancies > pool_size)
 #endif
           {
-            ; 
+            ;
             show_line("! You have to increase POOLSIZE.\n", 1);
-            (void) a_close(pool_file); 
-            Result = false; 
-            return(Result); 
-          } 
+            (void) a_close(pool_file);
+            Result = false;
+            return(Result);
+          }
           {
             register integer for_end;
             k = 1;
             for_end = l;
             if (k <= for_end) 
               do {
-                if (eoln(pool_file)) 
+                if (eoln(pool_file))
                   m = ' ';
                 else read(pool_file, m);
                 {
-                  str_pool[pool_ptr]= xord[m]; 
+                  str_pool[pool_ptr] = xord[m];
                   incr(pool_ptr);
                 }
               } while(k++ < for_end);
           }
           readln(pool_file); /* flush rest to end of file / end of line */
-          g = make_string(); 
+          g = make_string();
         }
-      } 
-    } while(!(c)); 
-    (void) a_close(pool_file); 
-    Result = true; 
-  }
-  else {   
- ; 
+      }
+    } while (!(c));
+    (void) a_close(pool_file);
+    Result = true;
+  } else {
+    ; 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    sprintf(log_line, "! I can't read %s.\n", pool_name); 
-	show_line(log_line, 1);
-	if (! knuth_flag)
-	show_line("  (Was unable to find tex.poo or tex.pool)\n", 0); /* extra explain */
+    sprintf(log_line, "! I can't read %s.\n", pool_name);
+    show_line(log_line, 1);
+    if (!knuth_flag)
+      show_line("  (Was unable to find tex.poo or tex.pool)\n", 0); /* extra explain */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    Result = false; 
+    Result = false;
     return(Result); 
-  } 
-  return Result; 
-} 
+  }
+  return Result;
+}
 #endif /* INITEX */
 
 #ifdef INITEX
 void sort_avail (void) 
 { 
-  halfword p, q, r; 
-  halfword old_rover; 
+  halfword p, q, r;
+  halfword old_rover;
   p = get_node(1073741824L); /* 2^30 merge adjacent free nodes */
-  p = rlink(rover); 
-  rlink(rover) = empty_flag; 
-  old_rover = rover; 
+  p = rlink(rover);
+  rlink(rover) = empty_flag;
+  old_rover = rover;
   while (p != old_rover)
-    if (p < rover)
-	{
-    q = p; 
-    p = rlink(q); 
-    rlink(q) = rover; 
-    rover = q; 
-  } else {
-    q = rover; 
-    while (rlink(q) < p) q = rlink(q);
-    r = rlink(p);
-    rlink(p) = rlink(q); 
-    rlink(q) = p; 
-    p = r; 
-  } 
-  p = rover; 
+    if (p < rover) {
+      q = p;
+      p = rlink(q);
+      rlink(q) = rover;
+      rover = q;
+    } else {
+      q = rover;
+      while (rlink(q) < p)
+        q = rlink(q);
+      r = rlink(p);
+      rlink(p) = rlink(q);
+      rlink(q) = p;
+      p = r;
+    }
+  p = rover;
   while (rlink(p) != empty_flag) {
-    llink(rlink(p)) = p; 
-    p = rlink(p); 
-  } 
+    llink(rlink(p)) = p;
+    p = rlink(p);
+  }
   mem[p + 1].hh.v.RH = rover; 
   llink(rover) = p; 
 } 
 #endif /* INITEX */
 
 #ifdef INITEX
+/*****************APTEX********************/
+/*
+str_number make_string_pool (char *s)
+{
+  while (*s != '\0') {
+    append_char(*s); incr(s);
+  }
+  return (make_string());
+}
+void primitive_s (char * s, quarterword c, halfword o)
+{
+  pool_pointer k, l;
+  small_number j;
+  str_number prim_str;
+  if (s[1] = '\0')
+    cur_val = s[0] + single_base;
+  else {
+    prim_str = make_string_pool(s);
+    k = str_start[prim_str]; l = str_start[prim_str] - k;
+    for (j = 0; j < l; incr(j)) buffer[j] = str_pool[k + j];
+    cur_val = id_lookup(0, l);
+    {
+      decr(str_ptr);
+      pool_ptr = str_start[str_ptr];
+    }
+     hash[cur_val].v.RH = prim_str;
+  }
+  eq_level(cur_val) = level_one; eq_type(cur_val) = c; equiv(cur_val) = o;
+}
+*/
+/*****************APTEX********************/
 void primitive_ (str_number s, quarterword c, halfword o)
 { 
-  pool_pointer k; 
-  small_number j; 
+  pool_pointer k;
+  small_number j;
 /*  small_number l;  */
-  int l;						/* 95/Jan/7 */
+  int l; /* 95/Jan/7 */
   if (s < 256)
-	  cur_val = s + 257;	/* cur_val <- s + single_base; p.264 */
+    cur_val = s + 257; /* cur_val <- s + single_base; p.264 */
   else {
-    k = str_start[s]; 
-    l = str_start[s + 1] - k;			/* small_number l */
+    k = str_start[s];
+    l = str_start[s + 1] - k; /* small_number l */
     {
-		register integer for_end;
-		j = 0;
-		for_end = l - 1;
-		if (j <= for_end) 
-			do buffer[j]= str_pool[k + j]; 
-		while(j++ < for_end);
-	} 
-    cur_val = id_lookup(0, l); 
+      register integer for_end;
+      j = 0;
+      for_end = l - 1;
+      if (j <= for_end)
+        do buffer[j]= str_pool[k + j];
+        while(j++ < for_end);
+    }
+    cur_val = id_lookup(0, l);
     {
-      decr(str_ptr); 
-      pool_ptr = str_start[str_ptr]; 
-    } 
-/*	**********************  debugging only  96/Jan/20 should not happen */
+      decr(str_ptr);
+      pool_ptr = str_start[str_ptr];
+    }
+/* **********************  debugging only  96/Jan/20 should not happen */
 #ifdef SHORTHASH
-	if (s > 65535L) show_line("ERROR: hash entry too large\n", 1);
+    if (s > 65535L) show_line("ERROR: hash entry too large\n", 1);
 #endif
     hash[cur_val].v.RH = s;
   }
-  eqtb[cur_val].hh.b1 = 1; 
-  eqtb[cur_val].hh.b0 = c; 
-  eqtb[cur_val].hh.v.RH = o; 
+  eqtb[cur_val].hh.b1 = 1;
+  eqtb[cur_val].hh.b0 = c;
+  eqtb[cur_val].hh.v.RH = o;
 } 
 #endif /* INITEX */
 
@@ -3164,158 +3184,155 @@ void primitive_ (str_number s, quarterword c, halfword o)
 
 #ifdef INITEX
 trie_op_code new_trie_op_ (small_number d, small_number n, trie_op_code v)
-{/* 10 */
-  register trie_op_code Result; 
-  integer h; 
-  trie_op_code u; 
-  integer l; 
+{
+  register trie_op_code Result;
+  integer h;
+  trie_op_code u;
+  integer l;
 /* the 313, 361 and 1009 are hard-wired constants here p.944 */
 /* begin h:=abs(n+313*d+361*v+1009*cur_lang) mod (trie_op_size+trie_op_size) */
-  h = abs(toint(n)+ 313 * toint(d)+ 361 * toint(v)+ 1009 *
-		toint(cur_lang)) %(trie_op_size - neg_trie_op_size)+ neg_trie_op_size; 
+  h = abs(toint(n) + 313 * toint(d) + 361 * toint(v) + 1009 *
+		toint(cur_lang)) % (trie_op_size - neg_trie_op_size) + neg_trie_op_size;
   while (true) {
 /*  if l=0 then {empty position found for a new op} */
-    l = trie_op_hash[h]; 
-    if (l == 0)
-    {
-      if (trie_op_ptr == trie_op_size){
-		  overflow("pattern memory ops", trie_op_size);	/* pattern memory ops  - NOT DYNAMIC */
-		  return 0;			// abort_flag set
-	  }
-      u = trie_used[cur_lang]; 
+    l = trie_op_hash[h];
+    if (l == 0) {
+      if (trie_op_ptr == trie_op_size) {
+        overflow("pattern memory ops", trie_op_size);	/* pattern memory ops  - NOT DYNAMIC */
+        return 0;			// abort_flag set
+      }
+      u = trie_used[cur_lang];
 /*    if u=max_quarterword then ??? */
-      if (u == max_trie_op){
-/*		  overflow("pattern memory ops per language",
-		  max_quarterword-min_quarterword); ??? */
-		  overflow("pattern memory ops per language", max_trie_op - min_trie_op); /* pattern memory ops per language */
-		  return 0;			// abort_flag set
-	  }
-      incr(trie_op_ptr); 
-      incr(u); 
-      trie_used[cur_lang]= u; 
+      if (u == max_trie_op) {
+/*      overflow("pattern memory ops per language", max_quarterword-min_quarterword); ??? */
+        overflow("pattern memory ops per language", max_trie_op - min_trie_op); /* pattern memory ops per language */
+        return 0;			// abort_flag set
+      }
+      incr(trie_op_ptr);
+      incr(u);
+      trie_used[cur_lang] = u;
       if (u > max_op_used)
-      max_op_used = u; 
-      hyf_distance[trie_op_ptr]= d; 
-      hyf_num[trie_op_ptr]= n; 
-      hyf_next[trie_op_ptr]= v; 
-      trie_op_lang[trie_op_ptr]= cur_lang; 
-      trie_op_hash[h]= trie_op_ptr; 
-      trie_op_val[trie_op_ptr]= u; 
-      Result = u; 
-      return(Result); 
-    } 
-    if ((hyf_distance[l]== d)&&(hyf_num[l]== n)&&(hyf_next[l 
-  ]== v)&&(trie_op_lang[l]== cur_lang)) 
-    {
-      Result = trie_op_val[l]; 
-      return(Result); 
-    } 
+        max_op_used = u;
+      hyf_distance[trie_op_ptr] = d;
+      hyf_num[trie_op_ptr] = n;
+      hyf_next[trie_op_ptr] = v;
+      trie_op_lang[trie_op_ptr] = cur_lang;
+      trie_op_hash[h] = trie_op_ptr;
+      trie_op_val[trie_op_ptr] = u;
+      Result = u;
+      return(Result);
+    }
+    if ((hyf_distance[l]== d) && (hyf_num[l]== n) &&
+      (hyf_next[l]== v) && (trie_op_lang[l]== cur_lang)) {
+        Result = trie_op_val[l];
+        return(Result);
+    }
     if (h > - (integer) trie_op_size)
-		decr(h); 
-    else h = trie_op_size; 
-  } 
-/*  return Result;  */	/* unreachable code */
-} 
+      decr(h);
+    else h = trie_op_size;
+  }
+/* return Result;  */	/* unreachable code */
+}
 /* what are those horrible constants there ? page 395 */
 trie_pointer trie_node_ (trie_pointer p)
-{/* 10 */ register trie_pointer Result; 
-  trie_pointer h; 
-  trie_pointer q; 
+{
+  register trie_pointer Result;
+  trie_pointer h;
+  trie_pointer q;
 /* the 1009, 2718, 3142 are hard-wired constants here (not hyphen_prime) */
-  h = abs(toint(trie_c[p])+ 1009 * toint(trie_o[p])+ 2718 * 
-  toint(trie_l[p])+ 3142 * toint(trie_r[p])) % trie_size; 
-  while(true){
-    q = trie_hash[h]; 
-    if (q == 0)
-    {
-      trie_hash[h]= p; 
-      Result = p; 
-      return(Result); 
-    } 
-    if ((trie_c[q]== trie_c[p])&&(trie_o[q]== trie_o[p])&&(
-    trie_l[q]== trie_l[p])&&(trie_r[q]== trie_r[p])) 
-    {
-      Result = q; 
-      return(Result); 
-    } 
+  h = abs(toint(trie_c[p]) + 1009 * toint(trie_o[p]) + 2718 * 
+  toint(trie_l[p]) + 3142 * toint(trie_r[p])) % trie_size;
+  while (true) {
+    q = trie_hash[h];
+    if (q == 0) {
+      trie_hash[h]= p;
+      Result = p;
+      return(Result);
+    }
+    if ((trie_c[q] == trie_c[p]) && (trie_o[q] == trie_o[p]) &&
+      (trie_l[q]== trie_l[p]) && (trie_r[q]== trie_r[p])) {
+        Result = q;
+        return(Result);
+    }
     if (h > 0)
-		decr(h); 
-    else h = trie_size; 
+      decr(h);
+    else h = trie_size;
   } 
-/*  return Result;  */	/* unreachable code */
-} 
+/* return Result;  */	/* unreachable code */
+}
 trie_pointer compress_trie_ (trie_pointer p)
-{register trie_pointer Result; 
+{
+  register trie_pointer Result;
   if (p == 0)
-  Result = 0; 
+    Result = 0;
   else {
-    trie_l[p]= compress_trie(trie_l[p]); 
-    trie_r[p]= compress_trie(trie_r[p]); 
-    Result = trie_node(p); 
-  } 
-  return Result; 
-} 
+    trie_l[p] = compress_trie(trie_l[p]);
+    trie_r[p] = compress_trie(trie_r[p]);
+    Result = trie_node(p);
+  }
+  return Result;
+}
 void first_fit_ (trie_pointer p)
-{/* 45 40 */ 
-  trie_pointer h; 
-  trie_pointer z; 
-  trie_pointer q; 
-  ASCII_code c; 
-  trie_pointer l, r; 
-  short ll; 
-  c = trie_c[p]; 
-  z = trie_min[c]; 
-  while(true){
-    h = z - c; 
-    if (trie_max < h + 256)
-    {
-      if (trie_size <= h + 256){ 	
-		  overflow("pattern memory", trie_size);  /* pattern memory - NOT DYNAMIC */
+{
+  trie_pointer h;
+  trie_pointer z;
+  trie_pointer q;
+  ASCII_code c;
+  trie_pointer l, r;
+  short ll;
+  c = trie_c[p];
+  z = trie_min[c];
+  while (true) {
+    h = z - c;
+    if (trie_max < h + 256) {
+      if (trie_size <= h + 256) {
+        overflow("pattern memory", trie_size);  /* pattern memory - NOT DYNAMIC */
 /*		  not dynamic ---- but can be set -h=... from command line in ini-TeX */
-		  return;			// abort_flag set
-	  }
+        return;			// abort_flag set
+      }
       do {
-	  incr(trie_max); 
-	trie_taken[trie_max]= false; 
-	trie_trl[trie_max]= trie_max + 1; 
-	trie_tro[trie_max]= trie_max - 1; 
-      } while(!(trie_max == h + 256)); 
-    } 
+        incr(trie_max);
+        trie_taken[trie_max]= false;
+        trie_trl[trie_max]= trie_max + 1;
+        trie_tro[trie_max]= trie_max - 1;
+      } while (!(trie_max == h + 256));
+    }
     if (trie_taken[h])
-    goto lab45; 
-    q = trie_r[p]; 
-    while(q > 0){
+      goto lab45;
+    q = trie_r[p];
+    while (q > 0) {
       if (trie_trl[h + trie_c[q]] == 0)
-      goto lab45; 
-      q = trie_r[q]; 
-    } 
-    goto lab40; 
-    lab45: z = trie_trl[z]; 
-  } 
+        goto lab45;
+      q = trie_r[q];
+    }
+    goto lab40;
+lab45:
+    z = trie_trl[z];
+  }
 lab40:
-  trie_taken[h]= true; /* h may be used without ... */
-  trie_hash[p]= h; 
-  q = p; 
+  trie_taken[h] = true; /* h may be used without ... */
+  trie_hash[p] = h;
+  q = p;
   do {
-      z = h + trie_c[q]; 
-    l = trie_tro[z]; 
-    r = trie_trl[z]; 
-    trie_tro[r]= l; 
-    trie_trl[l]= r; 
-    trie_trl[z]= 0; 
-    if (l < 256)
-    {
+    z = h + trie_c[q];
+    l = trie_tro[z];
+    r = trie_trl[z];
+    trie_tro[r]= l;
+    trie_trl[l]= r;
+    trie_trl[z]= 0;
+    if (l < 256) {
       if (z < 256)
-      ll = z;					/* short ll */
-      else ll = 256; 
+        ll = z;					/* short ll */
+      else
+        ll = 256;
       do {
-	  trie_min[l]= r; 
-	incr(l); 
-      } while(!(l == ll)); 
-    } 
-    q = trie_r[q]; 
-  } while(!(q == 0)); 
-} 
+        trie_min[l] = r;
+        incr(l);
+      } while (!(l == ll));
+    }
+    q = trie_r[q];
+  } while (!(q == 0));
+}
 void trie_pack_ (trie_pointer p) 
 {
   trie_pointer q; 
@@ -3359,7 +3376,7 @@ void new_patterns (void)
 /*  ASCII_code c;  */
   int c;								/* 95/Jan/7 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if (! trie_not_ready) {					/* new stuff */
+  if (!trie_not_ready) {					/* new stuff */
 	  if (allow_patterns) {	
 		  if (trace_flag) show_line("Resetting patterns\n", 0);
 		  reset_trie();					/* RESET PATTERNS -  93/Nov/26 */
@@ -3370,136 +3387,126 @@ void new_patterns (void)
 	  }
   }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if (trie_not_ready)
-  {
+  if (trie_not_ready) {
     if (language <= 0)
-    cur_lang = 0; 
+      cur_lang = 0;
     else if (language > 255)
-    cur_lang = 0; 
-    else cur_lang = language; 
-    scan_left_brace(); 
-    k = 0; 
-    hyf[0]= 0; 
-    digitsensed = false; 
-    while(true){
-      get_x_token(); 
-      switch(cur_cmd)
-      {case 11 : 
-      case 12 : 
-	if (digitsensed ||(cur_chr < 48)||(cur_chr > 57)) 
-	{
-	  if (cur_chr == 46)		/* . */
-	  cur_chr = 0; 
-	  else {
-	      
-	    cur_chr = eqtb[(hash_size + 2139) + cur_chr].hh.v.RH; 
-	    if (cur_chr == 0)
-	    {
-			print_err("Nonletter");
-			help1("(See Appendix H.)");
-	      error(); 
-	    } 
-	  } 
-	  if (k < 63)
-	  {
-	    incr(k); 
-	    hc[k]= cur_chr; 
-	    hyf[k]= 0; 
-	    digitsensed = false; 
-	  } 
-	} 
-	else if (k < 63)
-	{
-	  hyf[k]= cur_chr - 48; 
-	  digitsensed = true; 
-	} 
-	break; 
-      case 10 : 
-      case 2 : 
-	{
-	  if (k > 0)
-	  {
-	    if (hc[1]== 0)
-	    hyf[0]= 0; 
-	    if (hc[k]== 0)
-	    hyf[k]= 0; 
-	    l = k; 
-	    v = min_trie_op; 
-	    while(true){
-	      if (hyf[l]!= 0)
-	      v = new_trie_op(k - l, hyf[l], v); 
-	      if (l > 0)
-	      decr(l); 
-	      else goto lab31; 
-	    } 
-	    lab31:; 
-	    q = 0; 
-	    hc[0]= cur_lang; 
-	    while(l <= k){
-	      c = hc[l]; 
-	      incr(l); 
-	      p = trie_l[q]; 
-	      firstchild = true; 
-	      while((p > 0)&&(c > trie_c[p])) {
-		q = p; 
-		p = trie_r[q]; 
-		firstchild = false; 
-	      } 
-	      if ((p == 0)||(c < trie_c[p])) 
-	      {
-		if (trie_ptr == trie_size){
-			overflow("pattern memory", trie_size);	/* pattern memory - NOT DYNAMIC */
+      cur_lang = 0;
+    else cur_lang = language;
+    scan_left_brace();
+    k = 0;
+    hyf[0] = 0;
+    digitsensed = false;
+    while (true) {
+      get_x_token();
+      switch (cur_cmd) {
+      case 11:
+      case 12:
+        if (digitsensed || (cur_chr < 48) || (cur_chr > 57)) {
+          if (cur_chr == '.')
+            cur_chr = 0;
+          else {
+            cur_chr = eqtb[(hash_size + 2139) + cur_chr].hh.v.RH;
+            if (cur_chr == 0) {
+              print_err("Nonletter");
+              help1("(See Appendix H.)");
+              error();
+            }
+          }
+          if (k < 63) {
+            incr(k);
+            hc[k] = cur_chr;
+            hyf[k] = 0;
+            digitsensed = false;
+          }
+        }	else if (k < 63) {
+          hyf[k] = cur_chr - 48;
+          digitsensed = true;
+        }
+        break; 
+      case 10:
+      case 2:
+        {
+          if (k > 0) {
+            if (hc[1]== 0)
+              hyf[0] = 0;
+            if (hc[k]== 0)
+              hyf[k] = 0;
+            l = k;
+            v = min_trie_op;
+            while (true) {
+              if (hyf[l]!= 0)
+                v = new_trie_op(k - l, hyf[l], v);
+              if (l > 0)
+                decr(l);
+              else
+                goto lab31;
+            }
+lab31:;
+            q = 0;
+            hc[0]= cur_lang;
+            while (l <= k) {
+              c = hc[l];
+              incr(l);
+              p = trie_l[q];
+              firstchild = true;
+              while ((p > 0) && (c > trie_c[p])) {
+                q = p;
+                p = trie_r[q];
+                firstchild = false;
+              }
+              if ((p == 0) || (c < trie_c[p])) {
+                if (trie_ptr == trie_size) {
+                  overflow("pattern memory", trie_size);	/* pattern memory - NOT DYNAMIC */
 /*			not dynamic ---- but can be set -h=... from command line in ini-TeX */
-			return;			// abort_flag set
-		}
-		incr(trie_ptr); 
-		trie_r[trie_ptr]= p; 
-		p = trie_ptr; 
-		trie_l[p]= 0; 
-		if (firstchild)
-		trie_l[q]= p; 
-		else trie_r[q]= p; 
-		trie_c[p]= c; 
-		trie_o[p]= min_trie_op; 
-	      } 
-	      q = p; 
-	    } 
-	    if (trie_o[q]!= min_trie_op)
-	    {
-			print_err("Duplicate pattern");
-			help1("(See Appendix H.)");
-	      error(); 
-	    } 
-	    trie_o[q]= v; 
-	  } 
-	  if (cur_cmd == 2)
-	  goto lab30; 
-	  k = 0; 
-	  hyf[0]= 0; 
-	  digitsensed = false; 
-	} 
-	break; 
-	default: 
-	{
-		print_err("Bad ");
-	  print_esc("patterns");
-	  help1("(See Appendix H.)");
-	  error(); 
-	} 
-	break; 
-      } 
-    } 
-    lab30:; 
-  } 
-  else {
-      print_err("Too late for ");
+                  return;			// abort_flag set
+                }
+                incr(trie_ptr);
+                trie_r[trie_ptr] = p;
+                p = trie_ptr;
+                trie_l[p] = 0;
+                if (firstchild)
+                  trie_l[q]= p;
+                else trie_r[q]= p;
+                trie_c[p] = c;
+                trie_o[p] = min_trie_op;
+              }
+              q = p;
+            }
+            if (trie_o[q]!= min_trie_op) {
+              print_err("Duplicate pattern");
+              help1("(See Appendix H.)");
+              error();
+            }
+            trie_o[q]= v;
+          }
+          if (cur_cmd == 2)
+            goto lab30;
+          k = 0;
+          hyf[0] = 0;
+          digitsensed = false;
+        }
+        break;
+      default:
+        {
+          print_err("Bad ");
+          print_esc("patterns");
+          help1("(See Appendix H.)");
+          error();
+        }
+        break;
+      }
+    }
+lab30:;
+  } else {
+    print_err("Too late for ");
     print_esc("patterns");
-	help1("All patterns must be given before typesetting begins.");
-    error(); 
-    mem[lig_trick].hh.v.RH = scan_toks(false, false); 
-    flush_list(def_ref); 
-  } 
-} 
+    help1("All patterns must be given before typesetting begins.");
+    error();
+    mem[lig_trick].hh.v.RH = scan_toks(false, false);
+    flush_list(def_ref);
+  }
+}
 void init_trie (void) 
 {
   trie_pointer p; 
@@ -3615,7 +3622,7 @@ void init_trie (void)
 
 #ifdef INITEX
 void store_fmt_file (void) 
-{/* 41 42 31 32 */
+{
   integer j, k, l; 
   halfword p, q; 
   integer x; 
@@ -3631,52 +3638,34 @@ void store_fmt_file (void)
   if (save_ptr != 0) {
 	  print_err("You can't dump inside a group");
 	  help1("`{...\\dump}' is a no-no..");
-    {
-      if (interaction == 3) interaction = 2; 
-      if (log_opened){
-		  error();
-	  }
-	;
-#ifdef DEBUG
-      if (interaction > 0) debug_help(); 
-#endif /* DEBUG */
-      history = 3; 
-      jump_out();		// trying to \dump inside a group
-//	  return;			// drops through now
-	}
+    succumb();
   } /* end of if save_ptr != 0 */
 
   selector = 21; 
   print_string(" (format=");
   print(job_name); 
   print_char(' ');
-/*  print_int(eqtb[(hash_size + 3186)].cint % 100);  */	/* Y2K */
-  print_int(year);		/* 98/Oct/12 */
-/*  {
-	  int n= eqtb[(hash_size + 3186)].cint;
-	  sprintf(log_line, "YEAR: %ld\n", n);
-	  show_line(log_line, 0);
-  } */
+  print_int(year);
   print_char('.');
   print_int(month); 
   print_char('.');
   print_int(day); 
   print_char(')');
-  if (interaction == 0)selector = 18; 
+  if (interaction == 0) selector = 18; 
   else selector = 19; 
   {
 #ifdef ALLOCATESTRING
     if (pool_ptr + 1 > current_pool_size)
-		str_pool = realloc_str_pool (increment_pool_size);
-    if (pool_ptr + 1 > current_pool_size){ /* in case it failed 94/Jan/24 */
-		overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/9 */
-		return;			// abort_flag set
-	}
+      str_pool = realloc_str_pool (increment_pool_size);
+    if (pool_ptr + 1 > current_pool_size) { /* in case it failed 94/Jan/24 */
+      overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/9 */
+      return;			// abort_flag set
+    }
 #else
-    if (pool_ptr + 1 > pool_size){
-		overflow("pool size", pool_size - init_pool_ptr); /* pool size */
-		return;			// abort_flag set
-	}
+    if (pool_ptr + 1 > pool_size) {
+      overflow("pool size", pool_size - init_pool_ptr); /* pool size */
+      return;			// abort_flag set
+    }
 #endif
   } 
   format_ident = make_string(); 
@@ -3684,13 +3673,13 @@ void store_fmt_file (void)
   while(! w_open_out(fmt_file)) {
 	  prompt_file_name(1267, 780); /* format file name  .fmt */
   }
-  print_nl(" Beginning to dump on file ");		/*  */
+  print_nl(" Beginning to dump on file ");
   slow_print(w_make_name_string(fmt_file)); 
   {
     decr(str_ptr); 
     pool_ptr = str_start[str_ptr]; 
   } 
-  print_nl("");		/* */
+  print_nl("");
   slow_print(format_ident); 
   dump_int(BEGINFMTCHECKSUM); /* magic FMT file start 4C 20 E6 15 hex */
 /*  dump_int(0); */
@@ -3702,112 +3691,110 @@ void store_fmt_file (void)
   dump_int(hyphen_prime);		/* bkph */
   dump_int(pool_ptr); 
   dump_int(str_ptr); 
-  if (dumpthings(str_start[0], str_ptr + 1) 
-	)return;
-  if (dumpthings(str_pool[0], pool_ptr) 
-	)return;
-  print_ln(); 
-  print_int(str_ptr); 
-  print_string("strings of total length ");
-  print_int(pool_ptr); 
-  sort_avail(); 
-  var_used = 0; 
-  dump_int(lo_mem_max); 
-  dump_int(rover); 
-  p = 0; 
-  q = rover; 
-  x = 0; 
+  if (dumpthings(str_start[0], str_ptr + 1)) return;
+  if (dumpthings(str_pool[0], pool_ptr)) return;
+  print_ln();
+  print_int(str_ptr);
+  print_string(" strings of total length ");
+  print_int(pool_ptr);
+  sort_avail();
+  var_used = 0;
+  dump_int(lo_mem_max);
+  dump_int(rover);
+  p = 0;
+  q = rover;
+  x = 0;
   do {
-      if (dumpthings(mem[p], q + 2 - p) 
-		)return;
-    x = x + q + 2 - p; 
-    var_used = var_used + q - p; 
-    p = q + mem[q].hh.v.LH; 
-    q = mem[q + 1].hh.v.RH; 
-  } while(!(q == rover)); 
-  var_used = var_used + lo_mem_max - p; 
-  dyn_used = mem_end + 1 - hi_mem_min; 
-  if (dumpthings(mem[p], lo_mem_max + 1 - p) 
-	)return;
-  x = x + lo_mem_max + 1 - p; 
-  dump_int(hi_mem_min); 
-  dump_int(avail); 
-  if (dumpthings(mem[hi_mem_min], mem_end + 1 - hi_mem_min) 
-	)return;
-  x = x + mem_end + 1 - hi_mem_min; 
-  p = avail; 
-  while(p != 0){
-    decr(dyn_used); 
-    p = mem[p].hh.v.RH; 
-  } 
-  dump_int(var_used); 
-  dump_int(dyn_used); 
-  print_ln(); 
+    if (dumpthings(mem[p], q + 2 - p))
+      return;
+    x = x + q + 2 - p;
+    var_used = var_used + q - p;
+    p = q + mem[q].hh.v.LH;
+    q = mem[q + 1].hh.v.RH;
+  } while (!(q == rover));
+  var_used = var_used + lo_mem_max - p;
+  dyn_used = mem_end + 1 - hi_mem_min;
+  if (dumpthings(mem[p], lo_mem_max + 1 - p)) return;
+  x = x + lo_mem_max + 1 - p;
+  dump_int(hi_mem_min);
+  dump_int(avail);
+  if (dumpthings(mem[hi_mem_min], mem_end + 1 - hi_mem_min)) return;
+  x = x + mem_end + 1 - hi_mem_min;
+  p = avail;
+  while (p != 0) {
+    decr(dyn_used);
+    p = mem[p].hh.v.RH;
+  }
+  dump_int(var_used);
+  dump_int(dyn_used);
+  print_ln();
   print_int(x); 
-  print_string("memory locations dumped; current usage is ");
+  print_string(" memory locations dumped; current usage is ");
   print_int(var_used); 
-  print_char(38);	/* & */
+  print_char('&');
   print_int(dyn_used); 
   k = 1; 
   do {
-      j = k; 
-    while(j < (hash_size + 3162)){
-      if ((eqtb[j].hh.v.RH == eqtb[j + 1].hh.v.RH)&&(eqtb[j 
-    ].hh.b0 == eqtb[j + 1].hh.b0)&&(eqtb[j].hh.b1 == eqtb[j + 
-      1].hh.b1)) 
-      goto lab41; 
-      incr(j); 
-    } 
-    l = (hash_size + 3163); 
-    goto lab31; 
-    lab41: incr(j); 
-    l = j; 
-    while(j < (hash_size + 3162)){
-      if ((eqtb[j].hh.v.RH != eqtb[j + 1].hh.v.RH)||(eqtb[j 
-    ].hh.b0 != eqtb[j + 1].hh.b0)||(eqtb[j].hh.b1 != eqtb[j + 
-      1].hh.b1)) 
-      goto lab31; 
-      incr(j); 
-    } 
-    lab31: dump_int(l - k); 
-    if (dumpthings(eqtb[k], l - k) 
-	 )return;
-    k = j + 1; 
-    dump_int(k - l); 
-  } while(!(k == (hash_size + 3163))); 
+    j = k;
+    while(j < (hash_size + 3162)) {
+      if ((eqtb[j].hh.v.RH == eqtb[j + 1].hh.v.RH) &&
+        (eqtb[j].hh.b0 == eqtb[j + 1].hh.b0) &&
+        (eqtb[j].hh.b1 == eqtb[j + 1].hh.b1))
+        goto lab41;
+      incr(j);
+    }
+    l = (hash_size + 3163);
+    goto lab31;
+lab41:
+    incr(j);
+    l = j;
+    while (j < (hash_size + 3162)) {
+      if ((eqtb[j].hh.v.RH != eqtb[j + 1].hh.v.RH) ||
+        (eqtb[j].hh.b0 != eqtb[j + 1].hh.b0) ||
+        (eqtb[j].hh.b1 != eqtb[j + 1].hh.b1))
+        goto lab31;
+      incr(j);
+    }
+lab31:
+    dump_int(l - k);
+    if (dumpthings(eqtb[k], l - k)) return;
+    k = j + 1;
+    dump_int(k - l);
+  } while (!(k == (hash_size + 3163)));
   do {
-      j = k; 
-    while(j < (hash_size + 4006)){
+    j = k;
+    while (j < (hash_size + 4006)) {
       if (eqtb[j].cint == eqtb[j + 1].cint)
-      goto lab42; 
-      incr(j); 
-    } 
-    l = (hash_size + 4007); 
-    goto lab32; 
-    lab42: incr(j); 
-    l = j; 
-    while(j < (hash_size + 4006)){
+        goto lab42;
+      incr(j);
+    }
+    l = (hash_size + 4007);
+    goto lab32;
+lab42:
+    incr(j);
+    l = j;
+    while (j < (hash_size + 4006)) {
       if (eqtb[j].cint != eqtb[j + 1].cint)
-      goto lab32; 
-      incr(j); 
-    } 
-    lab32: dump_int(l - k); 
-    if (dumpthings(eqtb[k], l - k) 
-	 )return;
-    k = j + 1; 
-    dump_int(k - l); 
-  } while(!(k > (hash_size + 4006))); 
-  dump_int(par_loc); 
-  dump_int(write_loc); 
-  dump_int(hash_used); 
+        goto lab32;
+      incr(j);
+    }
+lab32:
+    dump_int(l - k);
+    if (dumpthings(eqtb[k], l - k)) return;
+    k = j + 1;
+    dump_int(k - l);
+  } while (!(k > (hash_size + 4006)));
+  dump_int(par_loc);
+  dump_int(write_loc);
+  dump_int(hash_used);
 /*  cs_count:=frozen_control_sequence-1-hash_used; */
 /*  cs_count = (hash_size + 513) - hash_used;  */
-  cs_count = (hash_size + hash_extra + 513) - hash_used; 
+  cs_count = (hash_size + hash_extra + 513) - hash_used;
 /*  cs_count = (hash_size + 780) - hash_used;  */ /* ??? */
   if (trace_flag) {
-	  sprintf(log_line, "itex cs_count %d hash_size %d hash_extra %d hash_used %d",
-		 cs_count, hash_size, hash_extra, hash_used);			/* debugging */
-	  show_line(log_line, 0);
+    sprintf(log_line, "itex cs_count %d hash_size %d hash_extra %d hash_used %d",
+      cs_count, hash_size, hash_extra, hash_used);			/* debugging */
+    show_line(log_line, 0);
   }
 /*	for p <- hash_base to hash_used do */
   {
@@ -3815,147 +3802,134 @@ void store_fmt_file (void)
 	  p = 514;
 	  for_end = hash_used;
 	  if (p <= for_end) do 
-		  if (hash[p].v.RH != 0){
-			  dump_int(p); 
-			  dump_hh(hash[p]); 
-			  incr(cs_count); 
+		  if (hash[p].v.RH != 0) {
+			  dump_int(p);
+			  dump_hh(hash[p]);
+			  incr(cs_count);
 			  if (trace_flag) {
 				  sprintf(log_line, "itex cs_count++ ");
 				  show_line(log_line, 0); /* debugging */
 			  }
-		  } 
-	  while(p++ < for_end);
-  } 
+		  } while (p++ < for_end);
+  }
 /*	??? */
 /* for p <- hash_used+1 to undefined_control_sequence-1 do dump_hh(hash[p]) */
-  if (dumpthings(hash[hash_used + 1], (hash_size + 780) - hash_used) 
-	)return;
-  dump_int(cs_count); 
-  print_ln(); 
-  print_int(cs_count); 
+  if (dumpthings(hash[hash_used + 1], (hash_size + 780) - hash_used)) return;
+  dump_int(cs_count);
+  print_ln();
+  print_int(cs_count);
   print_string(" multiletter control sequences");
-  dump_int(fmem_ptr); 
+  dump_int(fmem_ptr);
   {
     if (dumpthings(font_info[0], fmem_ptr)) return;
 /*	frozenfontptr = font_ptr; */		/* number of fonts frozen into format */
-    dump_int(font_ptr); 
-    if (dumpthings(font_check[0], font_ptr + 1))return;
-    if (dumpthings(font_size[0], font_ptr + 1))return;
-    if (dumpthings(font_dsize[0], font_ptr + 1))return;
-    if (dumpthings(font_params[0], font_ptr + 1))return;
-    if (dumpthings(hyphen_char[0], font_ptr + 1))return;
-    if (dumpthings(skew_char[0], font_ptr + 1))return;
-    if (dumpthings(font_name[0], font_ptr + 1))return;
-    if (dumpthings(font_area[0], font_ptr + 1))return;
-    if (dumpthings(font_bc[0], font_ptr + 1))return;
-    if (dumpthings(font_ec[0], font_ptr + 1))return;
-    if (dumpthings(char_base[0], font_ptr + 1))return;
-    if (dumpthings(width_base[0], font_ptr + 1))return;
-    if (dumpthings(height_base[0], font_ptr + 1))return;
-    if (dumpthings(depth_base[0], font_ptr + 1))return;
-    if (dumpthings(italic_base[0], font_ptr + 1))return;
-    if (dumpthings(lig_kern_base[0], font_ptr + 1))return;
-    if (dumpthings(kern_base[0], font_ptr + 1))return;
-    if (dumpthings(exten_base[0], font_ptr + 1))return;
-    if (dumpthings(param_base[0], font_ptr + 1))return;
-    if (dumpthings(font_glue[0], font_ptr + 1))return;
-    if (dumpthings(bchar_label[0], font_ptr + 1))return;
-    if (dumpthings(font_bchar[0], font_ptr + 1))return;
-    if (dumpthings(font_false_bchar[0], font_ptr + 1))return;
+    dump_int(font_ptr);
+    if (dumpthings(font_check[0], font_ptr + 1)) return;
+    if (dumpthings(font_size[0], font_ptr + 1)) return;
+    if (dumpthings(font_dsize[0], font_ptr + 1)) return;
+    if (dumpthings(font_params[0], font_ptr + 1)) return;
+    if (dumpthings(hyphen_char[0], font_ptr + 1)) return;
+    if (dumpthings(skew_char[0], font_ptr + 1)) return;
+    if (dumpthings(font_name[0], font_ptr + 1)) return;
+    if (dumpthings(font_area[0], font_ptr + 1)) return;
+    if (dumpthings(font_bc[0], font_ptr + 1)) return;
+    if (dumpthings(font_ec[0], font_ptr + 1)) return;
+    if (dumpthings(char_base[0], font_ptr + 1)) return;
+    if (dumpthings(width_base[0], font_ptr + 1)) return;
+    if (dumpthings(height_base[0], font_ptr + 1)) return;
+    if (dumpthings(depth_base[0], font_ptr + 1)) return;
+    if (dumpthings(italic_base[0], font_ptr + 1)) return;
+    if (dumpthings(lig_kern_base[0], font_ptr + 1)) return;
+    if (dumpthings(kern_base[0], font_ptr + 1)) return;
+    if (dumpthings(exten_base[0], font_ptr + 1)) return;
+    if (dumpthings(param_base[0], font_ptr + 1)) return;
+    if (dumpthings(font_glue[0], font_ptr + 1)) return;
+    if (dumpthings(bchar_label[0], font_ptr + 1)) return;
+    if (dumpthings(font_bchar[0], font_ptr + 1)) return;
+    if (dumpthings(font_false_bchar[0], font_ptr + 1)) return;
     {
-		register integer for_end;
-		k = 0;
-		for_end = font_ptr;
-		if (k <= for_end) 
-			do 
-      {
-	print_nl("\\font");
+      register integer for_end;
+      k = 0;
+      for_end = font_ptr;
+      if (k <= for_end)
+        do {
+          print_nl("\\font");
 /*	print_esc(hash[(hash_size + 524) + k].v.RH);  */
 	//print_esc(hash[(hash_size + hash_extra + 524) + k].v.RH);
-	print_esc("");print(hash[(hash_size + hash_extra + 524) + k].v.RH);
-	print_char(61); /* = */
-	print_file_name(font_name[k], font_area[k], 335); 
-	if (font_size[k]!= font_dsize[k])
-	{
-	  print_string(" at ");
-	  print_scaled(font_size[k]); 
-	  print_string("pt");
-	} 
-      } 
-    while(k++ < for_end);
-	} 
-  } 
-  print_ln(); 
-  print_int(fmem_ptr - 7); 
-  print_string("words of font info for");
-  print_int(font_ptr - 0); 
+          print_esc("");print(hash[(hash_size + hash_extra + 524) + k].v.RH);
+          print_char('=');
+          print_file_name(font_name[k], font_area[k], 335);
+          if (font_size[k]!= font_dsize[k]) {
+            print_string(" at ");
+            print_scaled(font_size[k]);
+            print_string("pt");
+          }
+        } while (k++ < for_end);
+    }
+  }
+  print_ln();
+  print_int(fmem_ptr - 7);
+  print_string(" words of font info for");
+  print_int(font_ptr - 0);
   print_string(" preloaded font");
   if (font_ptr != 1)
-	  print_char(115);	/* s */
-  dump_int(hyph_count); 
+    print_char('s');
+  dump_int(hyph_count);
 /*  {register integer for_end; k = 0; for_end = 607; if (k <= for_end) do */
   {
 	  register integer for_end;
 	  k = 0;
 	  for_end = hyphen_prime;
-	  if (k <= for_end) do 
+	  if (k <= for_end) do
 		  if (hyph_word[k]!= 0)
 		  {
-			  dump_int(k); 
-			  dump_int(hyph_word[k]); 
-			  dump_int(hyph_list[k]); 
-		  } 
-	  while(k++ < for_end);
-  } 
-  print_ln(); 
-  print_int(hyph_count); 
+			  dump_int(k);
+			  dump_int(hyph_word[k]);
+			  dump_int(hyph_list[k]);
+		  } while(k++ < for_end);
+  }
+  print_ln();
+  print_int(hyph_count);
   print_string(" hyphenation exception");
   if (hyph_count != 1)
-  print_char(115);	/* s */
+    print_char('s');
   if (trie_not_ready)
-  init_trie(); 
-  dump_int(trie_max); 
-  if (dumpthings(trie_trl[0], trie_max + 1) 
-	)return;
-  if (dumpthings(trie_tro[0], trie_max + 1) 
-	)return;
-  if (dumpthings(trie_trc[0], trie_max + 1) 
-	)return;
-  dump_int(trie_op_ptr); 
-  if (dumpthings(hyf_distance[1], trie_op_ptr) 
-	)return;
-  if (dumpthings(hyf_num[1], trie_op_ptr) 
-	)return;
-  if (dumpthings(hyf_next[1], trie_op_ptr) 
-	)return;
-  print_nl("Hyphenation trie of length ");	/*  */
-  print_int(trie_max); 
-  print_string("has");
-  print_int(trie_op_ptr); 
-  print_string("op");
+    init_trie();
+  dump_int(trie_max);
+  if (dumpthings(trie_trl[0], trie_max + 1)) return;
+  if (dumpthings(trie_tro[0], trie_max + 1)) return;
+  if (dumpthings(trie_trc[0], trie_max + 1)) return;
+  dump_int(trie_op_ptr);
+  if (dumpthings(hyf_distance[1], trie_op_ptr)) return;
+  if (dumpthings(hyf_num[1], trie_op_ptr)) return;
+  if (dumpthings(hyf_next[1], trie_op_ptr)) return;
+  print_nl("Hyphenation trie of length ");
+  print_int(trie_max);
+  print_string(" has ");
+  print_int(trie_op_ptr);
+  print_string(" op");
   if (trie_op_ptr != 1)
-  print_char(115);	/* s */
+    print_char('s');
   print_string("out of");
   print_int(trie_op_size); 
   {
 	  register integer for_end;
 	  k = 255;
 	  for_end = 0;
-	  if (k >= for_end) do 
+	  if (k >= for_end) do
 		  if (trie_used[k]> 0)
 		  {
 			  print_nl("  ");
-			  print_int(trie_used[k]); 
-			  print_string("for language");
-			  print_int(k); 
-			  dump_int(k); 
-			  dump_int(trie_used[k]); 
-		  } 
-	  while(k-- > for_end);
-  } 
-  dump_int(interaction); 
-  dump_int(format_ident); 
-  dump_int(ENDFMTCHECKSUM);	/* magic checksum end of FMT file --- change ??? */ 
+			  print_int(trie_used[k]);
+			  print_string(" for language ");
+			  print_int(k);
+			  dump_int(k);
+			  dump_int(trie_used[k]);
+		  } while(k-- > for_end);
+  }
+  dump_int(interaction);
+  dump_int(format_ident);
+  dump_int(ENDFMTCHECKSUM); /* magic checksum end of FMT file --- change ??? */ 
   tracing_stats = 0;
   w_close(fmt_file); 
 //  return 0;
@@ -3966,6 +3940,7 @@ void store_fmt_file (void)
 void init_prim (void) 
 { 
   no_new_control_sequence = false;
+  //primitive_s("lineskip", assign_glue, glue_base + line_skip_code);
   primitive(373, assign_glue, glue_base + line_skip_code);          /* lineskip */
   primitive(374, assign_glue, glue_base + baseline_skip_code);      /* baselineskip */
   primitive(375, assign_glue, glue_base + par_skip_code);           /* parskip */
@@ -4343,4 +4318,3 @@ void init_prim (void)
 /* #pragma optimize("1", off) */
 #pragma optimize("t", on)						/* 96/Sep/12 */
 /* #pragma optimize("2", on) */
-

@@ -1208,8 +1208,8 @@ lab22:
   lab30: scanner_status = 0; 
   new_save_level(6); 
 /* if every_cr<>null then begin_token_list(every_cr,every_cr_text); l.15665 */
-  if (eqtb[(hash_size + 1320)].hh.v.RH != 0)/* everycr */
-    begin_token_list(eqtb[(hash_size + 1320)].hh.v.RH, 13); 
+  if (every_cr != 0)/* everycr */
+    begin_token_list(every_cr, 13); 
   align_peek(); 
 } 
 void init_span_ (halfword p)
@@ -1279,8 +1279,8 @@ void fin_row (void)
   } 
   mem[p].hh.b0 = 13; 
   mem[p + 6].cint = 0; 
-  if (eqtb[(hash_size + 1320)].hh.v.RH != 0)/* everycr */
-    begin_token_list(eqtb[(hash_size + 1320)].hh.v.RH, 13); 
+  if (every_cr != 0)/* everycr */
+    begin_token_list(every_cr, 13); 
   align_peek(); 
 } 
 void fin_align (void) 

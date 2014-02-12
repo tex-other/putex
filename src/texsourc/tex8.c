@@ -39,46 +39,43 @@ void math_fraction (void)
       scan_delimiter(lig_trick, false); 
     } 
     if (c % 3 == 0)
-    scan_dimen(false, false, false);
-	print_err("Ambiguous; you need another { and }");
-	help3("I'm ignoring this fraction specification, since I don't",
-		"know whether a construction like `x \\over y \\over z'",
-		"means `{x \\over y} \\over z' or `x \\over {y \\over z}'.");
-    error(); 
-  } 
-  else {
-      
-    cur_list.aux_field.cint = get_node(6); 
-    mem[cur_list.aux_field.cint].hh.b0 = 25; 
-    mem[cur_list.aux_field.cint].hh.b1 = 0; 
-    mem[cur_list.aux_field.cint + 2].hh.v.RH = 3; 
-    mem[cur_list.aux_field.cint + 2].hh.v.LH = mem[head]
-   .hh.v.RH; 
-    mem[cur_list.aux_field.cint + 3].hh = empty_field; 
-    mem[cur_list.aux_field.cint + 4].qqqq = null_delimiter; 
-    mem[cur_list.aux_field.cint + 5].qqqq = null_delimiter; 
-    mem[head].hh.v.RH = 0; 
-    tail = head; 
-    if (c >= 3)
-    {
-      scan_delimiter(cur_list.aux_field.cint + 4, false); 
-      scan_delimiter(cur_list.aux_field.cint + 5, false); 
-    } 
+      scan_dimen(false, false, false);
+    print_err("Ambiguous; you need another { and }");
+    help3("I'm ignoring this fraction specification, since I don't",
+      "know whether a construction like `x \\over y \\over z'",
+      "means `{x \\over y} \\over z' or `x \\over {y \\over z}'.");
+    error();
+  } else {
+    cur_list.aux_field.cint = get_node(6);
+    mem[cur_list.aux_field.cint].hh.b0 = 25;
+    mem[cur_list.aux_field.cint].hh.b1 = 0;
+    mem[cur_list.aux_field.cint + 2].hh.v.RH = 3;
+    mem[cur_list.aux_field.cint + 2].hh.v.LH = mem[head].hh.v.RH;
+    mem[cur_list.aux_field.cint + 3].hh = empty_field;
+    mem[cur_list.aux_field.cint + 4].qqqq = null_delimiter;
+    mem[cur_list.aux_field.cint + 5].qqqq = null_delimiter;
+    mem[head].hh.v.RH = 0;
+    tail = head;
+    if (c >= 3) {
+      scan_delimiter(cur_list.aux_field.cint + 4, false);
+      scan_delimiter(cur_list.aux_field.cint + 5, false);
+    }
     switch(c % 3)
-    {case 0 : 
+    {
+    case 0:
       {
-  scan_dimen(false, false, false); 
-  mem[cur_list.aux_field.cint + 1].cint = cur_val; 
-      } 
-      break; 
-    case 1 : 
+        scan_dimen(false, false, false);
+        mem[cur_list.aux_field.cint + 1].cint = cur_val;
+      }
+      break;
+    case 1:
       mem[cur_list.aux_field.cint + 1].cint = 1073741824L;  /* 2^30 */
-      break; 
-    case 2 : 
-      mem[cur_list.aux_field.cint + 1].cint = 0; 
-      break; 
-    } 
-  } 
+      break;
+    case 2:
+      mem[cur_list.aux_field.cint + 1].cint = 0;
+      break;
+    }
+  }
 }
 /* sec 1191 */
 void math_left_right (void) 
@@ -86,44 +83,36 @@ void math_left_right (void)
   small_number t; 
   halfword p; 
   t = cur_chr; 
-  if ((t == 31)&&(cur_group != 16)) 
-  {
-    if (cur_group == 15)
-    {
+  if ((t == 31) && (cur_group != 16)) {
+    if (cur_group == 15) {
       scan_delimiter(lig_trick, false);
-	  print_err("Extra "); 
+      print_err("Extra ");
       print_esc("right");
-	  help1("I'm ignoring a \\right that had no matching \\left."); 
-      error(); 
-    } 
-    else {
-    off_save();
-  }
-  } 
-  else {
-      
-    p = new_noad(); 
-    mem[p].hh.b0 = t; 
-    scan_delimiter(p + 1, false); 
-    if (t == 30)
-    {
-      push_math(16); 
-      mem[head].hh.v.RH = p; 
-      tail = p; 
-    } 
-    else {
-  
-      p = fin_mlist(p); 
-      unsave(); 
+      help1("I'm ignoring a \\right that had no matching \\left.");
+      error();
+    } else {
+      off_save();
+    }
+  } else {
+    p = new_noad();
+    mem[p].hh.b0 = t;
+    scan_delimiter(p + 1, false);
+    if (t == 30) {
+      push_math(16);
+      mem[head].hh.v.RH = p;
+      tail = p;
+    } else {
+      p = fin_mlist(p);
+      unsave();
       {
-  mem[tail].hh.v.RH = new_noad(); 
-  tail = mem[tail].hh.v.RH; 
-      } 
-      mem[tail].hh.b0 = 23; 
-      mem[tail + 1].hh.v.RH = 3; 
-      mem[tail + 1].hh.v.LH = p; 
-    } 
-  } 
+        mem[tail].hh.v.RH = new_noad();
+        tail = mem[tail].hh.v.RH;
+      }
+      mem[tail].hh.b0 = 23;
+      mem[tail + 1].hh.v.RH = 3;
+      mem[tail + 1].hh.v.LH = p;
+    }
+  }
 }
 /* sec 1194 */
 void after_math (void) 
@@ -381,25 +370,24 @@ void after_math (void)
 }
 /* sec 1200 */
 void resume_after_display (void) 
-{ 
-
-   if (cur_group != 15){
+{
+  if (cur_group != 15) {
     confusion("display");
     return;       // abort_flag set
   }
-  unsave(); 
-  prev_graf = prev_graf + 3; 
-  push_nest(); 
-  mode = 102; 
-  space_factor = 1000; 
+  unsave();
+  prev_graf = prev_graf + 3;
+  push_nest();
+  mode = 102;
+  space_factor = 1000;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* was   clang = 0; etc in 3.141 new stuff follows */
   if (language <= 0)
-  cur_lang = 0; 
+    cur_lang = 0; 
   else if (language > 255)
-  cur_lang = 0; 
-  else cur_lang = language; 
-  clang = cur_lang; 
+    cur_lang = 0;
+  else cur_lang = language;
+  clang = cur_lang;
   prev_graf =(norm_min(left_hyphen_min) * 64 +
      norm_min(right_hyphen_min)) * 65536L + cur_lang; 
 /* eqtb ??? hash_size ? hash_size + hash_extra ? norm_min etc */
@@ -408,44 +396,43 @@ void resume_after_display (void)
     get_x_token(); 
     if (cur_cmd != 10) back_input(); 
   } 
-  if (nest_ptr == 1){
+  if (nest_ptr == 1) {
     build_page();
   }
 }
 /* sec 1215 */
 void get_r_token (void) 
-{/* 20 */ 
+{
 lab20:
   do {
     get_token(); 
-  } while(!(cur_tok != 2592)); 
+  } while (!(cur_tok != 2592));
 /*  if ((cur_cs == 0)||(cur_cs > (hash_size + 514))) */  /* 95/Jan/10 */
-  if ((cur_cs == 0)||(cur_cs > (hash_size + hash_extra + 514))) {
-	  print_err("Missing control sequence inserted");
-	  help5("Please don't say `\\def cs{...}', say `\\def\\cs{...}'.",
-		  "I've inserted an inaccessible control sequence so that your",
-		  "definition will be completed without mixing me up too badly.",
-		  "You can recover graciously from this error, if you're",
-		  "careful; see exercise 27.2 in The TeXbook.");
+  if ((cur_cs == 0) || (cur_cs > (hash_size + hash_extra + 514))) {
+    print_err("Missing control sequence inserted");
+    help5("Please don't say `\\def cs{...}', say `\\def\\cs{...}'.",
+      "I've inserted an inaccessible control sequence so that your",
+      "definition will be completed without mixing me up too badly.",
+      "You can recover graciously from this error, if you're",
+      "careful; see exercise 27.2 in The TeXbook.");
     if (cur_cs == 0)
-    back_input(); 
+      back_input(); 
 /*    cur_tok = (hash_size + 4609);  */
 /*    cur_tok = (hash_size + 4095 + 514);  */
     cur_tok = (hash_size + hash_extra + 4095 + 514); /* 96/Jan/10 */
-    ins_error(); 
-    goto lab20; 
-  } 
+    ins_error();
+    goto lab20;
+  }
 }
 /* sec 1229 */
 void trap_zero_glue (void) 
 {
-  if ((mem[cur_val + 1].cint == 0)&&(mem[cur_val + 2].cint == 0)
-  &&(mem[cur_val + 3].cint == 0)) 
-  {
+  if ((mem[cur_val + 1].cint == 0) && (mem[cur_val + 2].cint == 0) &&
+    (mem[cur_val + 3].cint == 0)) {
     incr(mem[0].hh.v.RH); /* mem[mem_bot]? */ /* mem[null]? */
-    delete_glue_ref(cur_val); 
-    cur_val = 0; 
-  } 
+    delete_glue_ref(cur_val);
+    cur_val = 0;
+  }
 }
 /* sec 1236 */
 void do_register_command_ (small_number a) 
@@ -494,8 +481,7 @@ void do_register_command_ (small_number a)
   lab40:; 
   if (q == 89)
   scan_optional_equals(); 
-  else if (scan_keyword("by"))   /* by */
-; 
+  else if (scan_keyword("by")); 
   arith_error = false; 
   if (q < 91)
   if (p < 2)
@@ -888,7 +874,7 @@ void open_or_close_in (void)
 /* *** some changes in following in 3.14159 *** */
 /*  if current extension is *not* empty, try to open using name as is */
 /*  string 335 is "" the empty string */
-    if ((cur_ext != 335)&& a_open_in(read_file[n], TEXINPUTPATH)) 
+    if ((cur_ext != 335) && a_open_in(read_file[n], TEXINPUTPATH)) 
     read_open[n]= 1; 
 /*  we get here if extension is "", or file with extension failed to open */
 /*  if current extension is not `tex,' and `tex' is not irrelevant, try it */
@@ -965,7 +951,7 @@ void issue_message (void)
   else {
     print_err("");  
     slow_print(s); 
-    if (eqtb[(hash_size + 1321)].hh.v.RH != 0)
+    if (err_help != 0)
     use_err_help = true; 
     else if (long_help_seen)
 		help1("(That was another \\errmessage.)");
@@ -1439,8 +1425,8 @@ void main_control (void)
     integer t; 
   integer bSuppress;    /* 199/Jan/5 */
 
-  if (eqtb[(hash_size + 1319)].hh.v.RH != 0)/* everyjob */
-    begin_token_list(eqtb[(hash_size + 1319)].hh.v.RH, 12); 
+  if (every_job != 0)/* everyjob */
+    begin_token_list(every_job, 12); 
 
 lab60:
   get_x_token();       /* big_switch */
@@ -1845,8 +1831,8 @@ lab21:
       push_nest(); 
       mode = -1; 
       cur_list.aux_field.cint = ignore_depth; 
-      if (eqtb[(hash_size + 1318)].hh.v.RH != 0)/* everyvbox */
-      begin_token_list(eqtb[(hash_size + 1318)].hh.v.RH, 11); 
+      if (every_vbox != 0)/* everyvbox */
+      begin_token_list(every_vbox, 11); 
     } 
     break; 
   case 256 : 

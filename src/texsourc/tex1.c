@@ -902,8 +902,8 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
     case 75:
     case 76:
 /* if chr_code<skip_base then print_skip_param(chr_code-glue_base) */
-      if (chrcode < (hash_size + 800))
-        print_skip_param(chrcode - (hash_size + 782));  /* lineskip */
+      if (chrcode < skip_base)
+        print_skip_param(chrcode - glue_base);  /* lineskip */
 /* else if chr_code<mu_skip_base then
     begin print_esc("skip"); print_int(chr_code-skip_base); */
       else if (chrcode < (hash_size + 1056))
@@ -917,10 +917,10 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
       }
       break;
     case 72:
-      if (chrcode >= (hash_size + 1322))
+      if (chrcode >= toks_base)
       {
         print_esc("toks");
-        print_int(chrcode - (hash_size + 1322));
+        print_int(chrcode - toks_base);
       } else switch (chrcode)
       {
         case (hash_size + 1313):
@@ -1747,11 +1747,11 @@ void show_eqtb_(halfword n)
       {
         print_esc("parshape");
         print_char('=');
-        if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
+        if (par_shape_ptr == 0)
           print_char('0');
         else
-          print_int(mem[eqtb[(hash_size + 1312)].hh.v.RH].hh.v.LH);
-      } else if (n < (hash_size + 1322))
+          print_int(mem[par_shape_ptr].hh.v.LH);
+      } else if (n < toks_base)
       {
         print_cmd_chr(72, n); /* H */
         print_char('=');
@@ -1760,7 +1760,7 @@ void show_eqtb_(halfword n)
       } else if (n < (hash_size + 1578))
       {
         print_esc("toks");
-        print_int(n - (hash_size + 1322));
+        print_int(n - toks_base);
         print_char('=');
         if (eqtb[n].hh.v.RH != 0)
           show_token_list(mem[eqtb[n].hh.v.RH].hh.v.RH, 0, 32);

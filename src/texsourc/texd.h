@@ -1246,7 +1246,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   extern char *tex_version;       /* in local.c - bkph */
   extern char *application;       /* in local.c - bkph */
   extern char *yandyversion;        /* in local.c - bkph */
-  unsigned char wintodos[128];        /* in local.c - bkph */
+  extern unsigned char wintodos[128];        /* in local.c - bkph */
   extern char last_filename[PATH_MAX];    /* in ourpaths.c */
   extern char log_line[MAXLINE];        /* in local.c */
   extern char *texpath;           /* in local.c */
@@ -1406,88 +1406,88 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define null_list     mem_top - 11
 #define lig_trick     mem_top - 12
 /* sec 0207 */
-#define escape 0
-#define relax 0
-#define left_brace 1
-#define right_brace 2
-#define math_shift 3
-#define tab_mark 4
-#define car_ret 5
-#define out_param 5
-#define mac_param 6
-#define sup_mark 7
-#define sub_mark 8
-#define ignore 9
-#define endv 9
-#define spacer 10
-#define letter 11
-#define other_char 12
-#define active_char 13
-#define par_end 13
-#define match 13
-#define comment 14
-#define end_match 14
-#define stop 14
-#define invalid_char 15
-#define delim_num 15
+#define escape        0
+#define relax         0
+#define left_brace    1
+#define right_brace   2
+#define math_shift    3
+#define tab_mark      4
+#define car_ret       5
+#define out_param     5
+#define mac_param     6
+#define sup_mark      7
+#define sub_mark      8
+#define ignore        9
+#define endv          9
+#define spacer        10
+#define letter        11
+#define other_char    12
+#define active_char   13
+#define par_end       13
+#define match         13
+#define comment       14
+#define end_match     14
+#define stop          14
+#define invalid_char  15
+#define delim_num     15
 #define max_char_code 15
 /* sec 0208 */
-#define char_num 16
+#define char_num      16
 #define math_char_num 17
-#define mark 18
-#define xray 19
-#define make_box 20
-#define hmove 21
-#define vmove 22
-#define un_hbox 23
-#define un_vbox 24
-#define remove_item 25
-#define hskip 26
-#define vskip 27
-#define mskip 28
-#define kern 29
-#define mkern 30
-#define leader_ship 31
-#define halign 32
-#define valign 33
-#define no_align 34
-#define vrule 35
-#define hrule 36
-#define insert 37
-#define vadjust 38
+#define mark          18
+#define xray          19
+#define make_box      20
+#define hmove         21
+#define vmove         22
+#define un_hbox       23
+#define un_vbox       24
+#define remove_item   25
+#define hskip         26
+#define vskip         27
+#define mskip         28
+#define kern          29
+#define mkern         30
+#define leader_ship   31
+#define halign        32
+#define valign        33
+#define no_align      34
+#define vrule         35
+#define hrule         36
+#define insert        37
+#define vadjust       38
 #define ignore_spaces 39
 #define after_assignment 40
-#define after_group 41
-#define break_penalty 42
-#define start_par 43
-#define ital_corr 44
-#define accent 45
-#define math_accent 46
-#define discretionary 47
-#define eq_no 48
-#define left_right 49
-#define math_comp 50
-#define limit_switch 51
-#define above 52
-#define math_style 53
-#define math_choice 54
-#define non_script 55
-#define vcenter 56
-#define case_shift 57
-#define message 58
-#define extension 59
-#define in_stream 60
-#define begin_group 61
-#define end_group 62
-#define omit 63
-#define ex_space 64
-#define no_boundary 65
-#define radical 66
-#define end_cs_name 67
-#define min_internal 68
-#define char_given 68
-#define math_given 69
-#define last_item 70
+#define after_group      41
+#define break_penalty    42
+#define start_par        43
+#define ital_corr        44
+#define accent           45
+#define math_accent      46
+#define discretionary    47
+#define eq_no            48
+#define left_right       49
+#define math_comp        50
+#define limit_switch     51
+#define above            52
+#define math_style       53
+#define math_choice      54
+#define non_script       55
+#define vcenter          56
+#define case_shift       57
+#define message          58
+#define extension        59
+#define in_stream        60
+#define begin_group      61
+#define end_group        62
+#define omit             63
+#define ex_space         64
+#define no_boundary      65
+#define radical          66
+#define end_cs_name      67
+#define min_internal     68
+#define char_given       68
+#define math_given       69
+#define last_item        70
 #define max_non_prefixed_command 70
 /* sec 0209 */
 #define toks_register 71
@@ -1523,26 +1523,26 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define set_interaction 100
 #define max_command 100
 /* sec 0210 */
-#define undefined_cs max_command + 1
-#define expand_after max_command + 2
-#define no_expand max_command + 3
-#define input max_command + 4
-#define if_test max_command + 5
-#define fi_or_else max_command + 6
-#define cs_name max_command + 7
-#define convert max_command + 8
-#define the max_command + 9
-#define top_bot_mark max_command + 10
-#define call max_command + 11
-#define long_call max_command + 12
-#define outer_call max_command + 13
+#define undefined_cs    max_command + 1
+#define expand_after    max_command + 2
+#define no_expand       max_command + 3
+#define input           max_command + 4
+#define if_test         max_command + 5
+#define fi_or_else      max_command + 6
+#define cs_name         max_command + 7
+#define convert         max_command + 8
+#define the             max_command + 9
+#define top_bot_mark    max_command + 10
+#define call            max_command + 11
+#define long_call       max_command + 12
+#define outer_call      max_command + 13
 #define long_outer_call max_command + 14
-#define end_template max_command + 15
-#define dont_expand max_command + 16
-#define glue_ref max_command + 17
-#define shape_ref max_command + 18
-#define box_ref max_command + 19 
-#define data max_command + 20
+#define end_template    max_command + 15
+#define dont_expand     max_command + 16
+#define glue_ref        max_command + 17
+#define shape_ref       max_command + 18
+#define box_ref         max_command + 19 
+#define data            max_command + 20
 /* sec 0212 */
 #define ignore_depth -65536000L
 /* sec 0213 */
@@ -1557,14 +1557,20 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define prev_graf       cur_list.pg_field
 #define mode_line       cur_list.ml_field
 /* sec 0221 */
-#define level_zero min_quarterword
-#define level_one  level_zero + 1
+#define eq_level_field(a) a.hh.b1
+#define eq_type_field(a)  a.hh.b0
+#define equiv_field(a)    a.hh.v.RH
+#define eq_level(a)       eq_level_field(eqtb[a])
+#define eq_type(a)        eq_type_field(eqtb[a])
+#define equiv(a)          equiv_field(eqtb[a])
+#define level_zero        min_quarterword
+#define level_one         level_zero + 1
 /* sec 0222 */
-#define active_base                   1
-#define single_base                   active_base + 256
-#define null_cs                       single_base + 256
-#define hash_base                     null_cs + 1
-#define frozen_control_sequence       hash_base + hash_size
+#define active_base                   1                      // 1
+#define single_base                   active_base + 256      // 257
+#define null_cs                       single_base + 256      // 513
+#define hash_base                     null_cs + 1            // 514
+#define frozen_control_sequence       hash_base + hash_size  // hash_size + 514
 #define frozen_protection             frozen_control_sequence
 #define frozen_cr                     frozen_control_sequence + 1
 #define frozen_end_group              frozen_control_sequence + 2
@@ -1575,33 +1581,33 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define frozen_relax                  frozen_control_sequence + 7
 #define end_write                     frozen_control_sequence + 8
 #define frozen_dont_expand            frozen_control_sequence + 9
-#define frozen_null_font              frozen_control_sequence + 10
+#define frozen_null_font              frozen_control_sequence + 10 // 524
 #define font_id_base                  frozen_null_font - font_base
-#define undefined_control_sequence    frozen_null_font + 257
-#define glue_base                     undefined_control_sequence + 1
+#define undefined_control_sequence    frozen_null_font + 257 // 781
+#define glue_base                     undefined_control_sequence + 1 // 782
 /* sec 0224 */
-#define line_skip_code                0
-#define baseline_skip_code            1
-#define par_skip_code                 2
-#define above_display_skip_code       3
-#define below_display_skip_code       4
-#define above_display_short_skip_code 5
-#define below_display_short_skip_code 6
-#define left_skip_code                7
-#define right_skip_code               8
-#define top_skip_code                 9
-#define split_top_skip_code           10
-#define tab_skip_code                 11
-#define space_skip_code               12
-#define xspace_skip_code              13
-#define par_fill_skip_code            14
-#define thin_mu_skip_code             15
-#define med_mu_skip_code              16
-#define thick_mu_skip_code            17
-#define glue_pars                     18
-#define skip_base                     glue_base + glue_pars
-#define mu_skip_base                  skip_base + 256
-#define local_base                    mu_skip_base + 256
+#define line_skip_code                0  // 782
+#define baseline_skip_code            1  // 783
+#define par_skip_code                 2  // 784
+#define above_display_skip_code       3  // 785
+#define below_display_skip_code       4  // 786
+#define above_display_short_skip_code 5  // 787
+#define below_display_short_skip_code 6  // 788
+#define left_skip_code                7  // 789
+#define right_skip_code               8  // 790
+#define top_skip_code                 9  // 791
+#define split_top_skip_code           10 // 792
+#define tab_skip_code                 11 // 793
+#define space_skip_code               12 // 794
+#define xspace_skip_code              13 // 795
+#define par_fill_skip_code            14 // 796
+#define thin_mu_skip_code             15 // 797
+#define med_mu_skip_code              16 // 798
+#define thick_mu_skip_code            17 // 799
+#define glue_pars                     18 // 800
+#define skip_base                     glue_base + glue_pars // 800
+#define mu_skip_base                  skip_base + 256 // 1056
+#define local_base                    mu_skip_base + 256 // 1312
 // #
 #define skip(a)                       equiv(skip_base + a)
 #define mu_skip(a)                    equiv(mu_skip_base + a)
@@ -1625,26 +1631,26 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define med_mu_skip                   glue_par(med_mu_skip_code)
 #define thick_mu_skip                 glue_par(thick_mu_skip_code)
 /* sec 0230 */
-#define par_shape_loc                 local_base
-#define output_routine_loc            local_base + 1
-#define every_par_loc                 local_base + 2
-#define every_math_loc                local_base + 3
-#define every_display_loc             local_base + 4
-#define every_hbox_loc                local_base + 5
-#define every_vbox_loc                local_base + 6
-#define every_job_loc                 local_base + 7
-#define every_cr_loc                  local_base + 8
-#define err_help_loc                  local_base + 9
-#define toks_base                     local_base + 10
-#define box_base                      toks_base + 256
-#define cur_font_loc                  box_base + 256
-#define math_font_base                cur_font_loc + 1
-#define cat_code_base                 math_font_base + 48
-#define lc_code_base                  cat_code_base + 256
-#define uc_code_base                  lc_code_base + 256
-#define sf_code_base                  uc_code_base + 256
-#define math_code_base                sf_code_base + 256
-#define int_base                      math_code_base + 256
+#define par_shape_loc                 local_base     // 1312
+#define output_routine_loc            local_base + 1 // 1313
+#define every_par_loc                 local_base + 2 // 1314
+#define every_math_loc                local_base + 3 // 1315
+#define every_display_loc             local_base + 4 // 1316
+#define every_hbox_loc                local_base + 5 // 1317
+#define every_vbox_loc                local_base + 6 // 1318
+#define every_job_loc                 local_base + 7 // 1319
+#define every_cr_loc                  local_base + 8 // 1320
+#define err_help_loc                  local_base + 9 // 1321
+#define toks_base                     local_base + 10 // 1322
+#define box_base                      toks_base + 256 // 1578
+#define cur_font_loc                  box_base + 256 // 1834
+#define math_font_base                cur_font_loc + 1 // 1835
+#define cat_code_base                 math_font_base + 48 // 1883
+#define lc_code_base                  cat_code_base + 256 // 2139
+#define uc_code_base                  lc_code_base + 256 // 2395
+#define sf_code_base                  uc_code_base + 256 // 2651
+#define math_code_base                sf_code_base + 256 // 2907
+#define int_base                      math_code_base + 256 // 3163
 // #
 #define par_shape_ptr                 equiv(par_shape_loc)
 #define output_routine                equiv(output_routine_loc)
@@ -1837,6 +1843,9 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 
 extern void tex_help (unsigned int n, ...);
 extern void append_char(ASCII_code c);
+extern void succumb(void);
+extern void dvi_out_ (ASCII_code op);
+#define dvi_out(op) dvi_out_((ASCII_code) (op))
 #define help0()     tex_help(0)
 #define help1(...)  tex_help(1, __VA_ARGS__)
 #define help2(...)  tex_help(2, __VA_ARGS__)

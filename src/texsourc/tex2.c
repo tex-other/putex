@@ -535,12 +535,12 @@ void back_error (void)
   error(); 
 } 
 void ins_error (void) 
-{ 
-    OK_to_interrupt = false; 
-  back_input(); 
-  cur_input.index_field = 4; 
-  OK_to_interrupt = true; 
-  error(); 
+{
+  OK_to_interrupt = false;
+  back_input();
+  cur_input.index_field = 4;
+  OK_to_interrupt = true;
+  error();
 } 
 void begin_file_reading (void) 
 { 
@@ -1371,7 +1371,7 @@ void mu_error (void)
 } 
 void scan_eight_bit_int (void) 
 { 
-    scan_int(); 
+  scan_int(); 
   if ((cur_val < 0)||(cur_val > 255)) 
   {
 	  print_err("Bad register code");
@@ -1383,7 +1383,7 @@ void scan_eight_bit_int (void)
 } 
 void scan_char_num (void) 
 {
-    scan_int(); 
+  scan_int(); 
   if ((cur_val < 0)||(cur_val > 255)) 
   {
 	  print_err("Bad character code");
@@ -1395,7 +1395,7 @@ void scan_char_num (void)
 } 
 void scan_four_bit_int (void) 
 {
-    scan_int(); 
+  scan_int(); 
   if ((cur_val < 0)||(cur_val > 15)) 
   {
 	  print_err("Bad number");
@@ -1428,27 +1428,28 @@ void scan_twenty_seven_bit_int (void)
     int_error(cur_val); 
     cur_val = 0; 
   } 
-} 
+}
+/* sec 0577 */
 void scan_font_ident (void) 
 {
-  internal_font_number f; 
-  halfword m; 
+  internal_font_number f;
+  halfword m;
+
   do {
       get_x_token(); 
-  } while(!(cur_cmd != 10)); 
-  if (cur_cmd == 88)
-  f = eqtb[(hash_size + 1834)].hh.v.RH; 
-  else if (cur_cmd == 87)
-  f = cur_chr; 
-  else if (cur_cmd == 86)
-  {
-    m = cur_chr; 
-    scan_four_bit_int(); 
-    f = eqtb[m + cur_val].hh.v.RH; 
-  } 
-  else {
-      print_err("Missing font identifier");
-	  help2("I was looking for a control sequence whose",
+  } while (!(cur_cmd != 10)); 
+
+  if (cur_cmd == def_font)
+    f = cur_font;
+  else if (cur_cmd == set_font)
+    f = cur_chr; 
+  else if (cur_cmd == def_family) {
+    m = cur_chr;
+    scan_four_bit_int();
+    f = equiv(m + cur_val);
+  } else {
+    print_err("Missing font identifier");
+    help2("I was looking for a control sequence whose",
 		  "current meaning has been defined by \\font.");
     back_error(); 
     f = 0; 
@@ -1470,7 +1471,7 @@ void find_font_dimen_(bool writing)
 /* else  begin if writing and(n<=space_shrink_code)and@|
     (n>=space_code)and(font_glue[f]<>null) then
     begin delete_glue_ref(font_glue[f]); l.11225 */
-    if (writing &&(n <= 4)&&(n >= 2)&&(font_glue[f]!= 0)) 
+    if (writing && (n <= 4) && (n >= 2) && (font_glue[f]!= 0)) 
     {
     delete_glue_ref(font_glue[f]); 
     font_glue[f]= 0;  /* font_glue[f]:=null */
@@ -1509,56 +1510,53 @@ void find_font_dimen_(bool writing)
         font_check[f].b2) << 8 | font_check[f].b3; */
   } 
 /* compiler error: '-' : incompatible types - from 'union fmemoryword *' to 'struct fourunsignedchars *' */
-  if (cur_val == fmem_ptr){
+  if (cur_val == fmem_ptr) {
 	  print_err("Font ");
 /*    print_esc(hash[(hash_size + 524) + f].v.RH); */
     //print_esc(hash[(hash_size + hash_extra + 524) + f].v.RH); /*96/Jan/10*/
-	  print_esc("");print(hash[(hash_size + hash_extra + 524) + f].v.RH);
+	  print_esc(""); print(hash[(hash_size + hash_extra + 524) + f].v.RH);
     print_string(" has only ");
     print_int(font_params[f]); 
     print_string(" fontdimen parameters");
-	help2("To increase the number of font parameters, you must",
-		"use \\fontdimen immediately after the \\font is loaded.");
+    help2("To increase the number of font parameters, you must",
+      "use \\fontdimen immediately after the \\font is loaded.");
     error(); 
   }
-} 
+}
 
 /* NOTE: the above use of /fontdimen0 to access the checksum is a kludge */
 /* In future would be better to do this by allocating one more slot for */
 /* for parameters when a font is read rather than carry checksum separately */
 /* The above gets the value byte order reversed ... 98/Oct/5 */
-
+/* sec 0413 */
 void scan_something_internal_(small_number level, bool negative)
 { 
   halfword m; 
   integer p; 
   m = cur_chr; 
   switch(cur_cmd)
-  {case 85 : 
+  {
+  case def_code: 
     {
       scan_char_num(); 
-      if (m == (hash_size + 2907))
+      if (m == math_code_base)
       {
-  cur_val = eqtb[(hash_size + 2907) + cur_val].hh.v.RH; 
-  cur_val_level = 0; 
-      } 
-      else if (m < (hash_size + 2907))
-      {
-  cur_val = eqtb[m + cur_val].hh.v.RH; 
-  cur_val_level = 0; 
-      } 
-      else {
-    
-  cur_val = eqtb[m + cur_val].cint; 
-  cur_val_level = 0; 
-      } 
-    } 
+        cur_val = eqtb[(hash_size + 2907) + cur_val].hh.v.RH;
+        cur_val_level = 0;
+      } else if (m < math_code_base) {
+        cur_val = eqtb[m + cur_val].hh.v.RH;
+        cur_val_level = 0;
+      } else {
+        cur_val = eqtb[m + cur_val].cint;
+        cur_val_level = 0;
+      }
+    }
     break; 
-  case 71 : 
-  case 72 : 
-  case 86 : 
-  case 87 : 
-  case 88 : 
+  case toks_register:
+  case assign_toks:
+  case def_family:
+  case set_font:
+  case def_font:
     if (level != 5)
     {
 		print_err("Missing number, treated as zero");
@@ -1576,7 +1574,7 @@ void scan_something_internal_(small_number level, bool negative)
       if (cur_cmd < 72)
       {
   scan_eight_bit_int(); 
-  m = (hash_size + 1322) + cur_val; 
+  m = toks_base + cur_val; 
       } 
       {
   cur_val = eqtb[m].hh.v.RH; 
@@ -1584,7 +1582,6 @@ void scan_something_internal_(small_number level, bool negative)
       } 
     } 
     else {
-  
       back_input(); 
       scan_font_ident(); 
       {
@@ -1594,31 +1591,31 @@ void scan_something_internal_(small_number level, bool negative)
       } 
     } 
     break; 
-  case 73 : 
+  case assign_int:
     {
       cur_val = eqtb[m].cint; 
       cur_val_level = 0; 
     } 
     break; 
-  case 74 : 
+  case assign_dimen: 
     {
       cur_val = eqtb[m].cint; 
       cur_val_level = 1; 
     } 
     break; 
-  case 75 : 
+  case assign_glue:
     {
       cur_val = eqtb[m].hh.v.RH; 
       cur_val_level = 2; 
     } 
     break; 
-  case 76 : 
+  case assign_mu_glue:
     {
       cur_val = eqtb[m].hh.v.RH; 
       cur_val_level = 3; 
     } 
     break; 
-  case 79 : 
+  case set_aux: 
     if (abs(mode)!= m)
     {
 		print_err("Improper ");
@@ -1633,7 +1630,6 @@ void scan_something_internal_(small_number level, bool negative)
       cur_val_level = 1; 
       } 
       else {
-    
   cur_val = 0; 
   cur_val_level = 0; 
       } 
@@ -1644,19 +1640,17 @@ void scan_something_internal_(small_number level, bool negative)
       cur_val_level = 1; 
     } 
     else {
-  
       cur_val = space_factor; 
       cur_val_level = 0; 
     } 
     break; 
-  case 80 : 
+  case set_prev_graf: 
     if (mode == 0)
     {
       cur_val = 0; 
       cur_val_level = 0; 
     } 
     else {
-  
       nest[nest_ptr]= cur_list; 
       p = nest_ptr; 
       while(abs(nest[p].mode_field)!= 1)decr(p); 
@@ -1666,7 +1660,7 @@ void scan_something_internal_(small_number level, bool negative)
       } 
     } 
     break; 
-  case 82 : 
+  case set_page_int: 
     {
       if (m == 0)
       cur_val = dead_cycles; 
@@ -1674,41 +1668,41 @@ void scan_something_internal_(small_number level, bool negative)
       cur_val_level = 0; 
     } 
     break; 
-  case 81 : 
+  case set_page_dimen:
     {
-      if ((page_contents == 0)&&(! output_active)) 
-      if (m == 0)
-      cur_val = 1073741823L;  /* 2^30 - 1 */
-      else cur_val = 0; 
-      else cur_val = page_so_far[m]; 
+      if ((page_contents == 0) && (! output_active)) 
+        if (m == 0)
+          cur_val = 1073741823L;  /* 2^30 - 1 */
+        else cur_val = 0;
+      else cur_val = page_so_far[m];
       cur_val_level = 1; 
     } 
     break; 
-  case 84 : 
+  case set_shape:
     {
-      if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
+      if (par_shape_ptr == 0)
       cur_val = 0; 
-      else cur_val = mem[eqtb[(hash_size + 1312)].hh.v.RH].hh.v.LH; 
+      else cur_val = mem[par_shape_ptr].hh.v.LH; 
       cur_val_level = 0; 
     } 
     break; 
-  case 83 : 
+  case set_box_dimen: 
     {
       scan_eight_bit_int(); 
-      if (eqtb[(hash_size + 1578) + cur_val].hh.v.RH == 0)
+      if (eqtb[box_base + cur_val].hh.v.RH == 0)
       cur_val = 0; 
       else cur_val = mem[eqtb[(hash_size + 1578) + cur_val].hh.v.RH + m].cint; 
       cur_val_level = 1; 
     } 
     break; 
-  case 68 : 
-  case 69 : 
+  case char_given:
+  case math_given:
     {
       cur_val = cur_chr; 
       cur_val_level = 0; 
     } 
     break; 
-  case 77 : 
+  case assign_font_dimen:
     {
       find_font_dimen(false); 
       font_info[fmem_ptr].cint = 0; 
@@ -1718,41 +1712,40 @@ void scan_something_internal_(small_number level, bool negative)
       } 
     } 
     break; 
-  case 78 : 
+  case assign_font_int: 
     {
       scan_font_ident(); 
-      if (m == 0){
-  cur_val = hyphen_char[cur_val]; 
-  cur_val_level = 0; 
-      } 
-      else {
-    
-  cur_val = skew_char[cur_val]; 
-  cur_val_level = 0; 
+      if (m == 0) {
+        cur_val = hyphen_char[cur_val];
+        cur_val_level = 0;
+      } else {
+        cur_val = skew_char[cur_val];
+        cur_val_level = 0;
       } 
     } 
     break; 
-  case 89 : 
+  case tex_register:
     {
-      scan_eight_bit_int(); 
+      scan_eight_bit_int();
       switch(m)
-      {case 0 : 
-  cur_val = eqtb[(hash_size + 3218) + cur_val].cint; 
-  break; 
-      case 1 : 
-  cur_val = eqtb[(hash_size + 3751) + cur_val].cint; 
-  break; 
-      case 2 : 
-  cur_val = eqtb[(hash_size + 800) + cur_val].hh.v.RH; 
-  break; 
-      case 3 : 
-  cur_val = eqtb[(hash_size + 1056) + cur_val].hh.v.RH; 
-  break; 
-      } 
-      cur_val_level = m; 
-    } 
-    break; 
-  case 70 : 
+      {
+      case 0 :
+        cur_val = eqtb[(hash_size + 3218) + cur_val].cint;
+        break;
+      case 1:
+        cur_val = eqtb[(hash_size + 3751) + cur_val].cint;
+        break; 
+      case 2:
+        cur_val = eqtb[(hash_size + 800) + cur_val].hh.v.RH;
+        break;
+      case 3:
+        cur_val = eqtb[(hash_size + 1056) + cur_val].hh.v.RH;
+        break;
+      }
+      cur_val_level = m;
+    }
+    break;
+  case last_item:
     if (cur_chr > 2)
     {
       if (cur_chr == 3)
@@ -1761,7 +1754,6 @@ void scan_something_internal_(small_number level, bool negative)
       cur_val_level = 0; 
     } 
     else {
-  
       if (cur_chr == 2)
       cur_val = 0; 
       else cur_val = 0; 
@@ -1786,8 +1778,7 @@ void scan_something_internal_(small_number level, bool negative)
   } 
   break; 
       } 
-      else if ((mode == 1)&&(tail == cur_list 
-     .head_field)) 
+      else if ((mode == 1) && (tail == cur_list.head_field)) 
       switch(cur_chr)
       {case 0 : 
   cur_val = last_penalty; 
@@ -1822,8 +1813,7 @@ void scan_something_internal_(small_number level, bool negative)
     } 
     break; 
   } 
-  while(cur_val_level > level){
-      
+  while (cur_val_level > level) {
     if (cur_val_level == 2)
     cur_val = mem[cur_val + 1].cint; 
     else if (cur_val_level == 3){
@@ -1849,8 +1839,6 @@ void scan_something_internal_(small_number level, bool negative)
 /*****************************************************************************/
 
 /* Moved here to avoid question about pragma optimize 96/Sep/12 */
-
-/* #pragma optimize ("a", off) */
 
 void get_next (void) 
 {/* 20 25 21 26 40 10 */ 
