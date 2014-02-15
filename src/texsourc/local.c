@@ -418,8 +418,8 @@ int read_xchr_file (char *filename, int flag, char *argv[])
     }
   }
   if (pinput == NULL) {
-/*    strcpy (infile, gargv[0]); */   /* try TeX program path */
-    strcpy (infile, argv[0]);     /* try TeX program path */
+/*  strcpy (infile, gargv[0]); *//* try TeX program path */
+    strcpy (infile, argv[0]);    /* try TeX program path */
     if ((s = strrchr (infile, '\\')) != NULL) *(s+1) = '\0';
     else if ((s = strrchr (infile, '/')) != NULL) *(s+1) = '\0';
     else if ((s = strrchr (infile, ':')) != NULL) *(s+1) = '\0';
@@ -444,8 +444,8 @@ int read_xchr_file (char *filename, int flag, char *argv[])
     }
   }
   if (pinput == NULL) {          /* 97/July/31 */
-/*    strcpy (infile, gargv[0]); */   /* try TeX program path\keyboard */
-    strcpy (infile, argv[0]);     /* try TeX program path */
+/*  strcpy (infile, gargv[0]); *//* try TeX program path\keyboard */
+    strcpy (infile, argv[0]);    /* try TeX program path */
     if ((s = strrchr (infile, '\\')) != NULL) *(s+1) = '\0';
     else if ((s = strrchr (infile, '/')) != NULL) *(s+1) = '\0';
     else if ((s = strrchr (infile, ':')) != NULL) *(s+1) = '\0';
@@ -497,7 +497,8 @@ int read_xchr_file (char *filename, int flag, char *argv[])
 /* Following may be useful if link without floating point emulation */
 
 #ifdef DEBUG
-void testfloating (void) {
+void testfloating (void)
+{
 /*  double x = 1.0; */
 /*  double dx = DBL_EPSILON; */
   double dx = 1.0;
@@ -520,14 +521,21 @@ char *debugfile;      /* NULL or name of file to try and open */
 
 #ifdef SHOWHEAPERROR
   char *heapstrings[] = {
-    "", "Empty", "OK", "Bad Begin", "Bad Node", "End", "Bad Pointer"
+    "",
+    "Empty",
+    "OK",
+    "Bad Begin",
+    "Bad Node",
+    "End",
+    "Bad Pointer"
   };
 #endif
 
 /* Attempt to get at problem with eqtb ... temporarily abandoned */
 
 #ifdef CHECKEQTB
-void check_eqtb (char *act) {
+void check_eqtb (char *act)
+{
   int k, count=0;
   memory_word *eqtb = zeqtb;
 /*  for (k = 10280 + hash_extra; k < 10280 + eqtb_extra; k++) { */
@@ -539,7 +547,8 @@ void check_eqtb (char *act) {
       }
       sprintf(log_line, "%d ", k);
       show_line(log_line, 0);
-      if (count++ > 256) break;
+      if (count++ > 256)
+        break;
     }
   }
   if (count != 0) show_char('\n');
@@ -1291,9 +1300,9 @@ memory_word *realloc_save_stack (int size)
   update_statistics ((int) save_stack, n, current_save_size);
   current_save_size = newsize;
   if (trace_flag) {
-    sprintf(log_line, "Current%s %d\n", "save_size", current_save_size);
+    sprintf(log_line, "  Current %s %d\n", "save_size", current_save_size);
     show_line(log_line, 0);
-    sprintf(log_line, "New Address %s == %d\n", "save stack", save_stack);
+    sprintf(log_line, "  New Address %s == %d\n", "save stack", save_stack);
     show_line(log_line, 0);
   }
   if (trace_flag) probe_show();      /* 94/Mar/25 */
@@ -1342,9 +1351,9 @@ in_state_record *realloc_input_stack (int size)
   update_statistics ((int) input_stack, n, current_stack_size);
   current_stack_size = newsize;
   if (trace_flag) {
-    sprintf(log_line, "Current%s %d\n", "stack_size", current_stack_size);
+    sprintf(log_line, "  Current %s %d\n", "stack_size", current_stack_size);
     show_line(log_line, 0);
-    sprintf(log_line, "New Address %s == %d\n", "input stack", input_stack);
+    sprintf(log_line, "  New Address %s == %d\n", "input stack", input_stack);
     show_line(log_line, 0);
   }
   if (trace_flag)  probe_show();     /* 94/Mar/25 */
@@ -1393,9 +1402,9 @@ list_state_record *realloc_nest_stack (int size)
   update_statistics ((int) nest, n, current_nest_size);
   current_nest_size = newsize;
   if (trace_flag) {
-    sprintf(log_line, "Current%s %d\n", "nest_size", current_nest_size);
+    sprintf(log_line, "  Current %s %d\n", "nest_size", current_nest_size);
     show_line(log_line, 0);
-    sprintf(log_line, "New Address %s == %d\n", "nest stack", nest);
+    sprintf(log_line, "  New Address %s == %d\n", "nest stack", nest);
     show_line(log_line, 0);
   }
   if (trace_flag)  probe_show();     /* 94/Mar/25 */
@@ -1444,9 +1453,9 @@ halfword *realloc_param_stack (int size)
   update_statistics ((int) param_stack, n, current_param_size);
   current_param_size = newsize;
   if (trace_flag) {
-    sprintf(log_line, "Current%s %d\n", "param_size", current_param_size);
+    sprintf(log_line, "  Current %s %d\n", "param_size", current_param_size);
     show_line(log_line, 0);
-    sprintf(log_line, "New Address %s == %d\n", "param stack", param_stack);
+    sprintf(log_line, "  New Address %s == %d\n", "param stack", param_stack);
     show_line(log_line, 0);
   }
   if (trace_flag)  probe_show();     /* 94/Mar/25 */
@@ -1500,9 +1509,9 @@ ASCII_code *realloc_buffer (int size)
 #endif
   current_buf_size = newsize;
   if (trace_flag) {
-    sprintf(log_line, "Current%s %d\n", "buffer", current_buf_size);
+    sprintf(log_line, "  Current %s %d\n", "buffer", current_buf_size);
     show_line(log_line, 0);
-    sprintf(log_line, "New Address %s == %d\n", "buffer", buffer);
+    sprintf(log_line, "  New Address %s == %d\n", "buffer", buffer);
     show_line(log_line, 0);
   }
   if (trace_flag)  probe_show();     /* 94/Mar/25 */
@@ -1539,17 +1548,17 @@ eight_bits *allocatedvibuf (int size)
 /* we used to allocate this one only to reduce the size of the PE file */
 /* it can be done without loss in performance, since register eqtb = zeqtb */
 #ifdef ALLOCATEZEQTB
-memory_word *allocatezeqtb (int k)
+memory_word *allocate_zeqtb (int k)
 {
   memory_word *zeqtb;
   int n;
 
   n = k * sizeof (memory_word);  /* 13507 * 8 = 108 kilobytes */
-  if (trace_flag)  trace_memory("eqtb", n);
-  zeqtb = (memory_word *) malloc (roundup(n));
+  if (trace_flag)
+    trace_memory("eqtb", n);
+  zeqtb = (memory_word *) malloc(roundup(n));
   if (zeqtb == NULL)  {
-    memory_error("eqtb", n);
-//    exit (1);           /* serious error */   
+    memory_error("eqtb", n);  
     return NULL;
   }
   if (trace_flag) {
@@ -1557,7 +1566,8 @@ memory_word *allocatezeqtb (int k)
     show_line(log_line, 0);
   }
   update_statistics ((int) zeqtb, n, 0);
-  if (trace_flag)  probe_show();     /* 94/Mar/25 */
+  if (trace_flag)
+    probe_show();     /* 94/Mar/25 */
   return zeqtb;
 }
 #endif
@@ -1622,11 +1632,11 @@ int allocate_memory (void)
 #ifdef ALLOCATEZEQTB
 /*  zeqtb = NULL; */
 #ifdef INCREASEFONTS
-/*  zeqtb = allocatezeqtb (13507 + eqtb_extra); */  /* 94/Mar/29 */
-  zeqtb = allocatezeqtb (hash_size + 4007 + eqtb_extra);  /* 94/Mar/29 */
+/*  zeqtb = allocate_zeqtb (13507 + eqtb_extra); */  /* 94/Mar/29 */
+  zeqtb = allocate_zeqtb (hash_size + 4007 + eqtb_extra);  /* 94/Mar/29 */
 #else
-/*  zeqtb = allocatezeqtb (13507); */
-  zeqtb = allocatezeqtb (hash_size + 4007); 
+/*  zeqtb = allocate_zeqtb (13507); */
+  zeqtb = allocate_zeqtb (hash_size + 4007); 
 #endif
 #endif
 
@@ -1845,7 +1855,7 @@ int free_memory (void)
   if (zdvibuf != NULL) free(zdvibuf);
   zdvibuf = NULL;
 #endif
-#ifdef ALLOCATEZEQTB
+#ifdef ALLLOCATEZEQTB
   if (zeqtb != NULL) free(zeqtb);
   zeqtb = NULL;
 #endif
@@ -3284,7 +3294,7 @@ int init (int ac, char **av)
   char initbuffer[PATH_MAX];
   int k;
   
-  debugfile = getenv("TEXDEBUG");     /* 94/March/28 */
+  debugfile = getenv("TEXDEBUG"); /* 94/March/28 */
   if (debugfile)
     debug_flag = 1;
   else
@@ -3300,16 +3310,16 @@ int init (int ac, char **av)
     show_line(log_line, 1);
   }
 
-  start_time = clock();    /* get time */
-  main_time = start_time;   /* fill in, in case file never opened */
+  start_time = clock(); /* get time */
+  main_time = start_time; /* fill in, in case file never opened */
 
-  initbuffer[0] = '\0';         /* paranoia 94/Apr/10 */
+  initbuffer[0] = '\0'; /* paranoia 94/Apr/10 */
 
 /*  reset all allocatable memory pointers to NULL - in case we drop out */
   mainmemory = NULL;
-  font_info = NULL;
-  str_pool = NULL;
-  str_start = NULL;
+  font_info  = NULL;
+  str_pool   = NULL;
+  str_start  = NULL;
 #ifdef ALLOCATEZEQTB
   zeqtb = NULL;
 #endif
@@ -3328,8 +3338,10 @@ int init (int ac, char **av)
   buffer = realloc_buffer (initial_buf_size);
 /*  sprintf(log_line, "buffer %x, current_buf_size %d\n", buffer, current_buf_size); */
 #endif
-  hyph_list = NULL; hyph_word = NULL;
-  trie_taken = NULL; trie_hash = NULL;
+  hyph_list = NULL;
+  hyph_word = NULL;
+  trie_taken = NULL;
+  trie_hash = NULL;
   trie_r = NULL;
   trie_c = NULL;
   trie_o = NULL;
@@ -3348,7 +3360,8 @@ int init (int ac, char **av)
 /*  if (*av[1] == '-Y') reorder_arg_flag = false; */  /* 94/April/14 */
   if (ac > 1 && *av[1] == '-Y') reorder_arg_flag = false;
 
-  if (reorder_arg_flag) reorderargs(ac, av);  
+  if (reorder_arg_flag)
+    reorderargs(ac, av);  
 
   if (init_commands(ac, av))
     return -1;          // failure
@@ -3373,15 +3386,18 @@ int init (int ac, char **av)
 
   closed_already=0;        // so can only do once
 
-  if (trace_flag) show_line("Entering init (local)\n", 0);
+  if (trace_flag)
+    show_line("Entering init (local)\n", 0);
 
 /*   Print version *after* banner ? */ /* does this get in log file ? */
 
   probe_memory();             /* show top address */
   ini_max_address = max_address;       /* initial max address */
-  if (trace_flag) show_maximums(stdout);
+  if (trace_flag)
+    show_maximums(stdout);
 #ifdef HEAPWALK
-  if (heap_flag) (void) heap_dump(stdout, 1);
+  if (heap_flag)
+    (void) heap_dump(stdout, 1);
 #endif
 
   initial_memory();

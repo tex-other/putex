@@ -1843,6 +1843,7 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define h_offset                      dimen_par(h_offset_code)
 #define v_offset                      dimen_par(v_offset_code)
 #define emergency_stretch             dimen_par(emergency_stretch_code)
+/* sec 0564 */
 /* sec 79 */
 
 extern void tex_help (unsigned int n, ...);

@@ -2016,7 +2016,7 @@ string *find_dir_list (string path)
 
 /* Unixify filename and path (turn \ into /) --- assumes null terminated */
 
-char *unixify (char * t)
+char * unixify (char * t)
 {
   char * s = t;
   if (s == NULL) return s;    /* paranoia -- 1993/Apr/10 */
@@ -2056,8 +2056,11 @@ char *unixify (char * t)
 
 /* called only from initialize_path_list  (and recursively) */
 
-void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirname,
-          struct _finddata_t findt, integer recurseflag)
+void expand_subdir (string **dir_list_ptr,
+                    unsigned *dir_count_ptr,
+                    string dirname,
+                    struct _finddata_t findt,
+                    integer recurseflag)
 {
 #ifdef MSDOS
 /*  struct _finddata_t findt; */
