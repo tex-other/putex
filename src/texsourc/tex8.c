@@ -267,8 +267,8 @@ void after_math (void)
     } 
     if (w + q > z)
     {
-      if ((e != 0)&&((w - totalshrink[0]+ q <= z)||(totalshrink 
-     [1]!= 0)||(totalshrink[2]!= 0)||(totalshrink[3]!= 0)
+      if ((e != 0)&&((w - total_shrink[0]+ q <= z)||(total_shrink 
+     [1]!= 0)||(total_shrink[2]!= 0)||(total_shrink[3]!= 0)
     )) 
       {
   free_node(b, 7); 

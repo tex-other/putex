@@ -67,7 +67,7 @@
 #define MAX_INT_LENGTH 21
 
 /* Return a fresh copy of S1 followed by S2, et al.  */
-extern string concat(string s1, string s2);
+extern string concat (string s1, string s2);
 extern string concat3 (string, string, string);
 extern string concat4 (string, string, string, string);
 extern string concat5 (string, string, string, string, string);

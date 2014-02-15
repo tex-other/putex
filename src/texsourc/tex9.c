@@ -310,7 +310,6 @@ void close_files_and_terminate (void)
     dvi_out(total_pages % 256);
     if (show_fonts_used && log_opened)     /* 97/Dec/24 */
       show_font_info();           // now in local.c
-
     while (font_ptr > 0) {
       if (font_used[font_ptr])
         dvi_font_def(font_ptr);
@@ -340,14 +339,14 @@ void close_files_and_terminate (void)
     else
       slow_print(output_file_name);
     print_string(" (");
-    print_int(total_pages); 
+    print_int(total_pages);
     print_string(" page");
     if (total_pages != 1)
       print_char('s');
     print_string(", ");
-    print_int(dvi_offset + dvi_ptr); 
+    print_int(dvi_offset + dvi_ptr);
     print_string(" bytes).");
-    b_close(dvi_file); 
+    b_close(dvi_file);
   } 
   if (log_opened) {
     (void) putc ('\n', log_file);

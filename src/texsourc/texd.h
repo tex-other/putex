@@ -865,7 +865,7 @@ EXTERN scaled dvi_h, dvi_v;
 EXTERN scaled cur_h, cur_v; 
 EXTERN internal_font_number dvi_f; 
 EXTERN integer cur_s; 
-EXTERN scaled totalstretch[4], totalshrink[4]; /* padded already */
+EXTERN scaled total_stretch[4], total_shrink[4]; /* padded already */
 EXTERN integer last_badness; 
 EXTERN halfword adjust_tail; 
 EXTERN integer pack_begin_line; 
