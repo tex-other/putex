@@ -36,7 +36,7 @@
 
 #include <setjmp.h>
 
-#define EXTERN /* Instantiate data in `texd.h' or `mfd.h' here ! */
+#define	EXTERN			/* Instantiate data in `texd.h' or `mfd.h' here ! */
 
 #include "texd.h"
 
@@ -76,14 +76,14 @@
 
 #include <time.h>		// needed for time, struct tm etc.
 
-extern struct tm * localtime();
+extern struct tm *localtime();
 
 /* Catch interrupts.  */
 #include <signal.h>		// needed for signal, SIGINT, SIG_IGN, SIG_ERR etc.
 
 /* following may be found in local.c --- used for key replacement */
 
-extern char * replacement[];		/* pointers to replacement strings */
+extern char *replacement[];		/* pointers to replacement strings */
 
 /* extern char *buffercopy; */	/* pointer to allocated copy of buffer */
 
@@ -114,7 +114,7 @@ char **gargv;		/* char *gargv[] -- bkph ? */
   int init(int, char **);			/* in local.c */
 #endif /* INIVIR */ 
 
-char * set_program_name(char *comm)
+char *set_program_name(char *comm)
 {			/* bkph */
 	char *s;
 	if ((s = strrchr (comm, '\\')) != NULL) s++;
@@ -141,10 +141,8 @@ int main (int ac, char *av[])
 	program_name = set_program_name(av[0]);		/* rewritten 1994/Mar/1 - bkph */
 #else
 	program_name = strrchr (av[0], PATH_SEP); 
-	if (program_name == NULL)
-    program_name = av[0];
-	else
-    program_name++; 
+	if (program_name == NULL) program_name = av[0];
+	else program_name++; 
 #endif
 
 #ifdef MSDOS
@@ -164,14 +162,12 @@ int main (int ac, char *av[])
 		program_name = set_program_name(av[0]);	/* rewritten 1994/Mar/1 - bkph */
 #else
 		program_name = strrchr (av[0], PATH_SEP);
-		if (program_name == NULL)
-      program_name = av[0];
-		else
-      program_name++; 
+		if (program_name == NULL)	program_name = av[0];
+		else program_name++; 
 #endif
 		if (strcmp (program_name, virgin_program) != 0)	{
-/* TeX or Metafont adds the space at the end of the name.  */
-      (void) sprintf (custom_default, dump_format, program_name);
+/*		  TeX or Metafont adds the space at the end of the name.  */
+			(void) sprintf (custom_default, dump_format, program_name);
 			dump_default_var = custom_default;
 			dump_default_length = strlen (program_name) + dump_ext_length;
 		}
@@ -198,8 +194,7 @@ int main (int ac, char *av[])
 
 //	ABORTCHECKZERO;				// after storefmtfiles e.g.
 
-	if (endit(flag) != 0)
-    flag = 1;	/* do final clean up in local.c */
+	if (endit(flag) != 0) flag = 1;	/* do final clean up in local.c */
 	if (flag == 0) return 0;
 #ifdef _WINDOWS
 	return flag;
@@ -310,7 +305,8 @@ void get_date_and_time (integer *minutes, integer *pday, integer *pmonth, intege
 		sprintf(log_line, "Cannot convert time (%0ld)!\n", clock);
 		show_line(log_line, 1);
 		*pyear=2038; *pmonth=1; *pday=18; *minutes=22 * 60 + 14;
-	} else {
+	}
+	else {
 		*minutes = tmptr->tm_hour * 60 + tmptr->tm_min;
 		*pday    = tmptr->tm_mday;
 		*pmonth  = tmptr->tm_mon + 1;
@@ -326,7 +322,7 @@ void get_date_and_time (integer *minutes, integer *pday, integer *pmonth, intege
   {
 #ifdef MSDOS
 	if (!no_interrupts) {
-		if (signal(SIGINT, catch_interrupt) == SIG_ERR) {
+		if (signal(SIGINT, catch_interrupt)== SIG_ERR) {
 			show_line(" CTRL-C handler not installed\n", 0);
 #ifndef _WINDOWS
 			uexit(1);  /* do we care when run as DLL ? */
@@ -658,9 +654,10 @@ void call_edit (ASCII_code *stringpool, pool_pointer fnstart,
 
 	if (log_opened) {						/* 1994/Aug/10 */
 		lgstart = str_start[texmf_log_name];
-		lglength = length(texmf_log_name);
+		lglength = str_start[texmf_log_name + 1]- str_start[texmf_log_name];
 		log_file_name = stringpool + lgstart;
-	} else {								/* 1994/Aug/10 */
+	}
+	else {								/* 1994/Aug/10 */
 		lglength = 0;
 		log_file_name = (unsigned char *) "";
 	}

@@ -27,7 +27,7 @@
    Specifically, a test in diag_round (in Metafont) on a quarterword
    comes out differently without the cast, thus causing the trap test to
    fail.  (A path at line 86 is constructed slightly differently).  */
-#define	abs(x) ((integer)(x)>=0?(integer)(x):(integer)-(x))
+#define	abs(x)((integer)(x)>=0?(integer)(x):(integer)-(x))
 
 /* above conflicts with math.h ... */
 

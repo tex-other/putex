@@ -865,7 +865,7 @@ EXTERN scaled dvi_h, dvi_v;
 EXTERN scaled cur_h, cur_v; 
 EXTERN internal_font_number dvi_f; 
 EXTERN integer cur_s; 
-EXTERN scaled total_stretch[4], total_shrink[4]; /* padded already */
+EXTERN scaled totalstretch[4], totalshrink[4]; /* padded already */
 EXTERN integer last_badness; 
 EXTERN halfword adjust_tail; 
 EXTERN integer pack_begin_line; 
@@ -1372,11 +1372,12 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define width_offset    1
 #define depth_offset    2
 #define height_offset   3
-#define width(a)        mem[a + width_offset].sc
-#define depth(a)        mem[a + depth_offset].sc
-#define height(a)       mem[a + height_offset].sc
-#define shift_amount(a) mem[a + 4].sc
+#define width(a)        mem[a + width_offset].cint
+#define depth(a)        mem[a + depth_offset].cint
+#define height(a)       mem[a + height_offset].cint
+#define shift_amount(a) mem[a + 4].cint
 #define list_offset     5
+#define list_ptr(a)     link(a + list_offset)
 #define glue_order(a)   subtype(a + list_offset)
 #define glue_sign(a)    type(a + list_offset)
 #define normal          0
@@ -1397,6 +1398,64 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define float_cost(a)    mem[a + 1].cint
 #define ins_ptr(a)       info(a + 4)
 #define split_top_ptr(a) link(a + 4)
+/* sec 0141 */
+#define mark_node       4
+#define small_node_size 2
+#define mark_ptr(a)     mem[a + 1].cint
+/* sec 0142 */
+#define adjust_node 5
+#define adjust_ptr  mark_ptr
+/* sec 0143 */
+#define ligature_node 6
+#define lig_char(a)   (a + 1)
+#define lig_ptr(a)    link(lig_char(a))
+/* sec 0145 */
+#define disc_node     7
+#define replace_count subtype
+#define pre_break     llink
+#define post_break    rlink
+/* sec 0146 */
+#define whatsit_node 8
+/* sec 0147 */
+#define math_node 9
+#define before    0
+#define after     1
+/* sec 0148 */
+#define precedes_break(a)  (type(a) < math_node)
+#define non_discardable(a) (type(a) < math_node)
+/* sec 0149 */
+#define glue_node      10
+#define cond_math_node 98
+#define mu_glue        99
+#define a_leaders      100
+#define c_leaders      101
+#define x_leaders      102
+#define glue_ptr       llink
+#define leader_ptr     rlink
+/* sec 0150 */
+#define glue_spec_size    4
+#define glue_ref_count(a) link(a)
+#define stretch(a)        mem[a + 2].cint
+#define shrink(a)         mem[a + 3].cint
+#define stretch_order     type
+#define shrink_order      subtype
+#define fil               1
+#define fill              2
+#define filll             3
+/* sec 0155 */
+#define kern_node 11
+#define explicit  1
+#define acc_kern  2
+/* sec 0157 */
+#define penalty_node  12
+#define inf_penalty   inf_bad
+#define eject_penalty -inf_bad
+#define penalty(a)    mem[a + 1].cint
+/* sec 0159 */
+#define unset_node      13
+#define glue_stretch(a) mem[a + glue_offset].cint
+#define glue_shrink(q)  shift_amount
+#define span_count      subtype
 /* sec 0162 */
 #define contrib_head  mem_top - 1
 #define page_head     mem_top - 2
@@ -1843,6 +1902,12 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define h_offset                      dimen_par(h_offset_code)
 #define v_offset                      dimen_par(v_offset_code)
 #define emergency_stretch             dimen_par(emergency_stretch_code)
+/* sec 0305 */
+#define skipping  1
+#define defining  2
+#define matching  3
+#define aligning  4
+#define absorbing 5
 /* sec 0564 */
 /* sec 79 */
 

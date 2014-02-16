@@ -535,12 +535,12 @@ void back_error (void)
   error(); 
 } 
 void ins_error (void) 
-{
-  OK_to_interrupt = false;
-  back_input();
-  cur_input.index_field = 4;
-  OK_to_interrupt = true;
-  error();
+{ 
+    OK_to_interrupt = false; 
+  back_input(); 
+  cur_input.index_field = 4; 
+  OK_to_interrupt = true; 
+  error(); 
 } 
 void begin_file_reading (void) 
 { 
@@ -730,7 +730,7 @@ void firm_up_the_line (void)
       {
       ; 
         print_string("=>");
-        term_input(615, 0); 
+        term_input("=>", 0);
       } 
       if (last > first){
         {
@@ -840,11 +840,12 @@ void macro_call (void)
     incr(m); 
     u = mem[t].hh.v.RH; 
     v = s; 
-    while (true) {
+    while(true){
       if (u == r)
       if (cur_tok != mem[v].hh.v.LH)
       goto lab30; 
       else {
+    
         r = mem[v].hh.v.RH; 
         goto lab22; 
       } 
@@ -887,7 +888,7 @@ void macro_call (void)
       if (cur_tok < 512)
       {
   unbalance = 1; 
-  while (true) {
+  while(true){
     {
       {
         q = avail; 
@@ -989,7 +990,8 @@ void macro_call (void)
       goto lab22; 
       lab40: if (s != 0)
       {
-  if ((m == 1) && (mem[p].hh.v.LH < 768) && (p != temp_head))
+  if ((m == 1)&&(mem[p].hh.v.LH < 768)&&(p != temp_head 
+  ))
   {
     mem[rbraceptr].hh.v.RH = 0; /* rbraceptr may be used without ... */
     {
@@ -1077,28 +1079,28 @@ void insert_relax (void)
 } 
 void expand (void) 
 {
-  halfword t;
-  halfword p, q, r;
-  integer j;
-  integer cvbackup;
-  small_number cvlbackup, radixbackup, cobackup;
-  halfword backupbackup;
-  small_number savescannerstatus;
+  halfword t; 
+  halfword p, q, r; 
+  integer j; 
+  integer cvbackup; 
+  small_number cvlbackup, radixbackup, cobackup; 
+  halfword backupbackup; 
+  small_number savescannerstatus; 
 
-  cvbackup = cur_val;
-  cvlbackup = cur_val_level;
-  radixbackup = radix;
-  cobackup = cur_order;
-  backupbackup = mem[mem_top - 13].hh.v.RH;
+  cvbackup = cur_val; 
+  cvlbackup = cur_val_level;  
+  radixbackup = radix;  
+  cobackup = cur_order;  
+  backupbackup = mem[mem_top - 13].hh.v.RH; 
   if (cur_cmd < 111)
   {
     if (tracing_commands > 1)
-    show_cur_cmd_chr();
+    show_cur_cmd_chr(); 
     switch(cur_cmd)
-    {case 110:
+    {case 110 : 
       {
 /* begin if cur_mark[cur_chr]<>null then l.7881 */
-  if (cur_mark[cur_chr] != 0)
+  if (cur_mark[cur_chr]!= 0)
   begin_token_list(cur_mark[cur_chr], 14); 
       } 
       break; 
@@ -1107,7 +1109,7 @@ void expand (void)
   get_token(); 
   t = cur_tok; 
   get_token(); 
-  if (cur_cmd > 100) {
+  if (cur_cmd > 100){
     expand();
   }
   else back_input(); 
@@ -1307,7 +1309,7 @@ void scan_left_brace (void)
 { 
   do {
       get_x_token(); 
-  } while(!((cur_cmd != 10) && (cur_cmd != 0))); 
+  } while(!((cur_cmd != 10)&&(cur_cmd != 0))); 
   if (cur_cmd != 1)
   {
 	print_err("Missing { inserted"); 
@@ -1325,125 +1327,128 @@ void scan_left_brace (void)
 void scan_optional_equals (void) 
 {
   do {
-      get_x_token();
-  } while(!(cur_cmd != 10));
-  if (cur_tok != 3133)
-    back_input();
-}
-/* sec 0407 */
+      get_x_token(); 
+  } while(!(cur_cmd != 10)); 
+  if (cur_tok != 3133)back_input(); 
+} 
 bool scan_keyword_(char * s)
-{
-  register bool Result;
-  halfword p;
-  halfword q;
-  char * k;
-  p = mem_top - 13;
-  mem[p].hh.v.RH = 0;
-  k = s;
-  while (*k) {
+{/* 10 */ register bool Result; 
+  halfword p; 
+  halfword q; 
+  char * k; 
+  p = mem_top - 13; 
+  mem[p].hh.v.RH = 0; 
+  k = s; 
+  while(*k) {
     get_x_token(); 
-    if ((cur_cs == 0) && ((cur_chr == (*k)) || (cur_chr == (*k) - 32))) {
+    if ((cur_cs == 0) && ((cur_chr == (*k))||(cur_chr == (*k)- 32))) {
       {
-        q = get_avail();
-        mem[p].hh.v.RH = q;
-        mem[q].hh.v.LH = cur_tok;
-        p = q;
-      }
-      incr(k);
-    } else if ((cur_cmd != 10) || (p != mem_top - 13)) {
-      back_input();
+  q = get_avail(); 
+  mem[p].hh.v.RH = q; 
+  mem[q].hh.v.LH = cur_tok; 
+  p = q; 
+      } 
+      incr(k); 
+    } 
+    else if ((cur_cmd != 10)||(p != mem_top - 13)) 
+    {
+      back_input(); 
       if (p != mem_top - 13)
-        begin_token_list(mem[mem_top - 13].hh.v.RH, 3);
-      Result = false;
-      return(Result);
-    }
-  }
-  flush_list(mem[mem_top - 13].hh.v.RH);
-  Result = true;
-  return Result;
-}
+      begin_token_list(mem[mem_top - 13].hh.v.RH, 3); 
+      Result = false; 
+      return(Result); 
+    } 
+  } 
+  flush_list(mem[mem_top - 13].hh.v.RH); 
+  Result = true; 
+  return Result; 
+} 
 void mu_error (void) 
-{
+{ 
   print_err("Incompatible glue units");
-  help1("I'm going to assume that 1mu=1pt when they're mixed.");
-  error();
-}
-void scan_eight_bit_int (void)
-{
-  scan_int();
-  if ((cur_val < 0) || (cur_val > 255)) {
-    print_err("Bad register code");
+  help1("I'm going to assume that 1mu=1pt when they're mixed."); 
+  error(); 
+} 
+void scan_eight_bit_int (void) 
+{ 
+    scan_int(); 
+  if ((cur_val < 0)||(cur_val > 255)) 
+  {
+	  print_err("Bad register code");
 	  help2("A register number must be between 0 and 255.",
 		  "I changed this one to zero.");
-    int_error(cur_val);
-    cur_val = 0;
-  }
-}
+    int_error(cur_val); 
+    cur_val = 0; 
+  } 
+} 
 void scan_char_num (void) 
 {
-  scan_int();
-  if ((cur_val < 0) || (cur_val > 255)) {
+    scan_int(); 
+  if ((cur_val < 0)||(cur_val > 255)) 
+  {
 	  print_err("Bad character code");
 	  help2("A character number must be between 0 and 255.",
 		  "I changed this one to zero.");
-    int_error(cur_val);
-    cur_val = 0;
-  }
-}
-void scan_four_bit_int (void)
+    int_error(cur_val); 
+    cur_val = 0; 
+  } 
+} 
+void scan_four_bit_int (void) 
 {
-  scan_int();
-  if ((cur_val < 0) || (cur_val > 15)) {
+    scan_int(); 
+  if ((cur_val < 0)||(cur_val > 15)) 
+  {
 	  print_err("Bad number");
 	  help2("Since I expected to read a number between 0 and 15,",
 		  "I changed this one to zero.");
-    int_error(cur_val);
-    cur_val = 0;
-  }
-}
+    int_error(cur_val); 
+    cur_val = 0; 
+  } 
+} 
 void scan_fifteen_bit_int (void) 
-{
-  scan_int();
-  if ((cur_val < 0) || (cur_val > 32767)) {
+{ 
+    scan_int(); 
+  if ((cur_val < 0)||(cur_val > 32767)) 
+  {
 	  print_err("Bad mathchar");
 	  help2("A mathchar number must be between 0 and 32767.",
 		  "I changed this one to zero.");
-    int_error(cur_val);
-    cur_val = 0;
-  }
-}
+    int_error(cur_val); 
+    cur_val = 0; 
+  } 
+} 
 void scan_twenty_seven_bit_int (void) 
-{
-  scan_int();
-  if ((cur_val < 0) || (cur_val > 134217727L)) /* 2^27 - 1 */ {
-    print_err("Bad delimiter code");
+{ 
+    scan_int(); 
+  if ((cur_val < 0)||(cur_val > 134217727L)) /* 2^27 - 1 */
+  {
+	  print_err("Bad delimiter code");
 	  help2("A numeric delimiter code must be between 0 and 2^{27}-1.",
 		  "I changed this one to zero.");
-    int_error(cur_val);
-    cur_val = 0;
-  }
-}
-/* sec 0577 */
+    int_error(cur_val); 
+    cur_val = 0; 
+  } 
+} 
 void scan_font_ident (void) 
 {
-  internal_font_number f;
-  halfword m;
-
+  internal_font_number f; 
+  halfword m; 
   do {
       get_x_token(); 
-  } while (!(cur_cmd != 10)); 
-
-  if (cur_cmd == def_font)
-    f = cur_font;
-  else if (cur_cmd == set_font)
-    f = cur_chr; 
-  else if (cur_cmd == def_family) {
-    m = cur_chr;
-    scan_four_bit_int();
-    f = equiv(m + cur_val);
-  } else {
-    print_err("Missing font identifier");
-    help2("I was looking for a control sequence whose",
+  } while(!(cur_cmd != 10)); 
+  if (cur_cmd == 88)
+  f = eqtb[(hash_size + 1834)].hh.v.RH; 
+  else if (cur_cmd == 87)
+  f = cur_chr; 
+  else if (cur_cmd == 86)
+  {
+    m = cur_chr; 
+    scan_four_bit_int(); 
+    f = eqtb[m + cur_val].hh.v.RH; 
+  } 
+  else {
+      print_err("Missing font identifier");
+	  help2("I was looking for a control sequence whose",
 		  "current meaning has been defined by \\font.");
     back_error(); 
     f = 0; 
@@ -1465,7 +1470,7 @@ void find_font_dimen_(bool writing)
 /* else  begin if writing and(n<=space_shrink_code)and@|
     (n>=space_code)and(font_glue[f]<>null) then
     begin delete_glue_ref(font_glue[f]); l.11225 */
-    if (writing && (n <= 4) && (n >= 2) && (font_glue[f]!= 0)) 
+    if (writing &&(n <= 4)&&(n >= 2)&&(font_glue[f]!= 0)) 
     {
     delete_glue_ref(font_glue[f]); 
     font_glue[f]= 0;  /* font_glue[f]:=null */
@@ -1504,53 +1509,56 @@ void find_font_dimen_(bool writing)
         font_check[f].b2) << 8 | font_check[f].b3; */
   } 
 /* compiler error: '-' : incompatible types - from 'union fmemoryword *' to 'struct fourunsignedchars *' */
-  if (cur_val == fmem_ptr) {
+  if (cur_val == fmem_ptr){
 	  print_err("Font ");
 /*    print_esc(hash[(hash_size + 524) + f].v.RH); */
     //print_esc(hash[(hash_size + hash_extra + 524) + f].v.RH); /*96/Jan/10*/
-	  print_esc(""); print(hash[(hash_size + hash_extra + 524) + f].v.RH);
+	  print_esc("");print(hash[(hash_size + hash_extra + 524) + f].v.RH);
     print_string(" has only ");
     print_int(font_params[f]); 
     print_string(" fontdimen parameters");
-    help2("To increase the number of font parameters, you must",
-      "use \\fontdimen immediately after the \\font is loaded.");
+	help2("To increase the number of font parameters, you must",
+		"use \\fontdimen immediately after the \\font is loaded.");
     error(); 
   }
-}
+} 
 
 /* NOTE: the above use of /fontdimen0 to access the checksum is a kludge */
 /* In future would be better to do this by allocating one more slot for */
 /* for parameters when a font is read rather than carry checksum separately */
 /* The above gets the value byte order reversed ... 98/Oct/5 */
-/* sec 0413 */
+
 void scan_something_internal_(small_number level, bool negative)
-{
-  halfword m;
-  integer p;
-  m = cur_chr;
+{ 
+  halfword m; 
+  integer p; 
+  m = cur_chr; 
   switch(cur_cmd)
-  {
-  case def_code: 
+  {case 85 : 
     {
       scan_char_num(); 
-      if (m == math_code_base)
+      if (m == (hash_size + 2907))
       {
-        cur_val = eqtb[(hash_size + 2907) + cur_val].hh.v.RH;
-        cur_val_level = 0;
-      } else if (m < math_code_base) {
-        cur_val = eqtb[m + cur_val].hh.v.RH;
-        cur_val_level = 0;
-      } else {
-        cur_val = eqtb[m + cur_val].cint;
-        cur_val_level = 0;
-      }
-    }
+  cur_val = eqtb[(hash_size + 2907) + cur_val].hh.v.RH; 
+  cur_val_level = 0; 
+      } 
+      else if (m < (hash_size + 2907))
+      {
+  cur_val = eqtb[m + cur_val].hh.v.RH; 
+  cur_val_level = 0; 
+      } 
+      else {
+    
+  cur_val = eqtb[m + cur_val].cint; 
+  cur_val_level = 0; 
+      } 
+    } 
     break; 
-  case toks_register:
-  case assign_toks:
-  case def_family:
-  case set_font:
-  case def_font:
+  case 71 : 
+  case 72 : 
+  case 86 : 
+  case 87 : 
+  case 88 : 
     if (level != 5)
     {
 		print_err("Missing number, treated as zero");
@@ -1568,7 +1576,7 @@ void scan_something_internal_(small_number level, bool negative)
       if (cur_cmd < 72)
       {
   scan_eight_bit_int(); 
-  m = toks_base + cur_val; 
+  m = (hash_size + 1322) + cur_val; 
       } 
       {
   cur_val = eqtb[m].hh.v.RH; 
@@ -1576,6 +1584,7 @@ void scan_something_internal_(small_number level, bool negative)
       } 
     } 
     else {
+  
       back_input(); 
       scan_font_ident(); 
       {
@@ -1585,31 +1594,31 @@ void scan_something_internal_(small_number level, bool negative)
       } 
     } 
     break; 
-  case assign_int:
+  case 73 : 
     {
       cur_val = eqtb[m].cint; 
       cur_val_level = 0; 
     } 
     break; 
-  case assign_dimen: 
+  case 74 : 
     {
       cur_val = eqtb[m].cint; 
       cur_val_level = 1; 
     } 
     break; 
-  case assign_glue:
+  case 75 : 
     {
       cur_val = eqtb[m].hh.v.RH; 
       cur_val_level = 2; 
     } 
     break; 
-  case assign_mu_glue:
+  case 76 : 
     {
       cur_val = eqtb[m].hh.v.RH; 
       cur_val_level = 3; 
     } 
     break; 
-  case set_aux: 
+  case 79 : 
     if (abs(mode)!= m)
     {
 		print_err("Improper ");
@@ -1624,6 +1633,7 @@ void scan_something_internal_(small_number level, bool negative)
       cur_val_level = 1; 
       } 
       else {
+    
   cur_val = 0; 
   cur_val_level = 0; 
       } 
@@ -1634,17 +1644,19 @@ void scan_something_internal_(small_number level, bool negative)
       cur_val_level = 1; 
     } 
     else {
+  
       cur_val = space_factor; 
       cur_val_level = 0; 
     } 
     break; 
-  case set_prev_graf: 
+  case 80 : 
     if (mode == 0)
     {
       cur_val = 0; 
       cur_val_level = 0; 
     } 
     else {
+  
       nest[nest_ptr]= cur_list; 
       p = nest_ptr; 
       while(abs(nest[p].mode_field)!= 1)decr(p); 
@@ -1654,7 +1666,7 @@ void scan_something_internal_(small_number level, bool negative)
       } 
     } 
     break; 
-  case set_page_int: 
+  case 82 : 
     {
       if (m == 0)
       cur_val = dead_cycles; 
@@ -1662,41 +1674,41 @@ void scan_something_internal_(small_number level, bool negative)
       cur_val_level = 0; 
     } 
     break; 
-  case set_page_dimen:
+  case 81 : 
     {
-      if ((page_contents == 0) && (! output_active)) 
-        if (m == 0)
-          cur_val = 1073741823L;  /* 2^30 - 1 */
-        else cur_val = 0;
-      else cur_val = page_so_far[m];
+      if ((page_contents == 0)&&(! output_active)) 
+      if (m == 0)
+      cur_val = 1073741823L;  /* 2^30 - 1 */
+      else cur_val = 0; 
+      else cur_val = page_so_far[m]; 
       cur_val_level = 1; 
     } 
     break; 
-  case set_shape:
+  case 84 : 
     {
-      if (par_shape_ptr == 0)
+      if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
       cur_val = 0; 
-      else cur_val = mem[par_shape_ptr].hh.v.LH; 
+      else cur_val = mem[eqtb[(hash_size + 1312)].hh.v.RH].hh.v.LH; 
       cur_val_level = 0; 
     } 
     break; 
-  case set_box_dimen: 
+  case 83 : 
     {
       scan_eight_bit_int(); 
-      if (eqtb[box_base + cur_val].hh.v.RH == 0)
+      if (eqtb[(hash_size + 1578) + cur_val].hh.v.RH == 0)
       cur_val = 0; 
       else cur_val = mem[eqtb[(hash_size + 1578) + cur_val].hh.v.RH + m].cint; 
       cur_val_level = 1; 
     } 
     break; 
-  case char_given:
-  case math_given:
+  case 68 : 
+  case 69 : 
     {
       cur_val = cur_chr; 
       cur_val_level = 0; 
     } 
     break; 
-  case assign_font_dimen:
+  case 77 : 
     {
       find_font_dimen(false); 
       font_info[fmem_ptr].cint = 0; 
@@ -1706,40 +1718,41 @@ void scan_something_internal_(small_number level, bool negative)
       } 
     } 
     break; 
-  case assign_font_int: 
+  case 78 : 
     {
       scan_font_ident(); 
-      if (m == 0) {
-        cur_val = hyphen_char[cur_val];
-        cur_val_level = 0;
-      } else {
-        cur_val = skew_char[cur_val];
-        cur_val_level = 0;
+      if (m == 0){
+  cur_val = hyphen_char[cur_val]; 
+  cur_val_level = 0; 
+      } 
+      else {
+    
+  cur_val = skew_char[cur_val]; 
+  cur_val_level = 0; 
       } 
     } 
     break; 
-  case tex_register:
+  case 89 : 
     {
-      scan_eight_bit_int();
+      scan_eight_bit_int(); 
       switch(m)
-      {
-      case 0 :
-        cur_val = eqtb[(hash_size + 3218) + cur_val].cint;
-        break;
-      case 1:
-        cur_val = eqtb[(hash_size + 3751) + cur_val].cint;
-        break; 
-      case 2:
-        cur_val = eqtb[(hash_size + 800) + cur_val].hh.v.RH;
-        break;
-      case 3:
-        cur_val = eqtb[(hash_size + 1056) + cur_val].hh.v.RH;
-        break;
-      }
-      cur_val_level = m;
-    }
-    break;
-  case last_item:
+      {case 0 : 
+  cur_val = eqtb[(hash_size + 3218) + cur_val].cint; 
+  break; 
+      case 1 : 
+  cur_val = eqtb[(hash_size + 3751) + cur_val].cint; 
+  break; 
+      case 2 : 
+  cur_val = eqtb[(hash_size + 800) + cur_val].hh.v.RH; 
+  break; 
+      case 3 : 
+  cur_val = eqtb[(hash_size + 1056) + cur_val].hh.v.RH; 
+  break; 
+      } 
+      cur_val_level = m; 
+    } 
+    break; 
+  case 70 : 
     if (cur_chr > 2)
     {
       if (cur_chr == 3)
@@ -1748,6 +1761,7 @@ void scan_something_internal_(small_number level, bool negative)
       cur_val_level = 0; 
     } 
     else {
+  
       if (cur_chr == 2)
       cur_val = 0; 
       else cur_val = 0; 
@@ -1772,7 +1786,8 @@ void scan_something_internal_(small_number level, bool negative)
   } 
   break; 
       } 
-      else if ((mode == 1) && (tail == cur_list.head_field)) 
+      else if ((mode == 1)&&(tail == cur_list 
+     .head_field)) 
       switch(cur_chr)
       {case 0 : 
   cur_val = last_penalty; 
@@ -1807,7 +1822,8 @@ void scan_something_internal_(small_number level, bool negative)
     } 
     break; 
   } 
-  while (cur_val_level > level) {
+  while(cur_val_level > level){
+      
     if (cur_val_level == 2)
     cur_val = mem[cur_val + 1].cint; 
     else if (cur_val_level == 3){
@@ -1834,8 +1850,10 @@ void scan_something_internal_(small_number level, bool negative)
 
 /* Moved here to avoid question about pragma optimize 96/Sep/12 */
 
+/* #pragma optimize ("a", off) */
+
 void get_next (void) 
-{
+{/* 20 25 21 26 40 10 */ 
   integer k; 
   halfword t; 
 /*  char cat; */    /* make this an int ? */
@@ -2177,7 +2195,7 @@ lab20:
         {
         ; 
           print_string("*");    /* * */
-          term_input(42, 0); 
+          term_input("*", 0); 
         } 
         cur_input.limit_field = last; 
         if ((end_line_char < 0)||

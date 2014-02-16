@@ -78,7 +78,7 @@
 #ifndef _WINDOWS
   #include <conio.h>            /* for _getch() */
 #endif
-#pragma warning(default:4032) // different type when promoted
+#pragma warning(default:4032) // different type when promoted`
 
 
 /* Argument handling, etc.  */ /* from common.h - setup `main' in texmf.c */
@@ -133,20 +133,20 @@ bool reorder_arg_flag = true; /* put command line flags/arguments first */
 /* Used in tex0.c with wintodos[c-128]                      */
 
 unsigned char wintodos[128] = {
-    0,   0,   0, 159,   0,   0,   0,   0,
-   94,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0, 159,   0,   0,   0,   0, 
+   94,   0,   0,   0,   0,   0,   0,   0, 
     0,  96,  39,   0,   0,   7,   0,   0,
-  126,   0,   0,   0,   0,   0,   0,   0,
-   32, 173, 189, 156, 207, 190, 221,  21,
-    0, 184, 166, 174, 170,  45, 169,   0,
-  248, 241, 253, 252,   0, 230,  20, 250,
-    0, 251, 167, 175, 172, 171, 243, 168,
-  183, 181, 182, 199, 142, 143, 146, 128,
-  212, 144, 210, 211, 222, 214, 215, 216,
-  209, 165, 227, 224, 226, 229, 153, 158,
-  157, 235, 233, 234, 154, 237, 232, 225,
-  133, 160, 131, 198, 132, 134, 145, 135,
-  138, 130, 136, 137, 141, 161, 140, 139,
+  126,   0,   0,   0,   0,   0,   0,   0, 
+   32, 173, 189, 156, 207, 190, 221,  21, 
+    0, 184, 166, 174, 170,  45, 169,   0, 
+  248, 241, 253, 252,   0, 230,  20, 250, 
+    0, 251, 167, 175, 172, 171, 243, 168, 
+  183, 181, 182, 199, 142, 143, 146, 128, 
+  212, 144, 210, 211, 222, 214, 215, 216, 
+  209, 165, 227, 224, 226, 229, 153, 158, 
+  157, 235, 233, 234, 154, 237, 232, 225, 
+  133, 160, 131, 198, 132, 134, 145, 135, 
+  138, 130, 136, 137, 141, 161, 140, 139, 
   208, 164, 149, 162, 147, 228, 148, 246,
   155, 151, 163, 150, 129, 236, 231, 152
 };  
@@ -156,7 +156,7 @@ void show_usage (char * program) {
   sprintf (s, "\n"
       " yandytex [-?ivnwdrzpK] [-m=ini_mem] [-e=hyph_size] [-h=trie_size]\n"
       "          [-x=xchr_file] [-k=key_file] [-o=dvi_dir] [-l=log_dir] [-a=aux_dir]\n"
-      "          [+format_file] [tex_file]\n\n"
+      "          [+format_file] [tex_file]\n"
       "    -?    show this usage summary\n"
       "    -i    start up as iniTeX (create format file)\n"
       "    -v    be verbose (show implementation version number)\n"
@@ -250,7 +250,7 @@ void stampcopy (char *s)
 #define MAXCHRS 256
 #define NOTDEF 127
 
-void read_xchr_sub (FILE * xchr_input)
+void read_xchr_sub (FILE *pinput)
 {
   char buffer[PATH_MAX];
   int k, from, to, count = 0;
@@ -268,9 +268,9 @@ void read_xchr_sub (FILE * xchr_input)
 #endif
 
 #ifdef ALLOCATEBUFFER
-  while (fgets(buffer, current_buf_size, xchr_input) != NULL) 
+  while (fgets(buffer, current_buf_size, pinput) != NULL) 
 #else
-  while (fgets(buffer, sizeof(buffer), xchr_input) != NULL)
+  while (fgets(buffer, sizeof(buffer), pinput) != NULL)
 #endif
   {
     if (*buffer == '%' || *buffer == ';' || *buffer == '\n') continue;
@@ -319,7 +319,7 @@ void read_xchr_sub (FILE * xchr_input)
 
 char *replacement[MAXCHRS];     /* pointers to replacement strings */
 
-void read_repl_sub (FILE * repl_input)
+void read_repl_sub (FILE *pinput)
 {
   int k, n, m, chrs;
   char buffer[PATH_MAX];
@@ -333,7 +333,7 @@ void read_repl_sub (FILE * repl_input)
   for (k = 0; k < MAXCHRS; k++) replacement[k] = NULL; 
 #endif
 
-  while (fgets(buffer, PATH_MAX, repl_input) != NULL) {
+  while (fgets(buffer, PATH_MAX, pinput) != NULL) {
     if (*buffer == '%' || *buffer == ';' || *buffer == '\n') continue;
     if ((m = sscanf (buffer, "%d%n %s", &chrs, &n, &charname)) == 0)
       continue; 
@@ -418,8 +418,8 @@ int read_xchr_file (char *filename, int flag, char *argv[])
     }
   }
   if (pinput == NULL) {
-/*  strcpy (infile, gargv[0]); *//* try TeX program path */
-    strcpy (infile, argv[0]);    /* try TeX program path */
+/*    strcpy (infile, gargv[0]); */   /* try TeX program path */
+    strcpy (infile, argv[0]);     /* try TeX program path */
     if ((s = strrchr (infile, '\\')) != NULL) *(s+1) = '\0';
     else if ((s = strrchr (infile, '/')) != NULL) *(s+1) = '\0';
     else if ((s = strrchr (infile, ':')) != NULL) *(s+1) = '\0';
@@ -444,8 +444,8 @@ int read_xchr_file (char *filename, int flag, char *argv[])
     }
   }
   if (pinput == NULL) {          /* 97/July/31 */
-/*  strcpy (infile, gargv[0]); *//* try TeX program path\keyboard */
-    strcpy (infile, argv[0]);    /* try TeX program path */
+/*    strcpy (infile, gargv[0]); */   /* try TeX program path\keyboard */
+    strcpy (infile, argv[0]);     /* try TeX program path */
     if ((s = strrchr (infile, '\\')) != NULL) *(s+1) = '\0';
     else if ((s = strrchr (infile, '/')) != NULL) *(s+1) = '\0';
     else if ((s = strrchr (infile, ':')) != NULL) *(s+1) = '\0';
@@ -497,8 +497,7 @@ int read_xchr_file (char *filename, int flag, char *argv[])
 /* Following may be useful if link without floating point emulation */
 
 #ifdef DEBUG
-void testfloating (void)
-{
+void testfloating (void) {
 /*  double x = 1.0; */
 /*  double dx = DBL_EPSILON; */
   double dx = 1.0;
@@ -521,21 +520,14 @@ char *debugfile;      /* NULL or name of file to try and open */
 
 #ifdef SHOWHEAPERROR
   char *heapstrings[] = {
-    "",
-    "Empty",
-    "OK",
-    "Bad Begin",
-    "Bad Node",
-    "End",
-    "Bad Pointer"
+    "", "Empty", "OK", "Bad Begin", "Bad Node", "End", "Bad Pointer"
   };
 #endif
 
 /* Attempt to get at problem with eqtb ... temporarily abandoned */
 
 #ifdef CHECKEQTB
-void check_eqtb (char *act)
-{
+void check_eqtb (char *act) {
   int k, count=0;
   memory_word *eqtb = zeqtb;
 /*  for (k = 10280 + hash_extra; k < 10280 + eqtb_extra; k++) { */
@@ -547,8 +539,7 @@ void check_eqtb (char *act)
       }
       sprintf(log_line, "%d ", k);
       show_line(log_line, 0);
-      if (count++ > 256)
-        break;
+      if (count++ > 256) break;
     }
   }
   if (count != 0) show_char('\n');
@@ -800,8 +791,7 @@ int allocate_tries (int trie_max)
   update_statistics ((int) trie_trc, nc, 0);
 /*  sprintf(log_line, "trie_size %d trie_max %d\n", trie_size, trie_max); */ /* debug */
   trie_size = trie_max;           /* BUG FIX 98/Jan/5 */
-  if (trace_flag)
-    probe_show();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return 0;               // success
 }
 #endif
@@ -809,7 +799,7 @@ int allocate_tries (int trie_max)
 #ifdef ALLOCATEHYPHEN
 bool prime (int);       /* test function later in this file */
 
-int current_prime = 0;         /* remember in case reallocated later */
+int currentprime = 0;         /* remember in case reallocated later */
 
 /* we don't return an address here, since TWO memory regions allocated */
 /* plus, we don't really reallocate, we FLUSH the old information totally */
@@ -843,7 +833,8 @@ int realloc_hyphen (int hyphen_prime)
     return -1;
   }
   if (trace_flag) {
-    sprintf(log_line, "Addresses hyph_word %d hyph_list %d\n", hyph_word, hyph_list);
+    sprintf(log_line, "Addresses hyph_word %d hyph_list %d\n", 
+         hyph_word, hyph_list);
     show_line(log_line, 0);
   }
 /*  cannot preserve old contents when hyphen prime is changed */
@@ -858,17 +849,17 @@ int realloc_hyphen (int hyphen_prime)
   for (k = 0; k <= hyphen_prime; k++) hyph_list[k]= 0; 
 #endif
   hyph_count = 0;   /* or use reset_hyphen() in itex.c */
-  if (current_prime != 0) {
+  if (currentprime != 0) {
     update_statistics ((int) hyph_word, nw, 
-      (current_prime + 1) * sizeof(str_number));
+      (currentprime + 1) * sizeof(str_number));
     update_statistics ((int) hyph_list, nl, 
-      (current_prime + 1) * sizeof(halfword));
+      (currentprime + 1) * sizeof(halfword));
   }
   else {
     update_statistics ((int) hyph_word, nw, 0);
     update_statistics ((int) hyph_list, nl, 0);
   }
-  current_prime = hyphen_prime;
+  currentprime = hyphen_prime;
   if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return 0;               // success
 }
@@ -952,9 +943,9 @@ memory_word *allocate_main_memory (int size)
 memory_word *realloc_main (int losize, int hisize)
 {  
   int k, minsize;
-  int newsize = 0;        /* to quieten compiler */
-  int n = 0;          /* to quieten compiler */
-  memory_word * newmemory = NULL; /* to quieten compiler */
+  int newsize=0;        /* to quieten compiler */
+  int n=0;          /* to quieten compiler */
+  memory_word *newmemory = NULL; /* to quieten compiler */
 
 /*  if (losize == 0 && hisize > 0) runawayflag = 1;     
   else runawayflag = 0; */ /* 94/Jan/22 */
@@ -1300,9 +1291,9 @@ memory_word *realloc_save_stack (int size)
   update_statistics ((int) save_stack, n, current_save_size);
   current_save_size = newsize;
   if (trace_flag) {
-    sprintf(log_line, "  Current %s %d\n", "save_size", current_save_size);
+    sprintf(log_line, "Current%s %d\n", "save_size", current_save_size);
     show_line(log_line, 0);
-    sprintf(log_line, "  New Address %s == %d\n", "save stack", save_stack);
+    sprintf(log_line, "New Address %s == %d\n", "save stack", save_stack);
     show_line(log_line, 0);
   }
   if (trace_flag) probe_show();      /* 94/Mar/25 */
@@ -1351,9 +1342,9 @@ in_state_record *realloc_input_stack (int size)
   update_statistics ((int) input_stack, n, current_stack_size);
   current_stack_size = newsize;
   if (trace_flag) {
-    sprintf(log_line, "  Current %s %d\n", "stack_size", current_stack_size);
+    sprintf(log_line, "Current%s %d\n", "stack_size", current_stack_size);
     show_line(log_line, 0);
-    sprintf(log_line, "  New Address %s == %d\n", "input stack", input_stack);
+    sprintf(log_line, "New Address %s == %d\n", "input stack", input_stack);
     show_line(log_line, 0);
   }
   if (trace_flag)  probe_show();     /* 94/Mar/25 */
@@ -1402,9 +1393,9 @@ list_state_record *realloc_nest_stack (int size)
   update_statistics ((int) nest, n, current_nest_size);
   current_nest_size = newsize;
   if (trace_flag) {
-    sprintf(log_line, "  Current %s %d\n", "nest_size", current_nest_size);
+    sprintf(log_line, "Current%s %d\n", "nest_size", current_nest_size);
     show_line(log_line, 0);
-    sprintf(log_line, "  New Address %s == %d\n", "nest stack", nest);
+    sprintf(log_line, "New Address %s == %d\n", "nest stack", nest);
     show_line(log_line, 0);
   }
   if (trace_flag)  probe_show();     /* 94/Mar/25 */
@@ -1453,9 +1444,9 @@ halfword *realloc_param_stack (int size)
   update_statistics ((int) param_stack, n, current_param_size);
   current_param_size = newsize;
   if (trace_flag) {
-    sprintf(log_line, "  Current %s %d\n", "param_size", current_param_size);
+    sprintf(log_line, "Current%s %d\n", "param_size", current_param_size);
     show_line(log_line, 0);
-    sprintf(log_line, "  New Address %s == %d\n", "param stack", param_stack);
+    sprintf(log_line, "New Address %s == %d\n", "param stack", param_stack);
     show_line(log_line, 0);
   }
   if (trace_flag)  probe_show();     /* 94/Mar/25 */
@@ -1509,9 +1500,9 @@ ASCII_code *realloc_buffer (int size)
 #endif
   current_buf_size = newsize;
   if (trace_flag) {
-    sprintf(log_line, "  Current %s %d\n", "buffer", current_buf_size);
+    sprintf(log_line, "Current%s %d\n", "buffer", current_buf_size);
     show_line(log_line, 0);
-    sprintf(log_line, "  New Address %s == %d\n", "buffer", buffer);
+    sprintf(log_line, "New Address %s == %d\n", "buffer", buffer);
     show_line(log_line, 0);
   }
   if (trace_flag)  probe_show();     /* 94/Mar/25 */
@@ -1548,17 +1539,17 @@ eight_bits *allocatedvibuf (int size)
 /* we used to allocate this one only to reduce the size of the PE file */
 /* it can be done without loss in performance, since register eqtb = zeqtb */
 #ifdef ALLOCATEZEQTB
-memory_word *allocate_zeqtb (int k)
+memory_word *allocatezeqtb (int k)
 {
   memory_word *zeqtb;
   int n;
 
   n = k * sizeof (memory_word);  /* 13507 * 8 = 108 kilobytes */
-  if (trace_flag)
-    trace_memory("eqtb", n);
-  zeqtb = (memory_word *) malloc(roundup(n));
+  if (trace_flag)  trace_memory("eqtb", n);
+  zeqtb = (memory_word *) malloc (roundup(n));
   if (zeqtb == NULL)  {
-    memory_error("eqtb", n);  
+    memory_error("eqtb", n);
+//    exit (1);           /* serious error */   
     return NULL;
   }
   if (trace_flag) {
@@ -1566,8 +1557,7 @@ memory_word *allocate_zeqtb (int k)
     show_line(log_line, 0);
   }
   update_statistics ((int) zeqtb, n, 0);
-  if (trace_flag)
-    probe_show();     /* 94/Mar/25 */
+  if (trace_flag)  probe_show();     /* 94/Mar/25 */
   return zeqtb;
 }
 #endif
@@ -1632,11 +1622,11 @@ int allocate_memory (void)
 #ifdef ALLOCATEZEQTB
 /*  zeqtb = NULL; */
 #ifdef INCREASEFONTS
-/*  zeqtb = allocate_zeqtb (13507 + eqtb_extra); */  /* 94/Mar/29 */
-  zeqtb = allocate_zeqtb (hash_size + 4007 + eqtb_extra);  /* 94/Mar/29 */
+/*  zeqtb = allocatezeqtb (13507 + eqtb_extra); */  /* 94/Mar/29 */
+  zeqtb = allocatezeqtb (hash_size + 4007 + eqtb_extra);  /* 94/Mar/29 */
 #else
-/*  zeqtb = allocate_zeqtb (13507); */
-  zeqtb = allocate_zeqtb (hash_size + 4007); 
+/*  zeqtb = allocatezeqtb (13507); */
+  zeqtb = allocatezeqtb (hash_size + 4007); 
 #endif
 #endif
 
@@ -1806,11 +1796,11 @@ int free_memory (void)
 #ifdef ALLOCATEINI
   if (is_initex) {
     if (trie_taken != NULL) free(trie_taken);
-    if (trie_hash  != NULL) free(trie_hash);
-    if (trie_r     != NULL) free(trie_r);
-    if (trie_c     != NULL) free(trie_c);
-    if (trie_o     != NULL) free(trie_o);
-    if (trie_l     != NULL) free(trie_l);
+    if (trie_hash != NULL) free(trie_hash);
+    if (trie_r != NULL) free(trie_r);
+    if (trie_c != NULL) free(trie_c);
+    if (trie_o != NULL) free(trie_o);
+    if (trie_l != NULL) free(trie_l);
     trie_taken = NULL;
     trie_hash = trie_l = trie_r = NULL;
     trie_c = NULL;
@@ -1855,7 +1845,7 @@ int free_memory (void)
   if (zdvibuf != NULL) free(zdvibuf);
   zdvibuf = NULL;
 #endif
-#ifdef ALLLOCATEZEQTB
+#ifdef ALLOCATEZEQTB
   if (zeqtb != NULL) free(zeqtb);
   zeqtb = NULL;
 #endif
@@ -1990,7 +1980,7 @@ void reorderargs (int ac, char **av)
   }
 }
 
-int test_align (int address, int size, char *name)
+int testalign (int address, int size, char *name)
 {
   int n;
   if (size > 4) n = address % 4;
@@ -2006,157 +1996,157 @@ int test_align (int address, int size, char *name)
 
 void check_fixed_align (int flag)
 {
-  if (test_align ((int) &mem_top, 4, "FIXED ALIGNMENT")) {
+  if (testalign ((int) &mem_top, 4, "FIXED ALIGNMENT")) {
     show_line("PLEASE RECOMPILE ME!\n", 1);
   }
 #ifdef CHECKALIGNMENT
   if (!flag) return;
-  test_align ((int) &mem_top, 4, "mem_top");
-  test_align ((int) &mem_max, 4, "mem_max");
-  test_align ((int) &mem_min, 4, "mem_min");
-  test_align ((int) &bad, 4, "bad");
-  test_align ((int) &trie_size, 4, "trie_size");
-  test_align ((int) &xord, sizeof(xord[0]), "xord"); /* no op */
-  test_align ((int) &xchr, sizeof(xchr[0]), "xchr"); /* no op */
-  test_align ((int) &name_length, 4, "name_length");
-  test_align ((int) &first, 4, "first");
-  test_align ((int) &last, 4, "last");
-  test_align ((int) &max_buf_stack, 4, "max_buf_stack");
-  test_align ((int) &pool_ptr, 4, "pool_ptr");
-  test_align ((int) &str_ptr, 4, "str_ptr");
-  test_align ((int) &init_pool_ptr, 4, "init_pool_ptr");
-  test_align ((int) &init_str_ptr, 4, "init_str_ptr");
-  test_align ((int) &log_file, 4, "log_file");
-  test_align ((int) &tally, 4, "tally");
-  test_align ((int) &term_offset, 4, "term_offset");
-  test_align ((int) &file_offset, 4, "file_offset");
-  test_align ((int) &trick_count, 4, "trick_count");
-  test_align ((int) &first_count, 4, "first_count");
-  test_align ((int) &deletions_allowed, 4, "deletions_allowed");
-  test_align ((int) &set_box_allowed, 4, "set_box_allowed");
-  test_align ((int) &help_line, sizeof(help_line[0]), "help_line");
-  test_align ((int) &use_err_help, 4, "use_err_help");
-  test_align ((int) &interrupt, 4, "interrupt");
-  test_align ((int) &OK_to_interrupt, 4, "OK_to_interrupt");
-  test_align ((int) &arith_error, 4, "arith_error");
-  test_align ((int) &tex_remainder, 4, "tex_remainder");
-  test_align ((int) &temp_ptr, 4, "temp_ptr");
-  test_align ((int) &lo_mem_max, 4, "lo_mem_max");
-  test_align ((int) &hi_mem_min, 4, "hi_mem_min");
-  test_align ((int) &var_used, 4, "var_used");
-  test_align ((int) &dyn_used, 4, "dyn_used");
-  test_align ((int) &avail, 4, "avail");
-  test_align ((int) &mem_end, 4, "mem_end");
-  test_align ((int) &mem_start, 4, "mem_start");
-  test_align ((int) &rover, 4, "rover");
-  test_align ((int) &font_in_short_display, 4, "font_in_short_display");
-  test_align ((int) &depth_threshold, 4, "depth_threshold");
-  test_align ((int) &breadth_max, 4, "breadth_max");
-  test_align ((int) &nest, sizeof(nest[0]), "nest");
+  testalign ((int) &mem_top, 4, "mem_top");
+  testalign ((int) &mem_max, 4, "mem_max");
+  testalign ((int) &mem_min, 4, "mem_min");
+  testalign ((int) &bad, 4, "bad");
+  testalign ((int) &trie_size, 4, "trie_size");
+  testalign ((int) &xord, sizeof(xord[0]), "xord"); /* no op */
+  testalign ((int) &xchr, sizeof(xchr[0]), "xchr"); /* no op */
+  testalign ((int) &name_length, 4, "name_length");
+  testalign ((int) &first, 4, "first");
+  testalign ((int) &last, 4, "last");
+  testalign ((int) &max_buf_stack, 4, "max_buf_stack");
+  testalign ((int) &pool_ptr, 4, "pool_ptr");
+  testalign ((int) &str_ptr, 4, "str_ptr");
+  testalign ((int) &init_pool_ptr, 4, "init_pool_ptr");
+  testalign ((int) &init_str_ptr, 4, "init_str_ptr");
+  testalign ((int) &log_file, 4, "log_file");
+  testalign ((int) &tally, 4, "tally");
+  testalign ((int) &term_offset, 4, "term_offset");
+  testalign ((int) &file_offset, 4, "file_offset");
+  testalign ((int) &trick_count, 4, "trick_count");
+  testalign ((int) &first_count, 4, "first_count");
+  testalign ((int) &deletions_allowed, 4, "deletions_allowed");
+  testalign ((int) &set_box_allowed, 4, "set_box_allowed");
+  testalign ((char *) &help_line, sizeof(help_line[0]), "help_line");
+  testalign ((int) &use_err_help, 4, "use_err_help");
+  testalign ((int) &interrupt, 4, "interrupt");
+  testalign ((int) &OK_to_interrupt, 4, "OK_to_interrupt");
+  testalign ((int) &arith_error, 4, "arith_error");
+  testalign ((int) &tex_remainder, 4, "tex_remainder");
+  testalign ((int) &temp_ptr, 4, "temp_ptr");
+  testalign ((int) &lo_mem_max, 4, "lo_mem_max");
+  testalign ((int) &hi_mem_min, 4, "hi_mem_min");
+  testalign ((int) &var_used, 4, "var_used");
+  testalign ((int) &dyn_used, 4, "dyn_used");
+  testalign ((int) &avail, 4, "avail");
+  testalign ((int) &mem_end, 4, "mem_end");
+  testalign ((int) &mem_start, 4, "mem_start");
+  testalign ((int) &rover, 4, "rover");
+  testalign ((int) &font_in_short_display, 4, "font_in_short_display");
+  testalign ((int) &depth_threshold, 4, "depth_threshold");
+  testalign ((int) &breadth_max, 4, "breadth_max");
+  testalign ((int) &nest, sizeof(nest[0]), "nest");
 
 #ifdef ALLOCZEQTB
-  test_align ((int) &zeqtb, sizeof(zeqtb[0]), "zeqtb");  /* not any more ? */
+  testalign ((int) &zeqtb, sizeof(zeqtb[0]), "zeqtb");  /* not any more ? */
 #endif
-/*  test_align ((int) &xeq_level, sizeof(xeq_level[0]), "xeq_level"); */
-  test_align ((int) &zzzad, sizeof(zzzad[0]), "zzzad");
-/*  test_align ((int) &hash, sizeof(hash[0]), "hash"); */
-  test_align ((int) &zzzae, sizeof(zzzae[0]), "zzzae");
+/*  testalign ((int) &xeq_level, sizeof(xeq_level[0]), "xeq_level"); */
+  testalign ((int) &zzzad, sizeof(zzzad[0]), "zzzad");
+/*  testalign ((int) &hash, sizeof(hash[0]), "hash"); */
+  testalign ((int) &zzzae, sizeof(zzzae[0]), "zzzae");
 
-  test_align ((int) &save_stack, sizeof(save_stack[0]), "save_stack");
-  test_align ((int) &input_stack, sizeof(input_stack[0]), "input_stack");
-  test_align ((int) &input_file, sizeof(input_file[0]), "input_file");
-  test_align ((int) &line_stack, sizeof(line_stack[0]), "line_stack");
-  test_align ((int) &param_stack, sizeof(param_stack[0]), "param_stack");
-  test_align ((int) &cur_mark, sizeof(cur_mark[0]), "cur_mark");
-  test_align ((int) &pstack, sizeof(pstack[0]), "pstack");
-  test_align ((int) &read_file, sizeof(read_file[0]), "read_file");
+  testalign ((int) &save_stack, sizeof(save_stack[0]), "save_stack");
+  testalign ((int) &input_stack, sizeof(input_stack[0]), "input_stack");
+  testalign ((int) &input_file, sizeof(input_file[0]), "input_file");
+  testalign ((int) &line_stack, sizeof(line_stack[0]), "line_stack");
+  testalign ((int) &param_stack, sizeof(param_stack[0]), "param_stack");
+  testalign ((int) &cur_mark, sizeof(cur_mark[0]), "cur_mark");
+  testalign ((int) &pstack, sizeof(pstack[0]), "pstack");
+  testalign ((int) &read_file, sizeof(read_file[0]), "read_file");
 
-  test_align ((int) &font_check, sizeof(font_check[0]), "font_check");
-  test_align ((int) &font_size, sizeof(font_size[0]), "font_size");
-  test_align ((int) &font_dsize, sizeof(font_dsize[0]), "font_dsize");
-  test_align ((int) &font_params, sizeof(font_params[0]), "font_params");
-  test_align ((int) &font_name, sizeof(font_name[0]), "font_name");
-  test_align ((int) &font_area, sizeof(font_area[0]), "font_area");
-  test_align ((int) &font_bc, sizeof(font_bc[0]), "font_bc");
-  test_align ((int) &font_ec, sizeof(font_ec[0]), "font_ec");
-  test_align ((int) &font_glue, sizeof(font_glue[0]), "font_glue");
-  test_align ((int) &font_used, sizeof(font_used[0]), "font_used");
-  test_align ((int) &hyphen_char, sizeof(hyphen_char[0]), "hyphen_char");
-  test_align ((int) &skew_char, sizeof(skew_char[0]), "skew_char");
-  test_align ((int) &bchar_label, sizeof(bchar_label[0]), "bchar_label");
-  test_align ((int) &font_bchar, sizeof(font_bchar[0]), "font_bchar");
-  test_align ((int) &font_false_bchar, sizeof(font_false_bchar[0]), "font_false_bchar");
-  test_align ((int) &char_base, sizeof(char_base[0]), "char_base");
-  test_align ((int) &width_base, sizeof(width_base[0]), "width_base");
-  test_align ((int) &height_base, sizeof(height_base[0]), "height_base");
-  test_align ((int) &depth_base, sizeof(depth_base[0]), "depth_base");
-  test_align ((int) &italic_base, sizeof(italic_base[0]), "italic_base");
-  test_align ((int) &lig_kern_base, sizeof(lig_kern_base[0]), "lig_kern_base");
-  test_align ((int) &kern_base, sizeof(kern_base[0]), "kern_base");
-  test_align ((int) &exten_base, sizeof(exten_base[0]), "exten_base");
-  test_align ((int) &param_base, sizeof(param_base[0]), "param_base");
+  testalign ((int) &font_check, sizeof(font_check[0]), "font_check");
+  testalign ((int) &font_size, sizeof(font_size[0]), "font_size");
+  testalign ((int) &font_dsize, sizeof(font_dsize[0]), "font_dsize");
+  testalign ((int) &font_params, sizeof(font_params[0]), "font_params");
+  testalign ((int) &font_name, sizeof(font_name[0]), "font_name");
+  testalign ((int) &font_area, sizeof(font_area[0]), "font_area");
+  testalign ((int) &font_bc, sizeof(font_bc[0]), "font_bc");
+  testalign ((int) &font_ec, sizeof(font_ec[0]), "font_ec");
+  testalign ((int) &font_glue, sizeof(font_glue[0]), "font_glue");
+  testalign ((int) &font_used, sizeof(font_used[0]), "font_used");
+  testalign ((int) &hyphen_char, sizeof(hyphen_char[0]), "hyphen_char");
+  testalign ((int) &skew_char, sizeof(skew_char[0]), "skew_char");
+  testalign ((int) &bchar_label, sizeof(bchar_label[0]), "bchar_label");
+  testalign ((int) &font_bchar, sizeof(font_bchar[0]), "font_bchar");
+  testalign ((int) &font_false_bchar, sizeof(font_false_bchar[0]), "font_false_bchar");
+  testalign ((int) &char_base, sizeof(char_base[0]), "char_base");
+  testalign ((int) &width_base, sizeof(width_base[0]), "width_base");
+  testalign ((int) &height_base, sizeof(height_base[0]), "height_base");
+  testalign ((int) &depth_base, sizeof(depth_base[0]), "depth_base");
+  testalign ((int) &italic_base, sizeof(italic_base[0]), "italic_base");
+  testalign ((int) &lig_kern_base, sizeof(lig_kern_base[0]), "lig_kern_base");
+  testalign ((int) &kern_base, sizeof(kern_base[0]), "kern_base");
+  testalign ((int) &exten_base, sizeof(exten_base[0]), "exten_base");
+  testalign ((int) &param_base, sizeof(param_base[0]), "param_base");
 
 #ifdef ALLOCATEDVIBUF
-  test_align ((int) &zdvibuf, sizeof(zdvibuf[0]), "zdvibuf"); /* no op */
+  testalign ((int) &zdvibuf, sizeof(zdvibuf[0]), "zdvibuf"); /* no op */
 #endif
-  test_align ((int) &total_stretch, sizeof(total_stretch[0]), "total_stretch");
-  test_align ((int) &total_shrink, sizeof(total_shrink[0]), "total_shrink");
-  test_align ((int) &active_width, sizeof(active_width[0]), "active_width");
-  test_align ((int) &cur_active_width, sizeof(cur_active_width[0]), "cur_active_width");
-  test_align ((int) &background, sizeof(background[0]), "background");
-  test_align ((int) &break_width, sizeof(break_width[0]), "break_width");
-  test_align ((int) &minimal_demerits, sizeof(minimal_demerits[0]), "minimal_demerits");
-  test_align ((int) &best_place, sizeof(best_place[0]), "best_place");
-  test_align ((int) &best_pl_line, sizeof(best_pl_line[0]), "best_pl_line");
-  test_align ((int) &hc, sizeof(hc[0]), "hc");
-  test_align ((int) &hu, sizeof(hu[0]), "hu");
-  test_align ((int) &hyf, sizeof(hyf[0]), "hyf");
-/*  test_align ((int) &x, sizeof(x[0]), "x"); */
+  testalign ((int) &totalstretch, sizeof(totalstretch[0]), "totalstretch");
+  testalign ((int) &totalshrink, sizeof(totalshrink[0]), "totalshrink");
+  testalign ((int) &active_width, sizeof(active_width[0]), "active_width");
+  testalign ((int) &cur_active_width, sizeof(cur_active_width[0]), "cur_active_width");
+  testalign ((int) &background, sizeof(background[0]), "background");
+  testalign ((int) &break_width, sizeof(break_width[0]), "break_width");
+  testalign ((int) &minimal_demerits, sizeof(minimal_demerits[0]), "minimal_demerits");
+  testalign ((int) &best_place, sizeof(best_place[0]), "best_place");
+  testalign ((int) &best_pl_line, sizeof(best_pl_line[0]), "best_pl_line");
+  testalign ((int) &hc, sizeof(hc[0]), "hc");
+  testalign ((int) &hu, sizeof(hu[0]), "hu");
+  testalign ((int) &hyf, sizeof(hyf[0]), "hyf");
+/*  testalign ((int) &x, sizeof(x[0]), "x"); */
 
-  test_align ((int) &hyf_distance, sizeof(hyf_distance[0]), "hyf_distance");
-  test_align ((int) &hyf_num, sizeof(hyf_num[0]), "hyf_num");
-  test_align ((int) &hyf_next, sizeof(hyf_next[0]), "hyf_next");
-  test_align ((int) &op_start, sizeof(op_start[0]), "op_start");
+  testalign ((int) &hyf_distance, sizeof(hyf_distance[0]), "hyf_distance");
+  testalign ((int) &hyf_num, sizeof(hyf_num[0]), "hyf_num");
+  testalign ((int) &hyf_next, sizeof(hyf_next[0]), "hyf_next");
+  testalign ((int) &op_start, sizeof(op_start[0]), "op_start");
 
-/*  test_align ((int) &trie_op_hash, sizeof(trie_op_hash[0]), "trie_op_hash"); */
-  test_align ((int) &zzzaf, sizeof(zzzaf[0]), "zzzaf");
-  test_align ((int) &trie_used, sizeof(trie_used[0]), "trie_used");
-/*  test_align ((int) &trie_op_lang, sizeof(trie_op_lang[0]), "trie_op_lang");*/
-  test_align ((int) &trie_op_val, sizeof(trie_op_val[0]), "trie_op_val");
+/*  testalign ((int) &trie_op_hash, sizeof(trie_op_hash[0]), "trie_op_hash"); */
+  testalign ((int) &zzzaf, sizeof(zzzaf[0]), "zzzaf");
+  testalign ((int) &trie_used, sizeof(trie_used[0]), "trie_used");
+/*  testalign ((int) &trie_op_lang, sizeof(trie_op_lang[0]), "trie_op_lang");*/
+  testalign ((int) &trie_op_val, sizeof(trie_op_val[0]), "trie_op_val");
 
-  test_align ((int) &trie_min, sizeof(trie_min[0]), "trie_min");
-  test_align ((int) &page_so_far, sizeof(page_so_far[0]), "page_so_far");
-  test_align ((int) &write_file, sizeof(write_file[0]), "write_file");
-  test_align ((int) &write_open, sizeof(write_open[0]), "write_open");
+  testalign ((int) &trie_min, sizeof(trie_min[0]), "trie_min");
+  testalign ((int) &page_so_far, sizeof(page_so_far[0]), "page_so_far");
+  testalign ((int) &write_file, sizeof(write_file[0]), "write_file");
+  testalign ((int) &write_open, sizeof(write_open[0]), "write_open");
 #endif
 }
 
 void check_alloc_align (int flag) {
-  if (test_align ((int) eqtb, sizeof(eqtb[0]), "ALLOCATED ALIGNMENT"))
+  if (testalign ((int) eqtb, sizeof(eqtb[0]), "ALLOCATED ALIGNMENT"))
     show_line("PLEASE RECOMPILE ME!\n", 1);
 #ifdef CHECKALIGNMENT
   if (!flag) return;
 #ifndef ALLOCZEQTB
-  test_align ((int) zeqtb, sizeof(zeqtb[0]), "zeqtb"); 
+  testalign ((int) zeqtb, sizeof(zeqtb[0]), "zeqtb"); 
 #endif
 #ifndef ALLOCATEDVIBUF
-  test_align ((int) &zdvibuf, sizeof(zdvibuf[0]), "zdvibuf");  /* no op */
+  testalign ((int) &zdvibuf, sizeof(zdvibuf[0]), "zdvibuf");  /* no op */
 #endif
-  test_align ((int) str_pool, sizeof(str_pool[0]), "str_pool"); /* no op */
-  test_align ((int) str_start, sizeof(str_start[0]), "str_start");
-  test_align ((int) zmem, sizeof(zmem[0]), "main memory");
-  test_align ((int) font_info, sizeof(font_info[0]), "font memory");
-  test_align ((int) trie_trl, sizeof(trie_trl[0]), "trie_trl");
-  test_align ((int) trie_tro, sizeof(trie_tro[0]), "trie_tro");
-  test_align ((int) trie_trc, sizeof(trie_trc[0]), "trie_trc");
-  test_align ((int) hyph_word, sizeof(hyph_word[0]), "hyph_word");
-  test_align ((int) hyph_list, sizeof(hyph_list[0]), "hyph_list");
-/*  test_align ((int) trie_c, sizeof(trie_c[0]), "trie_c"); *//* no op */
-  test_align ((int) trie_o, sizeof(trie_o[0]), "trie_o");
-  test_align ((int) trie_l, sizeof(trie_l[0]), "trie_l");
-  test_align ((int) trie_r, sizeof(trie_r[0]), "trie_r");
-  test_align ((int) trie_hash, sizeof(trie_hash[0]), "trie_hash");
-  test_align ((int) trie_taken, sizeof(trie_taken[0]), "trie_taken");
+  testalign ((int) str_pool, sizeof(str_pool[0]), "str_pool"); /* no op */
+  testalign ((int) str_start, sizeof(str_start[0]), "str_start");
+  testalign ((int) zmem, sizeof(zmem[0]), "main memory");
+  testalign ((int) font_info, sizeof(font_info[0]), "font memory");
+  testalign ((int) trie_trl, sizeof(trie_trl[0]), "trie_trl");
+  testalign ((int) trie_tro, sizeof(trie_tro[0]), "trie_tro");
+  testalign ((int) trie_trc, sizeof(trie_trc[0]), "trie_trc");
+  testalign ((int) hyph_word, sizeof(hyph_word[0]), "hyph_word");
+  testalign ((int) hyph_list, sizeof(hyph_list[0]), "hyph_list");
+/*  testalign ((int) trie_c, sizeof(trie_c[0]), "trie_c"); *//* no op */
+  testalign ((int) trie_o, sizeof(trie_o[0]), "trie_o");
+  testalign ((int) trie_l, sizeof(trie_l[0]), "trie_l");
+  testalign ((int) trie_r, sizeof(trie_r[0]), "trie_r");
+  testalign ((int) trie_hash, sizeof(trie_hash[0]), "trie_hash");
+  testalign ((int) trie_taken, sizeof(trie_taken[0]), "trie_taken");
 #endif
 }
 
@@ -2169,7 +2159,8 @@ void showaddresses (void)
   show_line(log_line, 0);
   sprintf(log_line, "eqtb %d hash %d ", zeqtb, zzzae);
   show_line(log_line, 0);
-  sprintf(log_line, "dvi_buf %d xchr %d xord %d nest %d\n", zdvibuf, xchr, xord, nest);
+  sprintf(log_line, "dvi_buf %d xchr %d xord %d nest %d\n",
+      zdvibuf, xchr, xord, nest);
   show_line(log_line, 0);
   sprintf(log_line, "save_stack %d input_stack %d line_stack %d param_stack %d\n",
        save_stack, input_stack, line_stack, param_stack);
@@ -2185,19 +2176,20 @@ void showaddresses (void)
 
 /* *** *** *** *** *** *** *** NEW APPROACH TO `ENV VARS' *** *** *** *** */
 
-/* grab `env var' from `dviwindo.ini' - or from DOS environment 94/May/19  */
-/* controlled by USEDVIWINDOINI environment variable            94/June/19 */
+/* grab `env var' from `dviwindo.ini' - or from DOS environment 94/May/19 */
+/* controlled by USEDVIWINDOINI environment variable 94/June/19 */
 
-bool usedviwindo        = true;               /* use [Environment] section in `dviwindo.ini' */
-bool backwardflag       = false;              /* don't cripple all advanced features */
-bool shorten_file_name  = false;              /* don't shorten file names to 8+3 for DOS */
-char *inifilename       = "dviwindo.ini";     /* name of ini file we look for */
-char *dviwindo          = "";                 /* full file name for dviwindo.ini with path */
-char *envsection        = "[Environment]";    /* Env var section in `dviwindo.ini' */
-char *wndsection        = "[Window]";         /* Window section in `dviwindo.ini' */
-char *workdirect        = "WorkingDirectory"; /* key in [Window] section */
-bool usesourcedirectory = true;               /* use source file directory as local when WorkingDirectory is set */
-bool workingdirectory   = false;              /* if working directory set in ini */
+bool usedviwindo = true;    /* use [Environment] section in `dviwindo.ini' */
+bool backwardflag = false;           /* don't cripple all advanced features */
+bool shorten_file_name = false;        /* don't shorten file names to 8+3 for DOS */
+char *inifilename = "dviwindo.ini";   /* name of ini file we look for */
+char *dviwindo = "";      /* full file name for dviwindo.ini with path */
+char *envsection = "[Environment]";   /* Env var section in `dviwindo.ini' */
+char *wndsection = "[Window]";      /* Window section in `dviwindo.ini' */
+char *workdirect = "WorkingDirectory";  /* key in [Window] section */
+bool usesourcedirectory = true;   /* use source file directory as local */
+                    /* when WorkingDirectory is set */
+bool workingdirectory = false;    /* if working directory set in ini */
 /* set up full file name for dviwindo.ini and check for [Environment] */
 
 bool setupdviwindo (void)
@@ -2376,8 +2368,7 @@ char *grabenv (char *varname)
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-void flush_trailing_slash (char *directory)
-{
+void flush_trailing_slash (char *directory){
   char *s;
 /*  flush trailing \ or / in directory, if any 1993/Dec/12 */
   if (strcmp(directory, "") != 0) {
@@ -2432,7 +2423,7 @@ void knuthify (void)
 
 /* ........ */
 
-int nohandler = 0;    /* experiment to avoid Ctrl-C interrupt handler */
+int nohandler=0;    /* experiment to avoid Ctrl-C interrupt handler */
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
@@ -2454,106 +2445,75 @@ char *replfile = NULL;/* save space use xstrdup */
 int analyze_flag (int c, char *optarg)
 {
   switch (c)  {
-    case 'v':
-      want_version = true;
-      verbose_flag = true;
-      break;
-    case 'i':
-      is_initex = true;
-      break;
-    case 'Q':
-      interaction = batch_mode; /* quiet mode */
-      break;
-    case 'R':
-      interaction = nonstop_mode; /* run mode */
-      break;
-    case 'S':
-      interaction = scroll_mode; /* scroll mode */
-      break;
-    case 'T':
-      interaction = error_stop_mode; /* tex mode */
-      break;
-    case 'K':
-      backwardflag = true; /* 94/Jun/15 */
-      knuthify();         /* revert to `standard' Knuth TeX */
-      break;
-    case 'L':
-      c_style_flag = true; /* C style error msg 94/Mar/21 */
-      break;
-    case 'Z':
-      show_tfm_flag = true; /* show TFM in log file 94/Jun/21 */
-      break;
-    case 'c':
-      current_tfm = false; /* not look current dir for TFM */
-      break;
-    case 'C':
-      current_flag = false; /* not look current dir for files */
-      break;
-    case 'M':
-      show_missing = false; /* do not show missing 94/June/10 */
-      break;
-    case 'd':
-      deslash = false; /* flipped 93/Nov/18 */
-      /* pseudo_tilde = 0; */ /* new 95/Sep/26 */
-      break;
-    case 'p':
-      allow_patterns = true; /* 93/Nov/26 */
-      /* reset_exceptions = true; */ /* 93/Dec/23 */
-      break;
+    case 'v': want_version = true;
+              verbose_flag = true;
+              break;
+    case 'i': is_initex = true;
+              break;
+    case 'Q': interaction = 0; /* quiet mode */
+              break;
+    case 'R': interaction = 1; /* run mode */
+              break;
+    case 'S': interaction = 2; /* scroll mode */
+              break;
+    case 'T': interaction = 3; /* tex mode */
+              break;
+    case 'K': backwardflag = true; /* 94/Jun/15 */
+              knuthify();         /* revert to `standard' Knuth TeX */
+              break;
+    case 'L': c_style_flag = true; /* C style error msg 94/Mar/21 */
+              break;
+    case 'Z': show_tfm_flag = true; /* show TFM in log file 94/Jun/21 */
+              break;
+    case 'c': current_tfm = false; /* not look current dir for TFM */
+              break;
+    case 'C': current_flag = false; /* not look current dir for files */
+              break;
+    case 'M': show_missing = false; /* do not show missing 94/June/10 */
+              break;
+    case 'd': deslash = false; /* flipped 93/Nov/18 */
+              /* pseudo_tilde = 0; */ /* new 95/Sep/26 */
+              break;
+    case 'p': allow_patterns = true; /* 93/Nov/26 */
+              /* reset_exceptions = true; */ /* 93/Dec/23 */
+              break;
 /*  case 'w':  show_in_hex = false; */ /* 94/Jan/26 */
-    case 'w':
-      show_in_hex = true; /* flipped 00/Jun/18 */
-      break;
-    case 'j':
-      show_in_dos = true; /* 96/Jan/26 */
-      break;
-    case 'n':
-      restrict_to_ascii = true; /* 0 - 127 1994/Jan/21 */
-      break;
-    case '6':
-      workingdirectory = true; /* use source dir 98/Sep/29 */
-      break;
-    case '7':
-      usesourcedirectory = false; /* use working dir 98/Sep/29 */
-      break;
-    case 'f':
-      show_fonts_used = false; /* 97/Dec/24 */
-      break;
-    case '8':
-      shorten_file_name = true; /* 95/Feb/20 */
-      break;
-    case '9':
-      show_cs_names = true; /* 98/Mar/31 */
-      break;
-    case '4':
-      ignore_frozen = true; /* 98/Oct/5 */
-      break;
-    case '5':
-      font_dimen_zero = false; /* 98/Oct/5 */
-      break;
-    case 'F':
-      show_texinput_flag = false; /* 98/Jan/28 */
-      break;
+    case 'w': show_in_hex = true; /* flipped 00/Jun/18 */
+              break;
+    case 'j': show_in_dos = true; /* 96/Jan/26 */
+              break;
+    case 'n': restrict_to_ascii = true; /* 0 - 127 1994/Jan/21 */
+              break;
+    case '6': workingdirectory = true; /* use source dir 98/Sep/29 */
+              break;
+    case '7': usesourcedirectory = false; /* use working dir 98/Sep/29 */
+              break;
+    case 'f': show_fonts_used = false; /* 97/Dec/24 */
+              break;
+    case '8': shorten_file_name = true; /* 95/Feb/20 */
+              break;
+    case '9': show_cs_names = true; /* 98/Mar/31 */
+              break;
+    case '4': ignore_frozen = true; /* 98/Oct/5 */
+              break;
+    case '5': font_dimen_zero = false; /* 98/Oct/5 */
+              break;
+    case 'F': show_texinput_flag = false; /* 98/Jan/28 */
+              break;
 /*  case 'X':  truncate_long_lines = false; */ /* 98/Feb/2 */
               /* break; */
-    case 'W':
-      usedviwindo = false; /* 94/May/19 */
-      break;
-    case 'J':
-      show_line_break_stats = false; /* 96/Feb/8 */
-      break;
-    case 'O':
-      show_fmt_flag = false; /* 94/Jun/21 */
-      break;
-    case 'I':
-      format_specific = false; /* 95/Jan/7 */
-      break;
-    case '3':
-      encoding_specific = false; /* 98/Oct/5 */
-      break;
-    case '2':
-      suppress_f_ligs = true; /* 99/Jan/5 f-lig */
-      break;
+    case 'W': usedviwindo = false; /* 94/May/19 */
+              break;
+    case 'J': show_line_break_stats = false; /* 96/Feb/8 */
+              break;
+    case 'O': show_fmt_flag = false; /* 94/Jun/21 */
+              break;
+    case 'I': format_specific = false; /* 95/Jan/7 */
+              break;
+    case '3': encoding_specific = false; /* 98/Oct/5 */
+              break;
+    case '2': suppress_f_ligs = true; /* 99/Jan/5 f-lig */
+              break;
 /* following are pretty obscure */
 /*  case 'y': cache_file_flag = false; */ /* 96/Nov/16 */
 /*            break; */
@@ -2561,177 +2521,95 @@ int analyze_flag (int c, char *optarg)
 /*            break; */
 /*  case 'z': trimeof = false; */ /* 93/Nov/24 */
 /*            break; */
-    case 'z':
-      full_file_name_flag = false; // 00 Jun 18
-      break;
-    case 'X':
-      save_strings_flag = false; // 00 Aug 15
-      break;
+    case 'z': full_file_name_flag = false; // 00 Jun 18
+              break;
+    case 'X': save_strings_flag = false; // 00 Aug 15
+              break;
 /* following are unannounced options */ /* some may be recycled ... */
-    case 't':
-      trace_flag = true;
-      break;
-    case 'q':
-      quitflag++; /* 93/Dec/16 */
-      break;
+    case 't': trace_flag = true;
+              break;
+    case 'q': quitflag++; /* 93/Dec/16 */
+              break;
 /* The following are really obscure and should not be advertized */
-    case 's':
-      show_current = false; /* tex8 93/Dec/14 */
-      break;
-    case 'N':
-      show_numeric = false; /* 93/Dec/21 */
-      break;
-    case 'A':
-      civilize_flag = false; /* 93/Dec/16 */
-      break; 
-    case 'B':
-      open_trace_flag = true; /* openinou 1994/Jan/8 */
-      break;
-    case 'Y':
-      reorder_arg_flag = false; /* local */
-      break;
-    case 'b':
-      test_dir_access = false; /* 94/Feb/10 */
-      break;
-    case 'D':
-      dir_method = false; /* 94/Feb/10 */
-      break;
-    case 'G':
-      file_method = false; /* 94/Feb/13 */
-      break;
+    case 's': show_current = false; /* tex8 93/Dec/14 */
+              break;
+    case 'N': show_numeric = false; /* 93/Dec/21 */
+              break;
+    case 'A': civilize_flag = false; /* 93/Dec/16 */
+              break; 
+    case 'B': open_trace_flag = true; /* openinou 1994/Jan/8 */
+              break;
+    case 'Y': reorder_arg_flag = false; /* local */
+              break;
+    case 'b': test_dir_access = false; /* 94/Feb/10 */
+              break;
+    case 'D': dir_method = false; /* 94/Feb/10 */
+              break;
+    case 'G': file_method = false; /* 94/Feb/13 */
+              break;
 //  case 'V': share_flag = _SH_DENYNO; break; /* 0x40 - deny none mode */ 
 /*  case 'X': nohandler++; break; */
 /*  case 'f': waitflush = false; break; */
 /*  case 'F': floating = true; break; */
 /* *********** following command line options take arguments **************  */
-    case 'm':
-      if (optarg == 0)
-        mem_initex = mem_top;
-      else
-        mem_initex = atoi(optarg) * 1024; /* 93 Dec/1 */
-      if (mem_initex == 0)
-        complainarg(c, optarg);
-      mem_spec_flag = 1;
-      break;
+    case 'm': if (optarg == 0) mem_initex = mem_top; else mem_initex = atoi(optarg) * 1024; /* 93 Dec/1 */
+              if (mem_initex == 0) complainarg(c, optarg);
+              mem_spec_flag = 1;
+              break;
 #ifdef VARIABLETRIESIZE
-    case 'h':
-      if (optarg == 0)
-        trie_size = default_trie_size;
-      else
-        trie_size = atoi(optarg); /* 93 Dec/1 */
-      if (trie_size == 0)
-        complainarg(c, optarg);
-      break;
+    case 'h': if (optarg == 0) trie_size = default_trie_size; else trie_size = atoi(optarg); /* 93 Dec/1 */
+              if (trie_size == 0) complainarg(c, optarg);
+              break;
 #endif
 #ifdef ALLOCATEHYPHEN
-    case 'e':
-      if (optarg == 0)
-        new_hyphen_prime = hyphen_prime * 2;
-      else
-        new_hyphen_prime = atoi(optarg); /* 93/Nov/26 */
-      if (new_hyphen_prime == 0)
-        complainarg(c, optarg);
-      break;
+    case 'e': if (optarg == 0) new_hyphen_prime = hyphen_prime * 2; else new_hyphen_prime = atoi(optarg); /* 93/Nov/26 */
+              if (new_hyphen_prime == 0) complainarg(c, optarg);
+              break;
 #endif
 #ifdef ALLOCATEDVIBUF
-    case 'u':
-      if (optarg == 0)
-        dvi_buf_size = default_dvi_buf_size;
-      else
-        dvi_buf_size = atoi(optarg); /* 94/Mar/24 */
-      if (dvi_buf_size == 0)
-        complainarg(c, optarg);
-      break;
+    case 'u': if (optarg == 0) dvi_buf_size = default_dvi_buf_size; else dvi_buf_size = atoi(optarg); /* 94/Mar/24 */
+              if (dvi_buf_size == 0) complainarg(c, optarg);
+              break;
 #endif
-    case 'g':
-      if (optarg == 0)
-        percent_grow = 62;
-      else
-        percent_grow = atoi(optarg); /* 93/Dec/11 */
-      if (percent_grow == 0)
-        complainarg(c, optarg);
-      break;
-    case 'U':
-      if (optarg == 0)
-        pseudo_tilde = 0;
-      else
-        pseudo_tilde = atoi(optarg); /* 95/Sep/26 */
-      if (pseudo_tilde > 255)
-        pseudo_tilde = 255;
-      else if (pseudo_tilde < 128)
-        pseudo_tilde = 128;
-      break;
+    case 'g': if (optarg == 0) percent_grow = 62; else percent_grow = atoi(optarg); /* 93/Dec/11 */
+              if (percent_grow == 0) complainarg(c, optarg);
+              break;
+    case 'U': if (optarg == 0) pseudo_tilde = 0; else pseudo_tilde = atoi(optarg); /* 95/Sep/26 */
+              if (pseudo_tilde > 255) pseudo_tilde = 255; else if (pseudo_tilde < 128) pseudo_tilde = 128;
+              break;
 /*  case 'H':  if (optarg == 0) heapthreshold = 1024; else heapthreshold = atoi(optarg);
  *             if (heapthreshold == 0) complainarg(c, optarg); else heap_flag = 1;
  *             break; */
-    case 'H':
-      if (optarg == 0)
-        tab_step = 8;
-      else
-        tab_step = atoi(optarg); /* 94/July/3 */
-      if (tab_step == 0)
-        complainarg(c, optarg);
-      break;
-    case 'x':
-      if (optarg == 0)
-        xchrfile = xstrdup("xchr.map");
-      else
-        xchrfile = xstrdup(optarg);
-      if (xchrfile == NULL || *xchrfile == '\0')
-        complainarg(c, optarg);
-      break;
-    case 'k':
-      if (optarg == 0)
-        replfile = xstrdup("repl.key");
-      else
-        replfile = xstrdup(optarg);
-      if (replfile == NULL || *replfile == '\0')
-        complainarg(c, optarg);
-      break;
+    case 'H': if (optarg == 0) tab_step = 8; else tab_step = atoi(optarg); /* 94/July/3 */
+              if (tab_step == 0) complainarg(c, optarg);
+              break;
+    case 'x': if (optarg == 0) xchrfile=xstrdup("xchr.map"); else xchrfile = xstrdup(optarg);
+              if (xchrfile == NULL || *xchrfile == '\0') complainarg(c, optarg);
+              break;
+    case 'k': if (optarg == 0) replfile =xstrdup("repl.key"); else replfile = xstrdup(optarg);
+              if (replfile == NULL || *replfile == '\0')
+                complainarg(c, optarg);
+              break;
 /* more obscure stuff - ppssibly recycle */
-    case 'P':
-      if (optarg == 0)
-        default_rule = 26214; /* 95/Oct/9 */
-      else
-        default_rule = atoi(optarg); /* 95/Oct/9 */
-      if (default_rule == 0)
-        complainarg(c, optarg);
-      break;
-    case 'E':
-      if (optarg != 0)
-        putenv(optarg);
-      else
-        complainarg(c, optarg);
-      break;
-    case 'o':
-      if (optarg == 0)
-        dvi_directory = "";
-      else
-        dvi_directory = xstrdup(optarg);
-      if (strcmp(dvi_directory, "") == 0)
-        complainarg(c, optarg);
-      break;
-    case 'l':
-      if (optarg == 0)
-        log_directory = "";
-      else
-        log_directory = xstrdup(optarg);
-      if (strcmp(log_directory, "") == 0)
-        complainarg(c, optarg);
-      break;
-    case 'a':
-      if (optarg == 0)
-        aux_directory = "";
-      else
-        aux_directory = xstrdup(optarg);
-      if (strcmp(aux_directory, "") == 0)
-        complainarg(c, optarg);
-      break;
+    case 'P': if (optarg == 0) default_rule = 26214; /* 95/Oct/9 */
+              else default_rule = atoi(optarg); /* 95/Oct/9 */
+              if (default_rule == 0) complainarg(c, optarg);
+              break;
+    case 'E': if (optarg != 0) putenv(optarg); else complainarg(c, optarg);
+              break;
+    case 'o': if (optarg == 0) dvi_directory = ""; else dvi_directory = xstrdup(optarg);
+              if (strcmp(dvi_directory, "") == 0) complainarg(c, optarg);
+              break;
+    case 'l': if (optarg == 0) log_directory = ""; else log_directory = xstrdup(optarg);
+              if (strcmp(log_directory, "") == 0) complainarg(c, optarg);
+              break;
+    case 'a': if (optarg == 0) aux_directory = ""; else aux_directory = xstrdup(optarg);
+              if (strcmp(aux_directory, "") == 0) complainarg(c, optarg);
+              break;
     case '?':
-    default:
-      show_use = true;
-      return -1; // failed to recognize
-      break;
+    default : show_use = true;
+              return -1; // failed to recognize
+              break;
   }
   return 0;
 }
@@ -2753,9 +2631,9 @@ char *yytexcmd="YANDYTEX.CMD";    /* name of command line file */
 void yy_extension (char *fname, char *ext)
 {
   char *s, *t;
-  if ((s = strrchr(fname, '.')) == NULL ||
+    if ((s = strrchr(fname, '.')) == NULL ||
     ((t = strrchr(fname, '\\')) != NULL && s < t)) {
-      strcat(fname, ".");
+      strcat(fname, "."); 
       strcat(fname, ext);
   }
 }
@@ -2765,9 +2643,9 @@ void yy_extension (char *fname, char *ext)
 void strip_name (char *pathname)
 {
   char *s;
-  if ((s = strrchr(pathname, '\\')) != NULL);
-  else if ((s = strrchr(pathname, '/')) != NULL);
-  else if ((s = strrchr(pathname, ':')) != NULL) s++;
+  if ((s=strrchr(pathname, '\\')) != NULL);
+  else if ((s=strrchr(pathname, '/')) != NULL);
+  else if ((s=strrchr(pathname, ':')) != NULL) s++;
   else s = pathname;
   *s = '\0';
 }
@@ -2865,9 +2743,9 @@ int read_command_line (int ac, char **av)
 /*  WARNING: if adding flags, change also `allowedargs' and  `takeargs' !!!! */
   while ((c = getopt(ac, av, allowedargs)) != EOF) {
     if (optarg != 0 && *optarg == '=')
-      optargnew = optarg+1;
+		optargnew = optarg+1;
     else
-      optargnew = optarg;
+		optargnew = optarg;
     analyze_flag (c, optargnew);
   }
   if (show_use || quitflag == 3) {
@@ -2909,8 +2787,7 @@ int read_command_line (int ac, char **av)
 }
 
 #ifdef IGNORED
-void uppercase (char *s)
-{
+void uppercase (char *s) {
   int c;
   while ((c = *s) != '\0') {
 /*    if (islower(c)) *s = toupper (*s); */
@@ -2927,7 +2804,7 @@ int init_commands (int ac, char **av)
   is_initex = trace_flag = deslash = non_ascii = false; */
   is_initex         = false; /* check for dumping format file */
   allow_patterns    = false; /* using \pattern after format file loaded */
-  reset_exceptions  = false;
+  reset_exceptions  = false; 
   non_ascii         = false;
   key_replace       = false;
   want_version      = false;
@@ -2974,7 +2851,8 @@ int init_commands (int ac, char **av)
   errout                = stdout;    /* as opposed to stderr say --- used ??? */
   abort_flag            = 0;      // not yet hooked up ???
   err_level             = 0;     // not yet hooked up ???
-  new_hyphen_prime      = 0;
+
+  new_hyphen_prime = 0;
 #ifdef VARIABLETRIESIZE
 /*  trie_size = default_trie_size; */
   trie_size = 0;
@@ -3022,81 +2900,84 @@ int init_commands (int ac, char **av)
 /*  if we aren't including current directory in any directory lists */
 /*  then makes no sense to avoid them separately for TFM files ... */
 /*  (that is, the ./ is already omitted from the dir list in that case */
-  if (!current_flag && !current_tfm)
-    current_tfm = true; /* 94/Jan/24 */
+  if (!current_flag && !current_tfm) current_tfm = true; /* 94/Jan/24 */
   return 0;               // success
 }
 
 /* E sets environment variable ? */
 
 void initial_memory (void)
-{
-  /* set initial memory allocations */
-  if (mem_extra_high < 0) mem_extra_high = 0;
-  if (mem_extra_low < 0) mem_extra_low = 0;
-  if (mem_initex < 0) mem_initex = 0;
-  if (is_initex) {
+{   /* set initial memory allocations */
+    if (mem_extra_high < 0) mem_extra_high = 0;
+    if (mem_extra_low < 0) mem_extra_low = 0;
+    if (mem_initex < 0) mem_initex = 0;
+    if (is_initex) {
  #if defined(ALLOCATEHIGH) || defined(ALLOCATELOW)
-    if (mem_extra_high != 0 || mem_extra_low != 0) {
-      show_line("ERROR: Cannot extend main memory in iniTeX\n", 1);
-      mem_extra_high = 0;   mem_extra_low = 0;
-    }
-#endif
-  } else {
-    if (mem_initex != 0) {
-      show_line("ERROR: Can only set initial main memory size in iniTeX\n", 1);
-      mem_initex = 0;
-    }
-    if (trie_size != 0) {
-      show_line("ERROR: Need only set hyphenation trie size in iniTeX\n", 1);
-/* trie_size = 0; */
-    }
-  }
-  if (mem_initex == 0) mem_initex = default_mem_top;
-  if (trie_size == 0) trie_size = default_trie_size;
-/* Just in case user mistakenly specified words instead of kilo words */
-  if (mem_extra_high > 10000L * 1024L) mem_extra_high = mem_extra_high / 1024;
-  if (mem_extra_low > 10000L * 1024L) mem_extra_low = mem_extra_low / 1024;
-  if (mem_initex > 10000L * 1024L) mem_initex = mem_initex / 1024;
-#ifdef ALLOCATEHIGH         /* not used anymore */
-  if (mem_extra_high > 2048L * 1024L) { /* extend SW area by 16 mega byte! */
-    show_line("WARNING: There may be no benefit to asking for so much memory\n", 0);
-    mem_extra_high = 2048 * 1024; /* limit to SW to 4 x VLR */
-  }
-#endif
-#ifdef ALLOCATELOW          /* not used anymore */
-  if (mem_extra_low > 2048L * 1024L) { /* extend VL area by 16 mega byte! */
-    show_line("WARNING: There may be no benefit to asking for so much memory\n", 0);
-    mem_extra_low = 2048 * 1024; /* limit VLR to 4 x SW */
-  }
-#endif
-  if (mem_initex > 2048L * 1024L) { /* extend main memory by 16 mega byte! */
-    show_line("WARNING: There may be no benefit to asking for so much memory\n", 0);
-/* mem_initex = 2048 * 1024; */
-  }
- #ifdef ALLOCATEDVIBUF
-  if (dvi_buf_size == 0) dvi_buf_size = default_dvi_buf_size;
-/* if less than 1024 assume user specified kilo-bytes, not bytes */
-  if (dvi_buf_size < 1024) dvi_buf_size = dvi_buf_size * 1024;
-  if (dvi_buf_size % 8 != 0)        /* check multiple of eight */
-    dvi_buf_size = (dvi_buf_size / 8 + 1) * 8;
+      if (mem_extra_high != 0 || mem_extra_low != 0) {
+        show_line("ERROR: Cannot extend main memory in iniTeX\n", 1);
+        mem_extra_high = 0;   mem_extra_low = 0;
+      }
  #endif
-  if (new_hyphen_prime < 0) new_hyphen_prime = 0;
-  if (new_hyphen_prime > 0) {
-    if (! is_initex)
-      show_line("ERROR: Can only set hyphen prime in iniTeX\n", 1);
+    }
     else {
-      if (new_hyphen_prime % 2 == 0) new_hyphen_prime++;
-      while (!prime(new_hyphen_prime)) new_hyphen_prime = new_hyphen_prime+2;
-      if (trace_flag) {
-        sprintf(log_line, "Using %d as hyphen prime\n", new_hyphen_prime);
-        show_line(log_line, 0);
+      if (mem_initex != 0) {
+        show_line("ERROR: Can only set initial main memory size in iniTeX\n", 1);
+        mem_initex = 0;
+      }
+      if (trie_size != 0) {
+        show_line("ERROR: Need only set hyphenation trie size in iniTeX\n", 1);
+/*        trie_size = 0; */
       }
     }
-  }
-  if (percent_grow > 100) percent_grow = percent_grow - 100;
-  if (percent_grow > 100) percent_grow = 100;   /* upper limit - double */
-  if (percent_grow < 10) percent_grow = 10;   /* lower limit - 10% */
+    if (mem_initex == 0) mem_initex = default_mem_top;
+    if (trie_size == 0) trie_size = default_trie_size;
+/* Just in case user mistakenly specified words instead of kilo words */
+    if (mem_extra_high > 10000L * 1024L) mem_extra_high = mem_extra_high / 1024;
+    if (mem_extra_low > 10000L * 1024L) mem_extra_low = mem_extra_low / 1024;
+    if (mem_initex > 10000L * 1024L) mem_initex = mem_initex / 1024;
+#ifdef ALLOCATEHIGH         /* not used anymore */
+    if (mem_extra_high > 2048L * 1024L) { /* extend SW area by 16 mega byte! */
+      show_line(
+      "WARNING: There may be no benefit to asking for so much memory\n", 0); 
+      mem_extra_high = 2048 * 1024; /* limit to SW to 4 x VLR */
+    }
+#endif
+#ifdef ALLOCATELOW          /* not used anymore */
+    if (mem_extra_low > 2048L * 1024L) { /* extend VL area by 16 mega byte! */
+      show_line(
+      "WARNING: There may be no benefit to asking for so much memory\n", 0); 
+      mem_extra_low = 2048 * 1024; /* limit VLR to 4 x SW */
+    }
+#endif
+    if (mem_initex > 2048L * 1024L) { /* extend main memory by 16 mega byte! */
+      show_line(
+      "WARNING: There may be no benefit to asking for so much memory\n", 0); 
+/*      mem_initex = 2048 * 1024; */
+    }
+ #ifdef ALLOCATEDVIBUF
+    if (dvi_buf_size == 0) dvi_buf_size = default_dvi_buf_size;
+    /* if less than 1024 assume user specified kilo-bytes, not bytes */
+    if (dvi_buf_size < 1024) dvi_buf_size = dvi_buf_size * 1024;
+    if (dvi_buf_size % 8 != 0)        /* check multiple of eight */
+       dvi_buf_size = (dvi_buf_size / 8 + 1) * 8;
+ #endif
+    if (new_hyphen_prime < 0) new_hyphen_prime = 0;
+    if (new_hyphen_prime > 0) {
+      if (! is_initex) 
+        show_line("ERROR: Can only set hyphen prime in iniTeX\n", 1);
+      else {
+        if (new_hyphen_prime % 2 == 0) new_hyphen_prime++;
+        while (!prime(new_hyphen_prime)) new_hyphen_prime = new_hyphen_prime+2;
+        if (trace_flag) {
+          sprintf(log_line, "Using %d as hyphen prime\n", new_hyphen_prime);
+          show_line(log_line, 0);
+        }
+      }
+    }
+
+    if (percent_grow > 100) percent_grow = percent_grow - 100;
+    if (percent_grow > 100) percent_grow = 100;   /* upper limit - double */
+    if (percent_grow < 10) percent_grow = 10;   /* lower limit - 10% */
 }
 
 /**********************************************************************/
@@ -3235,6 +3116,7 @@ void deslash_all (int ac, char **av)
 
 /*  deslash TeX source file (and format, if format specified) */
 /*  and check args to see whether format was specified */
+
   format_spec = 0;
 /*  NOTE: assuming that command line arguments are in writable memory ! */
 /*  if (trace_flag || debug_flag)
@@ -3294,7 +3176,7 @@ int init (int ac, char **av)
   char initbuffer[PATH_MAX];
   int k;
   
-  debugfile = getenv("TEXDEBUG"); /* 94/March/28 */
+  debugfile = getenv("TEXDEBUG");     /* 94/March/28 */
   if (debugfile)
     debug_flag = 1;
   else
@@ -3310,16 +3192,16 @@ int init (int ac, char **av)
     show_line(log_line, 1);
   }
 
-  start_time = clock(); /* get time */
-  main_time = start_time; /* fill in, in case file never opened */
+  start_time = clock();    /* get time */
+  main_time = start_time;   /* fill in, in case file never opened */
 
-  initbuffer[0] = '\0'; /* paranoia 94/Apr/10 */
+  initbuffer[0] = '\0';         /* paranoia 94/Apr/10 */
 
 /*  reset all allocatable memory pointers to NULL - in case we drop out */
   mainmemory = NULL;
-  font_info  = NULL;
-  str_pool   = NULL;
-  str_start  = NULL;
+  font_info = NULL;
+  str_pool = NULL;
+  str_start = NULL;
 #ifdef ALLOCATEZEQTB
   zeqtb = NULL;
 #endif
@@ -3338,17 +3220,10 @@ int init (int ac, char **av)
   buffer = realloc_buffer (initial_buf_size);
 /*  sprintf(log_line, "buffer %x, current_buf_size %d\n", buffer, current_buf_size); */
 #endif
-  hyph_list = NULL;
-  hyph_word = NULL;
-  trie_taken = NULL;
-  trie_hash = NULL;
-  trie_r = NULL;
-  trie_c = NULL;
-  trie_o = NULL;
-  trie_l = NULL;
-  trie_trc = NULL;
-  trie_tro = NULL;
-  trie_trl = NULL;
+  hyph_list = NULL;  hyph_word = NULL;
+  trie_taken = NULL; trie_hash = NULL;
+  trie_r = NULL; trie_c = NULL; trie_o = NULL; trie_l = NULL;
+  trie_trc = NULL; trie_tro = NULL; trie_trl = NULL;
 
   log_opened = false;       /* so can tell whether opened */
   interaction = -1;       /* default state => 3 */
@@ -3360,17 +3235,16 @@ int init (int ac, char **av)
 /*  if (*av[1] == '-Y') reorder_arg_flag = false; */  /* 94/April/14 */
   if (ac > 1 && *av[1] == '-Y') reorder_arg_flag = false;
 
-  if (reorder_arg_flag)
-    reorderargs(ac, av);  
+  if (reorder_arg_flag) reorderargs(ac, av);  
 
   if (init_commands(ac, av))
     return -1;          // failure
 
   check_fixed_align(trace_flag);       /* sanity check 1994/Jan/8 */
 
-  format_file   = NULL;       /* to be set in openinou.c 94/Jun/21 */
-  string_file   = NULL;       /* to be set in openinou.c 96/Jan/15 */
-  source_direct = NULL;       /* to be set in openinou.c 98/Sep/29 */
+  format_file = NULL;        /* to be set in openinou.c 94/Jun/21 */
+  string_file = NULL;        /* to be set in openinou.c 96/Jan/15 */
+  source_direct = NULL;      /* to be set in openinou.c 98/Sep/29 */
   dvi_file_name = NULL;       /* to be set in openinou.c 00/Jun/18 */
   log_file_name = NULL;       /* to be set in openinou.c 00/Jun/18 */
 
@@ -3386,18 +3260,15 @@ int init (int ac, char **av)
 
   closed_already=0;        // so can only do once
 
-  if (trace_flag)
-    show_line("Entering init (local)\n", 0);
+  if (trace_flag) show_line("Entering init (local)\n", 0);
 
 /*   Print version *after* banner ? */ /* does this get in log file ? */
 
   probe_memory();             /* show top address */
   ini_max_address = max_address;       /* initial max address */
-  if (trace_flag)
-    show_maximums(stdout);
+  if (trace_flag) show_maximums(stdout);
 #ifdef HEAPWALK
-  if (heap_flag)
-    (void) heap_dump(stdout, 1);
+  if (heap_flag) (void) heap_dump(stdout, 1);
 #endif
 
   initial_memory();
@@ -3525,7 +3396,7 @@ void print_cs_name (FILE *output, int h)
   
   textof = hash[h].v.RH;
   if (textof == 0) return;  /* ignore if text() == 0 */
-  n = length(textof);
+  n = str_start[textof + 1] - str_start[textof];
   if (textcolumn != 0) {
     sprintf(log_line, ", ");
     if (output != NULL) fprintf(output, log_line);
@@ -3549,24 +3420,24 @@ void print_cs_name (FILE *output, int h)
   textcolumn += n;
 }
 
-int compare_strn (int, int, int, int); /* in tex9.c */
+int comparestrn (int, int, int, int); /* in tex9.c */
 
 /* compare two csnames in qsort */
 
-int compare_cs (const void *cp1, const void *cp2)
+int comparecs (const void *cp1, const void *cp2)
 {
   int c1, c2, l1, l2, k1, k2, textof1, textof2;
   c1 = *(int *)cp1;
   c2 = *(int *)cp2;
   textof1 = hash[c1].v.RH;
   textof2 = hash[c2].v.RH;
-  l1 = length(textof1); 
-  l2 = length(textof2); 
+  l1 =(str_start[textof1 + 1] - str_start[textof1]); 
+  l2 =(str_start[textof2 + 1] - str_start[textof2]); 
   k1 = str_start[textof1]; 
   k2 = str_start[textof2]; 
 /*  showstring (k1, l1); */
 /*  showstring (k2, l2); */
-  return compare_strn (k1, l1, k2, l2);
+  return comparestrn (k1, l1, k2, l2);
 }
 
 char *csused=NULL;
@@ -3617,7 +3488,7 @@ void print_cs_names (FILE *output, int pass)
       if (hash[h].v.RH != 0) cnumtable[ccount++] = h;
     }
 
-    qsort ((void *)cnumtable, ccount, sizeof (int), &compare_cs);
+    qsort ((void *)cnumtable, ccount, sizeof (int), &comparecs);
 
     repeatflag = 0;
     for (k = 0; k < ccount; k++) {
@@ -3653,7 +3524,7 @@ void showstring (int k, int l)
 /* k1 and k2 are positions in string pool */
 /* l1 and l2 are lengths of strings */
 
-int compare_strn (int k1, int l1, int k2, int l2)
+int comparestrn (int k1, int l1, int k2, int l2)
 {
   int c1, c2;
 /*  while (l1-- > 0 && l2-- > 0) { */
@@ -3673,18 +3544,18 @@ int compare_strn (int k1, int l1, int k2, int l2)
 
 /* compare two font names and their at sizes in qsort */
 
-int compare_fnt (const void *fp1, const void *fp2)
+int comparefnt (const void *fp1, const void *fp2)
 {
   int f1, f2, l1, l2, k1, k2, s;
   f1 = *(short *)fp1;
   f2 = *(short *)fp2;
-  l1 = length(font_name[f1]);
-  l2 = length(font_name[f2]);
+  l1 =(str_start[font_name[f1]+ 1] - str_start[font_name[f1]]); 
+  l2 =(str_start[font_name[f2]+ 1] - str_start[font_name[f2]]); 
   k1 = str_start[font_name[f1]]; 
   k2 = str_start[font_name[f2]]; 
 /*  showstring (k1, l1); */
 /*  showstring (k2, l2); */
-  s = compare_strn (k1, l1, k2, l2);
+  s = comparestrn (k1, l1, k2, l2);
 /*  sprintf(log_line, "%d\n", s); */
   if (s != 0) return s;
   if (font_size[f1]> font_size[f2]) return 1;
@@ -3694,16 +3565,16 @@ int compare_fnt (const void *fp1, const void *fp2)
 
 /* compare two font names */
 
-int compare_fnt_name (int f1, int f2)
+int comparefntname (int f1, int f2)
 {
   int l1, l2, k1, k2, s;
-  l1 = length(font_name[f1]);
-  l2 = length(font_name[f2]); 
+  l1 =(str_start[font_name[f1]+ 1] - str_start[font_name[f1]]); 
+  l2 =(str_start[font_name[f2]+ 1] - str_start[font_name[f2]]); 
   k1 = str_start[font_name[f1]]; 
   k2 = str_start[font_name[f2]]; 
 /*  showstring (k1, l1); */
 /*  showstring (k2, l2); */
-  s = compare_strn (k1, l1, k2, l2);
+  s = comparestrn (k1, l1, k2, l2);
 /*  sprintf(log_line, "%d\n", s); */
   return s;
 }
@@ -3769,8 +3640,8 @@ void dvi_font_show(internal_font_number f, int suppressname)
 /*  suppressname = 0; */
   putc(' ', log_file);
   if (suppressname == 0) {
-    a = length(font_area[f]); 
-    l = length(font_name[f]); 
+    a = (str_start[font_area[f]+ 1]- str_start[font_area[f]]); 
+    l = (str_start[font_name[f]+ 1]- str_start[font_name[f]]); 
     k = str_start[font_area[f]];
     for_end = str_start[font_area[f]+ 1]- 1;
     if (k <= for_end) do {
@@ -3823,12 +3694,12 @@ void show_font_info (void)
   for (k = 1; k <= font_ptr; k++) 
     if (font_used[k])fnumtable[fcount++] = (short) k;
 
-  qsort ((void *)fnumtable, fcount, sizeof (short), &compare_fnt);
+  qsort ((void *)fnumtable, fcount, sizeof (short), &comparefnt);
 
   repeatflag = 0;
   for (m = 0; m < fcount; m++) {
     if (m > 0) {
-      if (compare_fnt_name(fnumtable[m-1], fnumtable[m]) == 0)
+      if (comparefntname(fnumtable[m-1], fnumtable[m]) == 0)
         repeatflag = 1;
       else repeatflag = 0;
     }

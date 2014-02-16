@@ -29,11 +29,6 @@ static void winerror (char * message)
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-void append_char (ASCII_code c)
-{
-  str_pool[pool_ptr] = c;
-  incr(pool_ptr);
-}
 void succumb (void)
 {
   if (interaction == error_stop_mode)
@@ -48,17 +43,15 @@ void succumb (void)
   history = 3;
   jump_out();
 }
-void dvi_out_ (ASCII_code op)
-{
-  dvi_buf[dvi_ptr] = op;
-  incr(dvi_ptr);
-  if (dvi_ptr == dvi_limit)
-    dvi_swap();
-}
 void flush_string (void)
 {
   decr(str_ptr);
   pool_ptr = str_start[str_ptr];
+}
+void append_char (ASCII_code c)
+{
+  str_pool[pool_ptr] = c;
+  incr(pool_ptr);
 }
 void print_err (const char * s)
 {
@@ -85,31 +78,25 @@ void tex_help (unsigned int n, ...)
 /* sec 0058 */
 void print_ln (void)
 {
-  switch (selector) {
+  switch (selector)
+  {
     case term_and_log:
-      {
-        show_char('\n');
-        term_offset = 0;
-        (void) putc ('\n', log_file);
-        file_offset = 0;
-      }
+      show_char('\n');
+      term_offset = 0;
+      (void) putc ('\n', log_file);
+      file_offset = 0;
       break;
     case log_only:
-      {
-        (void) putc ('\n',  log_file);
-        file_offset = 0;
-      }
+      (void) putc ('\n',  log_file);
+      file_offset = 0;
       break;
     case term_only:
-      {
-        show_char('\n');
-        term_offset = 0;
-      }
+      show_char('\n');
+      term_offset = 0;
       break;
     case no_print:
     case pseudo:
     case new_string:
-      ;
       break;
     default:
       (void) putc ('\n', write_file[selector]);
@@ -120,69 +107,74 @@ void print_ln (void)
 void print_char_ (ASCII_code s)
 {
   if (s == new_line_char)
-    if (selector < pseudo) {
+    if (selector < pseudo)
+    {
       print_ln();
       return;
     }
-  switch (selector) {
+
+  switch (selector)
+  {
     case term_and_log:
+      (void) show_char(Xchr(s));
+      incr(term_offset);
+      (void) putc(Xchr(s), log_file);
+      incr(file_offset);
+
+      if (term_offset == max_print_line)
       {
-        (void) show_char(Xchr(s));
-        incr(term_offset);
-        (void) putc(Xchr(s), log_file);
-        incr(file_offset);
-        if (term_offset == max_print_line) {
-          show_char('\n');
-          term_offset = 0;
-        }
-        if (file_offset == max_print_line) {
-          (void) putc ('\n', log_file);
-          file_offset = 0;
-        }
+        show_char('\n');
+        term_offset = 0;
       }
+      
+      if (file_offset == max_print_line)
+      {
+        (void) putc ('\n', log_file);
+        file_offset = 0;
+      }
+
       break;
     case log_only:
-      {
-        (void) putc(Xchr(s), log_file);
-        incr(file_offset);
-        if (file_offset == max_print_line) print_ln();
-      }
+      (void) putc(Xchr(s), log_file);
+      incr(file_offset);
+      if (file_offset == max_print_line)
+        print_ln();
       break;
     case term_only:
-      {
-        (void) show_char(Xchr(s));
-        incr(term_offset); 
-        if (term_offset == max_print_line) print_ln();
-      }
+      (void) show_char(Xchr(s));
+      incr(term_offset);
+      if (term_offset == max_print_line)
+        print_ln();
       break;
     case no_print:
-      ;
       break;
     case pseudo:
       if (tally < trick_count)
-        trick_buf[tally % error_line]= s;
+        trick_buf[tally % error_line] = s;
       break;
     case new_string:
-      {
 #ifdef ALLOCATESTRING
-        if (pool_ptr + 1 > current_pool_size) {
-          str_pool = realloc_str_pool (increment_pool_size);
-        }
-        if (pool_ptr < current_pool_size) {
-          str_pool[pool_ptr]= s;
-          incr(pool_ptr);
-        }
-#else
-        if (pool_ptr < pool_size) {
-          str_pool[pool_ptr]= s;
-          incr(pool_ptr);
-        }
-#endif
+      if (pool_ptr + 1 > current_pool_size)
+      {
+        str_pool = realloc_str_pool (increment_pool_size);
       }
-      break; 
-    default: 
+      
+      if (pool_ptr < current_pool_size)
+      {
+        str_pool[pool_ptr]= s;
+        incr(pool_ptr);
+      }
+#else
+      if (pool_ptr < pool_size)
+      {
+        str_pool[pool_ptr]= s;
+        incr(pool_ptr);
+      }
+#endif
+      break;
+    default:
       (void) putc(Xchr(s), write_file[selector]);
-      break; 
+      break;
   }
   incr(tally);
 }
@@ -192,68 +184,89 @@ void print_ (integer s)
 {
   pool_pointer j;
   integer nl;
-  if (s >= str_ptr) s = 259; /* ??? */
+  if (s >= str_ptr)
+    s = 259; /* ??? */
   else if (s < 256)
-    if (s < 0) s = 259; /* ??? */
+    if (s < 0)
+      s = 259; /* ??? */
     else {
-      if (selector > pseudo){
+      if (selector > pseudo)
+      {
         print_char(s);
         return;
       }
+
       if ((s == new_line_char))
-        if (selector < 20) {
+        if (selector < 20)
+        {
           print_ln();
           return;
         }
-      nl = new_line_char; /* save eol */
-      new_line_char = -1; 
+
+      nl = new_line_char;
+      new_line_char = -1;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/*    if (!show_in_hex && s < 256)  */      /* show control chars also ?? */
-      if (!show_in_hex && s < 256 && s >= 32) {      /* 94/Jan/26 */
-/*        following added 1996/Jan/20 */
-        if (show_in_dos && s > 127) {     /* translate ANSI to DOS 850 */
-          if (wintodos[s-128] > 0) print_char (wintodos[s-128]);
-          else {              /* print in hex after all */
+/* translate ansi to dos 850 */
+      if (!show_in_hex && s < 256 && s >= 32)
+      {
+        if (show_in_dos && s > 127)
+        {
+          if (wintodos[s-128] > 0)
+            print_char (wintodos[s - 128]);
+          else
+          {
             j = str_start[s]; 
-            while(j < str_start[s + 1]){
-              print_char(str_pool[j]); 
-              incr(j); 
-            } 
+            while (j < str_start[s + 1])
+            {
+              print_char(str_pool[j]);
+              incr(j);
+            }
           }
-        } else print_char(s);       /* don't translate to hex */
-      } else {                  /* not just a character */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+        }
+        else
+          print_char(s);       /* don't translate to hex */
+      }
+      else
+      {                       /* not just a character */
         j = str_start[s]; 
-        while(j < str_start[s + 1]){
-          print_char(str_pool[j]); 
-          incr(j); 
-        } 
+        while (j < str_start[s + 1])
+        {
+          print_char(str_pool[j]);
+          incr(j);
+        }
       }
       new_line_char = nl; /* restore eol */
       return; 
     }
 /*  we get here with s > 256 - i.e. not a single character */
   j = str_start[s]; 
-  while(j < str_start[s + 1]){
-    print_char(str_pool[j]); 
-    incr(j); 
+  while (j < str_start[s + 1])
+  {
+    print_char(str_pool[j]);
+    incr(j);
   }
-} 
+}
+/* string version print. */
 void print_string_ (unsigned char *s)
 {
-  while (*s > 0) print_char(*s++);
+  while (*s > 0)
+    print_char(*s++);
 }
 /* sec 0060 */
 // print string number s from string pool by calling print_
 void slow_print_ (integer s)
 {
   pool_pointer j;
-  if ((s >= str_ptr) || (s < 256)) print(s);
-  else {
+
+  if ((s >= str_ptr) || (s < 256))
+    print(s);
+  else
+  {
     j = str_start[s];
-    while (j < str_start[s + 1]) {
-//    if (str_pool[j]>= 128) print(str_pool[j]-128); // debugging only
-//    if (str_pool[j]== 0) print(36); // debugging only
+    while (j < str_start[s + 1])
+    {
+/*  if (str_pool[j]>= 128) print(str_pool[j] - 128); */ // debugging only
+/*  if (str_pool[j]== 0) print(36); */ // debugging only
       print(str_pool[j]);
       incr(j);
     }
@@ -261,28 +274,33 @@ void slow_print_ (integer s)
 }
 /* sec 0062 */
 // print newline followed by string number s (unless at start of line)
-void print_nl_ (char * s)
+void print_nl_ (const char * s)
 {
   if (((term_offset > 0) && (odd(selector))) ||
       ((file_offset > 0) && (selector >= log_only)))
     print_ln();
+
   print_string(s);
 }
 /* sec 0063 */
 // print string number s preceded by escape character
-void print_esc_ (char * s)
+void print_esc_ (const char * s)
 {
   integer c;
+
   c = escape_char;
+
   if (c >= 0)
-    if (c < 256) print(c);
-  //slow_print(s);
+    if (c < 256)
+      print(c);
+
   print_string(s);
-} 
+}
 /* sec 0064 */
 void print_the_digs_ (eight_bits k)
 {
-  while (k > 0) {
+  while (k > 0)
+  {
     decr(k);
     if (dig[k]< 10)
       print_char('0' + dig[k]);
@@ -296,94 +314,101 @@ void print_int_ (integer n)
   char k;
   integer m;
   k = 0;
-  if (n < 0) {
+  if (n < 0)
+  {
     print_char('-');
     if (n > -100000000L)
       n = - (integer) n;
-    else {
+    else
+    {
       m = -1 - n;
       n = m / 10;
-      m =(m % 10)+ 1;
+      m =(m % 10) + 1;
       k = 1;
+
       if (m < 10)
         dig[0]= (char) m;
-      else {
+      else
+      {
         dig[0]= 0;
         incr(n);
       }
     }
   }
   do {
-    dig[k]= (char) (n % 10);
+    dig[k] = (char) (n % 10);
     n = n / 10;
     incr(k);
-  } while(!(n == 0));
+  } while (!(n == 0));
   print_the_digs(k);
 }
 /* sec 0262 */
 void print_cs_ (integer p)
 {
-  if (p < 514)       /* if p < hash_base then ... p.262 */
-  if (p >= 257)        /* if p > single_base then ... p.262 */
-  if (p == 513)        /* if p = null_cs then ... p.262 */
-  {
-    print_esc("csname");
-    print_esc("endcsname");
-    print_char(' ');
-  } else {
-    //print_esc(p - 257);   /* p - single_base */
-    print_esc("");print(p - 257);
+  if (p < hash_base)
+    if (p >= single_base)
+      if (p == null_cs)
+      {
+        print_esc("csname");
+        print_esc("endcsname");
+        print_char(' ');
+      }
+      else
+      {
+        print_esc("");print(p - 257);
 /*  if cat_code(p - single_base) = letter then ... p.262 */
-    if (eqtb[(hash_size + 1883) + p - 257].hh.v.RH == 11)
-    print_char(' ');
-  } 
-  else if (p < 1)
-    print_esc("IMPOSSIBLE.");
-  else print(p - 1); 
+        if (eqtb[(hash_size + 1883) + p - 257].hh.v.RH == letter)
+          print_char(' ');
+      }
+    else if (p < 1)
+      print_esc("IMPOSSIBLE.");
+    else print(p - 1);
   else if (p >= (hash_size + 781)) /* undefined_control_sequence */
     print_esc("IMPOSSIBLE.");
-  else if ((hash[p].v.RH >= str_ptr)) 
+  else if ((hash[p].v.RH >= str_ptr))
     print_esc("NONEXISTENT.");
-  else {
-    //print_esc(hash[p].v.RH); 
+  else
+  {
     print_esc(""); print(hash[p].v.RH);
-    print_char(32);     /*    */
+    print_char(' ');
   }
 }
 /* sec 0263 */
 void sprint_cs_(halfword p)
 { 
-  if (p < 514)       /* if p < hash_base then ... p.263 */
-  if (p < 257)       /* if p < single_base then ... p.263 */
-    print(p - 1);     /* print (p - active_base); */
-  else if (p < 513)      /* else if p < null_cs then ... */
-    //print_esc(p - 257); /* print (p - single_base); */
-  {print_esc(""); print(p-257);}
-  else {
-    print_esc("csname");
-    print_esc("endcsname");
-  } 
-  else //print_esc(hash[p].v.RH); 
+  if (p < hash_base)       /* if p < hash_base then ... p.263 */
+    if (p < single_base)       /* if p < single_base then ... p.263 */
+      print(p - active_base);     /* print (p - active_base); */
+    else if (p < null_cs)      /* else if p < null_cs then ... */
+    {
+      print_esc(""); print(p - single_base);
+    }
+    else
+    {
+      print_esc("csname");
+      print_esc("endcsname");
+    }
+  else
   {
     print_esc(""); print(hash[p].v.RH);
   }
-} 
+}
 /* sec 0518 */
 /* ! I can't find file `  c:/foo/  accents  .tex  '. */
 void print_file_name_(integer n, integer a, integer e)
-{ 
+{
 /*  sprintf(log_line, "\na %d n %d e %d\n", a, n, e); */
 /*  show_line(log_line, 0); */
-//  print_char(33);  // debugging only
-  slow_print(a); 
-//  print_char(33);  // debugging only
-  slow_print(n); 
-//  print_char(33);  // debugging only
-  slow_print(e); 
-//  print_char(33);  // debugging only
+//  print_char('!');  // debugging only
+  slow_print(a);
+//  print_char('!');  // debugging only
+  slow_print(n);
+//  print_char('!');  // debugging only
+  slow_print(e);
+//  print_char('!');  // debugging only
 }
 /* sec 0699 */
-void print_size_(integer s) 
+void print_size_ (integer s)
 { 
   if (s == 0)
     print_esc("textfont");
@@ -395,16 +420,13 @@ void print_size_(integer s)
 /* sec 1355 */
 void print_write_whatsit_(str_number s, halfword p)
 {
-  //print_esc(s); 
   print_esc(""); print(s);
   if (mem[p + 1].hh.v.LH < 16)
     print_int(mem[p + 1].hh.v.LH); 
   else if (mem[p + 1].hh.v.LH == 16)
     print_char('*');
   else print_char('-');
-} 
-#ifdef DEBUG
-#endif /* DEBUG */
+}
 /* sec 0081 */
 // called from itex.c and tex0.c only  NASTY NASTY!
 // now uses uses non-local goto (longjmp) 1999/Nov/7
@@ -422,9 +444,11 @@ void jump_out (void)
       show_line("EXITING at JUMPOUT\n", 0);
 
     if ((history != 0) && (history != 1))
-      uexit(1);
+      code = 1;
     else
-      uexit(0);
+      code = 0;
+
+    uexit(code);
   }
 }
 /* sec 0082 */
@@ -435,26 +459,28 @@ void error (void)
   ASCII_code c;
   integer s1, s2, s3, s4;
 
-  if (history < 2)
-    history = 2;
+  if (history < error_message_issued)
+    history = error_message_issued;
 
   print_char('.');
   show_context();
 
   if (interaction == error_stop_mode)
-    while (true) {
-lab22:          /* loop */
+    while (true)
+    {
+lab22:
       clear_for_error_prompt();
-      {
-        ;
+      { /* prompt_input */
         print_string("? ");
-        term_input(264, help_ptr);
-      } 
-      if (last == first) return;    // no input
-      c = buffer[first];        // analyze first letter typed
-      if (c >= 97)           // uppercase letter first
-        c = (unsigned char) (c - 32); 
-      switch (c) {
+        term_input("? ", help_ptr);
+      }
+      if (last == first)
+        return; // no input
+      c = buffer[first];   // analyze first letter typed
+      if (c >= 'a')         // uppercase letter first
+        c = (unsigned char) (c + 'A' - 'a'); 
+      switch (c)
+      {
         case '0':
         case '1':
         case '2':
@@ -465,18 +491,22 @@ lab22:          /* loop */
         case '7':
         case '8':
         case '9':
-          if (deletions_allowed) {
-            s1 = cur_tok; 
-            s2 = cur_cmd; 
-            s3 = cur_chr; 
-            s4 = align_state; 
-            align_state = 1000000L; 
-            OK_to_interrupt = false; 
-            if ((last > first + 1) && (buffer[first + 1]>= 48) && (buffer[first + 1]<= 57))
-              c = (unsigned char) (c * 10 + buffer[first + 1]- 48 * 11); 
+          if (deletions_allowed)
+          {
+            s1 = cur_tok;
+            s2 = cur_cmd;
+            s3 = cur_chr;
+            s4 = align_state;
+            align_state = 1000000L;
+            OK_to_interrupt = false;
+
+            if ((last > first + 1) && (buffer[first + 1] >= '0') && (buffer[first + 1] <= '9'))
+              c = (unsigned char) (c * 10 + buffer[first + 1] - '0' * 11);
             else
               c = (unsigned char) (c - 48);
-            while (c > 0) {
+            
+            while (c > 0)
+            {
               get_token();
               decr(c);
             }
@@ -489,22 +519,21 @@ lab22:          /* loop */
                 "You can now delete more, or insert, or whatever.");
             show_context();
             goto lab22;     /* loop again */
-          } 
-          break; 
-          ;
+          }
+          break;
 #ifdef DEBUG
         case 'D':
           {
             debug_help();
             goto lab22;       /* loop again */
           }
-          break; 
+          break;
 #endif /* DEBUG */
         case 'E':
-          if (base_ptr > 0) {
+          if (base_ptr > 0)
+          {
             edit_name_start = str_start[input_stack[base_ptr].name_field];
-            edit_name_length = str_start[input_stack[base_ptr].name_field + 1] - 
-              str_start[input_stack[base_ptr].name_field];
+            edit_name_length = length(input_stack[base_ptr].name_field);
             edit_line = line;
             jump_out();
           }
@@ -515,16 +544,19 @@ lab22:          /* loop */
             {
               give_err_help();
               use_err_help = false;
-            } else {
+            }
+            else
+            {
               if (help_ptr == 0)
                 help2("Sorry, I don't know how to help in this situation.",
                     "Maybe you should try asking a human?");
               do {
-                decr(help_ptr); 
+                decr(help_ptr);
                 print_string(help_line[help_ptr]);
                 print_ln();
               } while (!(help_ptr == 0));
             }
+
             help4("Sorry, I already gave what help I could...",
                 "Maybe you should try asking a human?",
                 "An error might have occurred before I noticed any problems.",
@@ -535,15 +567,17 @@ lab22:          /* loop */
         case 'I':
           {
             begin_file_reading();
+
             if (last > first + 1)
             {
               cur_input.loc_field = first + 1;
               buffer[first]= 32;
-            } else {
-              {
-                ;
+            }
+            else
+            {
+              { /* prompt_input */
                 print_string("insert>");
-                term_input(276, 0);
+                term_input("insert>", 0);
               }
               cur_input.loc_field = first;
             }
@@ -555,97 +589,111 @@ lab22:          /* loop */
         case 'Q':
         case 'R':
         case 'S':
-        {
-          error_count = 0; 
-          interaction = 0 + c - 81; /* Q = 0, R = 1, S = 2, T = 3 */
-          print_string("OK, entering ");
-          switch(c){
-            case 81 :       /* Q */
+          {
+            error_count = 0; 
+            interaction = 0 + c - 81; /* Q = 0, R = 1, S = 2, T = 3 */
+            print_string("OK, entering ");
+            switch (c)
             {
-              print_esc("batchmode"); /*  */
-              decr(selector); 
-            } 
-            break; 
-            case 82 :       /* R */
-              print_esc("nonstopmode"); /*  */
-              break; 
-            case 83 :       /* S */
-              print_esc("scrollmode"); /*   */
-              break; 
-          } 
-          print_string("...");
-          print_ln(); 
+              case 'Q':
+                print_esc("batchmode");
+                decr(selector);
+                break;
+              case 'R':
+                print_esc("nonstopmode");
+                break;
+              case 'S':
+                print_esc("scrollmode");
+                break;
+            }
+            print_string("...");
+            print_ln();
 #ifndef _WINDOWS
-          fflush(stdout); 
+            fflush(stdout);
 #endif
-          return; 
-        } 
-        break; 
+            return;
+          }
+          break;
         case 'X':
-        {
-          interaction = scroll_mode; 
-          jump_out();
-        } 
-        break; 
-        default: 
-          ; 
-          break; 
+          {
+            interaction = 2;
+            jump_out();
+          }
+          break;
+        default:
+          break;
       }           /* end of switch analysing response character */
       {
         print_string("Type <return> to proceed, S to scroll future error messages,");
-        print_nl("R to run without stopping, Q to run quietly,");  /*  */
-        print_nl("I to insert something, ");  /*  */
-        if (base_ptr > 0) print_string("E to edit your file,");
-        if (deletions_allowed) print_nl("1 or ... or 9 to ignore the next 1 to 9 tokens of input,"); /*  */
-        print_nl("H for help, X to quit.");  /*  */
-      } 
-    }   /* end of while(true) loop */
+        print_nl("R to run without stopping, Q to run quietly,");
+        print_nl("I to insert something, ");
 
-  incr(error_count); 
-  if (error_count == 100) {
+        if (base_ptr > 0)
+          print_string("E to edit your file,");
+        if (deletions_allowed)
+          print_nl("1 or ... or 9 to ignore the next 1 to 9 tokens of input,");
+
+        print_nl("H for help, X to quit.");
+      }
+    } /* end of while(true) loop */
+
+  incr(error_count);
+  if (error_count == 100)
+  {
     print_nl("(That makes 100 errors; please try again.)");
-    history = 3; 
+    history = 3;
     jump_out();
-//    return;     // can drop through now 99/Oct/20   
-  } 
-  if (interaction > 0) decr(selector); 
-  if (use_err_help) {
-    print_ln(); 
-    give_err_help(); 
-  } 
-  else while(help_ptr > 0) {
-    decr(help_ptr); 
-    print_nl(help_line[help_ptr]); 
-  } 
-  print_ln(); 
-  if (interaction > 0)
-    incr(selector); 
-  print_ln(); 
-} 
+  }
 
+  if (interaction > batch_mode)
+    decr(selector);
+
+  if (use_err_help)
+  {
+    print_ln();
+    give_err_help();
+  }
+  else while(help_ptr > 0)
+  {
+    decr(help_ptr);
+    print_nl(help_line[help_ptr]);
+  }
+
+  print_ln();
+
+  if (interaction > batch_mode)
+    incr(selector);
+  
+  print_ln();
+}
+/* sec 0093 */
 void fatal_error_(char * s)
 {
   normalize_selector();
   print_err("Emergency stop");
-  help1(s); 
+  help1(s);
   succumb();
 }
 /* sec 0094 */
 void overflow_(char * s, integer n)
 {
   normalize_selector();
-  print_err("TeX capacity exceeded, sorry [");
-  print_string(s); 
+  print_err("TeX capacity exceeded, sorry[");
+  print_string(s);
   print_char('=');
-  print_int(n); 
+  print_int(n);
   print_char(']');
   help2("If you really absolutely need more capacity,",
-      "you can ask a wizard to enlarge me."); 
-  if (! knuth_flag) {   /*  Additional comments 98/Jan/5 */
-    if (!strcmp(s, "pattern memory") && n == trie_size) {
+      "you can ask a wizard to enlarge me.");
+
+  if (!knuth_flag)
+  {
+    if (!strcmp(s, "pattern memory") && n == trie_size)
+    {
       sprintf(log_line, "\n  (Maybe use -h=... on command line in ini-TeX)\n");
       show_line(log_line, 0);
-    } else if (!strcmp(s, "exception dictionary") && n == hyphen_prime) {
+    } else if (!strcmp(s, "exception dictionary") && n == hyphen_prime)
+    {
       sprintf(log_line, "\n  (Maybe use -e=... on command line in ini-TeX)\n");
       show_line(log_line, 0);
     }
@@ -655,13 +703,17 @@ void overflow_(char * s, integer n)
 /* sec 0095 */
 void confusion_(char * s)
 {
-  normalize_selector(); 
-  if (history < 2) {
-    print_err("This can't happen(");
-    print_string(s); 
+  normalize_selector();
+
+  if (history < error_message_issued)
+  {
+    print_err("This can't happen (");
+    print_string(s);
     print_char(')');
     help1("I'm broken. Please show this to someone who can fix can fix");
-  } else {
+  }
+  else
+  {
     print_err("I can't go on meeting you like this");
     help2("One of your faux pas seems to have wounded me deeply...",
         "in fact, I'm barely conscious. Please fix it and try again.");
@@ -669,35 +721,37 @@ void confusion_(char * s)
   succumb();
 }
 /* sec 0037 */
-bool init_terminal (void) 
-{/* 10 */
-  register bool Result; 
+bool init_terminal (void)
+{
+  register bool Result;
   int flag;
-  t_open_in(); 
+  t_open_in();
 
-  if (last > first) {
-    cur_input.loc_field = first; 
+  if (last > first)
+  {
+    cur_input.loc_field = first;
     while((cur_input.loc_field < last) && (buffer[cur_input.loc_field]== ' '))
       incr(cur_input.loc_field);    // step over initial white space
-    if (cur_input.loc_field < last){
-      Result = true; 
+    if (cur_input.loc_field < last)
+    {
+      Result = true;
       return Result;    // there is an input file name
-    } 
-  } 
+    }
+  }
 
-//  failed to find input file name
-  while(true){
-    ; 
+// failed to find input file name
+  while (true) {
 #ifdef _WINDOWS
     flag = ConsoleInput("**", "Please type a file name or a control sequence\r\n(or ^z to exit)", (char *) &buffer[first]);
     last = first + strlen((char *) &buffer[first]); /* -1 ? */
 //    may need to be more elaborate see input_line in texmf.c
 #else
     (void) fputs("**", stdout);
-    fflush(stdout); 
+    fflush(stdout);
     flag = input_ln(stdin, true);
 #endif
-    if (! flag){
+    if (!flag)
+    {
       show_char('\n');
       show_line("! End of file on the terminal... why?\n", 1);
       Result = false;
@@ -707,16 +761,18 @@ bool init_terminal (void)
     cur_input.loc_field = first;
     while ((cur_input.loc_field < last) && (buffer[cur_input.loc_field]== ' '))
       incr(cur_input.loc_field);    // step over intial white space
-    if (cur_input.loc_field < last) {
+    if (cur_input.loc_field < last)
+    {
       Result = true;
       return Result;    // there is an input file name
-    } 
+    }
+
     sprintf(log_line, "%s\n", "Please type the name of your input file.");
     show_line(log_line, 1);
   }
 }
 /* sec 0043 */
-// Make string from str_start[str_ptr]to pool_ptr
+// Make string from str_start[str_ptr] to pool_ptr
 str_number make_string (void)
 {
   register str_number Result; 
@@ -724,18 +780,20 @@ str_number make_string (void)
 #ifdef ALLOCATESTRING
   if (str_ptr == current_max_strings)
     str_start = realloc_str_start(increment_max_strings);
-  if (str_ptr == current_max_strings) {
-//  printf("**********MAKESTRING**********");   // debugging only
+
+  if (str_ptr == current_max_strings)
+  {
     overflow("number of strings", current_max_strings - init_str_ptr); /* 97/Mar/9 */
     return 0;     // abort_flag set
   }
 #else
-  if (str_ptr == max_strings) {
-    overflow("number of strings", max_strings - init_str_ptr); /* number of strings */
+  if (str_ptr == max_strings)
+  {
+    overflow("number of strings", max_strings - init_str_ptr);
     return 0;     // abort_flag set
   }
 #endif
-  incr(str_ptr); 
+  incr(str_ptr);
   str_start[str_ptr] = pool_ptr;
   Result = str_ptr - 1;
   return Result;
@@ -747,19 +805,21 @@ bool str_eq_buf_ (str_number s, integer k)
   pool_pointer j;
   bool result;
   j = str_start[s];
-  while (j < str_start[s + 1]) {
+  while (j < str_start[s + 1])
+  {
     if (str_pool[j]!= buffer[k])
     {
       result = false;
       goto lab45;
-    } 
+    }
     incr(j);
     incr(k);
-  } 
+  }
   result = true;
-lab45: Result = result;
-  return Result; 
-} 
+lab45:
+  Result = result;
+  return Result;
+}
 /* sec 0045 */
 bool str_eq_str_ (str_number s, str_number t)
 {
@@ -771,14 +831,16 @@ bool str_eq_str_ (str_number s, str_number t)
     goto lab45;
   j = str_start[s];
   k = str_start[t];
-  while (j < str_start[s + 1]) {
+  while (j < str_start[s + 1])
+  {
     if (str_pool[j] != str_pool[k])
       goto lab45;
     incr(j);
     incr(k);
   }
   result = true;
-  lab45: Result = result;
+lab45:
+  Result = result;
   return Result;
 }
 /* sec 0066 */
@@ -812,23 +874,25 @@ void print_roman_int_(integer n)
     while (n >= v) {
       print_char(str_pool[j]);
       n = n - v;
-    } 
+    }
     if (n <= 0)
       return;
     k = j + 2;
-    u = v / (str_pool[k - 1]- 48);
-    if (str_pool[k - 1]== 50)
+    u = v / (str_pool[k - 1] - '0');
+    if (str_pool[k - 1] == 50)
     {
       k = k + 2;
-      u = u / (str_pool[k - 1]- 48);
+      u = u / (str_pool[k - 1] - '0');
     }
     if (n + u >= v)
     {
       print_char(str_pool[k]);
       n = n + u;
-    } else {
+    }
+    else
+    {
       j = j + 2;
-      v = v / (str_pool[j - 1]- 48);
+      v = v / (str_pool[j - 1]- '0');
     }
   }
 }
@@ -837,7 +901,8 @@ void print_current_string (void)
 {
   pool_pointer j;
   j = str_start[str_ptr];
-  while (j < pool_ptr) {
+  while (j < pool_ptr)
+  {
     print_char(str_pool[j]);
     incr(j);
   }
@@ -851,13 +916,11 @@ int stringlength (int str_ptr)
   return (nnext - nstart) + 2;
 }
 
-char * add_string (char *s, int str_ptr)
+char * add_string (char *s, char * str_string)
 {
-  int nstart, nnext, n;
-  nstart = str_start[str_ptr];
-  nnext = str_start[str_ptr + 1];
-  n = nnext - nstart;
-  memcpy(s, &str_pool[nstart], n);
+  int n;
+  n = strlen(str_string);
+  memcpy(s, &str_string, n);
   s += n;
   strcpy(s, "\r\n");
   s += 2;
@@ -872,23 +935,25 @@ int addextrahelp=1;
 char * make_up_help_string (int nhelplines)
 {
   char * helpstring, *s;
-  int k, nlen=0;
+  int k, nlen = 0;
   
 //  get length of help for this specific message
-  for (k = nhelplines-1; k >= 0; k--) {
+  for (k = nhelplines - 1; k >= 0; k--) {
     //nlen += stringlength(help_line[k]);
     nlen += strlen(help_line[k]);
   }
-  nlen += 2;    // for blank line separator
+  nlen += 2; // for blank line separator: "\r\n"
   if (addextrahelp) {
     nlen += stringlength(265);
     nlen += stringlength(266);
     nlen += stringlength(267);
-    if (base_ptr > 0)nlen += stringlength(268);
-    if (deletions_allowed)nlen += stringlength(269);
+    if (base_ptr > 0)
+      nlen += stringlength(268);
+    if (deletions_allowed)
+      nlen += stringlength(269);
     nlen += stringlength(270);
   }
-  helpstring = (char *) malloc(nlen+1);
+  helpstring = (char *) malloc(nlen + 1); // +1 = '\0'
   s = helpstring;
   for (k = nhelplines-1; k >= 0; k--) {
     s = add_string(s, help_line[k]);
@@ -896,12 +961,14 @@ char * make_up_help_string (int nhelplines)
   if (addextrahelp) {
     strcpy(s, "\r\n");
     s += 2;
-    s = add_string(s, 265);    /* Type <return> to proceed, S to scroll future error messages, */
-    s = add_string(s, 266);    /* R to run without stopping, Q to run quietly, */
-    s = add_string(s, 267);    /* I to insert something,  */
-    if (base_ptr > 0)s = add_string(s, 268);  /*  E to edit your file,  */
-    if (deletions_allowed)s = add_string(s,  269);  /* 1 or ... or 9 to ignore the next 1 to 9 tokens of input, */
-    s = add_string(s, 270);    /* H for help, X to quit. */
+    s = add_string(s, "Type <return> to proceed, S to scroll future error messages,");
+    s = add_string(s, "R to run without stopping, Q to run quietly,");
+    s = add_string(s, "I to insert something, ");
+    if (base_ptr > 0)
+      s = add_string(s, "E to edit your file, ");
+    if (deletions_allowed)
+      s = add_string(s, "1 or ... or 9 to ignore the next 1 to 9 tokens of input,");
+    s = add_string(s, "H for help, X to quit.");
   }
   return helpstring;
 }
@@ -925,9 +992,9 @@ char * make_up_query_string (int promptstr)
 // abort_flag set if input_line / ConsoleInput returns non-zero
 // should set interrupt instead ???
 // called from tex0.c, tex2.c, tex3.c
-
+/* sec 0071 */
 // void term_input(void)
-void term_input (int promptstr, int nhelplines)
+void term_input (char * term_str, int term_help_lines)
 { 
   integer k;
   int flag;
@@ -941,9 +1008,10 @@ void term_input (int promptstr, int nhelplines)
   show_line("\n", 0);    // force it to show what may be buffered up ???
   helpstring = NULL;  
 #ifdef _WINDOWS
-  if (promptstr != 0) querystring = make_up_query_string (promptstr);
-  if (nhelplines != 0) helpstring = make_up_help_string (nhelplines);
-  if (helpstring == NULL && querystring != NULL) {
+  if (term_str != NULL) querystring = term_str;
+  if (term_help_lines != NULL) helpstring = make_up_help_string(term_help_lines);
+  if (helpstring == NULL && querystring != NULL)
+  {
     if (strcmp(querystring, ": ") == 0)
       helpstring = xstrdup("Please type another file name (or ^z to exit):");
     else if (strcmp(querystring, "=>") == 0)    // from firm_up_the_line
@@ -956,10 +1024,6 @@ void term_input (int promptstr, int nhelplines)
       helpstring = xstrdup("Please type a token");
     else if (strcmp(querystring, "*") == 0)   // get_next
       helpstring = xstrdup("Please type a control sequence\r\n(or ^z to exit)");
-//    else if (strcmp(querystring, "**") == 0)  // init_terminal
-//      helpstring = xstrdup("Please type a control sequence or a file name\r\n(or ^z to exit)");     
-//    else if (strcmp(querystring, "? ") == 0)  // from error()
-//      helpstring = xstrdup("Please type a character to select an action");
   }
   flag = ConsoleInput(querystring, helpstring, (char *) &buffer[first]);  // ???
 //  flag == 0 means trouble --- EOF on terminal
@@ -974,32 +1038,27 @@ void term_input (int promptstr, int nhelplines)
 //      first, last, flag, (char *) &buffer[first]);
 //  winerror(log_line);
 #else
-  fflush(stdout); 
+  fflush(stdout);
   flag = input_ln(stdin, true);
 #endif
-  if (! flag){
-    fatal_error("End of file on the terminal!"); /*  */
+  if (!flag)
+  {
+    fatal_error("End of file on the terminal!");
     return;         // abort_flag set
   }
-  term_offset = 0; 
+  term_offset = 0;
 #ifdef _WINDOWS
 // echo what was typed into Console buffer also
   if (last != first)
-    {register integer for_end; k = first; for_end = last - 1;
-  if (k <=  for_end) do
-    print(buffer[k]); 
-  while(k++ < for_end);
-    } 
-  print_ln(); 
+    for (k = first; k <= last - 1; k++)
+      print(buffer[k]);
+  print_ln();
 #else
   decr(selector);     // shut off echo
   if (last != first)
-    {register integer for_end; k = first; for_end = last - 1;
-  if (k <=  for_end) do
-    print(buffer[k]); 
-  while(k++ < for_end);
-    } 
-  print_ln(); 
+    for (k = first; k <= last - 1; k++)
+      print(buffer[k]);
+  print_ln();
   incr(selector);     // reset selector again
 #endif
 }
@@ -1015,20 +1074,23 @@ void int_error_ (integer n)
 void normalize_selector (void)
 {
   if (log_opened)
-    selector = 19;
+    selector = term_and_log;
   else
-    selector = 17;
+    selector = term_only;
+
   if (job_name == 0)
     open_log_file();
+
   if (interaction == batch_mode)
     decr(selector);
 }
 /* sec 0098 */
 void pause_for_instructions (void)
 {
-   if (OK_to_interrupt) {
+   if (OK_to_interrupt)
+   {
     interaction = error_stop_mode;
-    if ((selector == 18)||(selector == 16))
+    if ((selector == log_only) || (selector == no_print))
       incr(selector);
     print_err("Interruption");
     help3("You rang?",
@@ -1045,8 +1107,9 @@ integer half_(integer x)
 {
   register integer Result;
   if (odd(x))
-  Result =(x + 1)/ 2;
-  else Result = x / 2;
+    Result =(x + 1) / 2;
+  else
+    Result = x / 2;
   return Result;
 }
 /* sec 0102 */
@@ -1057,9 +1120,9 @@ scaled round_decimals_(small_number k)
   a = 0;
   while (k > 0) {
     decr(k);
-    a = (a + dig[k]* 131072L) / 10; /* 2^17 */
+    a = (a + dig[k] * 131072L) / 10; /* 2^17 */
   }
-  Result =(a + 1)/ 2;
+  Result =(a + 1) / 2;
   return Result;
 }
 /* sec 0103 */
@@ -1072,6 +1135,7 @@ void print_scaled_(scaled s)
     print_char('-');
     s = - (integer) s;
   }
+
   print_int(s / 65536L);
   print_char('.');
   s = 10 * (s % 65536L) + 5;
@@ -1093,6 +1157,7 @@ scaled mult_and_add_(integer n, scaled x, scaled y, scaled maxanswer)
     x = - (integer) x;
     n = - (integer) n;
   }
+
   if (n == 0)
     Result = y;
   else if (((x <= (maxanswer - y) / n) && (- (integer) x <= (maxanswer + y) / n)))
@@ -1101,6 +1166,7 @@ scaled mult_and_add_(integer n, scaled x, scaled y, scaled maxanswer)
     arith_error = true;
     Result = 0;
   }
+
   return Result;
 }
 /* sec 0106 */
@@ -1114,24 +1180,31 @@ scaled x_over_n_(scaled x, integer n)
     arith_error = true;
     Result = 0;
     tex_remainder = x;
-  } else {
+  }
+  else
+  {
     if (n < 0)
     {
       x = - (integer) x;
       n = - (integer) n;
       negative = true;
     }
+
     if (x >= 0)
     {
       Result = x / n;
       tex_remainder = x % n;
-    } else {
+    }
+    else
+    {
       Result = - (integer) ((- (integer) x)/ n);
       tex_remainder = - (integer) ((- (integer) x)% n);
     }
   }
+
   if (negative)
     tex_remainder = - (integer) tex_remainder;
+
   return Result;
 }
 /* sec 0107 */
@@ -1155,15 +1228,19 @@ scaled xn_over_d_(scaled x, integer n, integer d)
   if (u / d >= 32768L)
     arith_error = true; 
 /*  else u = 32768L *(u / d)+(v / d);  */ 
-  else u =((u / d) << 15) + (v / d); 
+  else u =((u / d) << 15) + (v / d);
+
   if (positive)
   {
     Result = u;
     tex_remainder = v % d;
-  } else {
+  }
+  else
+  {
     Result = - (integer) u;
     tex_remainder = - (integer)(v % d);
   }
+
   return Result;
 }
 /* sec 0108 */
@@ -1172,12 +1249,12 @@ halfword badness_(scaled t, scaled s)
   register halfword Result;
   integer r;
   if (t == 0)
-    Result = 0; 
+    Result = 0;
   else if (s <= 0)
-    Result = 10000; 
+    Result = 10000;
   else {
     if (t <= 7230584L)
-      r = (t * 297) / s; 
+      r = (t * 297) / s;
     else if (s >= 1663497L)
       r = t / (s / 297);
     else
@@ -1186,7 +1263,8 @@ halfword badness_(scaled t, scaled s)
       Result = 10000; 
 /*    safe to assume that r is positive ? */
 /*    else Result =(r * r * r + 131072L)/ 262144L;  */
-    else Result = (r * r * r + 131072L) >> 18;  /* 2^17 */
+    else
+      Result = (r * r * r + 131072L) >> 18;  /* 2^17 */
   }
   return Result;
 }
@@ -1242,7 +1320,7 @@ void zprintfword(fmemoryword w)
   print_int(w.qqqq.b3);
 }
 #endif
-
+/* sec 0292 */
 void show_token_list_(integer p, integer q, integer l)
 {
   integer m, c;
@@ -1257,73 +1335,71 @@ void show_token_list_(integer p, integer q, integer l)
     {
       first_count = tally;
       trick_count = tally + 1 + error_line - half_error_line;
+
       if (trick_count < error_line)
         trick_count = error_line;
     }
+
     if ((p < hi_mem_min) || (p > mem_end))
     {
       print_esc("CLOBBERED.");
       return;
     }
-    if (mem[p].hh.v.LH >= 4095)
-      print_cs(mem[p].hh.v.LH - 4095);
+
+    if (info(p) >= 4095)
+      print_cs(info(p) - 4095);
     else {
-      m = mem[p].hh.v.LH / 256;
-      c = mem[p].hh.v.LH % 256;
-      if (mem[p].hh.v.LH < 0)
+      m = info(p) / 256;
+      c = info(p) % 256;
+      if (info(p) < 0)
         print_esc("BAD.");
       else
         switch (m)
         {
-          case 1:
-          case 2:
-          case 3:
-          case 4:
-          case 7:
-          case 8:
-          case 10:
-          case 11:
-          case 12:
+          case left_brace:
+          case right_brace:
+          case math_shift:
+          case tab_mark:
+          case sup_mark:
+          case sub_mark:
+          case spacer:
+          case letter:
+          case other_char:
             print(c);
             break;
-          case 6:
+          case mac_param:
+            print(c);
+            print(c);
+            break;
+          case out_param:
+            print(matchchr);
+            if (c <= 9)
+              print_char(c + '0');
+            else
             {
-              print(c);
-              print(c);
+              print_char('!');
+              return;
             }
             break;
-          case 5:
-            {
-              print(matchchr);
-              if (c <= 9)
-                print_char(c + '0');
-              else {
-                print_char('!');
-                return;
-              }
-            }
+          case match:
+            matchchr = (ASCII_code) c;
+            print(c);
+            incr(n);
+            print_char(n);
+            if (n > '9')
+              return;
             break;
-          case 13:
-            {
-              matchchr = (ASCII_code) c;
-              print(c);
-              incr(n);
-              print_char(n);
-              if (n > 57)
-                return;
-            }
-            break;
-          case 14:
+          case end_match:
             print_string("->");
             break;
           default:
-            print_esc("BAD. ");
+            print_esc("BAD.");
             break;
         }
     }
-    p = mem[p].hh.v.RH; 
-  } 
-/* if p<>null then print_esc("ETC."); l.6244 */
+    p = link(p);
+  }
+
   if (p != 0)
     print_esc("ETC.");
 }
@@ -1336,35 +1412,26 @@ void runaway (void)
     print_nl("Runaway ");
     switch (scanner_status)
     {
-      case 2:
-        {
-          print_string("definition");
-          p = def_ref;
-        }
+      case defining:
+        print_string("definition");
+        p = def_ref;
         break;
-      case 3:
-        {
-          print_string("argument");
-          p = temp_head;
-        }
+      case matching:
+        print_string("argument");
+        p = temp_head;
         break;
-      case 4:
-        {
-          print_string("preamble");
-          p = hold_head;
-        }
+      case aligning:
+        print_string("preamble");
+        p = hold_head;
         break;
-      case 5:
-        {
-          print_string("text");
-          p = def_ref;
-        }
+      case absorbing:
+        print_string("text");
+        p = def_ref;
         break;
     }
     print_char('?');
     print_ln();
-/*  p may be used without being initialized -- OK */
-    show_token_list(mem[p].hh.v.RH, 0, error_line - 10); 
+    show_token_list(link(p), 0, error_line - 10); 
   }
 }
 /* sec 0120 */
@@ -1386,19 +1453,22 @@ halfword get_avail (void)
   {
     incr(mem_end);
     p = mem_end;
-  } else {
+  }
+  else
+  {
     decr(hi_mem_min);
     p = hi_mem_min;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    if (hi_mem_min <= lo_mem_max) {   /* have we run out in middle ? */
+    if (hi_mem_min <= lo_mem_max) /* have we run out in middle ? */
+    {
       incr(hi_mem_min);       /* undo the change */
 /*    realloc_main (0, mem_top/2); */ /* extend main memory at hi end */
       mem = realloc_main (0, mem_top / 2);  /* zzzaa = zmem = mem */
-      if (mem == NULL) {
+      if (mem == NULL)
         return 0;
-      }
 /* presumably now mem_end < mem_max - but need test in case allocation fails */
-      if (mem_end >= mem_max) {
+      if (mem_end >= mem_max)
+      {
         runaway();
         overflow("main memory size", mem_max + 1 - mem_min); /* main memory size */
         return 0;           // abort_flag set
@@ -1408,7 +1478,7 @@ halfword get_avail (void)
     }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   }
-  mem[p].hh.v.RH = 0;       /* link(p) = null !!! */
+  link(p) = 0;       /* link(p) = null !!! */
   ;
 #ifdef STAT
   incr(dyn_used); 
@@ -1443,11 +1513,11 @@ halfword get_node_(integer s)
   halfword q;
   integer r;
   integer t;
-lab20: p = rover;
+lab20:
+  p = rover;
   do {
       q = p + mem[p].hh.v.LH;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/*    while((mem[q].hh.v.RH == 262143L)) { */ /* NO! */
       while ((mem[q].hh.v.RH == empty_flag)) {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
         if (q == 0) {
@@ -1555,226 +1625,179 @@ lab20: p = rover;
   Result = r; 
   return Result; 
 } 
-
+/* sec  */
 void free_node_(halfword p, halfword s)
 { 
   halfword q;
   mem[p].hh.v.LH = s;
-  mem[p].hh.v.RH = empty_flag;
-  q = mem[rover + 1].hh.v.LH;
-  mem[p + 1].hh.v.LH = q;
-  mem[p + 1].hh.v.RH = rover;
-  mem[rover + 1].hh.v.LH = p;
-  mem[q + 1].hh.v.RH = p;
-  ;
+  link(p) = empty_flag;
+  q = llink(rover);
+  llink(p) = q;
+  rlink(p) = rover;
+  llink(rover) = p;
+  rlink(q) = p;
 #ifdef STAT
   var_used = var_used - s; 
 #endif /* STAT */
-} 
-
+}
+/* sec 0136 */
 halfword new_null_box (void) 
 {
-  register halfword Result;
-  halfword p; 
-  p = get_node(7);
-  mem[p].hh.b0 = 0;
-  mem[p].hh.b1 = 0;
-  mem[p + 1].cint = 0;
-  mem[p + 2].cint = 0;
-  mem[p + 3].cint = 0;
-  mem[p + 4].cint = 0;
-  mem[p + 5].hh.v.RH = 0;
-  mem[p + 5].hh.b0 = 0;
-  mem[p + 5].hh.b1 = 0;
-  mem[p + 6].gr = 0.0;
-  Result = p;
-  return Result;
-} 
-
-// @ A new rule node is delivered by the |new_rule| function. It
-//   makes all the dimensions ``running,'' so you have to change the
-//   ones that are not allowed to run.
-
+  halfword p;
+  p = get_node(box_node_size);
+  type(p) = hlist_node;
+  subtype(p) = min_quarterword;
+  width(p) = 0;
+  depth(p) = 0;
+  height(p) = 0;
+  shift_amount(p) = 0;
+  list_ptr(p) = 0;
+  glue_sign(p) = normal;
+  glue_order(p) = normal;
+  glue_set(p) = 0.0;
+  return p;
+}
+/* sec 0139 */
 halfword new_rule (void) 
 {
-  register halfword Result;
-  halfword p; 
-  p = get_node(4);          /* rule_node_size */
-  mem[p].hh.b0 = 2;       /* rule_node type */
-  mem[p].hh.b1 = 0;       /* sub_type zero */
-  mem[p + 1].cint = -1073741824L; /* -2^30 null_flag width */
-  mem[p + 2].cint = -1073741824L; /* -2^30 null_flag depth */
-  mem[p + 3].cint = -1073741824L; /* -2^30 null_flag height */
-  Result = p; 
-  return Result; 
-} 
-
-// @ The |new_ligature| function creates a ligature node having given
-//   contents of the |font|, |character|, and |lig_ptr| fields.
-
+  halfword p;
+  p = get_node(rule_node_size);
+  type(p) = rule_node;
+  subtype(p) = 0;
+  width(p) = null_flag;
+  depth(p) = null_flag;
+  height(p) = null_flag;
+  return p;
+}
+/* sec 0144 */
 halfword new_ligature_(quarterword f, quarterword c, halfword q)
 {
-  register halfword Result; 
   halfword p; 
-  p = get_node(2);      /* small_node_size */
-  mem[p].hh.b0 = 6;   /* ligature_node type */
-  mem[p + 1].hh.b0 = f; /* font */
-  mem[p + 1].hh.b1 = c; /* character */
-  mem[p + 1].hh.v.RH = q; /* pointer */
-  mem[p].hh.b1 = 0;   /* subtype zero */
-  Result = p; 
-  return Result; 
-} 
-
-//  We also have a |new_lig_item| function, which returns a two-word
-//  node having a given |character| field. Such nodes are used for
-//  temporary processing as ligatures are being created.
-
+  p = get_node(small_node_size);
+  type(p) = ligature_node;
+  font(lig_char(p)) = f;
+  character(lig_char(p)) = c;
+  lig_ptr(p) = q;
+  subtype(p) = 0;
+  return p;
+}
+/* sec 0144 */
 halfword new_lig_item_(quarterword c)
 {
-  register halfword Result;
-  halfword p; 
-  p = get_node(2);      /* small_node_size */
-  mem[p].hh.b1 = c;   /* character */ 
-  mem[p + 1].hh.v.RH = 0; /* lig_ptr(p):=null; */
-  Result = p; 
-  return Result; 
-} 
-
+  halfword p;
+  p = get_node(small_node_size);
+  character(p) = c;
+  lig_ptr(p) = 0;
+  return p;
+}
+/* sec 0145 */
 halfword new_disc (void) 
 {
-  register halfword Result; 
-  halfword p; 
-  p = get_node(2); 
-  mem[p].hh.b0 = 7; 
-  mem[p].hh.b1 = 0; 
-  mem[p + 1].hh.v.LH = 0; /* pre_break(p):=null; */
-  mem[p + 1].hh.v.RH = 0; /* post_break(p):=null; */
-  Result = p; 
-  return Result; 
-} 
-
+  halfword p;
+  p = get_node(small_node_size);
+  type(p) = disc_node;
+  replace_count(p) = 0;
+  pre_break(p) = 0;
+  post_break(p) = 0;
+  return p;
+}
+/* sec 0147 */
 halfword new_math_(scaled w, small_number s)
 {
-  register halfword Result;
-  halfword p; 
-  p = get_node(2); 
-  mem[p].hh.b0 = 9; 
-  mem[p].hh.b1 = s; 
-  mem[p + 1].cint = w; 
-  Result = p; 
-  return Result; 
-} 
-
+  halfword p;
+  p = get_node(small_node_size);
+  type(p) = math_node;
+  subtype(p) = s;
+  width(p) = w;
+  return p;
+}
+/* sec 0151 */
 halfword new_spec_(halfword p)
 {
-  register halfword Result;
-  halfword q; 
-  q = get_node(4); 
-  mem[q]= mem[p]; 
-  mem[q].hh.v.RH = 0; 
-  mem[q + 1].cint = mem[p + 1].cint; 
-  mem[q + 2].cint = mem[p + 2].cint; 
-  mem[q + 3].cint = mem[p + 3].cint; 
-  Result = q; 
-  return Result; 
-} 
-
+  halfword q;
+  q = get_node(glue_spec_size);
+  mem[q] = mem[p];
+  glue_ref_count(q) = 0;
+  width(q) = width(p);
+  stretch(q) = stretch(p);
+  shrink(q) = shrink(p);
+  return q;
+}
+/* se 0152 */
 halfword new_param_glue_(small_number n)
 {
-  register halfword Result; 
-  halfword p; 
-  halfword q; 
-  p = get_node(2); 
-  mem[p].hh.b0 = 10; 
-  mem[p].hh.b1 = n + 1; /* conversion int to unsigned short */
-  mem[p + 1].hh.v.RH = 0; 
-  q = eqtb[(hash_size + 782) + n].hh.v.RH; /* gluebase + n */
-  mem[p + 1].hh.v.LH = q; 
-  incr(mem[q].hh.v.RH); 
-  Result = p; 
-  return Result; 
-} 
-
+  halfword p;
+  halfword q;
+  p = get_node(small_node_size);
+  type(p) = glue_node;
+  subtype(p) = n + 1;
+  leader_ptr(p) = 0;
+  q = glue_par(n);
+  glue_ptr(p) = q;
+  incr(glue_ref_count(q));
+  return p;
+}
+/* sec 0153 */
 halfword new_glue_(halfword q)
 {
-  register halfword Result; 
-  halfword p; 
-  p = get_node(2); 
-  mem[p].hh.b0 = 10; 
-  mem[p].hh.b1 = 0; 
-  mem[p + 1].hh.v.RH = 0; 
-  mem[p + 1].hh.v.LH = q; 
-  incr(mem[q].hh.v.RH); 
-  Result = p; 
-  return Result; 
-} 
-
+  halfword p;
+  p = get_node(small_node_size);
+  type(p) = glue_node;
+  subtype(p) = normal;
+  leader_ptr(p) = 0; 
+  glue_ptr(p) = q;
+  incr(glue_ref_count(q));
+  return p;
+}
+/* sec 0154 */
 halfword new_skip_param_(small_number n)
 {
-  register halfword Result; 
-  halfword p; 
-  temp_ptr = new_spec(eqtb[(hash_size + 782) + n].hh.v.RH); /* gluebase + n */
+  halfword p;
+  temp_ptr = new_spec(glue_par(n));
   p = new_glue(temp_ptr); 
-  mem[temp_ptr].hh.v.RH = 0; 
-  mem[p].hh.b1 = n + 1;   /* conversion int to unsigned short */
-  Result = p; 
-  return Result; 
-} 
-
+  glue_ref_count(temp_ptr) = 0;
+  subtype(p) = n + 1;
+  return p;
+}
+/* sec 0155 */
 halfword new_kern_(scaled w)
 {
-  register halfword Result;
   halfword p; 
-  p = get_node(2); 
-  mem[p].hh.b0 = 11; 
-  mem[p].hh.b1 = 0; 
-  mem[p + 1].cint = w; 
-  Result = p; 
-  return Result; 
-} 
-
+  p = get_node(small_node_size);
+  type(p) = kern_node;
+  subtype(p) = normal;
+  width(p) = w;
+  return p;
+}
+/* sec 0158 */
 halfword new_penalty_(integer m)
 {
-  register halfword Result; 
-  halfword p; 
-  p = get_node(2); 
-  mem[p].hh.b0 = 12; 
-  mem[p].hh.b1 = 0; 
-  mem[p + 1].cint = m; 
-  Result = p; 
-  return Result; 
-} 
+  halfword p;
+  p = get_node(small_node_size);
+  type(p) = penalty_node;
+  subtype(p) = 0;
+  penalty(p) = m;
+  return p;
+}
 
 #ifdef DEBUG
+/* sec 0167 */
 void check_mem_(bool printlocs)
-{/* 31 32 */  
-  halfword p, q; 
-  bool clobbered; 
-  {
-    register integer for_end;
-    p = mem_min;
-    for_end = lo_mem_max;
-    if (p <= for_end) do 
-      freearr[p]= false;
-    while (p++ < for_end);
-  }
-  {
-    register integer for_end;
-    p = hi_mem_min;
-    for_end = mem_end;
-    if (p <= for_end) do
-      freearr[p]= false;
-    while (p++ < for_end);
-  }
+{
+  halfword p, q;
+  bool clobbered;
+
+  for (p = mem_min; p <= lo_mem_max; p++) freearr[p] = false;
+  for (p = hi_mem_min; p <= mem_end; p++) freearr[p] = false;
   p = avail;
   q = 0;
   clobbered = false;
-  while (p != 0) {    /* while p<>null do */
+  while (p != 0) {
     if ((p > mem_end) || (p < hi_mem_min))
       clobbered = true;
     else if (freearr[p])
       clobbered = true;
+
     if (clobbered)
     {
       print_nl("AVAIL list clobbered at ");
@@ -1783,34 +1806,29 @@ void check_mem_(bool printlocs)
     }
     freearr[p] = true;
     q = p;
-    p = mem[q].hh.v.RH;
+    p = link(q);
   }
 lab31:;
   p = rover;
-  q = 0;        /* q:=null */
+  q = 0;
   clobbered = false;
   do {
       if ((p >= lo_mem_max) || (p < mem_min))
         clobbered = true;
-      else if ((mem[p + 1].hh.v.RH >= lo_mem_max) || (mem[p + 1].hh.v.RH < mem_min))
+      else if ((rlink(p) >= lo_mem_max) || (rlink(p) < mem_min))
         clobbered = true;
-/*    else if (!((mem[p].hh.v.RH == 262143L)) ||(mem[p].hh *//*NO!*/
-    else if (!((mem[p].hh.v.RH == empty_flag)) ||
-        (mem[p].hh .v.LH < 2) || 
-        (p + mem[p].hh.v.LH > lo_mem_max) ||
-        (mem[mem[p + 1].hh.v.RH + 1].hh.v.LH != p))
-      clobbered = true;
-    if (clobbered)
-    {
-      print_nl("Double-AVAIL list clobbered at ");
-      print_int(q);
-      goto lab32;
-    } 
-    {
-      register integer for_end;
-      q = p;
-      for_end = p + mem[p].hh.v.LH - 1;
-      if (q <= for_end) do 
+      else if (!(is_empty(p)) || (node_size(p) < 2) ||
+          (p + node_size(p) > lo_mem_max) || (llink(rlink(p)) != p))
+        clobbered = true;
+      
+      if (clobbered)
+      {
+        print_nl("Double-AVAIL list clobbered at ");
+        print_int(q);
+        goto lab32;
+      }
+
+      for (q = p; q <= p + node_size(p) - 1; q++)
       {
         if (freearr[q])
         {
@@ -1819,15 +1837,14 @@ lab31:;
           goto lab32;
         }
         freearr[q]= true;
-      } while (q++ < for_end);
-    }
-    q = p;
-    p = mem[p + 1].hh.v.RH;
+      }
+      q = p;
+      p = rlink(p);
   } while (!(p == rover));
 lab32:;
   p = mem_min;
   while (p <= lo_mem_max) {
-    if ((mem[p].hh.v.RH == empty_flag)) 
+    if (is_empty(p))
     {
       print_nl("Bad flag at ");
       print_int(p);
@@ -1835,48 +1852,29 @@ lab32:;
     while ((p <= lo_mem_max) && !freearr[p]) incr(p);
     while ((p <= lo_mem_max) && freearr[p]) incr(p);
   }
+
   if (printlocs)
   {
     print_nl("New busy locs:");
-    {
-      register integer for_end;
-      p = mem_min;
-      for_end = lo_mem_max;
-      if (p <= for_end) do
-        if (!freearr[p] && ((p > was_lo_max) || wasfree[p]))
-        {
-          print_char(' ');
-          print_int(p);
-        } while (p++ < for_end);
-    }
-    {
-      register integer for_end;
-      p = hi_mem_min;
-      for_end = mem_end;
-      if (p <= for_end) do
-        if (!freearr[p] && ((p < was_hi_min) || (p > was_mem_end) || wasfree[p]))
-        {
-          print_char(' ');
-          print_int(p);
-        } while (p++ < for_end);
-    }
-  } 
-  {
-    register integer for_end;
-    p = mem_min;
-    for_end = lo_mem_max;
-    if (p <= for_end) do
-      wasfree[p]= freearr[p];
-    while (p++ < for_end);
+
+    for (p = mem_min; p <= lo_mem_max; p++)
+      if (!freearr[p] && ((p > was_lo_max) || wasfree[p]))
+      {
+        print_char(' ');
+        print_int(p);
+      }
+
+    for (p = hi_mem_min; p <= mem_end; p++)
+      if (!freearr[p] && ((p < was_hi_min) || (p > was_mem_end) || wasfree[p]))
+      {
+        print_char(' ');
+        print_int(p);
+      }
   }
-  {
-    register integer for_end;
-    p = hi_mem_min;
-    for_end = mem_end;
-    if (p <= for_end) do
-      wasfree[p] = freearr[p];
-    while (p++ < for_end);
-  }
+
+  for (p = mem_min; p <= lo_mem_max; p++) wasfree[p] = freearr[p];
+  for (p = hi_mem_min; p <= mem_end; p++) wasfree[p] = freearr[p];
+
   was_mem_end = mem_end;
   was_lo_max = lo_mem_max;
   was_hi_min = hi_mem_min;
@@ -1884,189 +1882,164 @@ lab32:;
 #endif /* DEBUG */
 
 #ifdef DEBUG
+/* sec 0172 */
 void search_mem_(halfword p)
 {
-  integer q; 
+  integer q;
+
+  for (q = mem_min; q <= lo_mem_max; q++)
   {
-    register integer for_end;
-    q = mem_min;
-    for_end = lo_mem_max;
-    if (q <= for_end) do
+    if (link(q) == p)
     {
-      if (link(q) == p)
-      {
-        print_nl("LINK(");
-        print_int(q);
-        print_char(')');
-      }
-      if (info(q) == p)
-      {
-        print_nl("INFO(");
-        print_int(q);
-        print_char(')');
-      }
-    } while (q++ < for_end);
+      print_nl("LINK(");
+      print_int(q);
+      print_char(')');
+    }
+    if (info(q) == p)
+    {
+      print_nl("INFO(");
+      print_int(q);
+      print_char(')');
+    }
   }
+
+  for (q = hi_mem_min; q <= mem_end; q++)
   {
-    register integer for_end;
-    q = hi_mem_min;
-    for_end = mem_end;
-    if (q <= for_end) do
+    if (link(q) == p)
     {
-      if (link(q) == p)
-      {
-        print_nl("LINK(");
-        print_int(q);
-        print_char(')');
-      }
-      if (info(q) == p)
-      {
-        print_nl("INFO(");
-        print_int(q);
-        print_char(')');
-      }
-    } while (q++ < for_end);
-  }
-  {
-    register integer for_end;
-    q = 1;
-    for_end = (hash_size + 1833);
-    if (q <= for_end) do
+      print_nl("LINK(");
+      print_int(q);
+      print_char(')');
+    }
+    if (info(q) == p)
     {
-      if (eqtb[q].hh.v.RH == p)
-      {
-        print_nl("EQUIV(");
-        print_int(q);
-        print_char(')');
-      }
-    } while(q++ < for_end);
+      print_nl("INFO(");
+      print_int(q);
+      print_char(')');
+    }
   }
+
+  for (q = active_base; q <= box_base + 255; q++)
+    if (equiv(q) == p)
+    {
+      print_nl("EQUIV(");
+      print_int(q);
+      print_char(')');
+    }
+
   if (save_ptr > 0)
-  {
-    register integer for_end;
-    q = 0;
-    for_end = save_ptr - 1;
-    if (q <= for_end) do 
+    for (q = 0; q <= save_ptr - 1; q++)
     {
-      if (save_stack[q].hh.v.RH == p)
+      if (equiv_field(save_stack[q]) == p)
       {
         print_nl("SAVE(");
         print_int(q);
-        print_char(41);
-      }
-    } while (q++ < for_end);
-  }
-/*  {register integer for_end; q = 0; for_end = 607; if (q <= for_end) do */
-  {
-    register integer for_end;
-    q = 0;
-    for_end = hyphen_prime;
-    if (q <= for_end) do 
-    {
-      if (hyph_list[q]== p)
-      {
-        print_nl("HYPH(");
-        print_int(q);
         print_char(')');
       }
-    } while(q++ < for_end);
-  }
+    }
+
+  for (q = 0; q <= hyphen_prime; q++)
+    if (hyph_list[q] == p)
+    {
+      print_nl("HYPH(");
+      print_int(q);
+      print_char(')');
+    }
 }
 #endif /* DEBUG */
-
+/* sec 0174 */
 void short_display_(integer p)
 {
   integer n; 
 /*  while(p > mem_min){ */
-  while (p != 0) {      /* want p != null here bkph 93/Dec/15 !!! */
-                /* NOTE: still not fixed in 3.14159 ! */
-     if ((p >= hi_mem_min))  /* is_char_node(p) */
+  while (p != 0) {      /* want p != null here bkph 93/Dec/15 !!! NOTE: still not fixed in 3.14159 ! */
+     if (is_char_node(p))
      {
        if (p <= mem_end)
        {
-         if (mem[p].hh.b0 != font_in_short_display) /* font(p) */
+         if (font(p) != font_in_short_display)
          {
-           if ((mem[p].hh.b0 > font_max)) 
+           if ((font(p) > font_max))
              print_char('*');
-/*    else print_esc(hash[(hash_size + 524) + mem[p].hh.b0].v.RH); */
-           else //print_esc(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH);
-           {print_esc("");print(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH);}
-/* 96/Jan/10 */
+           else
+           {
+             print_esc("");
+             print(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH);
+           }
            print_char(' ');
-           font_in_short_display = mem[p].hh.b0;
+           font_in_short_display = font(p);
          }
-         print(mem[p].hh.b1);          /* character(p) */
+         print(character(p));
        }
-    } else switch (mem[p].hh.b0)
-    {
-      case 0:
-      case 1:
-      case 3:
-      case 8:
-      case 4:
-      case 5:
-      case 13:
+     }
+     else switch (mem[p].hh.b0)
+     {
+      case hlist_node:
+      case vlist_node:
+      case ins_node:
+      case whatsit_node:
+      case mark_node:
+      case adjust_node:
+      case unset_node:
         print_string("[]");
         break;
-      case 2:
+      case rule_node:
         print_char('|');
         break;
-      case 10:
-        if (mem[p + 1].hh.v.LH != 0)
+      case glue_node:
+        if (glue_ptr(p) != 0)
           print_char(' ');
         break;
-      case 9:
+      case math_node:
         print_char('$');
         break;
-      case 6:
-        short_display(mem[p + 1].hh.v.RH);
+      case ligature_node:
+        short_display(lig_ptr(p));
         break;
-      case 7:
-        {
-          short_display(mem[p + 1].hh.v.LH);
-          short_display(mem[p + 1].hh.v.RH);
-          n = mem[p].hh.b1;
-          while (n > 0) {
-            if (link(p) != 0) /* if link(p)<>null then */
-              p = mem[p].hh.v.RH;
-            decr(n);
-          }
+      case disc_node:
+        short_display(pre_break(p));
+        short_display(post_break(p));
+        n = replace_count(p);
+        while (n > 0) {
+          if (link(p) != 0) /* if link(p)<>null then */
+            p = link(p);
+          decr(n);
         }
         break;
       default:
-        ;
         break;
     }
-    p = mem[p].hh.v.RH;
+    p = link(p);
   }
 }
-
+/* sec 0176 */
 void print_font_and_char_ (integer p)
 {
   if (p > mem_end)
     print_esc("CLOBBERED.");
   else {
-    if ((mem[p].hh.b0 > font_max)) /* font(p) */
-      print_char(42);   /* * */
-/*    else print_esc(hash[(hash_size + 524) + mem[p].hh.b0].v.RH); */
+    if ((font(p) > font_max))
+      print_char('*');
     else
-      //print_esc(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH); /* 96/Jan/10 */
-      {print_esc("");print(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH);}
+    {
+      print_esc("");
+      print(hash[(hash_size + hash_extra + 524) + mem[p].hh.b0].v.RH);
+    }
     print_char(' ');
-    print(mem[p].hh.b1);      /* character(p) */
-  } 
-} 
-
+    print(character(p));
+  }
+}
+/* sec 0176 */
 void print_mark_ (integer p)
 { 
   print_char('{');
   if ((p < hi_mem_min)||(p > mem_end))
     print_esc("CLOBBERED.");
   else
-    show_token_list(mem[p].hh.v.RH, 0, max_print_line - 10);
+    show_token_list(link(p), 0, max_print_line - 10);
   print_char('}');
-} 
-
+}
+/* sec 0176 */
 void print_rule_dimen_ (scaled d)
 {
   if ((d == -1073741824L)) /* - 2^30 */
@@ -2074,41 +2047,47 @@ void print_rule_dimen_ (scaled d)
   else
     print_scaled(d);
 }
-
-void print_glue_(scaled d, integer order, char * s)
+/* sec 0177 */
+void print_glue_(scaled d, integer order, str_number s)
 {
   print_scaled(d); 
-  if ((order < 0) || (order > 3))
+  if ((order < normal)||(order > filll))
     print_string("foul");
-  else if (order > 0) {
+  else if (order > 0)
+  {
     print_string("fil");
     while (order > 1) {
       print_char('l');
       decr(order);
     }
-  } else if (*s)
-    print_string(s);
+  } else if (s != 0)
+    print(s);
 }
-
-void print_spec_(integer p, char * s)
+/* sec 0178 */
+void print_spec_(integer p, str_number s)
 {
-  if ((p < mem_min) || (p >= lo_mem_max)) 
+  if ((p < mem_min)||(p >= lo_mem_max)) 
     print_char('*');
   else {
     print_scaled(mem[p + 1].cint);
-    if (*s)
-      print_string(s);
-    if (mem[p + 2].cint != 0) {
-      print_string(" plus ");
-      print_glue(mem[p + 2].cint, mem[p].hh.b0, s);
+
+    if (s != 0)
+      print(s);
+
+    if (stretch(p) != 0)
+    {
+      print_string("plus");
+      print_glue(stretch(p), stretch_order(p), s);
     }
-    if (mem[p + 3].cint != 0) {
-      print_string(" minus ");
-      print_glue(mem[p + 3].cint, mem[p].hh.b1, s);
+
+    if (shrink(p) != 0)
+    {
+      print_string("minus");
+      print_glue(shrink(p), shrink_order(p), s);
     }
   }
 }
-
+/* sec 0691 */
 void print_fam_and_char_(halfword p)
 {
   print_esc("fam");
@@ -2116,7 +2095,7 @@ void print_fam_and_char_(halfword p)
   print_char(' ');
   print(mem[p].hh.b1);
 }
-
+/* sec 0691 */
 void print_delimiter_(halfword p)
 {
   integer a;
@@ -2126,38 +2105,40 @@ void print_delimiter_(halfword p)
     print_int(a);
   else
     print_hex(a);
-} 
-
+}
+/* sec 0692 */
 void print_subsidiary_data_(halfword p, ASCII_code c)
 {
-  if (cur_length >= depth_threshold)
+  if ((pool_ptr - str_start[str_ptr]) >= depth_threshold)
   {
     if (mem[p].hh.v.RH != 0)
       print_string("[]");
-  } else {
+  }
+  else
+  {
     append_char(c);
     temp_ptr = p;
     switch (mem[p].hh.v.RH)
     {
       case 1:
-        {
-          print_ln();
-          print_current_string();
-          print_fam_and_char(p);
-        }
+        print_ln();
+        print_current_string();
+        print_fam_and_char(p);
         break;
       case 2:
         show_info();
         break;
       case 3:
-        if (info(p) == 0) {
+        if (info(p) == 0)
+        {
           print_ln();
           print_current_string();
           print_string("{}");
-        } else show_info();
+        }
+        else
+          show_info();
         break;
       default:
-        ;
         break;
     }
     decr(pool_ptr);
@@ -2249,7 +2230,7 @@ void print_skip_param_(integer n)
       break;
   }
 }
-
+/* sec 0182 */
 void show_node_list_(integer p)
 {
   integer n;
@@ -2258,21 +2239,23 @@ void show_node_list_(integer p)
   if (cur_length > depth_threshold)
   {
 /*  if (p > 0) */  /* was p>null !!! line 3662 in tex.web */
-    if (p != 0)    /* fixed 94/Mar/23 BUG FIX *//* NOTE: still not fixed in 3.14159 ! */
-      print_string("[]");
-    return;
-  }
+    if (p != 0)    /* fixed 94/Mar/23 BUG FIX NOTE: still not fixed in 3.14159 ! */
+    print_string("[]");
+    return; 
+  } 
   n = 0; 
 /*  while(p > mem_min){ */  /* was p>mem_min !!! line 3667 in tex.web */
-  while (p != 0) {      /* want p != null - bkph 93/Dec/15 *//* NOTE: still not fixed in 3.14159 ! */
+  while (p != 0) {      /* want p != null - bkph 93/Dec/15 NOTE: still not fixed in 3.14159 ! */
     print_ln(); 
     print_current_string(); 
-    if (p > mem_end) {
+    if (p > mem_end)
+    {
       print_string("Bad link, display aborted.");
       return;
     }
     incr(n);
-    if (n > breadth_max) {
+    if (n > breadth_max)
+    {
       print_string("etc.");
       return;
     }
@@ -2362,7 +2345,7 @@ void show_node_list_(integer p)
           print_string(",natural size ");
           print_scaled(mem[p + 3].cint);
           print_string("; split(");
-          print_spec(mem[p + 4].hh.v.RH, "");
+          print_spec(mem[p + 4].hh.v.RH, 0);
           print_char(',');
           print_scaled(mem[p + 2].cint);
           print_string("(; float cost");
@@ -2427,7 +2410,7 @@ void show_node_list_(integer p)
           else if (mem[p].hh.b1 == 102)
             print_char('x');
           print_string("leaders ");
-          print_spec(mem[p + 1].hh.v.LH, "");
+          print_spec(mem[p + 1].hh.v.LH, 0);
           {
             {
               str_pool[pool_ptr]= 46;
@@ -2452,9 +2435,9 @@ void show_node_list_(integer p)
           {
             print_char(' ');
             if (mem[p].hh.b1 < 98)
-              print_spec(mem[p + 1].hh.v.LH, "");
+              print_spec(mem[p + 1].hh.v.LH, 0);
             else
-              print_spec(mem[p + 1].hh.v.LH, "mu");
+              print_spec(mem[p + 1].hh.v.LH, 334); /* mu */
           }
         }
         break;

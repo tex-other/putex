@@ -48,6 +48,14 @@
 /* openinout.c: open input and output files.  These routines used by
    TeX, Metafont, and BibTeX.  */
 
+/* #include <sys\stat.h> */				/* debugging 94/Mar/2 */
+/* #include <sys\types.h> */			/* debugging 94/Mar/2 */
+/* #include <conio.h>	*/				/* for getch */
+
+// #include "config.h"
+// #include "c-namemx.h"
+// #include "c-pathch.h"
+
 #define BUILDNAMEDIRECT					/* avoid malloc for string concat */
 
 bool test_read_access (unsigned char *, int); 	/* in ourpaths.c - bkph */
@@ -109,13 +117,11 @@ char *xconcat3 (char *buffer, char *s1, char *s2, char *s3)
 #ifdef MSDOS
 /* separated out 1996/Jan/20 to make easier to read */
 /* assumes path does not end in PATH_SEP */
-void patch_in_path (unsigned char * buffer, unsigned char * name, unsigned char * path)
+void patch_in_path (unsigned char *buffer, unsigned char *name, unsigned char *path)
 {
 #ifdef BUILDNAMEDIRECT
-	if (*path == '\0')
-    strcpy((char *) buffer, (char *) name);
-	else
-    xconcat3((char *) buffer, (char *) path, PATH_SEP_STRING, (char *) name);
+	if (*path == '\0') strcpy((char *)buffer, (char *)name);
+	else xconcat3((char *)buffer, (char *)path, PATH_SEP_STRING, (char *)name);
 #else
 	string temp_name;
 	temp_name = concat3 (path, PATH_SEP_STRING, name);
@@ -125,9 +131,9 @@ void patch_in_path (unsigned char * buffer, unsigned char * name, unsigned char 
 }
 int qualified (unsigned char *name)
 {
-	if (strchr((char *) name, PATH_SEP) != NULL ||
-		strchr((char *) name, '\\') != NULL ||
-		strchr((char *) name, ':') != NULL)
+	if (strchr((char *)name, PATH_SEP) != NULL ||
+		strchr((char *)name, '\\') != NULL ||
+		strchr((char *)name, ':') != NULL)
 		return 1;
 	else
 		return 0;
@@ -148,7 +154,7 @@ int prepend_path_if (unsigned char *buffer, unsigned char *name, char *ext, unsi
 
 /* void check_short_name(void) { */				/* 1995/Feb/20 */
 void check_short_name (unsigned char *s)
-{/* 1995/Sep/26 */
+{					/* 1995/Sep/26 */
 	unsigned char *star, *sdot;
 	int n;
 
@@ -238,7 +244,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 /*  if share_flag is non-zero and we are opening for reading use fsopen */
 /*	but we can assume here that we are opening for *input* */
 /*      *f = fopen (name_of_file + 1, fopen_mode); */
-		if (share_flag == 0) *f = fopen (name_of_file + 1, fopen_mode);
+		if (share_flag == 0)  *f = fopen (name_of_file + 1, fopen_mode);
 		else *f = _fsopen (name_of_file + 1, fopen_mode, share_flag);
 		temp_length = strlen (name_of_file + 1);
 /*      space_terminate (name_of_file + 1); */
@@ -265,7 +271,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 /*		We can assume `name_of_file' is openable, */
 /*		since `test_read_access' just returned true.  */
 /*		*f = xfopen_pas (name_of_file, fopen_mode); */
-		*f = xfopen((char *) (name_of_file + 1), fopen_mode);
+		*f = xfopen((char *)name_of_file+1, fopen_mode);
 
 //		should we check *f == NULL ??? (should be OK because of	test_read_access)
 
@@ -307,44 +313,44 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 #ifdef MSDOS
 /*		code added 94/June/21 to show 'fmt' file opening in log */
 /*		if (show_fmt_flag && strstr(name_of_file+1, ".fmt") != NULL) { */
-		if (strstr((char *) (name_of_file + 1), ".fmt") != NULL) {
+		if (strstr((char *)name_of_file + 1, ".fmt") != NULL) {
 			if (format_file == NULL) {
 /*				null_terminate (name_of_file + 1); */
-				format_file = xstrdup((char *) (name_of_file + 1));
+				format_file = xstrdup((char *)name_of_file + 1);
 /*				space_terminate (name_of_file + 1); */
 			}
 		}	/* remember full format file name with path */
 /*		if (showpoolflag && strstr(name_of_file+1, ".poo") != NULL) { */
-		else if (strstr((char *) (name_of_file + 1), ".poo") != NULL) {
+		else if (strstr((char *)name_of_file+1, ".poo") != NULL) {
 			if (string_file == NULL) {
 /*				null_terminate (name_of_file + 1); */
-				string_file = xstrdup((char *) (name_of_file + 1));
+				string_file = xstrdup((char *)name_of_file + 1);
 /*				space_terminate (name_of_file + 1); */
 			}
 		}	/* remember full pool file name with path */
 /*		else if (show_tfm_flag && strstr(name_of_file+1, ".tfm") != NULL) { */
-		else if (strstr((char *) (name_of_file + 1), ".tfm") != NULL) {
+		else if (strstr((char *)name_of_file+1, ".tfm") != NULL) {
 			if (show_tfm_flag && log_opened) {
 #ifdef WRAPLINES
 				int old_setting = selector;
 				char *s = name_of_file + 1;
-				selector = log_only;
-				print_char(' ');
-				print_char('(');
-/*      while (*s > ' ') print_char (*s++); */
+				selector = 18;			/* log file only */
+				print_char (' ');
+				print_char (40);			/*(*/
+/*				while (*s > ' ') print_char (*s++); */
 				while (*s != '\0') print_char (*s++);
-				print_char(')');
+				print_char (41);			/*)*/
 				selector = old_setting;
 #else
 				int n; 
-/*      null_terminate (name_of_file + 1); */
-				n = strlen((char *) (name_of_file + 1));
+/*				null_terminate (name_of_file + 1); */
+				n = strlen((char *)name_of_file+1);
 				if (file_offset + n > max_print_line) {
 					putc('\n', log_file);
 					file_offset = 0;
 				}	/* somewhat risky ? */
 				else putc(' ', log_file);
-				fprintf(log_file, "(%s)", (name_of_file + 1));
+				fprintf(log_file, "(%s)", name_of_file+1);
 				file_offset += n+3;
 /*				space_terminate (name_of_file + 1);  */
 #endif	/*  end of WRAPLINES */
@@ -374,7 +380,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 	}
 /*	space_terminate (name_of_file + 1); */
 	{
-		unsigned temp_length = strlen((char *) (name_of_file + 1));
+		unsigned temp_length = strlen((char *)name_of_file + 1);
 		name_of_file[temp_length+1] = ' ';	/* space terminate */
 /*		set up name_length ??? */
 	}
@@ -465,17 +471,17 @@ bool maketexmf (void)
 #endif /* ifndef TEXONLY */
 
 
-char * get_env_shroud (char *);		/* defined in texmf.c */
+char *get_env_shroud (char *);		/* defined in texmf.c */
 
 /* char outputdirectory[PATH_MAX]; */				/* defined in local.c */
 
-extern char * dvi_directory;				/* defined in local.c */
-extern char * log_directory;				/* defined in local.c */
-extern char * aux_directory;				/* defined in local.c */
+extern char *dvi_directory;				/* defined in local.c */
+extern char *log_directory;				/* defined in local.c */
+extern char *aux_directory;				/* defined in local.c */
 
 #ifdef IGNORED
 /* Try and figure out if can write to current directory */
-bool isitsafe (char * name)
+bool isitsafe (char *name)
 {
 /*  struct stat statbuf; */					/* debugging 94/Mar/2 */
 /*	Can't test access on file, since fails if not exist */
@@ -589,10 +595,11 @@ bool open_output (FILE **f, char *fopen_mode)
 {
 	unsigned temp_length;
 
-	name_of_file[name_length + 1] = '\0';
+/*	null_terminate (name_of_file + 1);	*/	/* moved here 95/Sep/26  */
+	name_of_file[name_length+1] = '\0';	/* null terminate */
 
 /* reinsert '~' and ' ' in file names -  95/June/5 */
-/* done late to prevent problems with null_terminate / space_terminate */  
+/* done late to prevent problems with  null_terminate / space_terminate */  
 	if (pseudo_tilde != 0 || pseudo_space !=  0) {
 		retwiddle(name_of_file + 1);
 	}
@@ -613,11 +620,11 @@ bool open_output (FILE **f, char *fopen_mode)
 #ifdef MSDOS
 /* write into user specified output directory if given on command line */
 /* following code added 1993/Dec/12 */ /* separated 1996/Jan/20 */
-	if (prepend_path_if (name_of_file + 1, name_of_file + 1, ".dvi", (unsigned char *) dvi_directory) ||
-		prepend_path_if (name_of_file + 1, name_of_file + 1, ".log", (unsigned char *) log_directory) ||
-		prepend_path_if (name_of_file + 1, name_of_file + 1, ".aux", (unsigned char *) aux_directory)) {
+	if (prepend_path_if (name_of_file+1, name_of_file+1, ".dvi", (unsigned char *)dvi_directory) ||
+		prepend_path_if (name_of_file+1, name_of_file+1, ".log", (unsigned char *)log_directory) ||
+		prepend_path_if (name_of_file+1, name_of_file+1, ".aux", (unsigned char *)aux_directory)) {
 		if (open_trace_flag) {
-			sprintf(log_line, "After prepend %s\n", name_of_file + 1);
+			sprintf(log_line, "After prepend %s\n", name_of_file+1);
 			show_line(log_line, 0);
 		}
 	}
@@ -627,7 +634,7 @@ bool open_output (FILE **f, char *fopen_mode)
 
 	if (open_trace_flag) {
 /*      null_terminate (name_of_file + 1); */
-		sprintf(log_line, " Open `%s' for output ", name_of_file + 1); /* C string */
+		sprintf(log_line, " Open `%s' for output ", name_of_file+1); /* C string */
 		show_line(log_line, 0);
 /*      space_terminate (name_of_file + 1); */
 	}		// debugging only
@@ -636,7 +643,7 @@ bool open_output (FILE **f, char *fopen_mode)
 
 /*  if share_flag is non-zero and we are opening for reading use fsopen */
 /*	but we can assume this is opening here for *output* */
-	*f = fopen((char *) (name_of_file + 1), fopen_mode);
+	*f = fopen((char *)name_of_file + 1, fopen_mode);
 
 	if (*f == NULL)    { /* Can't open as given.  Try the envvar.  */
 /*    string temp_dir = getenv ("TEXMFOUTPUT"); */	/* 93/Nov/20 */
@@ -669,26 +676,24 @@ bool open_output (FILE **f, char *fopen_mode)
 //	show_line(name_of_file+1, 1);		// debugging only
 //	New code to remember complete dvi_file name and log_file_name
 //	To remember for output at the end 2000 June 18
-	if (strstr((char *) (name_of_file + 1), ".dvi") != NULL) {
-		if (qualified(name_of_file + 1))
-      *log_line = '\0';
+	if (strstr((char *)name_of_file + 1, ".dvi") != NULL) {
+		if (qualified(name_of_file+1)) *log_line = '\0';
 		else {
-			(void) getcwd(log_line, sizeof(log_line));
+			(void) _getcwd(log_line, sizeof(log_line));
 			strcat(log_line, PATH_SEP_STRING);
 		}
-		strcat(log_line, (char*) (name_of_file + 1));
+		strcat(log_line, (char*)name_of_file+1);
 		unixify(log_line);
 		dvi_file_name = xstrdup(log_line);
 //		show_line(dvi_file_name, 1);	// debugging only
 	}
-	else if (strstr((char *) (name_of_file + 1), ".log") != NULL) {
-		if (qualified(name_of_file + 1))
-      *log_line = '\0';
+	else if (strstr((char *)name_of_file + 1, ".log") != NULL) {
+		if (qualified(name_of_file+1)) *log_line = '\0';
 		else {
-			(void) getcwd(log_line, sizeof(log_line));
+			(void) _getcwd(log_line, sizeof(log_line));
 			strcat(log_line, PATH_SEP_STRING);
 		}
-		strcat(log_line, (char *) (name_of_file + 1));
+		strcat(log_line, (char *)name_of_file+1);
 		unixify(log_line);
 		log_file_name = xstrdup(log_line);
 //		show_line(log_file_name, 1);	// debugging only

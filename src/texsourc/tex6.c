@@ -342,10 +342,10 @@ lab30:
           oldl = l;
           if (l > last_special_line)
             linewidth = second_width;
-          else if (par_shape_ptr == 0)
+          else if (eqtb[(hash_size + 1312)].hh.v.RH == 0)
             linewidth = first_width;
           else
-            linewidth = mem[par_shape_ptr + 2 * l].cint;
+            linewidth = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * l].cint;
         }
       }
     }
@@ -632,12 +632,12 @@ lab30:
     if (curline > last_special_line) {
       curwidth = second_width;
       curindent = second_indent;
-    } else if (par_shape_ptr == 0) {
+    } else if (eqtb[(hash_size + 1312)].hh.v.RH == 0) {
       curwidth = first_width;
       curindent = first_indent;
     } else {
-      curwidth = mem[par_shape_ptr + 2 * curline].cint;
-      curindent = mem[par_shape_ptr + 2 * curline - 1].cint;
+      curwidth = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * curline].cint;
+      curindent = mem[eqtb[(hash_size + 1312)].hh.v.RH + 2 * curline - 1].cint;
     }
     adjust_tail = adjust_head;
     just_box = hpack(q, curwidth, 0);
@@ -1044,9 +1044,9 @@ void hyphenate (void)
     k = hyph_word[h]; 
     if (k == 0)
     goto lab45; 
-    if (length(k) < hn)
+    if ((str_start[k + 1]- str_start[k])< hn)
     goto lab45; 
-    if (length(k) == hn)
+    if ((str_start[k + 1]- str_start[k])== hn)
     {
       j = 1; 
       u = str_start[k]; 
@@ -1441,12 +1441,15 @@ lab21: switch(cur_cmd){
       return;     // abort_flag set
     }
     incr(hyph_count); 
-    while (hyph_word[h]!= 0) {
-      k = hyph_word[h];
-      if (length(k) < length(s))
-        goto lab40;
-      if (length(k) > length(s))
-        goto lab45; 
+    while(hyph_word[h]!= 0){
+        
+      k = hyph_word[h]; 
+      if ((str_start[k + 1]- str_start[k])<(str_start[s + 1 
+    ]- str_start[s])) 
+      goto lab40; 
+      if ((str_start[k + 1]- str_start[k])>(str_start[s + 1 
+    ]- str_start[s])) 
+      goto lab45; 
       u = str_start[k]; 
       v = str_start[s]; 
       do {
@@ -2015,7 +2018,7 @@ void fire_up_(halfword c)
     incr(mem[cur_mark[0]].hh.v.LH); 
   } 
 /* if output_routine<>null then */
-  if (output_routine != 0)
+  if (eqtb[(hash_size + 1313)].hh.v.RH != 0)
   if (dead_cycles >= max_dead_cycles)
   {
 	  print_err("Output loop---");
@@ -2033,7 +2036,7 @@ void fire_up_(halfword c)
     mode = -1; 
     cur_list.aux_field.cint = ignore_depth; 
     mode_line = - (integer) line; 
-    begin_token_list(output_routine, 6); /* output */
+    begin_token_list(eqtb[(hash_size + 1313)].hh.v.RH, 6); /* output */
     new_save_level(8); 
     normal_paragraph(); 
     scan_left_brace(); 

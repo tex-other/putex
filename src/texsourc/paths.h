@@ -61,6 +61,18 @@
 #define BSTINPUTS ".;" TEXPATH "bib//"
 #endif
 
+#ifndef MFBASES
+#define MFBASES ".;c:/mf/bases"
+#endif
+
+#ifndef MFINPUTS
+#define MFINPUTS "c:/mf/inputs//"
+#endif
+
+#ifndef MFPOOL
+#define MFPOOL "c:/mf/bases"
+#endif
+
 /* Of course, TeX itself doesn't give a damn about any of the following: */
 
 #ifndef GFFONTS

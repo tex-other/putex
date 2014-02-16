@@ -57,3 +57,4 @@ typedef enum
 #define VFFILEPATHBIT	(1 << VFFILEPATH)
 
 #endif /* not OURPATHS_H */
+
