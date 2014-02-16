@@ -27,7 +27,7 @@
 
 void scan_int (void) 
 {
-  bool negative; 
+  bool negative;
   integer m;
   small_number d;
   bool vacuous;
@@ -553,7 +553,6 @@ halfword the_toks (void)
       if (q == 0)
       q = get_avail(); 
       else {
-    
         avail = mem[q].hh.v.RH; 
         mem[q].hh.v.RH = 0; 
   ;
@@ -570,9 +569,7 @@ halfword the_toks (void)
       } 
     } 
     Result = p; 
-  } 
-  else {
-      
+  } else {
     old_setting = selector;  
     selector = 21; 
     b = pool_ptr; 
@@ -588,13 +585,13 @@ halfword the_toks (void)
       break; 
     case 2 : 
       {
-  print_spec(cur_val, 394); /* pt */
+  print_spec(cur_val, "pt");
   delete_glue_ref(cur_val); 
       } 
       break; 
     case 3 : 
       {
-  print_spec(cur_val, 334); /* mu */
+  print_spec(cur_val, "mu");
   delete_glue_ref(cur_val); 
       } 
       break; 
@@ -662,7 +659,7 @@ void conv_toks (void)
       print(font_name[cur_val]); 
       if (font_size[cur_val]!= font_dsize[cur_val])
       {
-      print_string("at ");
+      print_string(" at ");
       print_scaled(font_size[cur_val]); 
       print_string("pt");
       } 
@@ -861,7 +858,7 @@ void read_toks_(integer n, halfword r)
         if (n < 0) {
         ; 
           print_string("");
-          term_input("", 0); 
+          term_input(335, 0); 
         } 
         else {
         ; 
@@ -870,7 +867,7 @@ void read_toks_(integer n, halfword r)
           {
           ; 
             print_string("=");
-            term_input("=", 0); 
+            term_input(61, 0); 
           } 
           n = -1; 
         } 
@@ -1291,11 +1288,11 @@ bool more_name_(ASCII_code c)
     if ((c == '/' || c == '\\' || c == ':')) /* 94/Mar/1 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     {
-    area_delimiter = (pool_ptr - str_start[str_ptr]); 
+    area_delimiter = cur_length; 
     ext_delimiter = 0; 
     } 
     else if (c == 46)    /* . */
-    ext_delimiter = (pool_ptr - str_start[str_ptr]); 
+    ext_delimiter = cur_length; 
     Result = true; 
   } 
   return Result; 
@@ -1330,12 +1327,12 @@ int find_string (int start, int end)
 //  code in new_font (tex8.c) will take care of reuse of font name already
 //  for (k = 0; k < str_ptr; k++) {
   for (k = 0; k < str_ptr-1; k++) {
-    if ((str_start[k+1] - str_start[k]) != nlen) continue;
-    if (strncmp(str_pool+start, str_pool+str_start[k], nlen) == 0) {
+    if (length(k) != nlen) continue;
+    if (strncmp((const char *)str_pool + start, (const char *) str_pool + str_start[k], nlen) == 0) {
       if (trace_flag) {
         sprintf(log_line, "\nFOUND the string %d (%d) ", k, str_start[k+1]-str_start[k]);
         s = log_line + strlen(log_line);
-        strncpy(s, str_pool+start, nlen);
+        strncpy(s, (const char *)str_pool + start, nlen);
         strcpy(s+nlen, "\n");
         show_line(log_line, 0);
       }
@@ -1345,7 +1342,7 @@ int find_string (int start, int end)
   if (trace_flag) {
     sprintf(log_line, "\nNOT FOUND string ");
     s = log_line + strlen(log_line);
-    strncpy(s, str_pool+start, nlen);
+    strncpy(s, (const char*)str_pool + start, nlen);
     strcpy(s+nlen, "\n");
     show_line(log_line, 0);
   }
@@ -1368,7 +1365,7 @@ void remove_string (int start, int end)
     int n = end-start;
     sprintf(log_line, "\nSTRIPPING OUT %d %d ", n, nlen);
     s = log_line + strlen(log_line);
-    strncpy(s, str_pool+start, n);
+    strncpy(s, (const char *)str_pool + start, n);
     strcpy(s+n, "\n");
     show_line(log_line, 0);
   }
@@ -1378,13 +1375,13 @@ void remove_string (int start, int end)
 
 void show_string (int k)
 {   // debugging code
-  int nlen = str_start[k+1] - str_start[k];
+  int nlen = length(k);
   char *s;
   
   sprintf(log_line, "\nSTRING %5d (%3d) %5d--%5d ",
       k, nlen, str_start[k], str_start[k+1]);
   s = log_line + strlen(log_line);      
-  strncpy(s, str_pool+str_start[k], nlen);
+  strncpy(s, (const char *)str_pool + str_start[k], nlen);
   strcpy(s + nlen, "");
   show_line(log_line, 0);
 }
@@ -1586,11 +1583,11 @@ str_number make_name_string (void)
     str_start = realloc_str_start(increment_max_strings);
   if ((pool_ptr + name_length > current_pool_size)||
     (str_ptr == current_max_strings)||
-      ((pool_ptr - str_start[str_ptr])> 0)) 
+      (cur_length > 0)) 
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if ((pool_ptr + name_length > pool_size)||(str_ptr == max_strings)||
-    ((pool_ptr - str_start[str_ptr])> 0)) 
+    (cur_length > 0)) 
 #endif
   Result = 63; 
   else {
@@ -1710,7 +1707,7 @@ void show_tex_inputs (void)
 void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e - default */ 
 {
   integer k; 
-  if (interaction == 2)
+  if (interaction == scroll_mode)
   ; 
   if (s == 781)
     print_err("I can't find file `");
@@ -1740,7 +1737,7 @@ void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e
   {
  ; 
     print_string(": ");
-    term_input(": ", 0);
+    term_input(565, 0);
   } 
 /*  should we deal with tilde and space in file name here ??? */
   {
@@ -1983,8 +1980,7 @@ void start_input (void)
     jobnameappend();   /* append `extension' to job_name */
     open_log_file(); 
   } 
-  if (term_offset +(str_start[cur_input.name_field + 1]- str_start[
-  cur_input.name_field])> max_print_line - 2) /* was 3 ? */  
+  if (term_offset + length(cur_input.name_field) > max_print_line - 2) /* was 3 ? */  
   print_ln(); 
   else if ((term_offset > 0)||(file_offset > 0)) 
   print_char(' ');
@@ -2618,7 +2614,7 @@ lab11:
   print_file_name(nom, aire, 335);  /* "" */
   if (s >= 0)
   {
-    print_string("at ");
+    print_string(" at ");
     print_scaled(s); 
     print_string("pt");
   } 
@@ -2627,8 +2623,8 @@ lab11:
     print_string("scaled");
     print_int(- (integer) s); 
   } 
-  if (fileopened)print_string("not loadable: Bad metric (TFM) file");
-  else print_string("not loadable: Metric (TFM) file not found");
+  if (fileopened)print_string(" not loadable: Bad metric (TFM) file");
+  else print_string(" not loadable: Metric (TFM) file not found");
   if (aire == 335) {    /* "" only if path not specified */
     if (show_texinput_flag) show_tex_fonts();   /* 98/Jan/31 */
   }

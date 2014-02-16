@@ -1208,8 +1208,8 @@ lab22:
   lab30: scanner_status = 0; 
   new_save_level(6); 
 /* if every_cr<>null then begin_token_list(every_cr,every_cr_text); l.15665 */
-  if (eqtb[(hash_size + 1320)].hh.v.RH != 0)/* everycr */
-    begin_token_list(eqtb[(hash_size + 1320)].hh.v.RH, 13); 
+  if (every_cr != 0)/* everycr */
+    begin_token_list(every_cr, 13); 
   align_peek(); 
 } 
 void init_span_ (halfword p)
@@ -1279,8 +1279,8 @@ void fin_row (void)
   } 
   mem[p].hh.b0 = 13; 
   mem[p + 6].cint = 0; 
-  if (eqtb[(hash_size + 1320)].hh.v.RH != 0)/* everycr */
-    begin_token_list(eqtb[(hash_size + 1320)].hh.v.RH, 13); 
+  if (every_cr != 0)/* everycr */
+    begin_token_list(every_cr, 13); 
   align_peek(); 
 } 
 void fin_align (void) 
@@ -1732,24 +1732,24 @@ bool fin_col (void)
       mem[cur_align + 1].cint = w; 
       mem[u].hh.b0 = 13; 
       mem[u].hh.b1 = n; 
-      if (totalstretch[3]!= 0)
+      if (total_stretch[3]!= 0)
       o = 3; 
-      else if (totalstretch[2]!= 0)
+      else if (total_stretch[2]!= 0)
       o = 2; 
-      else if (totalstretch[1]!= 0)
+      else if (total_stretch[1]!= 0)
       o = 1; 
       else o = 0; 
       mem[u + 5].hh.b1 = o; 
-      mem[u + 6].cint = totalstretch[o]; 
-      if (totalshrink[3]!= 0)
+      mem[u + 6].cint = total_stretch[o]; 
+      if (total_shrink[3]!= 0)
       o = 3; 
-      else if (totalshrink[2]!= 0)
+      else if (total_shrink[2]!= 0)
       o = 2; 
-      else if (totalshrink[1]!= 0)
+      else if (total_shrink[1]!= 0)
       o = 1; 
       else o = 0; 
       mem[u + 5].hh.b0 = o; 
-      mem[u + 4].cint = totalshrink[o]; 
+      mem[u + 4].cint = total_shrink[o]; 
       pop_nest(); 
       mem[tail].hh.v.RH = u; 
       tail = u; 

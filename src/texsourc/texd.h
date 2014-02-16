@@ -1914,7 +1914,7 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 extern void tex_help (unsigned int n, ...);
 extern void append_char(ASCII_code c);
 extern void succumb(void);
-extern void dvi_out_ (ASCII_code op);
+extern INLINE void dvi_out_ (ASCII_code op);
 #define dvi_out(op) dvi_out_((ASCII_code) (op))
 extern void flush_string (void);
 #define help0()     tex_help(0)

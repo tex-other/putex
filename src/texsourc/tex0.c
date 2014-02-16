@@ -29,6 +29,13 @@ static void winerror (char * message)
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+INLINE void dvi_out_(ASCII_code op)
+{
+  dvi_buf[dvi_ptr] = op;
+  incr(dvi_ptr);
+  if (dvi_ptr == dvi_limit)
+    dvi_swap();
+}
 void succumb (void)
 {
   if (interaction == error_stop_mode)
@@ -2048,10 +2055,10 @@ void print_rule_dimen_ (scaled d)
     print_scaled(d);
 }
 /* sec 0177 */
-void print_glue_(scaled d, integer order, str_number s)
+void print_glue_(scaled d, integer order, char * s)
 {
   print_scaled(d); 
-  if ((order < normal)||(order > filll))
+  if ((order < normal) || (order > filll))
     print_string("foul");
   else if (order > 0)
   {
@@ -2060,19 +2067,19 @@ void print_glue_(scaled d, integer order, str_number s)
       print_char('l');
       decr(order);
     }
-  } else if (s != 0)
-    print(s);
+  } else if (*s != '\0')
+    print_string(s);
 }
 /* sec 0178 */
-void print_spec_(integer p, str_number s)
+void print_spec_(integer p, char * s)
 {
   if ((p < mem_min)||(p >= lo_mem_max)) 
     print_char('*');
   else {
     print_scaled(mem[p + 1].cint);
 
-    if (s != 0)
-      print(s);
+    if (*s != '\0')
+      print_string(s);
 
     if (stretch(p) != 0)
     {
@@ -2289,12 +2296,12 @@ void show_node_list_(integer p)
             if (mem[p + 6].cint != 0)
             {
               print_string(", stretch");
-              print_glue(mem[p + 6].cint, mem[p + 5].hh.b1, 0);
+              print_glue(mem[p + 6].cint, mem[p + 5].hh.b1, "");
             }
             if (mem[p + 4].cint != 0)
             {
               print_string(", shrink");
-              print_glue(mem[p + 4].cint, mem[p + 5].hh.b0, 0);
+              print_glue(mem[p + 4].cint, mem[p + 5].hh.b0, "");
             }
           } else {
             g = mem[p + 6].gr;
@@ -2309,8 +2316,8 @@ void show_node_list_(integer p)
                   print_char('>');
                 else
                   print_string("< -");
-                print_glue(20000 * 65536L, mem[p + 5].hh.b1, 0);
-              } else print_glue(round(65536L * g), mem[p + 5].hh.b1, 0);
+                print_glue(20000 * 65536L, mem[p + 5].hh.b1, "");
+              } else print_glue(round(65536L * g), mem[p + 5].hh.b1, "");
             }
             if (mem[p + 4].cint != 0)
             {
@@ -2342,10 +2349,10 @@ void show_node_list_(integer p)
         {
           print_esc("insert");
           print_int(mem[p].hh.b1);
-          print_string(",natural size ");
+          print_string(", natural size ");
           print_scaled(mem[p + 3].cint);
           print_string("; split(");
-          print_spec(mem[p + 4].hh.v.RH, 0);
+          print_spec(mem[p + 4].hh.v.RH, "");
           print_char(',');
           print_scaled(mem[p + 2].cint);
           print_string("(; float cost");
@@ -2410,7 +2417,7 @@ void show_node_list_(integer p)
           else if (mem[p].hh.b1 == 102)
             print_char('x');
           print_string("leaders ");
-          print_spec(mem[p + 1].hh.v.LH, 0);
+          print_spec(mem[p + 1].hh.v.LH, "");
           {
             {
               str_pool[pool_ptr]= 46;
@@ -2435,9 +2442,9 @@ void show_node_list_(integer p)
           {
             print_char(' ');
             if (mem[p].hh.b1 < 98)
-              print_spec(mem[p + 1].hh.v.LH, 0);
+              print_spec(mem[p + 1].hh.v.LH, "");
             else
-              print_spec(mem[p + 1].hh.v.LH, 334); /* mu */
+              print_spec(mem[p + 1].hh.v.LH, "mu");
           }
         }
         break;

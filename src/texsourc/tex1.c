@@ -24,15 +24,18 @@
 #pragma warning(disable:4244)       /* 96/Jan/10 */
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+/* sec 0198 */
 void show_box_(halfword p)
 {
   depth_threshold = show_box_depth;
   breadth_max = show_box_breadth;
+
   if (breadth_max <= 0)
-    breadth_max = 5; 
+    breadth_max = 5;
+
 #ifdef ALLOCATESTRING
   if (pool_ptr + depth_threshold >= current_pool_size)
-    str_pool = realloc_str_pool (increment_pool_size);
+    str_pool = realloc_str_pool(increment_pool_size);
   if (pool_ptr + depth_threshold >= current_pool_size)
     depth_threshold = current_pool_size - pool_ptr - 1;
 #else
@@ -41,7 +44,8 @@ void show_box_(halfword p)
 #endif
   show_node_list(p);
   print_ln();
-} 
+}
+/* sec 0200 */
 void delete_token_ref_(halfword p)
 {
   if (mem[p].hh.v.LH == 0)
@@ -49,6 +53,7 @@ void delete_token_ref_(halfword p)
   else
     decr(mem[p].hh.v.LH);
 }
+/* sec 0201 */
 void delete_glue_ref_(halfword p)
 {
   if (mem[p].hh.v.RH == 0)
@@ -56,6 +61,7 @@ void delete_glue_ref_(halfword p)
   else
     decr(mem[p].hh.v.RH);
 }
+/* sec 0202 */
 void flush_node_list_(halfword p)
 {
   halfword q; 
@@ -230,6 +236,7 @@ lab30:;
     p = q;
   }
 }
+/* sec 0204 */
 halfword copy_node_list_(halfword p)
 {
   register halfword Result;
@@ -373,7 +380,8 @@ halfword copy_node_list_(halfword p)
   }
   Result = q;
   return Result;
-} 
+}
+/* sec 0211 */
 void print_mode_(integer m)
 { 
   if (m > 0)
@@ -388,8 +396,9 @@ void print_mode_(integer m)
       case 2:
         print_string("display math");
         break;
-    } else if (m == 0)
-      print_string("no");
+    }
+  else if (m == 0)
+    print_string("no");
   else switch ((- (integer) m)/(101))
   {
     case 0:
@@ -404,6 +413,7 @@ void print_mode_(integer m)
   }
   print_string(" mode");
 }
+/* sec 0216 */
 void push_nest (void) 
 {
   if (nest_ptr > max_nest_stack)
@@ -430,6 +440,7 @@ void push_nest (void)
   prev_graf = 0;
   mode_line = line;
 }
+/* sec 0217 */
 void pop_nest (void) 
 {
   {
@@ -443,7 +454,8 @@ void pop_nest (void)
   decr(nest_ptr);
   cur_list = nest[nest_ptr];
 }
-void show_activities (void) 
+/* sec 0218 */
+void show_activities (void)
 {
   integer p;
   short m;
@@ -752,6 +764,7 @@ void print_param_(integer n)
       break;
   }
 }
+/* sec 0245 */
 void begin_diagnostic (void)
 {
   old_setting = selector;
@@ -760,12 +773,14 @@ void begin_diagnostic (void)
     if (history == 0) history = 1;
   }
 }
+/* sec 0245 */
 void end_diagnostic_(bool blankline)
 {
   print_nl("  ");
   if (blankline) print_ln();
   selector = old_setting;
 }
+/* sec 0247 */
 void print_length_param_ (integer n)
 {
   switch (n)
@@ -838,33 +853,26 @@ void print_length_param_ (integer n)
       break;
   }
 }
+/* sec 0298 */
 void print_cmd_chr_ (quarterword cmd, halfword chrcode)
 {
   switch (cmd)
   {
     case 1:
-      {
-        print_string("begin-group character ");
-        print(chrcode);
-      }
+      print_string("begin-group character ");
+      print(chrcode);
       break;
     case 2:
-      {
-        print_string("end-group character ");
-        print(chrcode);
-      }
+      print_string("end-group character ");
+      print(chrcode);
       break;
     case 3:
-      {
-        print_string("math shift character ");
-        print(chrcode);
-      }
+      print_string("math shift character ");
+      print(chrcode);
       break;
     case 6:
-      {
-        print_string("macro parameter character ");
-        print(chrcode);
-      }
+      print_string("macro parameter character ");
+      print(chrcode);
       break;
     case 7:
       {
@@ -1708,6 +1716,7 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
 }
 
 #ifdef STAT
+/* sec 0252 */
 void show_eqtb_(halfword n)
 { 
   if (n < 1)
@@ -1728,20 +1737,20 @@ void show_eqtb_(halfword n)
       print_skip_param(n - (hash_size + 782));  /* lineskip */
       print_char('=');
       if (n < (hash_size + 797))
-        print_spec(eqtb[n].hh.v.RH, 394); /* pt */
+        print_spec(eqtb[n].hh.v.RH, "pt");
       else
-        print_spec(eqtb[n].hh.v.RH, 334);  /* mu */
+        print_spec(eqtb[n].hh.v.RH, "mu");
     } else if (n < (hash_size + 1056))
     {
       print_esc("skip");
       print_int(n - (hash_size + 800));
       print_char('=');
-      print_spec(eqtb[n].hh.v.RH, 394);   /* pt */
+      print_spec(eqtb[n].hh.v.RH, "pt");
     } else {
       print_esc("muskip");
       print_int(n - (hash_size + 1056));
       print_char('=');
-      print_spec(eqtb[n].hh.v.RH, 334);   /* mu */
+      print_spec(eqtb[n].hh.v.RH, "mu");
     } else if (n < (hash_size + 3163))
       if (n == (hash_size + 1312))
       {

@@ -110,7 +110,8 @@ void print_roman_int_(integer);
 void print_current_string(void); 
 #define printcurrentstring_regmem
 // void term_input(void); 
-void term_input(char *, int);
+void term_input(int, int); 
+#define terminput_regmem
 void int_error_(integer); 
 #define int_error(n) int_error_((integer) (n))
 
@@ -211,11 +212,11 @@ void print_mark_(integer);
 void print_rule_dimen_(scaled); 
 #define print_rule_dimen(d) print_rule_dimen_((scaled) (d))
 #define printruledimen_regmem
-void print_glue_(scaled, integer, str_number); 
-#define print_glue(d, order, s) print_glue_((scaled) (d), (integer) (order), (str_number) (s))
+void print_glue_(scaled, integer, char *); 
+#define print_glue(d, order, s) print_glue_((scaled) (d), (integer) (order), (char *) (s))
 #define printglue_regmem
-void print_spec_(integer, str_number); 
-#define print_spec(p, s) print_spec_((integer) (p), (str_number) (s))
+void print_spec_(integer, char *);
+#define print_spec(p, s) print_spec_((integer) (p), (char *) (s))
 #define printspec_regmem register memory_word *mem=zmem;
 void print_fam_and_char_(halfword); 
 #define print_fam_and_char(p) print_fam_and_char_((halfword) (p))
@@ -895,10 +896,10 @@ void print_string_(unsigned char * s);
 #define print_string(s) print_string_((unsigned char *) s)
 void slow_print_(integer);
 #define slow_print(s) slow_print_((integer) (s))
-void print_nl_(const char *);
-#define print_nl(s) print_nl_((const char *) (s))
-void print_esc_(const char *);
-#define print_esc(s) print_esc_((const char *) (s))
+void print_nl_(char *);
+#define print_nl(s) print_nl_((char *) (s))
+void print_esc_(char *);
+#define print_esc(s) print_esc_((char *) (s))
 void print_the_digs_(eight_bits);
 #define print_the_digs(k) print_the_digs_((eight_bits) (k))
 void print_int_(integer);
@@ -935,7 +936,7 @@ void print_hex_(integer);
 void print_roman_int_(integer);
 #define print_roman_int(n) print_roman_int_((integer) (n))
 void print_current_string(void);
-void term_input(char *, int);
+void term_input(int, int);
 void int_error_(integer);
 #define int_error(n) int_error_((integer) (n))
 void normalize_selector(void);
@@ -1000,10 +1001,10 @@ void print_mark_(integer);
 #define print_mark(p) print_mark_((integer) (p))
 void print_rule_dimen_(scaled);
 #define print_rule_dimen(d) print_rule_dimen_((scaled) (d))
-void print_glue_(scaled, integer, str_number);
-#define print_glue(d, order, s) print_glue_((scaled) (d), (integer) (order), (str_number) (s))
-void print_spec_(integer, str_number);
-#define print_spec(p, s) print_spec_((integer) (p), (str_number) (s))
+void print_glue_(scaled, integer, char *);
+#define print_glue(d, order, s) print_glue_((scaled) (d), (integer) (order), (char *) (s))
+void print_spec_(integer, char *);
+#define print_spec(p, s) print_spec_((integer) (p), (char *) (s))
 void print_fam_and_char_(halfword);
 #define print_fam_and_char(p) print_fam_and_char_((halfword) (p))
 void print_delimiter_(halfword);

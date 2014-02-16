@@ -124,4 +124,3 @@ extern int _getopt_internal();
 #endif
 
 #endif /* _GETOPT_H */
-
