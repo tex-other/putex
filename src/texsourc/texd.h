@@ -865,7 +865,7 @@ EXTERN scaled dvi_h, dvi_v;
 EXTERN scaled cur_h, cur_v; 
 EXTERN internal_font_number dvi_f; 
 EXTERN integer cur_s; 
-EXTERN scaled totalstretch[4], totalshrink[4]; /* padded already */
+EXTERN scaled total_stretch[4], total_shrink[4]; /* padded already */
 EXTERN integer last_badness; 
 EXTERN halfword adjust_tail; 
 EXTERN integer pack_begin_line; 
@@ -1457,17 +1457,26 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define glue_shrink(q)  shift_amount
 #define span_count      subtype
 /* sec 0162 */
-#define contrib_head  mem_top - 1
-#define page_head     mem_top - 2
-#define temp_head     mem_top - 3
-#define hold_head     mem_top - 4
-#define adjust_head   mem_top - 5
-#define active        mem_top - 7
-#define align_head    mem_top - 8
-#define end_span      mem_top - 9
-#define omit_template mem_top - 10
-#define null_list     mem_top - 11
-#define lig_trick     mem_top - 12
+#define contrib_head      mem_top - 1
+#define page_head         mem_top - 2
+#define temp_head         mem_top - 3
+#define hold_head         mem_top - 4
+#define adjust_head       mem_top - 5
+#define active            mem_top - 7
+#define align_head        mem_top - 8
+#define end_span          mem_top - 9
+#define omit_template     mem_top - 10
+#define null_list         mem_top - 11
+#define lig_trick         mem_top - 12
+#define garbage           mem_top - 12
+#define backup_head       mem_top - 13
+#define hi_mem_stat_min   mem_top - 13
+#define hi_mem_stat_usage 14
+/* sec 0200 */
+#define token_ref_count(a) info(a)
+/* sec 0203 */
+#define add_token_ref(a) incr(token_ref_count(a))
+#define add_glue_ref(a)  incr(glue_ref_count(a))
 /* sec 0207 */
 #define escape        0
 #define relax         0
@@ -1902,21 +1911,86 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define h_offset                      dimen_par(h_offset_code)
 #define v_offset                      dimen_par(v_offset_code)
 #define emergency_stretch             dimen_par(emergency_stretch_code)
+/* sec 0256 */
+//#define next
+#define text(a)         hash[a].v.RH
+#define hash_is_full    (hash_used == hash_base)
+#define font_id_text(a) text(font_id_base + a)
+/* sec 0268 */
+#define save_type(a)      save_stack[a].hh.b0
+#define save_level(a)     save_stack[a].hh.b1
+#define save_index(a)     save_stack[a].hh.v.RH
+#define restore_old_value 0
+#define restore_zero      1
+#define insert_token      2
+#define level_boundary    3
+/* sec 0269 */
+#define bottom_level      0
+#define simple_group      1
+#define hbox_group        2
+#define adjust_hbox_group 3
+#define vbox_group        4
+#define vtop_group        5
+#define align_group       6
+#define no_align_group    7
+#define output_group      8
+#define math_group        9
+#define disc_group        10
+#define insert_group      11
+#define vcenter_group     12
+#define math_choice_group 13
+#define semi_simple_group 14
+#define math_shift_group  15
+#define math_left_group   16
+#define max_group_code    16
 /* sec 0305 */
 #define skipping  1
 #define defining  2
 #define matching  3
 #define aligning  4
 #define absorbing 5
+/* sec 0307 */
+#define token_list         0
+#define token_type         cur_input.index_field
+#define param_start        cur_input.limit_field
+#define parameter          0
+#define u_template         1
+#define v_template         2
+#define backed_up          3
+#define inserted           4
+#define macro              5
+#define output_text        6
+#define every_par_text     7
+#define every_math_text    8
+#define every_display_text 9
+#define every_hbox_text    10
+#define every_vbox_text    11
+#define every_job_text     12
+#define every_cr_text      13
+#define mark_text          14
+#define write_text         15
 /* sec 0564 */
+/* sec 0608 */
+#define y_here  1
+#define z_here  2
+#define yz_OK   3
+#define y_OK    4
+#define z_OK    5
+#define d_fixed 6
+/* sec 0611 */
+#define none_seen 0
+#define y_seen    6
+#define z_seen    12
 /* sec 79 */
 
-extern void tex_help (unsigned int n, ...);
-extern void append_char(ASCII_code c);
-extern void succumb(void);
+extern INLINE void tex_help (unsigned int n, ...);
+extern INLINE void append_char(ASCII_code c);
+extern INLINE void succumb(void);
 extern INLINE void dvi_out_ (ASCII_code op);
 #define dvi_out(op) dvi_out_((ASCII_code) (op))
-extern void flush_string (void);
+extern INLINE void free_avail_(halfword p);
+#define free_avail(p) free_avail_((halfword) (p))
+extern INLINE void flush_string (void);
 #define help0()     tex_help(0)
 #define help1(...)  tex_help(1, __VA_ARGS__)
 #define help2(...)  tex_help(2, __VA_ARGS__)

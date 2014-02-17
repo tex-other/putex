@@ -23,1059 +23,1062 @@
 
 #pragma warning(disable:4244)       /* 96/Jan/10 */
 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-
 /* following bit used to be end of tex1.c */
 
 #ifdef STAT
+/* sec 0284 */
 void restore_trace_(halfword p, char * s)
 {
   begin_diagnostic();
   print_char('{');
   print_string(s);
   print_char(' ');
-  show_eqtb(p); 
+  show_eqtb(p);
   print_char('}');
   end_diagnostic(false);
 }
 #endif /* STAT */
-void unsave (void) 
-{/* 30 */  
-  halfword p; 
-  quarterword l; 
-  halfword t; 
-  if (cur_level > 1)
+/* sec 0281 */
+void unsave (void)
+{
+  halfword p;
+  quarterword l;
+  halfword t;
+
+  if (cur_level > level_one)
   {
-    decr(cur_level); 
+    decr(cur_level);
     while (true) {
-      decr(save_ptr); 
-      if (save_stack[save_ptr].hh.b0 == 3)
-      goto lab30; 
-      p = save_stack[save_ptr].hh.v.RH; 
-      if (save_stack[save_ptr].hh.b0 == 2)
+      decr(save_ptr);
+
+      if (save_type(save_ptr) == level_boundary)
+        goto lab30;
+
+      p = save_index(save_ptr);
+
+      if (save_type(save_ptr) == insert_token)
       {
-  t = cur_tok; 
-  cur_tok = p; 
-  back_input(); 
-  cur_tok = t; 
-      } 
-      else {
-  if (save_stack[save_ptr].hh.b0 == 0)
+        t = cur_tok;
+        cur_tok = p;
+        back_input();
+        cur_tok = t;
+      }
+      else
+      {
+        if (save_type(save_ptr) == restore_old_value)
+        {
+          l = save_level(save_ptr);
+          decr(save_ptr);
+        }
+        else
+          save_stack[save_ptr] = eqtb[undefined_control_sequence];
+        
+        if (p < int_base)
+          if (eq_level(p) == level_one)
+          {
+            eq_destroy(save_stack[save_ptr]);
+#ifdef STAT
+            if (tracing_restores > 0)
+              restore_trace(p, "retaining");
+#endif /* STAT */
+          }
+          else
+          {
+            eq_destroy(eqtb[p]);
+            eqtb[p] = save_stack[save_ptr];
+#ifdef STAT
+            if (tracing_restores > 0)
+              restore_trace(p, "restoring");
+#endif /* STAT */
+          }
+        else if (xeq_level[p] != level_one)
+        {
+          eqtb[p] = save_stack[save_ptr];
+          xeq_level[p] = l;     /* l may be used without having been ... */
+#ifdef STAT
+          if (tracing_restores > 0)
+            restore_trace(p, "restoring");
+#endif /* STAT */
+        }
+        else
+        {
+#ifdef STAT
+          if (tracing_restores > 0)
+            restore_trace(p, "retaining");
+#endif /* STAT */
+        }
+      }
+    }
+lab30:
+    cur_group = save_level(save_ptr);
+    cur_boundary = save_index(save_ptr);
+  }
+  else
   {
-    l = save_stack[save_ptr].hh.b1; 
-    decr(save_ptr); 
-  } 
-  else save_stack[save_ptr]= eqtb[(hash_size + 781)]; 
-                    /* undefine_control_sequence */
-  if (p < (hash_size + 3163))
-  if (eqtb[p].hh.b1 == 1)
-  {
-    eq_destroy(save_stack[save_ptr]); 
-  ;
-#ifdef STAT
-    if (tracing_restores > 0)
-    restore_trace(p, "retaining");
-#endif /* STAT */
-  } 
-  else {
-    eq_destroy(eqtb[p]); 
-    eqtb[p]= save_stack[save_ptr]; 
-  ;
-#ifdef STAT
-    if (tracing_restores > 0)
-    restore_trace(p, "restoring");
-#endif /* STAT */
-  } else if (xeq_level[p]!= 1)
-  {
-    eqtb[p]= save_stack[save_ptr]; 
-    xeq_level[p]= l;     /* l may be used without having been ... */
-  ;
-#ifdef STAT
-    if (tracing_restores > 0)
-    restore_trace(p, "restoring");
-#endif /* STAT */
-  } 
-  else {
-  ;
-#ifdef STAT
-    if (tracing_restores > 0)
-    restore_trace(p, "retaining");
-#endif /* STAT */
-  } 
-      } 
-    } 
-    lab30: cur_group = save_stack[save_ptr].hh.b1; 
-    cur_boundary = save_stack[save_ptr].hh.v.RH; 
-  } 
-  else {
     confusion("curlevel");
     return;       // abort_flag set
   }
-} 
+}
 /* This is where the old tex2.c used to start */
+/* sec 0288 */
 void prepare_mag (void) 
 {
-  if ((mag_set > 0) && (mag != mag_set)) 
+  if ((mag_set > 0) && (mag != mag_set))
   {
-    print_err("Incompatible magnification(");
-    print_int(mag); 
+    print_err("Incompatible magnification (");
+    print_int(mag);
     print_string(");");
     print_nl(" the previous value will be retained");
-    help2("I can handle only one magnification ratio per job.",
-        "So I've reverted to the magnification you used earlier on this run.");
-    int_error(mag_set); 
-    geq_word_define((hash_size + 3180), mag_set); 
+    help2("I can handle only one magnification ratio per job. So I've",
+        "reverted to the magnification you used earlier on this run.");
+    int_error(mag_set);
+    geq_word_define(int_base + mag_code, mag_set);
   } 
-  if ((mag <= 0) || (mag > 32768L)) {
+  if ((mag <= 0) || (mag > 32768L))
+  {
     print_err("Illegal magnification has been changed to 1000");
     help1("The magnification ratio must be between 1 and 32768.");
-    int_error(mag); 
-    geq_word_define((hash_size + 3180), 1000); 
-  } 
-  mag_set = mag; 
-} 
-void token_show_ (halfword p)  
+    int_error(mag);
+    geq_word_define(int_base + mag_code, 1000);
+  }
+  mag_set = mag;
+}
+/* sec 0295 */
+void token_show_ (halfword p)
 {
-/* begin if p<>null then show_token_list(link(p),null,10000000); l.6289 */
   if (p != 0)
-  show_token_list(mem[p].hh.v.RH, 0, 10000000L); 
-} 
+    show_token_list(link(p), 0, 10000000L);
+}
+/* sec 0296 */
 void print_meaning (void) 
 {
-  print_cmd_chr(cur_cmd, cur_chr); 
-  if (cur_cmd >= 111)
+  print_cmd_chr(cur_cmd, cur_chr);
+
+  if (cur_cmd >= call)
   {
-    print_char(58); /* : */
-    print_ln(); 
-    token_show(cur_chr); 
+    print_char(':');
+    print_ln();
+    token_show(cur_chr);
   } 
-  else if (cur_cmd == 110)
+  else if (cur_cmd == top_bot_mark)
   {
-    print_char(58); /* : */
-    print_ln(); 
-    token_show(cur_mark[cur_chr]); 
-  } 
-} 
-void show_cur_cmd_chr (void) 
+    print_char(':');
+    print_ln();
+    token_show(cur_mark[cur_chr]);
+  }
+}
+/* sec 0299 */
+void show_cur_cmd_chr (void)
 { 
-  begin_diagnostic(); 
+  begin_diagnostic();
   print_nl("{");
   if (mode != shown_mode)
   {
-    print_mode(mode); 
+    print_mode(mode);
     print_string(": ");
-    shown_mode = mode; 
-  } 
-  print_cmd_chr(cur_cmd, cur_chr); 
-  print_char(125);  /* } */
-  end_diagnostic(false); 
-} 
-void show_context (void) 
-{/* 30 */ 
-  char old_setting; 
-  integer nn; 
-  bool bottomline; 
-  integer i; 
-  integer j; 
-  integer l; 
-  integer m; 
-  integer n; 
-  integer p; 
-  integer q; 
-  base_ptr = input_ptr; 
-  input_stack[base_ptr] = cur_input; 
-  nn = -1; 
-  bottomline = false; 
-  while(true){
-    cur_input = input_stack[base_ptr]; 
-    if ((cur_input.state_field != 0)) 
-    if ((cur_input.name_field > 17)||(base_ptr == 0)) 
-    bottomline = true; 
-    if ((base_ptr == input_ptr)|| bottomline ||
-    (nn < error_context_lines)) 
+    shown_mode = mode;
+  }
+  print_cmd_chr(cur_cmd, cur_chr);
+  print_char('}');
+  end_diagnostic(false);
+}
+/* sec 0311 */
+void show_context (void)
+{
+  char old_setting;
+  integer nn;
+  bool bottomline;
+  integer i;
+  integer j;
+  integer l;
+  integer m;
+  integer n;
+  integer p;
+  integer q;
+
+  base_ptr = input_ptr;
+  input_stack[base_ptr] = cur_input;
+  nn = -1;
+  bottomline = false;
+  while (true) {
+    cur_input = input_stack[base_ptr];
+    if ((cur_input.state_field != 0))
+      if ((cur_input.name_field > 17) || (base_ptr == 0))
+        bottomline = true;
+    if ((base_ptr == input_ptr) || bottomline || (nn < error_context_lines))
     {
-/* begin if (base_ptr=input_ptr) or (state<>token_list) or
-   (token_type<>backed_up) or (loc<>null) then
-    {we omit backed-up token lists that have already been read} l.6761 */
-      if ((base_ptr == input_ptr)||(cur_input.state_field != 0)||(
-      cur_input.index_field != 3)||(cur_input.loc_field != 0)) 
+      if ((base_ptr == input_ptr) || (cur_input.state_field != token_list) ||
+          (cur_input.index_field != backed_up) || (cur_input.loc_field != 0))
       {
-  tally = 0; 
-  old_setting = selector;  
-  if (cur_input.state_field != 0)
-  {
-    if (cur_input.name_field <= 17)
-    if ((cur_input.name_field == 0)) 
-      if (base_ptr == 0)print_nl("<*>");   /* <*> */
-      else print_nl("<insert> "); /*  */
-    else {
-      print_nl("<read ");    /* <read  */
-      if (cur_input.name_field == 17)
-      print_char(42);   /* * */
-      else print_int(cur_input.name_field - 1); 
-      print_char(62);   /* > */
-    } 
-    else {
-/*      print_nl(574); */
-/*      print_int(line); */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-      if (c_style_flag) {         /* 94/Mar/21 */
-        print_ln();         /* new line */
-        /* show current input file name - ignore if from terminal */
-        if (cur_input.name_field > 17)  /* redundant ? */
-          print(cur_input.name_field);
-        print_char(40);       /*(*/
-        print_int(line);      /* line number */
-        print_char(41);       /*)*/
-        print_char(32);       /*   */
-        print_char(58);       /* : */
-      }
-      else {
-        print_nl("l.");        /* l. ? 573 ????? 98/Dec/8 check ! */
-        print_int(line);      /* line number */
-      }
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    } 
-    print_char(32);   /*   */
-    {
-      l = tally; 
-      tally = 0; 
-      selector = 20; 
-      trick_count = 1000000L; 
-    } 
-    if (buffer[cur_input.limit_field] == end_line_char)
-    j = cur_input.limit_field; 
-    else j = cur_input.limit_field + 1; 
-    if (j > 0)
-    {
-      register integer for_end; 
-      i = cur_input.start_field; 
-      for_end = j - 1; 
-      if (i <= for_end) do 
-      {
-        if (i == cur_input.loc_field)
+        tally = 0;
+        old_setting = selector;
+        if (cur_input.state_field != 0)
         {
-          first_count = tally; 
-          trick_count = tally + 1 + error_line - half_error_line; 
+          if (cur_input.name_field <= 17)
+            if ((cur_input.name_field == 0))
+              if (base_ptr == 0)
+                print_nl("<*>");
+              else
+                print_nl("<insert> ");
+            else
+            {
+              print_nl("<read ");
+              if (cur_input.name_field == 17)
+                print_char('*');
+              else
+                print_int(cur_input.name_field - 1);
+              print_char('>');
+            }
+          else {
+            if (c_style_flag)
+            {
+              print_ln();
+              /* show current input file name - ignore if from terminal */
+              if (cur_input.name_field > 17)  /* redundant ? */
+                print(cur_input.name_field);
+              print_char('(');
+              print_int(line); /* line number */
+              print_char(')');
+              print_char(' ');
+              print_char(':');
+            }
+            else
+            {
+              print_nl("l.");        /* l. ? 573 ????? 98/Dec/8 check ! */
+              print_int(line);      /* line number */
+            }
+          }
+          print_char(' ');
+          {
+            l = tally;
+            tally = 0;
+            selector = pseudo;
+            trick_count = 1000000L;
+          }
+          if (buffer[cur_input.limit_field] == end_line_char)
+            j = cur_input.limit_field;
+          else
+            j = cur_input.limit_field + 1;
+          if (j > 0)
+            for (i = cur_input.start_field; i <= j - 1; i++)
+            {
+              if (i == cur_input.loc_field)
+              {
+                first_count = tally;
+                trick_count = tally + 1 + error_line - half_error_line;
+                if (trick_count < error_line)
+                  trick_count = error_line;
+              }
+              print(buffer[i]);
+            }
+        }
+        else
+        {
+          switch (cur_input.index_field)
+          {
+            case parameter:
+              print_nl("<argument> ");
+              break;
+            case u_template:
+            case v_template:
+              print_nl("<template> ");
+              break;
+            case backed_up:
+              if (cur_input.loc_field == 0)
+                print_nl("<recently read> ");
+              else
+                print_nl("<to be read again> ");
+              break;
+            case inserted:
+              print_nl("<inserted text> ");
+              break;
+            case macro:
+              print_ln();
+              print_cs(cur_input.name_field);
+              break;
+            case output_text:
+              print_nl("<output> ");
+              break;
+            case every_par_text:
+              print_nl("<everypar> ");
+              break;
+            case every_math_text:
+              print_nl("<everymath> ");
+              break;
+            case every_display_text:
+              print_nl("<everydisplay> ");
+              break;
+            case every_hbox_text:
+              print_nl("<everyhbox> ");
+              break;
+            case every_vbox_text:
+              print_nl("<everyvbox> ");
+              break;
+            case every_job_text:
+              print_nl("<everyjob> ");
+              break;
+            case every_cr_text:
+              print_nl("<everycr> ");
+              break;
+            case mark_text:
+              print_nl("<mark> ");
+              break;
+            case write_text:
+              print_nl("<write> ");
+              break;
+            default:
+              print_nl("?");
+              break;
+          }
+          {
+            l = tally;
+            tally = 0;
+            selector = pseudo;
+            trick_count = 1000000L;
+          }
+          if (cur_input.index_field < macro)
+            show_token_list(cur_input.start_field, cur_input.loc_field, 100000L);
+          else
+            show_token_list(link(cur_input.start_field), cur_input.loc_field, 100000L);
+        }
+        selector = old_setting;
+        if (trick_count == 1000000L)
+        {
+          first_count = tally;
+          trick_count = tally + 1 + error_line - half_error_line;
           if (trick_count < error_line)
-            trick_count = error_line; 
-        } 
-        print(buffer[i]); 
-      } 
-      while(i++ < for_end);
-    } 
-  } 
-  else {
-      
-    switch(cur_input.index_field)
-    {case 0 : 
-      print_nl("<argument> "); /*  */  
-    break; 
-    case 1 : 
-    case 2 : 
-      print_nl("<template> "); /*  */
-      break; 
-    case 3 : 
-      if (cur_input.loc_field == 0)
-      print_nl("<recently read> ");  /*   */
-      else print_nl("<to be read again> "); /*  */
-      break; 
-    case 4 : 
-      print_nl("<inserted text> "); /*  */
-      break; 
-    case 5 : 
-      {
-        print_ln(); 
-        print_cs(cur_input.name_field); 
-      } 
-      break; 
-    case 6 : 
-      print_nl("<output> "); /*  */
-      break; 
-    case 7 : 
-      print_nl("<everypar> "); /*  */
-      break; 
-    case 8 : 
-      print_nl("<everymath> "); /*  */
-      break; 
-    case 9 : 
-      print_nl("<everydisplay> "); /*  */
-      break; 
-    case 10 : 
-      print_nl("<everyhbox> "); /*  */
-      break; 
-    case 11 : 
-      print_nl("<everyvbox> "); /*  */
-      break; 
-    case 12 : 
-      print_nl("<everyjob> "); /*  */
-      break; 
-    case 13 : 
-      print_nl("<everycr> "); /*  */
-      break; 
-    case 14 : 
-      print_nl("<mark> "); /*  */
-      break; 
-    case 15 : 
-      print_nl("<write> "); /*  */
-      break; 
-      default: 
-      print_nl("?");  /* ? */
-      break; 
-    } 
-    {
-      l = tally; 
-      tally = 0; 
-      selector = 20; 
-      trick_count = 1000000L; 
-    } 
-    if (cur_input.index_field < 5)
-    show_token_list(cur_input.start_field, cur_input.loc_field, 100000L 
-  ); 
-    else show_token_list(mem[cur_input.start_field].hh.v.RH, 
-    cur_input.loc_field, 100000L); 
-  } 
-  selector = old_setting; 
-  if (trick_count == 1000000L)
-  {
-    first_count = tally; 
-    trick_count = tally + 1 + error_line - half_error_line; 
-    if (trick_count < error_line)
-      trick_count = error_line; 
-  } 
-  if (tally < trick_count)
-    m = tally - first_count; 
-  else m = trick_count - first_count; 
-  if (l + first_count <= half_error_line){
-    p = 0; 
-    n = l + first_count; 
-  } 
-  else {
-    print_string("...");
-    p = l + first_count - half_error_line + 3; 
-    n = half_error_line; 
-  } 
-  {
-    register integer for_end; 
-    q = p; 
-    for_end = first_count - 1; 
-    if (q  <= for_end) do 
-      print_char(trick_buf[q % error_line]); 
-    while(q++ < for_end);
-  } 
-  print_ln(); 
-  {
-    register integer for_end; 
-    q = 1; 
-    for_end = n; 
-    if (q <= for_end) 
-      do print_char(32);    /*   */
-    while(q++ < for_end);
-  } 
-  if (m + n <= error_line)
-  p = first_count + m; 
-  else p = first_count +(error_line - n - 3); 
-  {
-    register integer for_end; 
-    q = first_count; 
-    for_end = p - 1; 
-    if (q  <= for_end) do 
-      print_char(trick_buf[q % error_line]); 
-    while(q++ < for_end);
-  } 
-  if (m + n > error_line)
-    print_string("...");
-  incr(nn); 
-      } 
-    } 
+            trick_count = error_line;
+        }
+        
+        if (tally < trick_count)
+          m = tally - first_count;
+        else
+          m = trick_count - first_count;
+
+        if (l + first_count <= half_error_line)
+        {
+          p = 0;
+          n = l + first_count;
+        }
+        else
+        {
+          print_string("...");
+          p = l + first_count - half_error_line + 3;
+          n = half_error_line;
+        }
+
+        for (q = p; q <= first_count - 1; q++)
+          print_char(trick_buf[q % error_line]);
+        
+        print_ln();
+
+        for (q = 1; q <= n; q++)
+          print_char(' ');
+
+        if (m + n <= error_line)
+          p = first_count + m;
+        else
+          p = first_count +(error_line - n - 3);
+
+        for (q = first_count; q <= p - 1; q++)
+          print_char(trick_buf[q % error_line]);
+
+        if (m + n > error_line)
+          print_string("...");
+        incr(nn);
+      }
+    }
     else if (nn == error_context_lines)
     {
       print_nl("...");
       incr(nn); 
-    } 
+    }
     if (bottomline)
-    goto lab30; 
-    decr(base_ptr); 
-  } 
-  lab30: cur_input = input_stack[input_ptr]; 
+      goto lab30;
+    decr(base_ptr);
+  }
+lab30:
+  cur_input = input_stack[input_ptr];
 }
 #pragma optimize("g", off)          /* 98/Dec/10 experiment */
+/* sec 0323 */
 void begin_token_list_ (halfword p, quarterword t)
 {
   {
     if (input_ptr > max_in_stack)
     {
-      max_in_stack = input_ptr; 
-#ifdef ALLOCATEINPUTSTACK
-    if (input_ptr == current_stack_size)
-      input_stack = realloc_input_stack (increment_stack_size);
-    if (input_ptr == current_stack_size){    /* check again after allocation */
-      overflow("input stack size", current_stack_size);
-      return;     // abort_flag set
-    }
-#else
-    if (input_ptr == stack_size) { /* input stack - not dynamic */
-      overflow("input stack size", stack_size);
-      return;     // abort_flag set
-    }
-#endif
-    } 
-    input_stack[input_ptr]= cur_input; 
-    incr(input_ptr); 
-  } 
-  cur_input.state_field = 0; 
-  cur_input.start_field = p; 
-  cur_input.index_field = t; 
-  if (t >= 5)
-  {
-    incr(mem[p].hh.v.LH); 
-    if (t == 5)
-    cur_input.limit_field = param_ptr; 
-    else {
-  
-      cur_input.loc_field = mem[p].hh.v.RH; 
-      if (tracing_macros > 1)
-      {
-  begin_diagnostic(); 
-  print_nl("");   /* */
-  switch(t)
-  {case 14 : 
-    print_esc("mark");
-    break; 
-  case 15 : 
-    print_esc("write");
-    break; 
-    default: 
-    print_cmd_chr(72, t + (hash_size + 1307));  /* H */
-    break; 
-  } 
-  print_string("->");
-  token_show(p); 
-  end_diagnostic(false); 
-      } 
-    } 
-  } 
-  else cur_input.loc_field = p; 
-} 
-#pragma optimize("", on)          /* 98/Dec/10 experiment */
-void end_token_list (void) 
-{ 
-  if (cur_input.index_field >= 3)
-  {
-    if (cur_input.index_field <= 4)
-    flush_list(cur_input.start_field); 
-    else {
-      delete_token_ref(cur_input.start_field); 
-      if (cur_input.index_field == 5)
-      while(param_ptr > cur_input.limit_field){
-      decr(param_ptr); 
-      flush_list(param_stack[param_ptr]); 
-      } 
-    } 
-  } 
-  else if (cur_input.index_field == 1)
-  if (align_state > 500000L)align_state = 0; 
-  else {
-    fatal_error("(interwoven alignment preambles are not allowed)"); /*  */
-    return;     // abort_flag set
-  }
-  {
-    decr(input_ptr); 
-    cur_input = input_stack[input_ptr]; 
-  } 
-  {
-    if (interrupt != 0){
-    pause_for_instructions();
-  }
-  } 
-}
-void back_input (void) 
-{ 
-  halfword p; 
-  while((cur_input.state_field == 0)&&(cur_input.loc_field == 0)) {
-    end_token_list();
-  }
-  p = get_avail(); 
-  mem[p].hh.v.LH = cur_tok; 
-  if (cur_tok < 768)
-    if (cur_tok < 512)
-      decr(align_state); 
-    else incr(align_state); 
-  {
-    if (input_ptr > max_in_stack)
-    {
-      max_in_stack = input_ptr; 
+      max_in_stack = input_ptr;
 #ifdef ALLOCATEINPUTSTACK
       if (input_ptr == current_stack_size)
-        input_stack = realloc_input_stack (increment_stack_size);
-      if (input_ptr == current_stack_size){  /* check again after allocation */
+        input_stack = realloc_input_stack(increment_stack_size);
+      if (input_ptr == current_stack_size)
+      {    /* check again after allocation */
         overflow("input stack size", current_stack_size);
         return;     // abort_flag set
       }
 #else
-      if (input_ptr == stack_size) { /* stack size - not dynamic */
+      if (input_ptr == stack_size)
+      { /* input stack - not dynamic */
         overflow("input stack size", stack_size);
         return;     // abort_flag set
       }
 #endif
-    } 
-    input_stack[input_ptr]= cur_input; 
-    incr(input_ptr); 
-  } 
-  cur_input.state_field = 0; 
-  cur_input.start_field = p; 
-  cur_input.index_field = 3; 
-  cur_input.loc_field = p; 
-} 
-void back_error (void) 
+    }
+    input_stack[input_ptr] = cur_input;
+    incr(input_ptr);
+  }
+  cur_input.state_field = token_list;
+  cur_input.start_field = p;
+  cur_input.index_field = t;
+  if (t >= macro)
+  {
+    add_token_ref(p);
+    if (t == macro)
+      cur_input.limit_field = param_ptr;
+    else
+    {
+      cur_input.loc_field = link(p);
+      if (tracing_macros > 1)
+      {
+        begin_diagnostic(); 
+        print_nl("");
+        switch (t)
+        {
+          case mark_text:
+            print_esc("mark");
+            break;
+          case write_text:
+            print_esc("write");
+            break;
+          default:
+            print_cmd_chr(assign_toks, t + (hash_size + 1307));
+            break;
+        }
+        print_string("->");
+        token_show(p);
+        end_diagnostic(false);
+      }
+    }
+  }
+  else
+    cur_input.loc_field = p;
+}
+#pragma optimize("", on)          /* 98/Dec/10 experiment */
+/* sec 0324 */
+void end_token_list (void) 
 { 
-  OK_to_interrupt = false; 
-  back_input(); 
-  OK_to_interrupt = true; 
-  error(); 
-} 
+  if (cur_input.index_field >= backed_up)
+  {
+    if (cur_input.index_field <= inserted)
+      flush_list(cur_input.start_field); 
+    else
+    {
+      delete_token_ref(cur_input.start_field);
+      if (cur_input.index_field == macro)
+        while (param_ptr > cur_input.limit_field) {
+          decr(param_ptr);
+          flush_list(param_stack[param_ptr]);
+        }
+    }
+  }
+  else if (cur_input.index_field == u_template)
+    if (align_state > 500000L)
+      align_state = 0;
+    else {
+      fatal_error("(interwoven alignment preambles are not allowed)");
+      return;     // abort_flag set
+    }
+  {
+    decr(input_ptr);
+    cur_input = input_stack[input_ptr];
+  }
+  {
+    if (interrupt != 0)
+    {
+      pause_for_instructions();
+    }
+  }
+}
+/* sec 0325 */
+void back_input (void)
+{
+  halfword p;
+  while ((cur_input.state_field == 0) && (cur_input.loc_field == 0) &&
+      (cur_input.index_field != v_template)) {
+    end_token_list();
+  }
+  p = get_avail();
+  info(p) = cur_tok;
+  if (cur_tok < 768)
+    if (cur_tok < 512)
+      decr(align_state);
+    else
+      incr(align_state);
+  {
+    if (input_ptr > max_in_stack)
+    {
+      max_in_stack = input_ptr;
+#ifdef ALLOCATEINPUTSTACK
+      if (input_ptr == current_stack_size)
+        input_stack = realloc_input_stack(increment_stack_size);
+      if (input_ptr == current_stack_size)
+      {  /* check again after allocation */
+        overflow("input stack size", current_stack_size);
+        return;     // abort_flag set
+      }
+#else
+      if (input_ptr == stack_size)
+      { /* stack size - not dynamic */
+        overflow("input stack size", stack_size);
+        return;     // abort_flag set
+      }
+#endif
+    }
+    input_stack[input_ptr] = cur_input;
+    incr(input_ptr);
+  }
+  cur_input.state_field = token_list;
+  cur_input.start_field = p;
+  cur_input.index_field = backed_up;
+  cur_input.loc_field = p;
+}
+/* sec 0327 */
+void back_error (void)
+{
+  OK_to_interrupt = false;
+  back_input();
+  OK_to_interrupt = true;
+  error();
+}
+/* sec 0327 */
 void ins_error (void) 
 {
   OK_to_interrupt = false;
   back_input();
-  cur_input.index_field = 4;
+  cur_input.index_field = inserted;
   OK_to_interrupt = true;
   error();
-} 
-void begin_file_reading (void) 
-{ 
-    if (in_open == max_in_open){
-      overflow("text input levels", max_in_open); /* text input levels - NOT DYNAMIC */
+}
+/* sec 0328 */
+void begin_file_reading (void)
+{
+  if (in_open == max_in_open)
+  {
+    overflow("text input levels", max_in_open); /* text input levels - NOT DYNAMIC */
     return;     // abort_flag set
   }
 #ifdef ALLOCATEBUFFER
-    if (first == current_buf_size)
-    buffer = realloc_buffer (increment_buf_size);
-  if (first == current_buf_size) {   /* check again after allocation */
+  if (first == current_buf_size)
+    buffer = realloc_buffer(increment_buf_size);
+  if (first == current_buf_size)
+  {   /* check again after allocation */
     overflow("buffer size", current_buf_size);
     return;     // abort_flag set
   }
 #else
-  if (first == buf_size){
+  if (first == buf_size)
+  {
     overflow("buffer size", buf_size);  /* buffer size - not dynamic */
     return;     // abort_flag set
   }
 #endif
-
-  incr(in_open); 
+  incr(in_open);
   if (in_open > high_in_open)     /* 1999 Jan 17 */
     high_in_open = in_open;
   {
     if (input_ptr > max_in_stack)
     {
-      max_in_stack = input_ptr; 
+      max_in_stack = input_ptr;
 #ifdef ALLOCATEINPUTSTACK
-    if (input_ptr == current_stack_size)
-      input_stack = realloc_input_stack (increment_stack_size);
-    if (input_ptr == current_stack_size){
-      overflow("input stack size", current_stack_size);  /* check again after allocation */
-      return;     // abort_flag set
-    }
+      if (input_ptr == current_stack_size)
+        input_stack = realloc_input_stack(increment_stack_size);
+      if (input_ptr == current_stack_size)
+      {
+        overflow("input stack size", current_stack_size);  /* check again after allocation */
+        return;     // abort_flag set
+      }
 #else
-    if (input_ptr == stack_size){
-      overflow("input stack size", stack_size);    /* input stack - not dynamic */
-      return;     // abort_flag set
-    }
+      if (input_ptr == stack_size)
+      {
+        overflow("input stack size", stack_size);    /* input stack - not dynamic */
+        return;     // abort_flag set
+      }
 #endif
-    } 
-    input_stack[input_ptr]= cur_input; 
-    incr(input_ptr); 
-  } 
-  cur_input.index_field = in_open; 
-  line_stack[cur_input.index_field]= line; 
-  cur_input.start_field = first; 
-  cur_input.state_field = 1; 
-  cur_input.name_field = 0; 
-} 
-void end_file_reading (void) 
-{ 
-  first = cur_input.start_field; 
-  line = line_stack[cur_input.index_field]; 
+    }
+    input_stack[input_ptr] = cur_input;
+    incr(input_ptr);
+  }
+  cur_input.index_field = in_open;
+  line_stack[cur_input.index_field] = line;
+  cur_input.start_field = first;
+  cur_input.state_field = 1;
+  cur_input.name_field = 0;
+}
+/* sec 0329 */
+void end_file_reading (void)
+{
+  first = cur_input.start_field;
+  line = line_stack[cur_input.index_field];
   if (cur_input.name_field > 17)
-    (void) a_close(input_file[cur_input.index_field]); 
+    (void) a_close(input_file[cur_input.index_field]);
   {
-    decr(input_ptr); 
-    cur_input = input_stack[input_ptr]; 
-  } 
-  decr(in_open); 
-} 
+    decr(input_ptr);
+    cur_input = input_stack[input_ptr];
+  }
+  decr(in_open);
+}
 /* called only form tex0.c */
+/* sec 0330 */
 void clear_for_error_prompt (void) 
 {
-  while((cur_input.state_field != 0)&&
-     (cur_input.name_field == 0)&&
-     (input_ptr > 0)&&
-     (cur_input.loc_field > cur_input.limit_field)) 
-  end_file_reading(); 
-  print_ln(); 
-} 
-void check_outer_validity (void) 
-{ 
-  halfword p; 
-  halfword q; 
+  while ((cur_input.state_field != 0) &&
+      (cur_input.name_field == 0) &&
+      (input_ptr > 0) &&
+      (cur_input.loc_field > cur_input.limit_field))
+    end_file_reading();
+  print_ln();
+}
+/* sec 0336 */
+void check_outer_validity (void)
+{
+  halfword p;
+  halfword q;
+
   if (scanner_status != 0)
   {
-    deletions_allowed = false; 
+    deletions_allowed = false;
     if (cur_cs != 0)
     {
-      if ((cur_input.state_field == 0)||(cur_input.name_field < 1)||
-      (cur_input.name_field > 17)) 
+      if ((cur_input.state_field == 0) ||
+          (cur_input.name_field < 1) ||
+          (cur_input.name_field > 17))
       {
-/*     begin p:=get_avail; info(p):=cs_token_flag+cur_cs; */
-  p = get_avail(); 
-  mem[p].hh.v.LH = 4095 + cur_cs; 
-  begin_token_list(p, 3); 
-      } 
-      cur_cmd = 10; 
-      cur_chr = 32; 
-    } 
-    if (scanner_status > 1)
+        p = get_avail();
+        info(p) = 4095 + cur_cs;
+        begin_token_list(p, 3);
+      }
+      cur_cmd = spacer;
+      cur_chr = ' ';
+    }
+
+    if (scanner_status > skipping)
     {
-      runaway(); 
+      runaway();
       if (cur_cs == 0)
         print_err("File ended");
-      else {
-  cur_cs = 0;
-  print_err("Forbidden control sequence found");
-      } 
+      else
+      {
+        cur_cs = 0;
+        print_err("Forbidden control sequence found");
+      }
       print_string(" while scanning ");
-      p = get_avail(); 
-      switch(scanner_status)
-      {case 2 : 
-  {
-    print_string("definition");
-    mem[p].hh.v.LH = 637; 
-  } 
-  break; 
-      case 3 : 
-  {
-    print_string("use");
-    mem[p].hh.v.LH = par_token; 
-    long_state = 113; 
-  } 
-  break; 
-      case 4 : 
-  {
-    print_string("preamble");
-    mem[p].hh.v.LH = 637; 
-    q = p; 
-    p = get_avail(); 
-    mem[p].hh.v.RH = q; 
+      p = get_avail();
+      switch (scanner_status)
+      {
+        case defining:
+          print_string("definition");
+          info(p) = 637;
+          break;
+        case matching:
+          print_string("use");
+          info(p) = par_token;
+          long_state = outer_call;
+          break;
+        case aligning:
+          print_string("preamble");
+          info(p) = 637;
+          q = p;
+          p = get_avail();
+          link(p) = q;
 /*    mem[p].hh.v.LH = (hash_size + 4610);  */
 /*    mem[p].hh.v.LH = (hash_size + 4095 + 515);  */
-    mem[p].hh.v.LH = (hash_size + hash_extra + 4095 + 515); /*96/Jan/10*/
-    align_state = -1000000L; 
-  } 
-  break; 
-      case 5 : 
-  {
-    print_string("text");
-    mem[p].hh.v.LH = 637; 
-  } 
-  break; 
-      } 
-      begin_token_list(p, 4); 
+          info(p) = (hash_size + hash_extra + 4095 + 515); /*96/Jan/10*/
+          align_state = -1000000L;
+          break;
+        case absorbing:
+          print_string("text");
+          info(p) = 637;
+          break;
+      }
+      begin_token_list(p, 4);
       print_string(" of ");
       sprint_cs(warning_index);
       help4("I suspect you have forgotten a `}', causing me",
           "to read past where you wanted me to stop.",
           "I'll try to recover; but if the error is serious,",
           "you'd better type `E' or `X' now and fix your file.");
-      error(); 
-    } 
-    else {
-  print_err("Incomplete ");
-      print_cmd_chr(105, cur_if); /* i */
+      error();
+    }
+    else
+    {
+      print_err("Incomplete ");
+      print_cmd_chr(if_test, cur_if);
       print_string("; all text was ignored after line ");
       print_int(skip_line);
       help3("A forbidden control sequence occurred in skipped text.",
           "This kind of error happens when you say `\\if...' and forget",
           "the matching `\\fi'. I've inserted a `\\fi'; this might work.");
       if (cur_cs != 0)
-      cur_cs = 0; 
-      else help_line[2]= "The file ended while I was skipping conditional text.";
+        cur_cs = 0; 
+      else
+        help_line[2] = "The file ended while I was skipping conditional text.";
 /*      cur_tok = (hash_size + 4613);  */
 /*      cur_tok = (hash_size + 4095 + 518);  */
       cur_tok = (hash_size + hash_extra + 4095 + 518); /* 96/Jan/10 */
-      ins_error(); 
+      ins_error();
   }
-    deletions_allowed = true; 
+    deletions_allowed = true;
   }
-} 
+}
 /*****************************************************************************/
 /* get_next() moved from here to end for pragma optimize reasons 96/Sep/12 */
 void get_next(void);
 /*****************************************************************************/
-void firm_up_the_line (void) 
-{ 
-  integer k; 
-  cur_input.limit_field = last; 
-  if (pausing > 0)
-    if (interaction > 1) {
-    ; 
-      print_ln(); 
-      if (cur_input.start_field < cur_input.limit_field) {
-        register integer for_end; 
-        k = cur_input.start_field; 
-        for_end = cur_input.limit_field - 1; 
-        if (k <= for_end) do print(buffer[k]); 
-        while(k++ < for_end);
-      } 
-      first = cur_input.limit_field; 
-      {
-      ; 
-        print_string("=>");
-        term_input(615, 0); 
-      } 
-      if (last > first){
-        {
-          register integer for_end; 
-          k = first; 
-          for_end = last - 1; 
-          if (k <= for_end) do 
-            buffer[k + cur_input.start_field - first]= buffer[k]; 
-          while(k++ < for_end);
-        } 
-        cur_input.limit_field = cur_input.start_field + last - first; 
-      } 
-    } 
-} 
-void get_token (void) 
-{ 
-  no_new_control_sequence = false; 
-  get_next(); 
-  no_new_control_sequence = true; 
-  if (cur_cs == 0)cur_tok =(cur_cmd * 256)+ cur_chr; 
-  else cur_tok = 4095 + cur_cs; 
-} 
-void macro_call (void) 
-{/* 10 22 30 31 40 */ 
-  halfword r; 
-  halfword p; 
-  halfword q; 
-  halfword s; 
-  halfword t; 
-  halfword u, v; 
-  halfword rbraceptr; 
-  small_number n; 
-  halfword unbalance; 
-  halfword m; 
-  halfword refcount; 
-  small_number savescannerstatus; 
-  halfword savewarningindex; 
-  ASCII_code matchchr; 
+/* sec 0363 */
+void firm_up_the_line (void)
+{
+  integer k;
 
-  savescannerstatus = scanner_status;  
-  savewarningindex = warning_index; 
-  warning_index = cur_cs; 
-  refcount = cur_chr; 
-  r = mem[refcount].hh.v.RH; 
-  n = 0; 
+  cur_input.limit_field = last;
+  if (pausing > 0)
+    if (interaction > 1)
+    {
+      ;
+      print_ln();
+      if (cur_input.start_field < cur_input.limit_field)
+        for (k = cur_input.start_field; k <= cur_input.limit_field - 1; k++)
+          print(buffer[k]);
+      first = cur_input.limit_field;
+      {
+        ;
+        print_string("=>");
+        term_input("=>", 0);
+      }
+      if (last > first)
+      {
+        for (k = first; k <= last - 1; k++)
+          buffer[k + cur_input.start_field - first] = buffer[k];
+        cur_input.limit_field = cur_input.start_field + last - first;
+      }
+    }
+}
+/* sec 0365 */
+void get_token (void)
+{ 
+  no_new_control_sequence = false;
+  get_next();
+  no_new_control_sequence = true;
+  if (cur_cs == 0)
+    cur_tok = (cur_cmd * 256) + cur_chr;
+  else
+    cur_tok = 4095 + cur_cs;
+}
+/* sec 0389 */
+void macro_call (void)
+{
+  halfword r;
+  halfword p;
+  halfword q;
+  halfword s;
+  halfword t;
+  halfword u, v;
+  halfword rbraceptr;
+  small_number n;
+  halfword unbalance;
+  halfword m;
+  halfword refcount;
+  small_number savescannerstatus;
+  halfword savewarningindex;
+  ASCII_code match_chr;
+
+  savescannerstatus = scanner_status;
+  savewarningindex = warning_index;
+  warning_index = cur_cs;
+  refcount = cur_chr;
+  r = link(refcount);
+  n = 0;
+
   if (tracing_macros > 0)
   {
-    begin_diagnostic(); 
-    print_ln(); 
-    print_cs(warning_index); 
-    token_show(refcount); 
-    end_diagnostic(false); 
-  } 
-  if (mem[r].hh.v.LH != 3584)
+    begin_diagnostic();
+    print_ln();
+    print_cs(warning_index);
+    token_show(refcount);
+    end_diagnostic(false);
+  }
+  if (info(r) != 3584)
   {
-    scanner_status = 3; 
-    unbalance = 0; 
-    long_state = eqtb[cur_cs].hh.b0; 
-    if (long_state >= 113)
-    long_state = long_state - 2; 
+    scanner_status = matching;
+    unbalance = 0;
+    long_state = eq_type(cur_cs);
+    if (long_state >= outer_call)
+      long_state = long_state - 2;
     do {
-  mem[temp_head].hh.v.RH = 0; /* repeat link(temp_head):=null; */
-      if ((mem[r].hh.v.LH > 3583)||(mem[r].hh.v.LH < 3328)) 
-      s = 0; /* s:=null l.7984 */
-      else {
-  matchchr = mem[r].hh.v.LH - 3328; 
-  s = mem[r].hh.v.RH; 
-  r = s; 
-  p = temp_head; 
-  m = 0; 
-      } 
-      lab22: get_token(); 
-      if (cur_tok == mem[r].hh.v.LH)
+      link(temp_head) = 0;
+      if ((info(r) > 3583) || (info(r) < 3328))
+        s = 0;
+      else
       {
-  r = mem[r].hh.v.RH; 
-  if ((mem[r].hh.v.LH >= 3328)&&(mem[r].hh.v.LH <= 3584 
-  ))
-  {
-    if (cur_tok < 512)
-    decr(align_state); 
-    goto lab40; 
-  } 
-  else goto lab22; 
-      } 
+        match_chr = info(r) - 3328;
+        s = link(r);
+        r = s;
+        p = temp_head;
+        m = 0;
+      }
+lab22:
+      get_token();
+      if (cur_tok == info(r))
+      {
+        r = link(r);
+        if ((info(r) >= 3328) && (info(r) <= 3584))
+        {
+          if (cur_tok < 512)
+            decr(align_state);
+          goto lab40;
+        }
+        else
+          goto lab22;
+      }
       if (s != r)
-      if (s == 0)
-      {
-		  print_err("Use of ");
-  sprint_cs(warning_index); 
-  print_string(" doesn't match its definition");
-  help4("If you say, e.g., `\\def\\a1{...}', then you must always",
-      "put `1' after `\\a', since control sequence names are",
-      "made up of letters only. The macro here has not been",
-      "followed by the required stuff, so I'm ignoring it."); 
-  error(); 
-  goto lab10; 
-      } 
-      else {
-  t = s; 
-  do {
-      { 
-      q = get_avail(); 
-      mem[p].hh.v.RH = q; 
-      mem[q].hh.v.LH = mem[t].hh.v.LH; 
-      p = q; 
-    } 
-    incr(m); 
-    u = mem[t].hh.v.RH; 
-    v = s; 
-    while (true) {
-      if (u == r)
-      if (cur_tok != mem[v].hh.v.LH)
-      goto lab30; 
-      else {
-        r = mem[v].hh.v.RH; 
-        goto lab22; 
-      } 
-      if (mem[u].hh.v.LH != mem[v].hh.v.LH)
-      goto lab30; 
-      u = mem[u].hh.v.RH; 
-      v = mem[v].hh.v.RH; 
-    } 
-    lab30: t = mem[t].hh.v.RH; 
-  } while(!(t == r)); 
-  r = s; 
-      } 
+        if (s == 0)
+        {
+          print_err("Use of ");
+          sprint_cs(warning_index);
+          print_string(" doesn't match its definition");
+          help4("If you say, e.g., `\\def\\a1{...}', then you must always",
+              "put `1' after `\\a', since control sequence names are",
+              "made up of letters only. The macro here has not been",
+              "followed by the required stuff, so I'm ignoring it.");
+          error();
+          goto lab10;
+        }
+        else
+        {
+          t = s;
+          do {
+            {
+              q = get_avail();
+              mem[p].hh.v.RH = q;
+              mem[q].hh.v.LH = mem[t].hh.v.LH;
+              p = q;
+            }
+            incr(m);
+            u = link(t);
+            v = s;
+            while (true) {
+              if (u == r)
+                if (cur_tok != info(v))
+                  goto lab30;
+                else
+                {
+                  r = link(v);
+                  goto lab22;
+                }
+              if (info(u) != info(v))
+                goto lab30;
+              u = link(u);
+              v = link(v);
+            }
+lab30:
+            t = link(t);
+          } while(!(t == r));
+          r = s;
+        }
       if (cur_tok == par_token)
-      if (long_state != 112)
-      {
-  if (long_state == 111)
-  {
-    runaway();
-	print_err("Paragraph ended before ");
-    sprint_cs(warning_index); 
-    print_string("was complete");
-    help3("I suspect you've forgotten a `}', causing me to apply this",
-        "control sequence to too much text. How can we recover?",
-        "My plan is to forget the whole thing and hope for the best."); 
-    back_error(); 
-  } 
-  pstack[n]= mem[temp_head].hh.v.RH; 
-  align_state = align_state - unbalance; 
-  {
-    register integer for_end; 
-    m = 0; 
-    for_end = n; 
-    if (m <= for_end) do 
-      flush_list(pstack[m]); 
-    while(m++ < for_end);
-  } 
-  goto lab10; 
-      } 
+        if (long_state != long_call)
+        {
+          if (long_state == call)
+          {
+            runaway();
+            print_err("Paragraph ended before ");
+            sprint_cs(warning_index);
+            print_string("was complete");
+            help3("I suspect you've forgotten a `}', causing me to apply this",
+                "control sequence to too much text. How can we recover?",
+                "My plan is to forget the whole thing and hope for the best.");
+            back_error();
+          }
+          pstack[n] = link(temp_head);
+          align_state = align_state - unbalance;
+          for (m = 0; m <= n; m++)
+            flush_list(pstack[m]);
+          goto lab10;
+        }
       if (cur_tok < 768)
-      if (cur_tok < 512)
-      {
-  unbalance = 1; 
-  while (true) {
-    {
-      {
-        q = avail; 
-        if (q == 0)
-        q = get_avail(); 
-        else {
-      
-    avail = mem[q].hh.v.RH; 
-    mem[q].hh.v.RH = 0; 
-  ;
+        if (cur_tok < 512)
+        {
+          unbalance = 1;
+          while (true) {
+            {
+              {
+                q = avail;
+                if (q == 0)
+                  q = get_avail();
+                else
+                {
+                  avail = mem[q].hh.v.RH;
+                  mem[q].hh.v.RH = 0;
 #ifdef STAT
-    incr(dyn_used); 
+                  incr(dyn_used);
 #endif /* STAT */
-        } 
-      } 
-      mem[p].hh.v.RH = q; 
-      mem[q].hh.v.LH = cur_tok; 
-      p = q; 
-    } 
-    get_token(); 
-    if (cur_tok == par_token)
-    if (long_state != 112)
-    {
-      if (long_state == 111)
+                }
+              }
+              mem[p].hh.v.RH = q;
+              mem[q].hh.v.LH = cur_tok;
+              p = q;
+            }
+            get_token();
+            if (cur_tok == par_token)
+              if (long_state != long_call)
+              {
+                if (long_state == call)
+                {
+                  runaway();
+                  print_err("Paragraph ended before ");
+                  sprint_cs(warning_index);
+                  print_string(" was complete");
+                  help3("I suspect you've forgotten a `}', causing me to apply this",
+                      "control sequence to too much text. How can we recover?",
+                      "My plan is to forget the whole thing and hope for the best.");
+                  back_error();
+                }
+                pstack[n] = link(temp_head);
+                align_state = align_state - unbalance;
+                for (m = 0; m <= n; m++)
+                  flush_list(pstack[m]);
+                goto lab10;
+              }
+            if (cur_tok < 768)
+              if (cur_tok < 512)
+                incr(unbalance); 
+              else
+              {
+                decr(unbalance);
+                if (unbalance == 0)
+                  goto lab31;
+              }
+          }
+lab31:
+          rbraceptr = p;
+          {
+            q = get_avail();
+            mem[p].hh.v.RH = q;
+            mem[q].hh.v.LH = cur_tok;
+            p = q;
+          }
+        }
+        else
+        {
+          back_input();
+          print_err("Argument of ");
+          sprint_cs(warning_index);
+          print_string(" has an extra }");
+          help6("I've run across a `}' that doesn't seem to match anything.",
+              "For example, `\\def\\a#1{...}' and `\\a}' would produce",
+              "this error. If you simply proceed now, the `\\par' that",
+              "I've just inserted will cause me to report a runaway",
+              "argument that might be the root of the problem. But if",
+              "your `}' was spurious, just type `2' and it will go away.");
+          incr(align_state);
+          long_state = call;
+          cur_tok = par_token;
+          ins_error();
+          goto lab22;
+        }
+      else
       {
-        runaway();
-        print_err("Paragraph ended before ");
-        sprint_cs(warning_index); 
-        print_string(" was complete");
-        help3("I suspect you've forgotten a `}', causing me to apply this",
-            "control sequence to too much text. How can we recover?",
-            "My plan is to forget the whole thing and hope for the best.");
-        back_error(); 
-      } 
-      pstack[n]= mem[temp_head].hh.v.RH; 
-      align_state = align_state - unbalance; 
-      {
-      register integer for_end; 
-      m = 0; 
-      for_end = n; 
-      if (m <= for_end) do 
-        flush_list(pstack[m]); 
-      while(m++ < for_end);
-    } 
-      goto lab10; 
-    } 
-    if (cur_tok < 768)
-    if (cur_tok < 512)
-    incr(unbalance); 
-    else {
-        
-      decr(unbalance); 
-      if (unbalance == 0)
-      goto lab31; 
-    } 
-  } 
-  lab31: rbraceptr = p; 
-  {
-    q = get_avail(); 
-    mem[p].hh.v.RH = q; 
-    mem[q].hh.v.LH = cur_tok; 
-    p = q; 
-  } 
-      } 
-      else {
-  back_input();
-  print_err("Argument of ");
-  sprint_cs(warning_index); 
-  print_string(" has an extra }");
-  help6("I've run across a `}' that doesn't seem to match anything.",
-	  "For example, `\\def\\a#1{...}' and `\\a}' would produce",
-	  "this error. If you simply proceed now, the `\\par' that",
-	  "I've just inserted will cause me to report a runaway",
-	  "argument that might be the root of the problem. But if",
-	  "your `}' was spurious, just type `2' and it will go away.");
-  incr(align_state); 
-  long_state = 111; 
-  cur_tok = par_token; 
-/* 420 in tex82.bug */
-  ins_error();
-  goto lab22;
-      } 
-      else {
-  if (cur_tok == 2592)
-  if (mem[r].hh.v.LH <= 3584)
-  if (mem[r].hh.v.LH >= 3328)
-  goto lab22; 
-  {
-    q = get_avail(); 
-    mem[p].hh.v.RH = q;   /* p may be used without having ... */
-    mem[q].hh.v.LH = cur_tok; 
-    p = q; 
-  } 
-      } 
+        if (cur_tok == 2592)
+          if (info(r) <= 3584)
+            if (info(r) >= 3328)
+              goto lab22;
+        {
+          q = get_avail();
+          mem[p].hh.v.RH = q;   /* p may be used without having ... */
+          mem[q].hh.v.LH = cur_tok;
+          p = q;
+        }
+      }
       incr(m);          /* m may be used without having been ... */
-      if (mem[r].hh.v.LH > 3584)
-      goto lab22; 
-      if (mem[r].hh.v.LH < 3328)
-      goto lab22; 
-      lab40: if (s != 0)
+      if (info(r) > 3584)
+        goto lab22;
+      if (info(r) < 3328)
+        goto lab22;
+lab40:
+      if (s != 0)
       {
-  if ((m == 1) && (mem[p].hh.v.LH < 768) && (p != temp_head))
-  {
-    mem[rbraceptr].hh.v.RH = 0; /* rbraceptr may be used without ... */
-    {
-      mem[p].hh.v.RH = avail; 
-      avail = p; 
-  ;
-#ifdef STAT
-      decr(dyn_used); 
-#endif /* STAT */
-    } 
-    p = mem[temp_head].hh.v.RH; 
-    pstack[n]= mem[p].hh.v.RH; 
-    {
-      mem[p].hh.v.RH = avail; 
-      avail = p; 
-  ;
-#ifdef STAT
-      decr(dyn_used); 
-#endif /* STAT */
-    } 
-  } 
-  else pstack[n]= mem[temp_head].hh.v.RH; 
-  incr(n); 
-  if (tracing_macros > 0)
-  {
-    begin_diagnostic(); 
-    print_nl(matchchr); /* matchchar may be used without ... */
-    print_int(n); 
-    print_string("<-");
-    show_token_list(pstack[n - 1], 0, 1000); 
-    end_diagnostic(false); 
-  } 
-      } 
-    } while(!(mem[r].hh.v.LH == 3584)); 
-  } 
-/* while (state=token_list)and(loc=null) do end_token_list; l.7956 */
-  while((cur_input.state_field == 0)&&(cur_input.loc_field == 0)) 
-  end_token_list(); 
-  begin_token_list(refcount, 5); 
-  cur_input.name_field = warning_index; 
-  cur_input.loc_field = mem[r].hh.v.RH; 
+        if ((m == 1) && (info(p) < 768) && (p != temp_head))
+        {
+          link(rbraceptr) = 0; /* rbraceptr may be used without ... */
+          free_avail(p);
+          p = link(temp_head);
+          pstack[n]= link(p);
+          free_avail(p);
+        }
+        else
+          pstack[n] = link(temp_head);
+        incr(n);
+        if (tracing_macros > 0)
+        {
+          begin_diagnostic();
+          //print_nl(match_chr); /* matchchar may be used without ... */
+          print_nl(""); print(match_chr);
+          print_int(n);
+          print_string("<-");
+          show_token_list(pstack[n - 1], 0, 1000);
+          end_diagnostic(false);
+        }
+      }
+    } while(!(info(r) == 3584));
+  }
+
+  while((cur_input.state_field == token_list) && (cur_input.loc_field == 0) &&
+      (cur_input.index_field != v_template))
+    end_token_list();
+  begin_token_list(refcount, macro);
+  cur_input.name_field = warning_index;
+  cur_input.loc_field = link(r);
   if (n > 0)
   {
     if (param_ptr + n > max_param_stack)
     {
-      max_param_stack = param_ptr + n; 
+      max_param_stack = param_ptr + n;
 #ifdef ALLOCATEPARAMSTACK
-    if (max_param_stack > current_param_size)
-      param_stack = realloc_param_stack (increment_param_size);
-    if (max_param_stack > current_param_size){ /* check again after allocation */
-      overflow("parameter stack size", current_param_size);
-      return;     // abort_flag set
-    }
+      if (max_param_stack > current_param_size)
+        param_stack = realloc_param_stack(increment_param_size);
+      if (max_param_stack > current_param_size)
+      { /* check again after allocation */
+        overflow("parameter stack size", current_param_size);
+        return;     // abort_flag set
+      }
 #else
-    if (max_param_stack > param_size){
-      overflow("parameter stack size", param_size); /* parameter stack - not dynamic */
-      return;     // abort_flag set
-    }
+      if (max_param_stack > param_size)
+      {
+        overflow("parameter stack size", param_size); /* parameter stack - not dynamic */
+        return;     // abort_flag set
+      }
 #endif
-    } 
-    {
-    register integer for_end; 
-    m = 0; 
-    for_end = n - 1; 
-    if (m <= for_end) 
-      do param_stack[param_ptr + m]= pstack[m]; 
-    while(m++ < for_end);
-  } 
-    param_ptr = param_ptr + n; 
-  } 
-  lab10: scanner_status = savescannerstatus; 
-  warning_index = savewarningindex; 
+    }
+    for (m = 0; m <= n - 1; m++)
+      param_stack[param_ptr + m] = pstack[m];
+    param_ptr = param_ptr + n;
+  }
+lab10:
+  scanner_status = savescannerstatus;
+  warning_index = savewarningindex;
 }
+/* sec 0379 */
 void insert_relax (void) 
 {
-/* begin cur_tok:=cs_token_flag+cur_cs; back_input; */
-  cur_tok = 4095 + cur_cs; 
-  back_input(); 
-/* cur_tok:=cs_token_flag+frozen_relax; back_input; token_type:=inserted; */
+  cur_tok = 4095 + cur_cs;
+  back_input();
 /*  cur_tok = (hash_size + 4616);  */
 /*  cur_tok = (hash_size + 4095 + 521);  */
   cur_tok = (hash_size + hash_extra + 4095 + 521);  /* 96/Jan/10 */
-  back_input(); 
-  cur_input.index_field = 4; 
-} 
-void expand (void) 
+  back_input();
+  cur_input.index_field = inserted;
+}
+/* sec 0366 */
+void expand (void)
 {
   halfword t;
   halfword p, q, r;
@@ -1089,244 +1092,247 @@ void expand (void)
   cvlbackup = cur_val_level;
   radixbackup = radix;
   cobackup = cur_order;
-  backupbackup = mem[mem_top - 13].hh.v.RH;
-  if (cur_cmd < 111)
+  backupbackup = link(backup_head);
+  if (cur_cmd < call)
   {
     if (tracing_commands > 1)
-    show_cur_cmd_chr();
-    switch(cur_cmd)
-    {case 110:
-      {
-/* begin if cur_mark[cur_chr]<>null then l.7881 */
-  if (cur_mark[cur_chr] != 0)
-  begin_token_list(cur_mark[cur_chr], 14); 
-      } 
-      break; 
-    case 102 : 
-      {
-  get_token(); 
-  t = cur_tok; 
-  get_token(); 
-  if (cur_cmd > 100) {
-    expand();
-  }
-  else back_input(); 
-  cur_tok = t; 
-  back_input(); 
-      } 
-      break; 
-    case 103 : 
-      {
-  savescannerstatus = scanner_status;  
-  scanner_status = 0; 
-  get_token(); 
-  scanner_status = savescannerstatus; 
-  t = cur_tok; 
-  back_input(); 
-  if (t >= 4095)   /* if t>=cs_token_flag then */
-  {
+      show_cur_cmd_chr();
+    switch (cur_cmd)
+    {
+      case top_bot_mark:
+        if (cur_mark[cur_chr] != 0)
+          begin_token_list(cur_mark[cur_chr], mark_text);
+        break;
+      case expand_after:
+        get_token();
+        t = cur_tok;
+        get_token();
+        if (cur_cmd > max_command)
+          expand();
+        else
+          back_input();
+        cur_tok = t;
+        back_input();
+        break;
+      case no_expand:
+        savescannerstatus = scanner_status;
+        scanner_status = normal;
+        get_token();
+        scanner_status = savescannerstatus;
+        t = cur_tok;
+        back_input();
+        if (t >= 4095)   /* if t>=cs_token_flag then */
+        {
 /*   begin p:=get_avail; info(p):=cs_token_flag+frozen_dont_expand; */
-    p = get_avail(); 
+          p = get_avail();
 /*    mem[p].hh.v.LH = (hash_size + 4618);  */
 /*    mem[p].hh.v.LH = (hash_size + 4095 + 523); */
-    mem[p].hh.v.LH = (hash_size + hash_extra + 4095 + 523); /*96/Jan/10*/
-    mem[p].hh.v.RH = cur_input.loc_field; 
-    cur_input.start_field = p; 
-    cur_input.loc_field = p; 
-  } 
-      } 
-      break; 
-    case 107 : 
-      {
-  r = get_avail(); 
-  p = r; 
-  do {
-      get_x_token(); 
-    if (cur_cs == 0){
-      q = get_avail(); 
-      mem[p].hh.v.RH = q; 
-      mem[q].hh.v.LH = cur_tok; 
-      p = q; 
-    } 
-  } while(!(cur_cs != 0)); 
-  if (cur_cmd != 67)
-  {
-	  print_err("Missing ");
-    print_esc("endcsname");
-    print_string(" inserted");
-    help2("The control sequence marked <to be read again> should",
-        "not appear between \\csname and \\endcsname.");
-    back_error(); 
-  } 
-  j = first; 
-  p = mem[r].hh.v.RH; 
-  while(p != 0){  /* while p<>null do l.7742 */
-      
-    if (j >= max_buf_stack)
-    {
-      max_buf_stack = j + 1; 
+          mem[p].hh.v.LH = (hash_size + hash_extra + 4095 + 523); /*96/Jan/10*/
+          mem[p].hh.v.RH = cur_input.loc_field;
+          cur_input.start_field = p;
+          cur_input.loc_field = p;
+        }
+        break;
+      case cs_name:
+        r = get_avail();
+        p = r;
+        do {
+          get_x_token();
+          if (cur_cs == 0)
+          {
+            q = get_avail();
+            mem[p].hh.v.RH = q;
+            mem[q].hh.v.LH = cur_tok;
+            p = q;
+          }
+        } while(!(cur_cs != 0));
+        if (cur_cmd != end_cs_name)
+        {
+          print_err("Missing ");
+          print_esc("endcsname");
+          print_string(" inserted");
+          help2("The control sequence marked <to be read again> should",
+              "not appear between \\csname and \\endcsname.");
+          back_error();
+        }
+        j = first;
+        p = link(r);
+        while (p != 0) {  /* while p<>null do l.7742 */
+          if (j >= max_buf_stack)
+          {
+            max_buf_stack = j + 1;
 #ifdef ALLOCATEBUFFER
-    if (max_buf_stack == current_buf_size)
-      buffer = realloc_buffer (increment_buf_size);
-    if (max_buf_stack == current_buf_size){  /* check again after allocation */
-      overflow("buffer size", current_buf_size);
-      return;     // abort_flag set
-    }
+            if (max_buf_stack == current_buf_size)
+              buffer = realloc_buffer (increment_buf_size);
+            if (max_buf_stack == current_buf_size)
+            {  /* check again after allocation */
+              overflow("buffer size", current_buf_size);
+              return;     // abort_flag set
+            }
 #else
-    if (max_buf_stack == buf_size){
-      overflow("buffer size", buf_size); /* buffer size - not dynamic */
-      return;     // abort_flag set
-    }
+            if (max_buf_stack == buf_size)
+            {
+              overflow("buffer size", buf_size); /* buffer size - not dynamic */
+              return;     // abort_flag set
+            }
 #endif
-    } 
-    buffer[j]= mem[p].hh.v.LH % 256; 
-/*    buffer[j]= mem[p].hh.v.LH & 255; */ /* last 8 bits */
-    incr(j); 
-    p = mem[p].hh.v.RH; 
-  } 
-  if (j > first + 1)
+          }
+          buffer[j] = info(p) % 256;
+          incr(j);
+          p = link(p);
+        }
+        if (j > first + 1)
+        {
+          no_new_control_sequence = false;
+          cur_cs = id_lookup(first, j - first);
+          no_new_control_sequence = true;
+        }
+        else if (j == first)
+          cur_cs = null_cs;
+        else
+          cur_cs = single_base + buffer[first];
+        flush_list(r);
+        if (eq_type(cur_cs) == undefined_cs)
+        {
+          eq_define(cur_cs, relax, 256);
+        }
+        cur_tok = cur_cs + 4095;
+        back_input();
+        break;
+      case convert:
+        conv_toks();
+        break;
+      case the:
+        ins_the_toks();
+        break;
+      case if_test:
+        conditional();
+        break;
+      case fi_or_else:
+        if (cur_chr > if_limit)
+          if (if_limit == 1)
+            insert_relax();
+          else
+          {
+            print_err("Extra ");
+            print_cmd_chr(fi_or_else, cur_chr);
+            help1("I'm ignoring this; it doesn't match any \\if.");
+            error();
+          }
+        else
+        {
+          while(cur_chr != 2)
+            pass_text();
+          {
+            p = cond_ptr;
+            if_line = mem[p + 1].cint;
+            cur_if = mem[p].hh.b1;
+            if_limit = mem[p].hh.b0;
+            cond_ptr = mem[p].hh.v.RH;
+            free_node(p, 2);
+          }
+        }
+        break;
+      case input:
+        if (cur_chr > 0)
+          force_eof = true;
+        else if (name_in_progress)
+          insert_relax();
+        else start_input();
+        break;
+      default:
+        print_err("Undefined control sequence");
+        help5("The control sequence at the end of the top line",
+            "of your error message was never \\def'ed. If you have",
+            "misspelled it (e.g., `\\hobx'), type `I' and the correct",
+            "spelling (e.g., `I\\hbox'). Otherwise just continue,",
+            "and I'll forget about whatever was undefined.");
+        error();
+        break;
+    }
+  }
+  else if (cur_cmd < end_template)
   {
-    no_new_control_sequence = false; 
-    cur_cs = id_lookup(first, j - first); 
-    no_new_control_sequence = true; 
-  } 
-  else if (j == first)
-  cur_cs = 513; 
-/* else cur_cs:=single_base+buffer[first] {the list has length one} */
-  else cur_cs = 257 + buffer[first]; 
-  flush_list(r); 
-  if (eqtb[cur_cs].hh.b0 == 101)
-  {
-    eq_define(cur_cs, 0, 256); 
-  } 
-  cur_tok = cur_cs + 4095; 
-  back_input(); 
-      } 
-      break; 
-    case 108 : 
-      conv_toks(); 
-      break; 
-    case 109 : 
-      ins_the_toks(); 
-      break; 
-    case 105 : 
-      conditional(); 
-      break; 
-    case 106 : 
-      if (cur_chr > if_limit)
-      if (if_limit == 1)
-      insert_relax(); 
-      else {
-    print_err("Extra ");
-  print_cmd_chr(106, cur_chr);  /* j */
-  help1("I'm ignoring this; it doesn't match any \\if.");
-  error(); 
-      } 
-      else {
-    
-  while(cur_chr != 2)pass_text(); 
-  {
-    p = cond_ptr; 
-    if_line = mem[p + 1].cint; 
-    cur_if = mem[p].hh.b1; 
-    if_limit = mem[p].hh.b0; 
-    cond_ptr = mem[p].hh.v.RH; 
-    free_node(p, 2); 
-  } 
-      } 
-      break; 
-    case 104 : 
-      if (cur_chr > 0)force_eof = true; 
-      else if (name_in_progress)insert_relax(); 
-      else start_input(); 
-      break; 
-      default: 
-      {
-		  print_err("Undefined control sequence");
-		  help5("The control sequence at the end of the top line",
-			  "of your error message was never \\def'ed. If you have",
-			  "misspelled it (e.g., `\\hobx'), type `I' and the correct",
-			  "spelling (e.g., `I\\hbox'). Otherwise just continue,",
-			  "and I'll forget about whatever was undefined."); 
-  error(); 
-      } 
-      break; 
-    } 
-  } 
-  else if (cur_cmd < 115){
     macro_call();
   }
-  else {
-      
+  else
+  {
 /*    cur_tok = (hash_size + 4615);  */
 /*    cur_tok = (hash_size + 4095 + 520);  */
     cur_tok = (hash_size + hash_extra + 4095 + 520); /* 96/Jan/10 */
-    back_input(); 
-  } 
-  cur_val = cvbackup; 
-  cur_val_level = cvlbackup; 
-  radix = radixbackup; 
-  cur_order = cobackup; 
-  mem[mem_top - 13].hh.v.RH = backupbackup; 
-} 
-void get_x_token (void) 
-{/* 20 30 */ 
-
+    back_input();
+  }
+  cur_val = cvbackup;
+  cur_val_level = cvlbackup;
+  radix = radixbackup;
+  cur_order = cobackup;
+  link(backup_head) = backupbackup;
+}
+/* sec 0380 */
+void get_x_token (void)
+{
 lab20:
-  get_next(); 
-  if (cur_cmd <= 100) goto lab30; 
-  if (cur_cmd >= 111)
-    if (cur_cmd < 115){
+  get_next();
+  if (cur_cmd <= max_command)
+    goto lab30;
+  if (cur_cmd >= call)
+    if (cur_cmd < end_template)
       macro_call();
-    }
     else {
 /*      cur_cs = (hash_size + 520);  */
       cur_cs = (hash_size + hash_extra + 520);  /* 96/Jan/10 */
-      cur_cmd = 9; 
-      goto lab30; 
-    } 
-  else {
+      cur_cmd = endv;
+      goto lab30;
+    }
+  else
     expand();
-  }
-  goto lab20; 
-lab30: if (cur_cs == 0)
-       cur_tok =(cur_cmd * 256)+ cur_chr; 
-     else cur_tok = 4095 + cur_cs; 
-} 
-void x_token (void) 
-{
-  while(cur_cmd > 100){
-    expand(); 
-    get_next(); 
-  } 
+  goto lab20;
+lab30:
   if (cur_cs == 0)
-  cur_tok =(cur_cmd * 256)+ cur_chr; 
-  else cur_tok = 4095 + cur_cs; 
-} 
-void scan_left_brace (void) 
-{ 
-  do {
-      get_x_token(); 
-  } while(!((cur_cmd != 10) && (cur_cmd != 0))); 
-  if (cur_cmd != 1)
-  {
-	print_err("Missing { inserted"); 
-	help4("A left brace was mandatory here, so I've put one in.",
-		"You might want to delete and/or insert some corrections",
-		"so that I will find a matching right brace soon.",
-		"(If you're confused by all this, try typing `I}' now.)");
-    back_error(); 
-    cur_tok = 379; 
-    cur_cmd = 1; 
-    cur_chr = 123; 
-    incr(align_state); 
-  } 
-} 
-void scan_optional_equals (void) 
+    cur_tok = (cur_cmd * 256) + cur_chr;
+  else
+    cur_tok = 4095 + cur_cs;
+}
+/* sec 0381 */
+void x_token (void)
+{
+  while (cur_cmd > max_command) {
+    expand();
+    get_next();
+  }
+  if (cur_cs == 0)
+    cur_tok = (cur_cmd * 256) + cur_chr;
+  else
+    cur_tok = 4095 + cur_cs;
+}
+/* sec 0403 */
+void scan_left_brace (void)
 {
   do {
       get_x_token();
-  } while(!(cur_cmd != 10));
+  } while(!((cur_cmd != spacer) && (cur_cmd != relax)));
+
+  if (cur_cmd != left_brace)
+  {
+    print_err("Missing { inserted");
+    help4("A left brace was mandatory here, so I've put one in.",
+        "You might want to delete and/or insert some corrections",
+        "so that I will find a matching right brace soon.",
+        "(If you're confused by all this, try typing `I}' now.)");
+    back_error();
+    cur_tok = 379;
+    cur_cmd = left_brace;
+    cur_chr = '{';
+    incr(align_state);
+  }
+}
+/* sec 0405 */
+void scan_optional_equals (void)
+{
+  do {
+      get_x_token();
+  } while(!(cur_cmd != spacer));
+
   if (cur_tok != 3133)
     back_input();
 }
@@ -1337,12 +1343,15 @@ bool scan_keyword_(char * s)
   halfword p;
   halfword q;
   char * k;
-  p = mem_top - 13;
-  mem[p].hh.v.RH = 0;
+
+  p = backup_head;
+  link(p) = 0;
   k = s;
+
   while (*k) {
     get_x_token(); 
-    if ((cur_cs == 0) && ((cur_chr == (*k)) || (cur_chr == (*k) - 32))) {
+    if ((cur_cs == 0) && ((cur_chr == (*k)) || (cur_chr == (*k) - 32)))
+    {
       {
         q = get_avail();
         mem[p].hh.v.RH = q;
@@ -1350,75 +1359,88 @@ bool scan_keyword_(char * s)
         p = q;
       }
       incr(k);
-    } else if ((cur_cmd != 10) || (p != mem_top - 13)) {
+    }
+    else if ((cur_cmd != spacer) || (p != backup_head))
+    {
       back_input();
-      if (p != mem_top - 13)
-        begin_token_list(mem[mem_top - 13].hh.v.RH, 3);
+      if (p != backup_head)
+        begin_token_list(link(backup_head), 3);
       Result = false;
       return(Result);
     }
   }
-  flush_list(mem[mem_top - 13].hh.v.RH);
+  flush_list(link(backup_head));
   Result = true;
   return Result;
 }
-void mu_error (void) 
+/* sec 0408 */
+void mu_error (void)
 {
   print_err("Incompatible glue units");
   help1("I'm going to assume that 1mu=1pt when they're mixed.");
   error();
 }
+/* sec 0433 */
 void scan_eight_bit_int (void)
 {
   scan_int();
-  if ((cur_val < 0) || (cur_val > 255)) {
+  if ((cur_val < 0) || (cur_val > 255))
+  {
     print_err("Bad register code");
-	  help2("A register number must be between 0 and 255.",
-		  "I changed this one to zero.");
+    help2("A register number must be between 0 and 255.",
+        "I changed this one to zero.");
     int_error(cur_val);
     cur_val = 0;
   }
 }
-void scan_char_num (void) 
+/* sec 0434 */
+void scan_char_num (void)
 {
   scan_int();
-  if ((cur_val < 0) || (cur_val > 255)) {
-	  print_err("Bad character code");
-	  help2("A character number must be between 0 and 255.",
-		  "I changed this one to zero.");
+  if ((cur_val < 0) || (cur_val > 255))
+  {
+    print_err("Bad character code");
+    help2("A character number must be between 0 and 255.",
+        "I changed this one to zero.");
     int_error(cur_val);
     cur_val = 0;
   }
 }
+/* sec 0435 */
 void scan_four_bit_int (void)
 {
   scan_int();
-  if ((cur_val < 0) || (cur_val > 15)) {
-	  print_err("Bad number");
-	  help2("Since I expected to read a number between 0 and 15,",
-		  "I changed this one to zero.");
+  if ((cur_val < 0) || (cur_val > 15))
+  {
+    print_err("Bad number");
+    help2("Since I expected to read a number between 0 and 15,",
+        "I changed this one to zero.");
     int_error(cur_val);
     cur_val = 0;
   }
 }
+/* sec 0436 */
 void scan_fifteen_bit_int (void) 
 {
   scan_int();
-  if ((cur_val < 0) || (cur_val > 32767)) {
-	  print_err("Bad mathchar");
-	  help2("A mathchar number must be between 0 and 32767.",
-		  "I changed this one to zero.");
+  if ((cur_val < 0) || (cur_val > 32767))
+  {
+    print_err("Bad mathchar");
+    help2("A mathchar number must be between 0 and 32767.",
+        "I changed this one to zero.");
     int_error(cur_val);
     cur_val = 0;
   }
 }
-void scan_twenty_seven_bit_int (void) 
+/* sec 0437 */
+void scan_twenty_seven_bit_int (void)
 {
   scan_int();
-  if ((cur_val < 0) || (cur_val > 134217727L)) /* 2^27 - 1 */ {
+  if ((cur_val < 0) || (cur_val > 134217727L)) /* 2^27 - 1 */
+  {
     print_err("Bad delimiter code");
-	  help2("A numeric delimiter code must be between 0 and 2^{27}-1.",
-		  "I changed this one to zero.");
+    help2("A numeric delimiter code must be between 0 and 2^{27}-1.",
+        "I changed this one to zero.");
     int_error(cur_val);
     cur_val = 0;
   }
@@ -1430,94 +1452,105 @@ void scan_font_ident (void)
   halfword m;
 
   do {
-      get_x_token(); 
-  } while (!(cur_cmd != 10)); 
+      get_x_token();
+  } while (!(cur_cmd != spacer));
 
   if (cur_cmd == def_font)
     f = cur_font;
   else if (cur_cmd == set_font)
     f = cur_chr; 
-  else if (cur_cmd == def_family) {
+  else if (cur_cmd == def_family)
+  {
     m = cur_chr;
     scan_four_bit_int();
     f = equiv(m + cur_val);
-  } else {
+  }
+  else
+  {
     print_err("Missing font identifier");
     help2("I was looking for a control sequence whose",
-		  "current meaning has been defined by \\font.");
-    back_error(); 
-    f = 0; 
+        "current meaning has been defined by \\font.");
+    back_error();
+    f = 0;
   }
-  cur_val = f; 
-} 
+  cur_val = f;
+}
+/* sec 0578 */
 void find_font_dimen_(bool writing)
-{ 
-  internal_font_number f; 
-  integer n; 
-  scan_int(); 
-  n = cur_val; 
-  scan_font_ident(); 
-  f = cur_val; 
+{
+  internal_font_number f;
+  integer n;
+
+  scan_int();
+  n = cur_val;
+  scan_font_ident();
+  f = cur_val;
 /*  if (n <= 0)*/            /* change 98/Oct/5 */
   if (n < 0 || (n == 0 && font_dimen_zero == 0))
-    cur_val = fmem_ptr; 
-  else {
+    cur_val = fmem_ptr;
+  else
+  {
 /* else  begin if writing and(n<=space_shrink_code)and@|
     (n>=space_code)and(font_glue[f]<>null) then
     begin delete_glue_ref(font_glue[f]); l.11225 */
     if (writing && (n <= 4) && (n >= 2) && (font_glue[f]!= 0)) 
     {
-    delete_glue_ref(font_glue[f]); 
-    font_glue[f]= 0;  /* font_glue[f]:=null */
-    } 
+      delete_glue_ref(font_glue[f]);
+      font_glue[f]= 0;  /* font_glue[f]:=null */
+    }
     if (n > font_params[f])
-    if (f < font_ptr)
-      cur_val = fmem_ptr; 
-    else {
+      if (f < font_ptr)
+        cur_val = fmem_ptr;
+    else
+    {
       do {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
  #ifdef ALLOCATEFONT
-        if (fmem_ptr == current_font_mem_size) { /* 93/Nov/28 ??? */
+        if (fmem_ptr == current_font_mem_size)
+        { /* 93/Nov/28 ??? */
           font_info = realloc_font_info(increment_font_mem_size);
         }
-        if (fmem_ptr == current_font_mem_size){    /* 94/Jan/24 */
+        if (fmem_ptr == current_font_mem_size)
+        {    /* 94/Jan/24 */
           overflow("font memory", current_font_mem_size); /* font memory */
           return;     // abort_flag set
         }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-        if (fmem_ptr == font_mem_size){
+        if (fmem_ptr == font_mem_size)
+        {
           overflow("font memory", font_mem_size); /* font memory */
           return;     // abort_flag set
         }
 #endif
-        font_info[fmem_ptr].cint = 0; 
-        incr(fmem_ptr); 
-        incr(font_params[f]); 
-      } while(!(n == font_params[f])); 
-      cur_val = fmem_ptr - 1; 
-    } 
+        font_info[fmem_ptr].cint = 0;
+        incr(fmem_ptr);
+        incr(font_params[f]);
+      } while(!(n == font_params[f]));
+      cur_val = fmem_ptr - 1;
+    }
 /*  else cur_val = n + param_base[f];   */      /* 98/Oct/5 */
-  else if (n > 0) cur_val = n + param_base[f];    /* 98/Oct/5 */
+  else if (n > 0)
+    cur_val = n + param_base[f];    /* 98/Oct/5 */
   else cur_val = &font_check[f] - &font_info[0]; /* 98/Oct/5 */
 /*  checksum =  (((font_check[f].b0) << 8 | font_check[f].b1) << 8 |
         font_check[f].b2) << 8 | font_check[f].b3; */
   } 
 /* compiler error: '-' : incompatible types - from 'union fmemoryword *' to 'struct fourunsignedchars *' */
-  if (cur_val == fmem_ptr) {
-	  print_err("Font ");
+  if (cur_val == fmem_ptr)
+  {
+    print_err("Font ");
 /*    print_esc(hash[(hash_size + 524) + f].v.RH); */
     //print_esc(hash[(hash_size + hash_extra + 524) + f].v.RH); /*96/Jan/10*/
-	  print_esc(""); print(hash[(hash_size + hash_extra + 524) + f].v.RH);
+    print_esc(""); print(hash[(hash_size + hash_extra + 524) + f].v.RH);
     print_string(" has only ");
-    print_int(font_params[f]); 
+    print_int(font_params[f]);
     print_string(" fontdimen parameters");
     help2("To increase the number of font parameters, you must",
       "use \\fontdimen immediately after the \\font is loaded.");
-    error(); 
+    error();
   }
 }
-
 /* NOTE: the above use of /fontdimen0 to access the checksum is a kludge */
 /* In future would be better to do this by allocating one more slot for */
 /* for parameters when a font is read rather than carry checksum separately */
@@ -2171,13 +2204,13 @@ lab20:
         )
           incr(cur_input.limit_field); 
         if (cur_input.limit_field == cur_input.start_field)
-          print_nl("(Please type a command or say `\\end')");    /*  */
+          print_nl("(Please type a command or say `\\end')");
         print_ln(); 
         first = cur_input.start_field; 
         {
         ; 
-          print_string("*");    /* * */
-          term_input(42, 0); 
+          print_string("*");
+          term_input("*", 0); 
         } 
         cur_input.limit_field = last; 
         if ((end_line_char < 0)||

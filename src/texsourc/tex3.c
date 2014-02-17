@@ -858,7 +858,7 @@ void read_toks_(integer n, halfword r)
         if (n < 0) {
         ; 
           print_string("");
-          term_input(335, 0); 
+          term_input("", 0); 
         } 
         else {
         ; 
@@ -867,7 +867,7 @@ void read_toks_(integer n, halfword r)
           {
           ; 
             print_string("=");
-            term_input(61, 0); 
+            term_input("=", 0); 
           } 
           n = -1; 
         } 
@@ -1737,7 +1737,7 @@ void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e
   {
  ; 
     print_string(": ");
-    term_input(565, 0);
+    term_input(": ", 0);
   } 
 /*  should we deal with tilde and space in file name here ??? */
   {

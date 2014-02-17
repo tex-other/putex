@@ -44,8 +44,8 @@ void slow_print_(integer);
 void print_nl_(str_number); 
 #define print_nl(s) print_nl_((str_number) (s))
 #define printnl_regmem
-void print_esc_(char *); 
-#define print_esc(s) print_esc_((char *) (s))
+void print_esc_(const char *); 
+#define print_esc(s) print_esc_((const char *) (s))
 #define printesc_regmem register memory_word *eqtb=zeqtb;
 void print_the_digs_(eight_bits); 
 #define print_the_digs(k) print_the_digs_((eight_bits) (k))
@@ -110,7 +110,7 @@ void print_roman_int_(integer);
 void print_current_string(void); 
 #define printcurrentstring_regmem
 // void term_input(void); 
-void term_input(int, int); 
+void term_input(char *, int); 
 #define terminput_regmem
 void int_error_(integer); 
 #define int_error(n) int_error_((integer) (n))
@@ -896,10 +896,10 @@ void print_string_(unsigned char * s);
 #define print_string(s) print_string_((unsigned char *) s)
 void slow_print_(integer);
 #define slow_print(s) slow_print_((integer) (s))
-void print_nl_(char *);
-#define print_nl(s) print_nl_((char *) (s))
-void print_esc_(char *);
-#define print_esc(s) print_esc_((char *) (s))
+void print_nl_(const char *);
+#define print_nl(s) print_nl_((const char *) (s))
+void print_esc_(const char *);
+#define print_esc(s) print_esc_((const char *) (s))
 void print_the_digs_(eight_bits);
 #define print_the_digs(k) print_the_digs_((eight_bits) (k))
 void print_int_(integer);
@@ -936,7 +936,7 @@ void print_hex_(integer);
 void print_roman_int_(integer);
 #define print_roman_int(n) print_roman_int_((integer) (n))
 void print_current_string(void);
-void term_input(int, int);
+void term_input(char *, int);
 void int_error_(integer);
 #define int_error(n) int_error_((integer) (n))
 void normalize_selector(void);

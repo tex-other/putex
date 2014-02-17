@@ -29,6 +29,14 @@ static void winerror (char * message)
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+INLINE void free_avail_(halfword p)
+{
+  link(p) = avail;
+  avail = p;
+#ifdef STAT
+  decr(dyn_used);
+#endif /* STAT */
+}
 INLINE void dvi_out_(ASCII_code op)
 {
   dvi_buf[dvi_ptr] = op;
@@ -36,7 +44,7 @@ INLINE void dvi_out_(ASCII_code op)
   if (dvi_ptr == dvi_limit)
     dvi_swap();
 }
-void succumb (void)
+INLINE void succumb (void)
 {
   if (interaction == error_stop_mode)
     interaction = scroll_mode;
@@ -50,23 +58,23 @@ void succumb (void)
   history = 3;
   jump_out();
 }
-void flush_string (void)
+INLINE void flush_string (void)
 {
   decr(str_ptr);
   pool_ptr = str_start[str_ptr];
 }
-void append_char (ASCII_code c)
+INLINE void append_char (ASCII_code c)
 {
   str_pool[pool_ptr] = c;
   incr(pool_ptr);
 }
-void print_err (const char * s)
+INLINE void print_err (const char * s)
 {
   if (interaction == error_stop_mode);
     print_nl("! ");
   print_string(s);
 }
-void tex_help (unsigned int n, ...)
+INLINE void tex_help (unsigned int n, ...)
 {
   unsigned int i;
   va_list help_arg;
@@ -1331,9 +1339,9 @@ void zprintfword(fmemoryword w)
 void show_token_list_(integer p, integer q, integer l)
 {
   integer m, c;
-  ASCII_code matchchr;
+  ASCII_code match_chr;
   ASCII_code n;
-  matchchr = 35;
+  match_chr = 35;
   n = 48;
   tally = 0;
 /* while (p<>null) and (tally<l) do l.6239 */
@@ -1379,7 +1387,7 @@ void show_token_list_(integer p, integer q, integer l)
             print(c);
             break;
           case out_param:
-            print(matchchr);
+            print(match_chr);
             if (c <= 9)
               print_char(c + '0');
             else
@@ -1389,7 +1397,7 @@ void show_token_list_(integer p, integer q, integer l)
             }
             break;
           case match:
-            matchchr = (ASCII_code) c;
+            match_chr = (ASCII_code) c;
             print(c);
             incr(n);
             print_char(n);

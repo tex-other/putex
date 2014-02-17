@@ -2615,12 +2615,12 @@ void do_initex (void)
     eqtb[(hash_size + 2651) + k].hh.v.RH = 1000;
   }
 /* cat_base == 11383 */ 
-  eqtb[(hash_size + 1896)].hh.v.RH = car_ret; 
-  eqtb[(hash_size + 1915)].hh.v.RH = spacer; 
-  eqtb[(hash_size + 1975)].hh.v.RH = escape; 
-  eqtb[(hash_size + 1920)].hh.v.RH = comment; 
-  eqtb[(hash_size + 2010)].hh.v.RH = invalid_char; 
-  eqtb[(hash_size + 1883)].hh.v.RH = ignore; 
+  eqtb[(hash_size + 1896)].hh.v.RH = car_ret;
+  eqtb[(hash_size + 1915)].hh.v.RH = spacer;
+  eqtb[(hash_size + 1975)].hh.v.RH = escape;
+  eqtb[(hash_size + 1920)].hh.v.RH = comment;
+  eqtb[(hash_size + 2010)].hh.v.RH = invalid_char;
+  eqtb[(hash_size + 1883)].hh.v.RH = ignore;
 /* for k:="0" to "9" do math_code(k):=hi(k+var_code); */
   for (k = '0'; k <= '9'; k++) eqtb[(hash_size + 2907) + k].hh.v.RH = k + 28672;
 /* cat_code of uppercase and lowercase letters ... */
