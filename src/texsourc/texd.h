@@ -1943,6 +1943,10 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define math_shift_group  15
 #define math_left_group   16
 #define max_group_code    16
+/* sec 0303 */
+#define mid_line    1
+#define skip_blanks 2 + max_char_code // 17
+#define new_line    3 + max_char_code + max_char_code // 33
 /* sec 0305 */
 #define skipping  1
 #define defining  2
@@ -1969,6 +1973,55 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define every_cr_text      13
 #define mark_text          14
 #define write_text         15
+/* sec 0344 */
+#define any_state_plus(a) mid_line + (a): case skip_blanks + (a): case new_line + (a)
+/* sec 0347 */
+#define add_delims_to(a) \
+  (a) + math_shift:      \
+  case (a) + tab_mark:   \
+  case (a) + mac_param:  \
+  case (a) + sub_mark:   \
+  case (a) + letter:     \
+  case (a) + other_char
+/* sec 0400 */
+#define int_val   0
+#define dimen_val 1
+#define glue_val  2
+#define mu_val    3
+#define ident_val 4
+#define tok_val   5
+/* sec 0468 */
+#define number_code        0
+#define roman_numeral_code 1
+#define string_code        2
+#define meaning_code       3
+#define font_name_code     4
+#define job_name_code      5
+/* sec 0487 */
+#define if_char_code   0
+#define if_cat_code    1
+#define if_int_code    2
+#define if_dim_code    3
+#define if_odd_code    4
+#define if_vmode_code  5
+#define if_hmode_code  6
+#define if_mmode_code  7
+#define if_inner_code  8
+#define if_void_code   9
+#define if_hbox_code   10
+#define if_vbox_code   11
+#define ifx_code       12
+#define if_eof_code    13
+#define if_true_code   14
+#define if_false_code  15
+#define if_case_code   16
+/* sec 0489 */
+#define if_node_size     2
+#define if_line_field(a) mem[(a) + 1].cint
+#define if_code          1
+#define fi_code          2
+#define else_code        3
+#define or_code          4
 /* sec 0564 */
 /* sec 0608 */
 #define y_here  1
@@ -1981,6 +2034,10 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define none_seen 0
 #define y_seen    6
 #define z_seen    12
+/* sec 0769 */
+#define u_part(a)     mem[(a) + height_offset].cint
+#define v_part(a)     mem[(a) + depth_offset].cint
+#define extra_info(a) info((a) + list_offset)
 /* sec 79 */
 
 extern INLINE void tex_help (unsigned int n, ...);

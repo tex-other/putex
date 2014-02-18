@@ -1561,24 +1561,27 @@ void scan_something_internal_(small_number level, bool negative)
   halfword m;
   integer p;
   m = cur_chr;
-  switch(cur_cmd)
+
+  switch (cur_cmd)
   {
-  case def_code: 
-    {
-      scan_char_num(); 
+    case def_code:
+      scan_char_num();
       if (m == math_code_base)
       {
-        cur_val = eqtb[(hash_size + 2907) + cur_val].hh.v.RH;
+        cur_val = math_code(cur_val);
         cur_val_level = 0;
-      } else if (m < math_code_base) {
-        cur_val = eqtb[m + cur_val].hh.v.RH;
+      }
+      else if (m < math_code_base)
+      {
+        cur_val = equiv(m + cur_val);
         cur_val_level = 0;
-      } else {
+      }
+      else
+      {
         cur_val = eqtb[m + cur_val].cint;
         cur_val_level = 0;
       }
-    }
-    break; 
+      break;
   case toks_register:
   case assign_toks:
   case def_family:
@@ -1586,188 +1589,202 @@ void scan_something_internal_(small_number level, bool negative)
   case def_font:
     if (level != 5)
     {
-		print_err("Missing number, treated as zero");
-		help3("A number should have been here; I inserted `0'.",
-			"(If you can't figure out why I needed to see a number,",
-			"look up `weird error' in the index to The TeXbook.)"); 
-      back_error(); 
+      print_err("Missing number, treated as zero");
+      help3("A number should have been here; I inserted `0'.",
+          "(If you can't figure out why I needed to see a number,",
+          "look up `weird error' in the index to The TeXbook.)");
+      back_error();
       {
-      cur_val = 0; 
-      cur_val_level = 1; 
-      } 
-    } 
-    else if (cur_cmd <= 72)
+        cur_val = 0;
+        cur_val_level = 1;
+      }
+    }
+    else if (cur_cmd <= assign_toks)
     {
-      if (cur_cmd < 72)
+      if (cur_cmd < assign_toks)
       {
-  scan_eight_bit_int(); 
-  m = toks_base + cur_val; 
-      } 
+        scan_eight_bit_int();
+        m = toks_base + cur_val;
+      }
       {
-  cur_val = eqtb[m].hh.v.RH; 
-  cur_val_level = 5; 
-      } 
+        cur_val = eqtb[m].hh.v.RH;
+        cur_val_level = 5;
+      }
     } 
-    else {
-      back_input(); 
-      scan_font_ident(); 
+    else
+    {
+      back_input();
+      scan_font_ident();
       {
 /*  cur_val = (hash_size + 524) + cur_val;  */
-  cur_val = (hash_size + hash_extra + 524) + cur_val; /* 96/Jan/10 */
-  cur_val_level = 4; 
-      } 
-    } 
-    break; 
+        cur_val = (hash_size + hash_extra + 524) + cur_val; /* 96/Jan/10 */
+        cur_val_level = 4;
+      }
+    }
+    break;
   case assign_int:
     {
-      cur_val = eqtb[m].cint; 
-      cur_val_level = 0; 
-    } 
-    break; 
-  case assign_dimen: 
+      cur_val = eqtb[m].cint;
+      cur_val_level = 0;
+    }
+    break;
+  case assign_dimen:
     {
-      cur_val = eqtb[m].cint; 
-      cur_val_level = 1; 
-    } 
+      cur_val = eqtb[m].cint;
+      cur_val_level = 1;
+    }
     break; 
   case assign_glue:
     {
-      cur_val = eqtb[m].hh.v.RH; 
-      cur_val_level = 2; 
-    } 
-    break; 
+      cur_val = eqtb[m].hh.v.RH;
+      cur_val_level = 2;
+    }
+    break;
   case assign_mu_glue:
     {
-      cur_val = eqtb[m].hh.v.RH; 
-      cur_val_level = 3; 
-    } 
-    break; 
-  case set_aux: 
+      cur_val = eqtb[m].hh.v.RH;
+      cur_val_level = 3;
+    }
+    break;
+  case set_aux:
     if (abs(mode)!= m)
     {
-		print_err("Improper ");
-      print_cmd_chr(79, m); /* O */
-	  help4("You can refer to \\spacefactor only in horizontal mode;",
-		  "you can refer to \\prevdepth only in vertical mode; and",
-		  "neither of these is meaningful inside \\write. So",
-		  "I'm forgetting what you said and using zero instead.");
-      error(); 
-      if (level != 5) {
-      cur_val = 0; 
-      cur_val_level = 1; 
-      } 
-      else {
-  cur_val = 0; 
-  cur_val_level = 0; 
-      } 
-    } 
+      print_err("Improper ");
+      print_cmd_chr(set_aux, m);
+      help4("You can refer to \\spacefactor only in horizontal mode;",
+          "you can refer to \\prevdepth only in vertical mode; and",
+          "neither of these is meaningful inside \\write. So",
+          "I'm forgetting what you said and using zero instead.");
+      error();
+      if (level != 5)
+      {
+        cur_val = 0;
+        cur_val_level = 1;
+      }
+      else
+      {
+        cur_val = 0;
+        cur_val_level = 0;
+      }
+    }
     else if (m == 1)
     {
-      cur_val = cur_list.aux_field.cint; 
-      cur_val_level = 1; 
+      cur_val = cur_list.aux_field.cint;
+      cur_val_level = 1;
     } 
-    else {
-      cur_val = space_factor; 
-      cur_val_level = 0; 
-    } 
-    break; 
-  case set_prev_graf: 
+    else
+    {
+      cur_val = space_factor;
+      cur_val_level = 0;
+    }
+    break;
+  case set_prev_graf:
     if (mode == 0)
     {
-      cur_val = 0; 
-      cur_val_level = 0; 
-    } 
-    else {
-      nest[nest_ptr]= cur_list; 
-      p = nest_ptr; 
-      while(abs(nest[p].mode_field)!= 1)decr(p); 
+      cur_val = 0;
+      cur_val_level = 0;
+    }
+    else
+    {
+      nest[nest_ptr] = cur_list;
+      p = nest_ptr;
+      while (abs(nest[p].mode_field)!= 1)
+        decr(p);
       {
-  cur_val = nest[p].pg_field; 
-  cur_val_level = 0; 
-      } 
-    } 
-    break; 
-  case set_page_int: 
+        cur_val = nest[p].pg_field;
+        cur_val_level = 0;
+      }
+    }
+    break;
+  case set_page_int:
     {
       if (m == 0)
-      cur_val = dead_cycles; 
-      else cur_val = insert_penalties; 
-      cur_val_level = 0; 
-    } 
-    break; 
+        cur_val = dead_cycles; 
+      else
+        cur_val = insert_penalties;
+      cur_val_level = 0;
+    }
+    break;
   case set_page_dimen:
     {
-      if ((page_contents == 0) && (! output_active)) 
+      if ((page_contents == 0) && (! output_active))
         if (m == 0)
           cur_val = 1073741823L;  /* 2^30 - 1 */
-        else cur_val = 0;
-      else cur_val = page_so_far[m];
-      cur_val_level = 1; 
-    } 
-    break; 
+        else
+          cur_val = 0;
+      else
+        cur_val = page_so_far[m];
+      cur_val_level = 1;
+    }
+    break;
   case set_shape:
     {
       if (par_shape_ptr == 0)
-      cur_val = 0; 
-      else cur_val = mem[par_shape_ptr].hh.v.LH; 
-      cur_val_level = 0; 
-    } 
-    break; 
-  case set_box_dimen: 
+        cur_val = 0; 
+      else
+        cur_val = mem[par_shape_ptr].hh.v.LH;
+      cur_val_level = 0;
+    }
+    break;
+  case set_box_dimen:
     {
-      scan_eight_bit_int(); 
+      scan_eight_bit_int();
       if (eqtb[box_base + cur_val].hh.v.RH == 0)
-      cur_val = 0; 
-      else cur_val = mem[eqtb[(hash_size + 1578) + cur_val].hh.v.RH + m].cint; 
-      cur_val_level = 1; 
-    } 
-    break; 
+        cur_val = 0;
+      else
+        cur_val = mem[eqtb[(hash_size + 1578) + cur_val].hh.v.RH + m].cint;
+      cur_val_level = 1;
+    }
+    break;
   case char_given:
   case math_given:
     {
-      cur_val = cur_chr; 
-      cur_val_level = 0; 
-    } 
-    break; 
+      cur_val = cur_chr;
+      cur_val_level = 0;
+    }
+    break;
   case assign_font_dimen:
     {
-      find_font_dimen(false); 
-      font_info[fmem_ptr].cint = 0; 
+      find_font_dimen(false);
+      font_info[fmem_ptr].cint = 0;
       {
-  cur_val = font_info[cur_val].cint; 
-  cur_val_level = 1; 
-      } 
-    } 
-    break; 
-  case assign_font_int: 
+        cur_val = font_info[cur_val].cint;
+        cur_val_level = 1;
+      }
+    }
+    break;
+  case assign_font_int:
     {
-      scan_font_ident(); 
-      if (m == 0) {
+      scan_font_ident();
+      if (m == 0)
+      {
         cur_val = hyphen_char[cur_val];
         cur_val_level = 0;
-      } else {
+      }
+      else
+      {
         cur_val = skew_char[cur_val];
         cur_val_level = 0;
-      } 
-    } 
-    break; 
+      }
+    }
+    break;
   case tex_register:
     {
       scan_eight_bit_int();
       switch(m)
       {
-      case 0 :
-        cur_val = eqtb[(hash_size + 3218) + cur_val].cint;
-        break;
-      case 1:
-        cur_val = eqtb[(hash_size + 3751) + cur_val].cint;
-        break; 
-      case 2:
-        cur_val = eqtb[(hash_size + 800) + cur_val].hh.v.RH;
-        break;
-      case 3:
-        cur_val = eqtb[(hash_size + 1056) + cur_val].hh.v.RH;
-        break;
+        case 0:
+          cur_val = eqtb[(hash_size + 3218) + cur_val].cint;
+          break;
+        case 1:
+          cur_val = eqtb[(hash_size + 3751) + cur_val].cint;
+          break;
+        case 2:
+          cur_val = eqtb[(hash_size + 800) + cur_val].hh.v.RH;
+          break;
+        case 3:
+          cur_val = eqtb[(hash_size + 1056) + cur_val].hh.v.RH;
+          break;
       }
       cur_val_level = m;
     }
@@ -1776,540 +1793,552 @@ void scan_something_internal_(small_number level, bool negative)
     if (cur_chr > 2)
     {
       if (cur_chr == 3)
-      cur_val = line; 
-      else cur_val = last_badness; 
-      cur_val_level = 0; 
-    } 
-    else {
-      if (cur_chr == 2)
-      cur_val = 0; 
-      else cur_val = 0; 
-      cur_val_level = cur_chr; 
-      if (!(tail >= hi_mem_min)&&(mode != 0)
-    )
-      switch(cur_chr)
-      {case 0 : 
-  if (mem[tail].hh.b0 == 12)
-  cur_val = mem[tail + 1].cint; 
-  break; 
-      case 1 : 
-  if (mem[tail].hh.b0 == 11)
-  cur_val = mem[tail + 1].cint; 
-  break; 
-      case 2 : 
-  if (mem[tail].hh.b0 == 10)
-  {
-    cur_val = mem[tail + 1].hh.v.LH; 
-    if (mem[tail].hh.b1 == 99)
-    cur_val_level = 3; 
-  } 
-  break; 
-      } 
-      else if ((mode == 1) && (tail == cur_list.head_field)) 
-      switch(cur_chr)
-      {case 0 : 
-  cur_val = last_penalty; 
-  break; 
-      case 1 : 
-  cur_val = last_kern; 
-  break; 
-      case 2 : 
-/*  if (last_glue != 262143L) */ /* NO! */
-  if (last_glue != empty_flag)
-  cur_val = last_glue; 
-  break; 
-      } 
-    } 
-    break; 
-    default: 
+        cur_val = line;
+      else
+        cur_val = last_badness;
+      cur_val_level = 0;
+    }
+    else
     {
-		print_err("You can't use `");
-      print_cmd_chr(cur_cmd, cur_chr); 
+      if (cur_chr == 2)
+        cur_val = 0;
+      else
+        cur_val = 0;
+      cur_val_level = cur_chr;
+      if (!(tail >= hi_mem_min) && (mode != 0))
+        switch(cur_chr)
+        {
+          case 0:
+            if (mem[tail].hh.b0 == 12)
+              cur_val = mem[tail + 1].cint;
+            break;
+          case 1:
+            if (mem[tail].hh.b0 == 11)
+              cur_val = mem[tail + 1].cint;
+            break;
+          case 2:
+            if (mem[tail].hh.b0 == 10)
+            {
+              cur_val = mem[tail + 1].hh.v.LH;
+              if (mem[tail].hh.b1 == 99)
+                cur_val_level = 3;
+            }
+            break;
+        }
+      else if ((mode == 1) && (tail == cur_list.head_field))
+        switch (cur_chr)
+        {
+          case 0:
+            cur_val = last_penalty;
+            break;
+          case 1:
+            cur_val = last_kern;
+            break;
+          case 2:
+/*  if (last_glue != 262143L) */ /* NO! */
+            if (last_glue != empty_flag)
+              cur_val = last_glue;
+            break;
+        }
+    }
+    break;
+  default:
+    {
+      print_err("You can't use `");
+      print_cmd_chr(cur_cmd, cur_chr);
       print_string("' after ");
       print_esc("the");
-	  help1("I'm forgetting what you said and using zero instead."); 
-      error(); 
-      if (level != 5){
-      cur_val = 0; 
-      cur_val_level = 1; 
-      } 
-      else {
-      cur_val = 0; 
-      cur_val_level = 0; 
-      } 
-    } 
-    break; 
-  } 
+      help1("I'm forgetting what you said and using zero instead.");
+      error();
+      if (level != 5)
+      {
+        cur_val = 0;
+        cur_val_level = 1;
+      }
+      else
+      {
+        cur_val = 0;
+        cur_val_level = 0;
+      }
+    }
+    break;
+  }
   while (cur_val_level > level) {
     if (cur_val_level == 2)
-    cur_val = mem[cur_val + 1].cint; 
-    else if (cur_val_level == 3){
-    mu_error(); 
-  }
-    decr(cur_val_level); 
-  } 
-  if (negative)
-  if (cur_val_level >= 2)
-  {
-    cur_val = new_spec(cur_val); 
+      cur_val = mem[cur_val + 1].cint;
+    else if (cur_val_level == 3)
     {
-      mem[cur_val + 1].cint = - (integer) mem[cur_val + 1].cint; 
-      mem[cur_val + 2].cint = - (integer) mem[cur_val + 2].cint; 
-      mem[cur_val + 3].cint = - (integer) mem[cur_val + 3].cint; 
-    } 
-  } 
-  else cur_val = - (integer) cur_val; 
-  else if ((cur_val_level >= 2)&&(cur_val_level <= 3)) 
-  incr(mem[cur_val].hh.v.RH); 
-} 
+      mu_error();
+    }
+    decr(cur_val_level);
+  }
+  if (negative)
+    if (cur_val_level >= 2)
+    {
+      cur_val = new_spec(cur_val);
+      {
+        mem[cur_val + 1].cint = - (integer) mem[cur_val + 1].cint;
+        mem[cur_val + 2].cint = - (integer) mem[cur_val + 2].cint;
+        mem[cur_val + 3].cint = - (integer) mem[cur_val + 3].cint;
+      }
+    }
+    else cur_val = - (integer) cur_val;
+  else if ((cur_val_level >= 2) && (cur_val_level <= 3))
+    incr(mem[cur_val].hh.v.RH);
+}
 
 /*****************************************************************************/
 
 /* Moved here to avoid question about pragma optimize 96/Sep/12 */
-
-void get_next (void) 
+/* sec 0341 */
+void get_next (void)
 {
-  integer k; 
-  halfword t; 
+  integer k;
+  halfword t;
 /*  char cat; */    /* make this an int ? */
   int cat;      /* make this an int ? 95/Jan/7 */
-  ASCII_code c, cc; 
-  char d; 
+  ASCII_code c, cc;
+  char d;
 
 lab20:
   cur_cs = 0; 
-  if (cur_input.state_field != 0) {
-    lab25: if (cur_input.loc_field <= cur_input.limit_field) {
-      cur_chr = buffer[cur_input.loc_field]; 
-      incr(cur_input.loc_field); 
-      lab21: cur_cmd = eqtb[(hash_size + 1883) + cur_chr].hh.v.RH; 
-      switch(cur_input.state_field + cur_cmd)
-      {case 10 : 
-      case 26 : 
-      case 42 : 
-      case 27 : 
-      case 43 : 
-  goto lab25; 
-  break; 
-      case 1 : 
-      case 17 : 
-      case 33 : 
+  if (cur_input.state_field != token_list)
   {
-    if (cur_input.loc_field > cur_input.limit_field)
-    cur_cs = 513; 
-    else {
-        
-      lab26: k = cur_input.loc_field; 
-      cur_chr = buffer[k]; 
-      cat = eqtb[(hash_size + 1883) + cur_chr].hh.v.RH; 
-      incr(k); 
-      if (cat == 11)
-      cur_input.state_field = 17; 
-      else if (cat == 10)
-      cur_input.state_field = 17; 
-      else cur_input.state_field = 1; 
-      if ((cat == 11)&&(k <= cur_input.limit_field)) 
-      {
-        do {
-      cur_chr = buffer[k]; 
-    cat = eqtb[(hash_size + 1883) + cur_chr].hh.v.RH; 
-    incr(k); 
-        } while(!((cat != 11)||(k > cur_input.limit_field)))
-     ; 
-        {
-    if (buffer[k]== cur_chr)
-    if (cat == 7)
-    if (k < cur_input.limit_field)
+lab25:
+    if (cur_input.loc_field <= cur_input.limit_field)
     {
-      c = buffer[k + 1]; 
-      if (c < 128)
+      cur_chr = buffer[cur_input.loc_field];
+      incr(cur_input.loc_field);
+lab21:
+      cur_cmd = cat_code(cur_chr);
+      switch (cur_input.state_field + cur_cmd)
       {
-        d = 2; 
-        if ((((c >= 48)&&(c <= 57)) ||((c >= 97)&& 
-       (c <= 102)))) 
-        if (k + 2 <= cur_input.limit_field)
-        {
-          cc = buffer[k + 2]; 
-          if ((((cc >= 48)&&(cc <= 57)) ||((cc >= 97 
-        )&&(cc <= 102)))) 
-          incr(d); 
-        } 
-        if (d > 2)
-        {
-          if (c <= 57)
-          cur_chr = c - 48; 
-          else cur_chr = c - 87; 
-          if (cc <= 57)
-          cur_chr = 16 * cur_chr + cc - 48; 
-          else cur_chr = 16 * cur_chr + cc - 87; 
-          buffer[k - 1]= cur_chr; 
-        } 
-        else if (c < 64)
-        buffer[k - 1]= c + 64; 
-        else buffer[k - 1]= c - 64; 
-        cur_input.limit_field = cur_input.limit_field - d; 
-        first = first - d; 
-        while(k <= cur_input.limit_field){
-      
-          buffer[k]= buffer[k + d]; 
-          incr(k); 
-        } 
-        goto lab26; 
-      } 
-    } 
-        } 
-        if (cat != 11)
-        decr(k); 
-        if (k > cur_input.loc_field + 1)
-        {
-    cur_cs = id_lookup(cur_input.loc_field, k - cur_input.loc_field 
-    ); 
-    cur_input.loc_field = k; 
-    goto lab40; 
-        } 
-      } 
-      else {
-    
-        if (buffer[k]== cur_chr)
-        if (cat == 7)
-        if (k < cur_input.limit_field)
-        {
-    c = buffer[k + 1]; 
-    if (c < 128)             /* ? */
-    {
-      d = 2; 
-      if ((((c >= 48)&&(c <= 57)) ||((c >= 97)&&(
-      c <= 102)))) 
-      if (k + 2 <= cur_input.limit_field)
-      {
-        cc = buffer[k + 2]; 
-        if ((((cc >= 48)&&(cc <= 57)) ||((cc >= 97)
-        &&(cc <= 102)))) 
-        incr(d); 
-      } 
-      if (d > 2)
-      {
-        if (c <= 57)
-        cur_chr = c - 48; 
-        else cur_chr = c - 87; 
-        if (cc <= 57)          /* cc may be used without ... */
-        cur_chr = 16 * cur_chr + cc - 48; 
-        else cur_chr = 16 * cur_chr + cc - 87; 
-        buffer[k - 1]= cur_chr; 
-      } 
-      else if (c < 64)
-        buffer[k - 1]= c + 64; 
-      else buffer[k - 1]= c - 64; 
-      cur_input.limit_field = cur_input.limit_field - d; 
-      first = first - d; 
-      while(k <= cur_input.limit_field){
-        buffer[k]= buffer[k + d]; 
-        incr(k); 
-      } 
-      goto lab26; 
-    } 
-        } 
-      } 
-/*   cur_cs:=single_base+buffer[loc]; incr(loc); */
-      cur_cs = 257 + buffer[cur_input.loc_field]; 
-      incr(cur_input.loc_field); 
-    } 
-    lab40: cur_cmd = eqtb[cur_cs].hh.b0; 
-    cur_chr = eqtb[cur_cs].hh.v.RH; 
-    if (cur_cmd >= 113){
-      check_outer_validity();
+        case any_state_plus(ignore):
+        case skip_blanks + spacer:
+        case new_line + spacer:
+          goto lab25;
+          break;
+        case any_state_plus(escape):
+          {
+            if (cur_input.loc_field > cur_input.limit_field)
+              cur_cs = null_cs;
+            else
+            {
+lab26:
+              k = cur_input.loc_field;
+              cur_chr = buffer[k];
+              cat = cat_code(cur_chr);
+              incr(k);
+              if (cat == letter)
+                cur_input.state_field = skip_blanks;
+              else if (cat == spacer)
+                cur_input.state_field = skip_blanks;
+              else
+                cur_input.state_field = mid_line;
+
+              if ((cat == letter) && (k <= cur_input.limit_field))
+              {
+                do {
+                  cur_chr = buffer[k];
+                  cat = cat_code(cur_chr);
+                  incr(k);
+                } while(!((cat != letter) || (k > cur_input.limit_field)));
+                {
+                  if (buffer[k]== cur_chr)
+                    if (cat == sup_mark)
+                      if (k < cur_input.limit_field)
+                      {
+                        c = buffer[k + 1];
+                        if (c < 128)
+                        {
+                          d = 2;
+                          if ((((c >= 48) && (c <= 57)) ||
+                                ((c >= 97) && (c <= 102))))
+                            if (k + 2 <= cur_input.limit_field)
+                            {
+                              cc = buffer[k + 2];
+                              if ((((cc >= 48) && (cc <= 57)) ||
+                                    ((cc >= 97) && (cc <= 102))))
+                                incr(d);
+                            }
+                          if (d > 2)
+                          {
+                            if (c <= 57)
+                              cur_chr = c - 48;
+                            else
+                              cur_chr = c - 87;
+                            if (cc <= 57)
+                              cur_chr = 16 * cur_chr + cc - 48;
+                            else
+                              cur_chr = 16 * cur_chr + cc - 87;
+                            buffer[k - 1] = cur_chr;
+                          }
+                          else if (c < 64)
+                            buffer[k - 1] = c + 64;
+                          else
+                            buffer[k - 1] = c - 64;
+                          cur_input.limit_field = cur_input.limit_field - d;
+                          first = first - d;
+                          while (k <= cur_input.limit_field) {
+                            buffer[k] = buffer[k + d];
+                            incr(k);
+                          }
+                          goto lab26;
+                        }
+                      }
+                }
+                if (cat != letter)
+                  decr(k);
+                if (k > cur_input.loc_field + 1)
+                {
+                  cur_cs = id_lookup(cur_input.loc_field, k - cur_input.loc_field);
+                  cur_input.loc_field = k;
+                  goto lab40;
+                }
+              }
+              else
+              {
+                if (buffer[k] == cur_chr)
+                  if (cat == sup_mark)
+                    if (k < cur_input.limit_field)
+                    {
+                      c = buffer[k + 1];
+                      if (c < 128)             /* ? */
+                      {
+                        d = 2;
+                        if ((((c >= 48) && (c <= 57)) ||
+                              ((c >= 97) && (c <= 102))))
+                          if (k + 2 <= cur_input.limit_field)
+                          {
+                            cc = buffer[k + 2];
+                            if ((((cc >= 48) && (cc <= 57)) ||
+                                  ((cc >= 97) && (cc <= 102))))
+                              incr(d);
+                          }
+                        if (d > 2)
+                        {
+                          if (c <= 57)
+                            cur_chr = c - 48;
+                          else
+                            cur_chr = c - 87;
+                          if (cc <= 57)          /* cc may be used without ... */
+                            cur_chr = 16 * cur_chr + cc - 48;
+                          else
+                            cur_chr = 16 * cur_chr + cc - 87;
+                          buffer[k - 1] = cur_chr;
+                        }
+                        else if (c < 64)
+                          buffer[k - 1] = c + 64;
+                        else
+                          buffer[k - 1] = c - 64;
+                        cur_input.limit_field = cur_input.limit_field - d;
+                        first = first - d;
+                        while (k <= cur_input.limit_field) {
+                          buffer[k] = buffer[k + d];
+                          incr(k);
+                        }
+                        goto lab26;
+                      }
+                    }
+              }
+              cur_cs = single_base + buffer[cur_input.loc_field];
+              incr(cur_input.loc_field);
+            }
+lab40:
+            cur_cmd = eq_type(cur_cs);
+            cur_chr = equiv(cur_cs);
+            
+            if (cur_cmd >= outer_call)
+            {
+              check_outer_validity();
+            }
+          }
+          break;
+        case any_state_plus(active_char):
+          {
+            cur_cs = cur_chr + active_base;
+            cur_cmd = eq_type(cur_cs);
+            cur_chr = equiv(cur_cs);
+            cur_input.state_field = mid_line;
+            
+            if (cur_cmd >= outer_call)
+            {
+              check_outer_validity();
+            }
+          }
+          break;
+        case any_state_plus(sup_mark):
+          {
+            if (cur_chr == buffer[cur_input.loc_field])
+              if (cur_input.loc_field < cur_input.limit_field)
+              {
+                c = buffer[cur_input.loc_field + 1];
+                if (c < 128)
+                {
+                  cur_input.loc_field = cur_input.loc_field + 2;
+                  if ((((c >= 48) && (c <= 57)) ||
+                        ((c >= 97) && (c <= 102))))
+                    if (cur_input.loc_field <= cur_input.limit_field)
+                    {
+                      cc = buffer[cur_input.loc_field];
+                      if ((((cc >= 48) && (cc <= 57)) ||
+                            ((cc >= 97) && (cc <= 102))))
+                      {
+                        incr(cur_input.loc_field);
+                        if (c <= 57)
+                          cur_chr = c - 48;
+                        else
+                          cur_chr = c - 87;
+                        if (cc <= 57)
+                          cur_chr = 16 * cur_chr + cc - 48;
+                        else
+                          cur_chr = 16 * cur_chr + cc - 87;
+                        goto lab21;
+                      }
+                    }
+                  if (c < 64)
+                    cur_chr = c + 64;
+                  else
+                    cur_chr = c - 64;
+                  goto lab21;
+                }
+              }
+            cur_input.state_field = mid_line;
+          }
+          break;
+        case any_state_plus(invalid_char):
+          {
+            print_err("Text line contains an invalid character");
+            help2("A funny symbol that I can't read has just been input.",
+                "Continue, and I'll forget that it ever happened.");
+            deletions_allowed = false;
+            error();
+            deletions_allowed = true;
+            goto lab20;
+          }
+          break;
+        case mid_line + spacer:
+          {
+            cur_input.state_field = skip_blanks;
+            cur_chr = ' ';
+          }
+          break;
+        case mid_line + car_ret:
+          {
+            cur_input.loc_field = cur_input.limit_field + 1;
+            cur_cmd = spacer;
+            cur_chr = ' ';
+          }
+          break;
+        case skip_blanks + car_ret:
+        case any_state_plus(comment):
+          {
+            cur_input.loc_field = cur_input.limit_field + 1;
+            goto lab25;
+          }
+          break;
+        case new_line + car_ret:
+          {
+            cur_input.loc_field = cur_input.limit_field + 1;
+            cur_cs = par_loc;
+            cur_cmd = eq_type(cur_cs);
+            cur_chr = equiv(cur_cs);
+            
+            if (cur_cmd >= outer_call)
+            {
+              check_outer_validity();
+            }
+          }
+          break;
+        case mid_line + left_brace:
+          incr(align_state);
+          break;
+        case skip_blanks + left_brace:
+        case new_line + left_brace:
+          {
+            cur_input.state_field = mid_line;
+            incr(align_state);
+          }
+          break;
+        case mid_line + right_brace:
+          decr(align_state);
+          break;
+        case skip_blanks + right_brace:
+        case new_line + right_brace:
+          {
+            cur_input.state_field = 1;
+            decr(align_state);
+          }
+          break;
+        case add_delims_to(skip_blanks):
+        case add_delims_to(new_line):
+          cur_input.state_field = 1;
+          break;
+        default:
+          break;
+      }
     }
-  } 
-  break; 
-      case 14 : 
-      case 30 : 
-      case 46 : 
-  {
-    cur_cs = cur_chr + 1; 
-    cur_cmd = eqtb[cur_cs].hh.b0; 
-    cur_chr = eqtb[cur_cs].hh.v.RH; 
-    cur_input.state_field = 1; 
-    if (cur_cmd >= 113){
-      check_outer_validity();
-    }
-  } 
-  break; 
-      case 8 : 
-      case 24 : 
-      case 40 : 
-  {
-    if (cur_chr == buffer[cur_input.loc_field])
-    if (cur_input.loc_field < cur_input.limit_field)
+    else
     {
-      c = buffer[cur_input.loc_field + 1]; 
-      if (c < 128)
+      cur_input.state_field = new_line;
+
+      if (cur_input.name_field > 17)
       {
-        cur_input.loc_field = cur_input.loc_field + 2; 
-        if ((((c >= 48)&&(c <= 57)) ||((c >= 97)&&(c <= 
-        102)))) 
-        if (cur_input.loc_field <= cur_input.limit_field)
+        incr(line);
+        first = cur_input.start_field;
+        if (!force_eof)
         {
-    cc = buffer[cur_input.loc_field]; 
-    if ((((cc >= 48)&&(cc <= 57)) ||((cc >= 97)&&(
-    cc <= 102)))) 
-    {
-      incr(cur_input.loc_field); 
-      if (c <= 57)
-      cur_chr = c - 48; 
-      else cur_chr = c - 87; 
-      if (cc <= 57)
-      cur_chr = 16 * cur_chr + cc - 48; 
-      else cur_chr = 16 * cur_chr + cc - 87; 
-      goto lab21; 
-    } 
-        } 
-        if (c < 64)
-        cur_chr = c + 64; 
-        else cur_chr = c - 64; 
-        goto lab21; 
-      } 
-    } 
-    cur_input.state_field = 1; 
-  } 
-  break; 
-      case 16 : 
-      case 32 : 
-      case 48 : 
-  {
-	  print_err("Text line contains an invalid character");
-	  help2("A funny symbol that I can't read has just been input.",
-		  "Continue, and I'll forget that it ever happened.");
-    deletions_allowed = false; 
-    error(); 
-    deletions_allowed = true; 
-    goto lab20; 
-  } 
-  break; 
-      case 11 : 
-  {
-    cur_input.state_field = 17; 
-    cur_chr = 32; 
-  } 
-  break; 
-      case 6 : 
-  {
-    cur_input.loc_field = cur_input.limit_field + 1; 
-    cur_cmd = 10; 
-    cur_chr = 32; 
-  } 
-  break; 
-      case 22 : 
-      case 15 : 
-      case 31 : 
-      case 47 : 
-  {
-    cur_input.loc_field = cur_input.limit_field + 1; 
-    goto lab25; 
-  } 
-  break; 
-      case 38 : 
-  {
-    cur_input.loc_field = cur_input.limit_field + 1; 
-    cur_cs = par_loc; 
-    cur_cmd = eqtb[cur_cs].hh.b0; 
-    cur_chr = eqtb[cur_cs].hh.v.RH; 
-    if (cur_cmd >= 113){
-      check_outer_validity();
-    }
-  } 
-  break; 
-      case 2 : 
-  incr(align_state); 
-  break; 
-      case 18 : 
-      case 34 : 
-  {
-    cur_input.state_field = 1; 
-    incr(align_state); 
-  } 
-  break; 
-      case 3 : 
-  decr(align_state); 
-  break; 
-      case 19 : 
-      case 35 : 
-  {
-    cur_input.state_field = 1; 
-    decr(align_state); 
-  } 
-  break; 
-      case 20 : 
-      case 21 : 
-      case 23 : 
-      case 25 : 
-      case 28 : 
-      case 29 : 
-      case 36 : 
-      case 37 : 
-      case 39 : 
-      case 41 : 
-      case 44 : 
-      case 45 : 
-  cur_input.state_field = 1; 
-  break; 
-  default: 
-  ; 
-  break; 
-      } 
-    } 
-    else {
-      cur_input.state_field = 33; 
-      if (cur_input.name_field > 17) {
-      incr(line); 
-      first = cur_input.start_field; 
-      if (! force_eof){
-        if (input_ln(input_file[cur_input.index_field], true)) {
-          firm_up_the_line();
+          if (input_ln(input_file[cur_input.index_field], true))
+          {
+            firm_up_the_line();
+          }
+          else
+            force_eof = true;
         }
-        else force_eof = true; 
-      } 
-      if (force_eof){
-        print_char(41);   /*)*/
-        decr(open_parens); 
-#ifndef _WINDOWS
-        fflush(stdout); 
-#endif
-        force_eof = false; 
-        end_file_reading(); 
-        check_outer_validity(); 
-        goto lab20; 
-      } 
-      if ((end_line_char < 0)||
-        (end_line_char > 255)) 
-        decr(cur_input.limit_field); 
-/*    long to unsigned char ... */
-      else buffer[cur_input.limit_field] = end_line_char; 
-      first = cur_input.limit_field + 1; 
-      cur_input.loc_field = cur_input.start_field; 
-    } 
-    else {
-      if (!(cur_input.name_field == 0)) {
-        cur_cmd = 0; 
-        cur_chr = 0; 
-        return; 
-      } 
-      if (input_ptr > 0){
-        end_file_reading(); 
-        goto lab20; 
-      } 
-      if (selector < 18) open_log_file(); 
-      if (interaction > 1){
-        if ((end_line_char < 0)||
-          (end_line_char > 255)
-        )
-          incr(cur_input.limit_field); 
-        if (cur_input.limit_field == cur_input.start_field)
-          print_nl("(Please type a command or say `\\end')");
-        print_ln(); 
-        first = cur_input.start_field; 
+
+        if (force_eof)
         {
-        ; 
-          print_string("*");
-          term_input("*", 0); 
-        } 
-        cur_input.limit_field = last; 
-        if ((end_line_char < 0)||
-          (end_line_char > 255)
-        )
-          decr(cur_input.limit_field); 
-/*    long to unsigned char ... */
-        else buffer[cur_input.limit_field]= end_line_char; 
-        first = cur_input.limit_field + 1; 
-        cur_input.loc_field = cur_input.start_field; 
-      } 
-      else {
-        fatal_error("*** (job aborted, no legal \\end found)"); /*  */
-        return;     // abort_flag set
+          print_char(')');
+          decr(open_parens);
+#ifndef _WINDOWS
+          fflush(stdout);
+#endif
+          force_eof = false;
+          end_file_reading();
+          check_outer_validity();
+          goto lab20;
+        }
+        if ((end_line_char < 0) || (end_line_char > 255))
+          decr(cur_input.limit_field);
+        else
+          buffer[cur_input.limit_field] = end_line_char;
+        first = cur_input.limit_field + 1;
+        cur_input.loc_field = cur_input.start_field;
       }
-    } 
-    {
-      if (interrupt != 0){
-        pause_for_instructions();
+      else
+      {
+        if (!(cur_input.name_field == 0))
+        {
+          cur_cmd = 0;
+          cur_chr = 0;
+          return;
+        }
+        if (input_ptr > 0)
+        {
+          end_file_reading();
+          goto lab20;
+        }
+        if (selector < log_only)
+          open_log_file();
+        if (interaction > nonstop_mode)
+        {
+          if ((end_line_char < 0) || (end_line_char > 255))
+            incr(cur_input.limit_field);
+          if (cur_input.limit_field == cur_input.start_field)
+            print_nl("(Please type a command or say `\\end')");
+          print_ln();
+          first = cur_input.start_field;
+          {
+            ;
+            print_string("*");
+            term_input("*", 0);
+          }
+          cur_input.limit_field = last;
+          if ((end_line_char < 0) || (end_line_char > 255))
+            decr(cur_input.limit_field);
+          else
+            buffer[cur_input.limit_field]= end_line_char;
+          first = cur_input.limit_field + 1;
+          cur_input.loc_field = cur_input.start_field;
+        }
+        else
+        {
+          fatal_error("*** (job aborted, no legal \\end found)");
+          return;     // abort_flag set
+        }
       }
-      } 
-      goto lab25; 
-    } 
-  } 
+      {
+        if (interrupt != 0)
+        {
+          pause_for_instructions();
+        }
+      }
+      goto lab25;
+    }
+  }
   else if (cur_input.loc_field != 0)
   {
-    t = mem[cur_input.loc_field].hh.v.LH; 
-    cur_input.loc_field = mem[cur_input.loc_field].hh.v.RH; 
+    t = info(cur_input.loc_field);
+    cur_input.loc_field = link(cur_input.loc_field);
     if (t >= 4095)
     {
-      cur_cs = t - 4095; 
-      cur_cmd = eqtb[cur_cs].hh.b0; 
-      cur_chr = eqtb[cur_cs].hh.v.RH; 
-      if (cur_cmd >= 113)
-      if (cur_cmd == 116)
-      {
-  cur_cs = mem[cur_input.loc_field].hh.v.LH - 4095; 
-  cur_input.loc_field = 0; 
-  cur_cmd = eqtb[cur_cs].hh.b0; 
-  cur_chr = eqtb[cur_cs].hh.v.RH; 
-  if (cur_cmd > 100)
-  {
-    cur_cmd = 0; 
-    cur_chr = 257; 
-  } 
-      } 
-      else {
-      check_outer_validity();
+      cur_cs = t - 4095;
+      cur_cmd = eq_type(cur_cs);
+      cur_chr = equiv(cur_cs);
+      if (cur_cmd >= outer_call)
+        if (cur_cmd == dont_expand)
+        {
+          cur_cs = info(cur_input.loc_field) - 4095;
+          cur_input.loc_field = 0;
+          cur_cmd = eq_type(cur_cs);
+          cur_chr = equiv(cur_cs);
+
+          if (cur_cmd > max_command)
+          {
+            cur_cmd = relax;
+            cur_chr = 257;
+          }
+        }
+        else
+        {
+          check_outer_validity();
+        }
     }
-    } 
-    else {
-  
-      cur_cmd = t / 256; 
-/*      cur_cmd = t >> 8; */  /* top 8 bits */
-      cur_chr = t % 256; 
-/*      cur_chr = t & 255; */ /* last 8 bits */
-      switch(cur_cmd)
-      {case 1 : 
-  incr(align_state); 
-  break; 
-      case 2 : 
-  decr(align_state); 
-  break; 
-      case 5 : 
-  {
-    begin_token_list(param_stack[cur_input.limit_field + cur_chr - 1], 
-    0); 
-    goto lab20; 
-  } 
-  break; 
-  default: 
-  ; 
-  break; 
-      } 
-    } 
-  } 
-  else {
-    end_token_list(); 
-    goto lab20; 
-  } 
-  if (cur_cmd <= 5)
-  if (cur_cmd >= 4)
-  if (align_state == 0)
-  {
-    if (scanner_status == 4){
-    fatal_error("(interwoven alignment preambles are not allowed)"); /*  */
-    return;     // abort_flag set
+    else
+    {
+      cur_cmd = t / 256;
+      cur_chr = t % 256;
+      switch (cur_cmd)
+      {
+        case left_brace:
+          incr(align_state);
+          break;
+        case right_brace:
+          decr(align_state);
+          break;
+        case out_param:
+          {
+            begin_token_list(param_stack[cur_input.limit_field + cur_chr - 1], parameter);
+            goto lab20;
+          }
+          break;
+        default:
+          break;
+      }
+    }
   }
-
-    cur_cmd = mem[cur_align + 5].hh.v.LH; 
-    mem[cur_align + 5].hh.v.LH = cur_chr; 
-    if (cur_cmd == 63)
-    begin_token_list(omit_template, 2); 
-    else begin_token_list(mem[cur_align + 2].cint, 2); 
-    align_state = 1000000L; 
-    goto lab20; 
-  } 
-} 
-
+  else
+  {
+    end_token_list();
+    goto lab20;
+  }
+  if (cur_cmd <= car_ret)
+    if (cur_cmd >= tab_mark)
+      if (align_state == 0)
+      {
+        if ((scanner_status == aligning) && (cur_align == 0))
+        {
+          fatal_error("(interwoven alignment preambles are not allowed)");
+          return;     // abort_flag set
+        }
+        cur_cmd = extra_info(cur_align);
+        extra_info(cur_align) = cur_chr;
+        if (cur_cmd == omit)
+          begin_token_list(omit_template, v_template);
+        else
+          begin_token_list(v_part(cur_align), v_template);
+        align_state = 1000000L;
+        goto lab20;
+      }
+}
 #pragma optimize ("", on)             /* 96/Sep/12 */
-
-/*****************************************************************************/
