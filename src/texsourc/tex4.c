@@ -23,113 +23,123 @@
 
 #pragma warning(disable:4244)       /* 96/Jan/10 */
 
-/* #pragma optimize("a", off) */        /* 98/Dec/10 experiment */
-
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-
+/* sec 0581 */
 void char_warning_(internal_font_number f, eight_bits c)
 { 
   if (tracing_lost_chars > 0)
   {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if (show_missing == 0)            /* show on screen 94/June/10 */
+    if (show_missing == 0)            /* show on screen 94/June/10 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-      begin_diagnostic(); 
+      begin_diagnostic();
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if (show_missing) {     /* add ! before 94/June/10 */
-    print_nl("! ");
-    print_string("Missing character: there is no ");
-  }
-  else
-    print_nl("Missing character: there is no ");
-    print(c); 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if (show_numeric) {             /* bkph 93/Dec/21 */
-    print_char(' ');
-    print_char('(');
-    if (c / 100 > 0) {
-      print_char(48 + c / 100);
-/*      c = c % 100; */
-      c = c - (c / 100) * 100;      /* ? */
-      print_char(48 + c / 10);
+    if (show_missing)
+    {     /* add ! before 94/June/10 */
+      print_nl("! ");
+      print_string("Missing character: there is no ");
     }
-    else {
+    else
+      print_nl("Missing character: there is no ");
+    print(c);
+/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+    if (show_numeric)
+    {             /* bkph 93/Dec/21 */
+      print_char(' ');
+      print_char('(');
+      if (c / 100 > 0)
+      {
+        print_char(48 + c / 100);
 /*      c = c % 100; */
-      c = c - (c / 100) * 100;      /* ? */
-      if (c / 10 > 0) print_char(48 + c / 10);
-    }
-    print_char(48 + c % 10);
-    print_char(41);   /*)*/
+        c = c - (c / 100) * 100;      /* ? */
+        print_char(48 + c / 10);
+      }
+      else
+      {
+/*      c = c % 100; */
+        c = c - (c / 100) * 100;      /* ? */
+        if (c / 10 > 0) print_char(48 + c / 10);
+      }
+      print_char(48 + c % 10);
+      print_char(')');
 /*    print_char(32); */
-  }
+    }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     print_string(" in font ");
-    slow_print(font_name[f]); 
+    slow_print(font_name[f]);
     print_char('!');
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /*  if (show_missing) show_context(); */    /* in tex2.c 94/June/10 */
-  if (show_missing) {
-    if (f != 0) show_context();     /* not if its the nullfont */
+    if (show_missing)
+    {
+      if (f != 0) show_context();     /* not if its the nullfont */
+    }
+    if (show_missing == 0)            /* show on screen 94/June/10 */
+/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+      end_diagnostic(false);
+/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+    missing_characters++;           /* bkph 93/Dec/16 */
+/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   }
-  if (show_missing == 0)            /* show on screen 94/June/10 */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    end_diagnostic(false); 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  missing_characters++;           /* bkph 93/Dec/16 */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  } 
-} 
+}
+/* sec 0582 */
 halfword new_character_(internal_font_number f, eight_bits c)
 {
   register halfword Result;
   halfword p;
-  if (font_bc[f]<= c)
-    if (font_ec[f]>= c)
-      if ((font_info[char_base[f]+ c].qqqq.b0 > 0))
+  if (font_bc[f] <= c)
+    if (font_ec[f] >= c)
+      if ((font_info[char_base[f] + c].qqqq.b0 > 0))
       {
         p = get_avail();
-        mem[p].hh.b0 = f;
-    mem[p].hh.b1 = c; 
-    Result = p; 
-    return(Result); 
-  } 
+        font(p) = f;
+        character(p) = c;
+        Result = p;
+        return (Result);
+      }
   char_warning(f, c); /* char_warning(f,c); l.11283 */
   Result = 0;       /* new_character:=null */
-  return Result; 
-} 
+  return Result;
+}
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
-void dvi_swap (void) 
+/* sec 0598 */
+void dvi_swap (void)
 { 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if (trace_flag) {
+  if (trace_flag)
+  {
     show_char('\n');
     sprintf(log_line, "dvi_swap %d", dvi_gone);
     show_line(log_line, 0);
   }
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if (dvi_limit == dvi_buf_size) {
-    writedvi(0, half_buf - 1); 
-    dvi_limit = half_buf; 
-    dvi_offset = dvi_offset + dvi_buf_size; 
-    dvi_ptr = 0; 
-  } else {
-    writedvi(half_buf, dvi_buf_size - 1); 
-    dvi_limit = dvi_buf_size; 
-  } 
-  dvi_gone = dvi_gone + half_buf; 
-} 
+
+  if (dvi_limit == dvi_buf_size)
+  {
+    writedvi(0, half_buf - 1);
+    dvi_limit = half_buf;
+    dvi_offset = dvi_offset + dvi_buf_size;
+    dvi_ptr = 0;
+  }
+  else
+  {
+    writedvi(half_buf, dvi_buf_size - 1);
+    dvi_limit = dvi_buf_size;
+  }
+  dvi_gone = dvi_gone + half_buf;
+}
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
-void dvi_four_(integer x)    /* attempt at speeding up bkph - is compiler smart ? */
+/* attempt at speeding up bkph - is compiler smart ? */
+/* sec 0600 */
+void dvi_four_(integer x)
 { 
   if (x >= 0)
     // dvi_out(x % 16777216L);
     dvi_out((x >> 24));
-  else {
-    x = x + 1073741824L;    /* 2^30 40000000 hex */ 
+  else
+  {
+    x = x + 1073741824L;    /* 2^30 40000000 hex */
     x = x + 1073741824L;
     //dvi_out((x / 16777216L) + 128);
     dvi_out((x >> 24) + 128);
-  } 
+  }
 /*  x = x % 16777216L;  */  /* % 2^24 */
   x = x & 16777215L;
   //dvi_out(x / 65536L);
@@ -140,26 +150,30 @@ void dvi_four_(integer x)    /* attempt at speeding up bkph - is compiler smart 
   dvi_out((x >> 8));
   //dvi_out(x % 256);
   dvi_out(x & 255);
-} 
+}
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
+/* sec 0601 */
 void zdvipop(integer l)
-{ 
+{
   if ((l == dvi_offset + dvi_ptr) && (dvi_ptr > 0))
-    decr(dvi_ptr); 
+    decr(dvi_ptr);
   else
     dvi_out(142);
-} 
+}
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
+/* sec 0602 */
 void dvi_font_def_(internal_font_number f)
-{ 
-  pool_pointer k; 
+{
+  pool_pointer k;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef INCREASEFONTS
-  if (f <= 256) {
+  if (f <= 256)
+  {
     dvi_out(243);
     dvi_out(f - 1);
   }
-  else {
+  else
+  {
     dvi_out(244);
     dvi_out(((f - 1) >> 8));
     dvi_out(((f - 1) & 255));
@@ -176,124 +190,127 @@ void dvi_font_def_(internal_font_number f)
   dvi_out(font_check[f].b3);
   dvi_four(font_size[f]); 
   dvi_four(font_dsize[f]);
-/*  long to unsigned char ... */
   dvi_out(length(font_area[f]));
-/*  long to unsigned char ... */
   dvi_out(length(font_name[f]));
 /* sec 0603 */
   for (k = str_start[font_area[f]]; k <= str_start[font_area[f]+ 1] - 1; k++)
     dvi_out(str_pool[k]);
   for (k = str_start[font_name[f]]; k <= str_start[font_name[f]+ 1] - 1; k++)
     dvi_out(str_pool[k]);
-} 
+}
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
-void zmovement(scaled w, eight_bits o) 
-{/* 10 40 45 2 1 */ 
-  small_number mstate; 
-  halfword p, q; 
-  integer k; 
-  q = get_node(3); 
-  mem[q + 1].cint = w; 
-  mem[q + 2].cint = dvi_offset + dvi_ptr; 
-  if (o == 157) /* 157 == down1 */ {
-    mem[q].hh.v.RH = down_ptr; 
-    down_ptr = q; 
-  } else { /* 143 == right1 */
-    mem[q].hh.v.RH = right_ptr; 
-    right_ptr = q; 
-  } 
-  p = mem[q].hh.v.RH; 
-  mstate = 0; 
+/* sec 0607 */
+void zmovement(scaled w, eight_bits o)
+{
+  small_number mstate;
+  halfword p, q;
+  integer k;
+  q = get_node(3);
+  mem[q + 1].cint = w;
+  mem[q + 2].cint = dvi_offset + dvi_ptr;
+  if (o == 157) /* 157 == down1 */
+  {
+    mem[q].hh.v.RH = down_ptr;
+    down_ptr = q;
+  }
+  else
+  { /* 143 == right1 */
+    mem[q].hh.v.RH = right_ptr;
+    right_ptr = q;
+  }
+  p = mem[q].hh.v.RH;
+  mstate = 0;
   while (p != 0) {  /* while p<>null do l.12153 */
     if (mem[p + 1].cint == w)
-    switch(mstate + mem[p].hh.v.LH)
-    {case 3 : 
-    case 4 : 
-    case 15 : 
-    case 16 : 
-      if (mem[p + 2].cint < dvi_gone)
-      goto lab45; 
-      else {
-    
-  k = mem[p + 2].cint - dvi_offset; 
-  if (k < 0)
-  k = k + dvi_buf_size; 
-  dvi_buf[k]= dvi_buf[k]+ 5; 
-  mem[p].hh.v.LH = 1; 
-  goto lab40; 
-      } 
-      break; 
-    case 5 : 
-    case 9 : 
-    case 11 : 
-      if (mem[p + 2].cint < dvi_gone)
-      goto lab45; 
-      else {
-    
-  k = mem[p + 2].cint - dvi_offset; 
-  if (k < 0)
-  k = k + dvi_buf_size; 
-  dvi_buf[k]= dvi_buf[k]+ 10; 
-  mem[p].hh.v.LH = 2; 
-  goto lab40; 
-      } 
-      break; 
-    case 1 : 
-    case 2 : 
-    case 8 : 
-    case 13 : 
-      goto lab40; 
-      break; 
-      default: 
-   ; 
-      break; 
-    } 
-    else switch(mstate + mem[p].hh.v.LH)
-    {case 1 : 
-      mstate = 6; 
-      break; 
-    case 2 : 
-      mstate = 12; 
-      break; 
-    case 8 : 
-    case 13 : 
-      goto lab45; 
-      break; 
-      default: 
-   ; 
-      break; 
-    } 
-    p = mem[p].hh.v.RH; 
-  } 
-  lab45:; 
-  mem[q].hh.v.LH = 3; 
-  if (abs(w)>= 8388608L) /* 2^23 */
+      switch(mstate + mem[p].hh.v.LH)
+      {
+        case 3:
+        case 4:
+        case 15:
+        case 16:
+          if (mem[p + 2].cint < dvi_gone)
+            goto lab45;
+          else
+          {
+            k = mem[p + 2].cint - dvi_offset;
+            if (k < 0)
+              k = k + dvi_buf_size;
+            dvi_buf[k]= dvi_buf[k] + 5;
+            mem[p].hh.v.LH = 1;
+            goto lab40;
+          }
+          break;
+        case 5:
+        case 9:
+        case 11:
+          if (mem[p + 2].cint < dvi_gone)
+            goto lab45;
+          else
+          {
+            k = mem[p + 2].cint - dvi_offset;
+            if (k < 0)
+              k = k + dvi_buf_size;
+            dvi_buf[k]= dvi_buf[k] + 10;
+            mem[p].hh.v.LH = 2;
+            goto lab40;
+          }
+          break;
+        case 1:
+        case 2:
+        case 8:
+        case 13:
+          goto lab40;
+          break;
+        default:
+          break;
+      }
+    else switch (mstate + mem[p].hh.v.LH)
+    {
+      case 1:
+        mstate = 6;
+        break;
+      case 2:
+        mstate = 12;
+        break;
+      case 8:
+      case 13:
+        goto lab45;
+        break;
+      default:
+        break;
+    }
+    p = mem[p].hh.v.RH;
+  }
+lab45:
+  ;
+  mem[q].hh.v.LH = 3;
+  if (abs(w) >= 8388608L) /* 2^23 */
   {
     dvi_out(o + 3);
-    dvi_four(w); 
-    return; 
-  } 
-  if (abs(w)>= 32768L)
+    dvi_four(w);
+    return;
+  }
+  if (abs(w) >= 32768L)
   {
     dvi_out(o + 2);
     if (w < 0)
-    w = w + 16777216L;  /* 2^24 */
+      w = w + 16777216L;  /* 2^24 */
     //dvi_out(w / 65536L);
     dvi_out((w >> 16));
 /*    w = w % 65536L; */
-  w = w & 65535L; 
-    goto lab2; 
-  } 
+    w = w & 65535L;
+    goto lab2;
+  }
   if (abs(w)>= 128)
   {
     dvi_out(o + 1);
     if (w < 0)
-    w = w + 65536L; 
-    goto lab2; 
+      w = w + 65536L;
+    goto lab2;
   }
   dvi_out(o);
   if (w < 0)
-  w = w + 256; 
+    w = w + 256;
   goto lab1;
 lab2:
   //dvi_out(w / 256);
@@ -301,55 +318,61 @@ lab2:
 lab1:
   //dvi_out(w % 256);
   dvi_out(w & 255);
-  return; 
-  lab40: mem[q].hh.v.LH = mem[p].hh.v.LH; 
+  return;
+lab40:
+  mem[q].hh.v.LH = mem[p].hh.v.LH;
   if (mem[q].hh.v.LH == 1)
   {
     dvi_out(o + 4);
     while (mem[q].hh.v.RH != p) {
-      q = mem[q].hh.v.RH; 
-      switch(mem[q].hh.v.LH)
-      {case 3 : 
-  mem[q].hh.v.LH = 5; 
-  break; 
-      case 4 : 
-  mem[q].hh.v.LH = 6; 
-  break; 
-  default: 
-  ; 
-  break; 
-      } 
-    } 
-  } else {
+      q = mem[q].hh.v.RH;
+      switch (mem[q].hh.v.LH)
+      {
+        case 3:
+          mem[q].hh.v.LH = 5;
+          break;
+        case 4:
+          mem[q].hh.v.LH = 6;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  else
+  {
     dvi_out(o + 9);
     while (mem[q].hh.v.RH != p) {
-      q = mem[q].hh.v.RH; 
-      switch(mem[q].hh.v.LH)
-      {case 3 : 
-  mem[q].hh.v.LH = 4; 
-  break; 
-      case 5 : 
-  mem[q].hh.v.LH = 6; 
-  break; 
-  default: 
-  ; 
-  break; 
-      } 
-    } 
-  } 
-} 
-void prune_movements_(integer l) 
-{/* 30 10 */ 
-  halfword p; 
-  while (down_ptr != 0) { /* while down_ptr<>null do l.12206 */
+      q = mem[q].hh.v.RH;
+      switch (mem[q].hh.v.LH)
+      {
+        case 3:
+          mem[q].hh.v.LH = 4;
+          break;
+        case 5:
+          mem[q].hh.v.LH = 6;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+}
+/* sec 0615 */
+void prune_movements_(integer l)
+{
+  halfword p;
+  while (down_ptr != 0)
+  {
     if (mem[down_ptr + 2].cint < l)
-    goto lab30; 
-    p = down_ptr; 
-    down_ptr = mem[p].hh.v.RH; 
-    free_node(p, 3); 
+      goto lab30;
+    p = down_ptr;
+    down_ptr = mem[p].hh.v.RH;
+    free_node(p, 3);
   }
 lab30:
-  while (right_ptr != 0) { /* done: while right_ptr<>null do */
+  while (right_ptr != 0)
+  {
     if (mem[right_ptr + 2].cint < l)
       return;
     p = right_ptr;
@@ -358,22 +381,25 @@ lab30:
   }
 }
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
+/* sec 1368 */
 void special_out_(halfword p)
 {
-  char old_setting; 
-  pool_pointer k; 
+  char old_setting;
+  pool_pointer k;
+
   if (cur_h != dvi_h)
   {
     movement(cur_h - dvi_h, 143); /* 143 == right1 */
-    dvi_h = cur_h; 
-  } 
+    dvi_h = cur_h;
+  }
+
   if (cur_v != dvi_v)
   {
     movement(cur_v - dvi_v, 157); /* 157 == down1 */
-    dvi_v = cur_v; 
-  } 
-  old_setting = selector; 
-  selector = 21; 
+    dvi_v = cur_v;
+  }
+  old_setting = selector;
+  selector = new_string;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* About output \special{...} make some space in string pool 97/Mar/9 */
 #ifdef ALLOCATESTRING
@@ -387,33 +413,33 @@ void special_out_(halfword p)
 #ifdef ALLOCATESTRING
 /*  show_token_list(mem[mem[p + 1].hh.v.RH].hh.v.RH, 0,
     current_pool_size - pool_ptr); */
-  show_token_list(mem[mem[p + 1].hh.v.RH].hh.v.RH, 0, 10000000L);   
+  show_token_list(mem[mem[p + 1].hh.v.RH].hh.v.RH, 0, 10000000L);
 /*  Above is safe, since print/print_char/print_esc will extend string space */
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  show_token_list(mem[mem[p + 1].hh.v.RH].hh.v.RH, 0,
-      pool_size - pool_ptr); 
+  show_token_list(mem[mem[p + 1].hh.v.RH].hh.v.RH, 0, pool_size - pool_ptr);
 #endif
-
-  selector = old_setting; 
+  selector = old_setting;
   {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* str_room(1) - is there space for one more character in string pool ? */
 #ifdef ALLOCATESTRING
-  if (pool_ptr + 1 > current_pool_size)
-    str_pool = realloc_str_pool (increment_pool_size);
-  if (pool_ptr + 1 > current_pool_size)  { /* in case it failed 94/Jan/24 */
-    overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
-    return;     // abort_flag set
-  }
+    if (pool_ptr + 1 > current_pool_size)
+      str_pool = realloc_str_pool (increment_pool_size);
+    if (pool_ptr + 1 > current_pool_size)
+    { /* in case it failed 94/Jan/24 */
+      overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
+      return;     // abort_flag set
+    }
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    if (pool_ptr + 1 > pool_size){
-    overflow("pool size", pool_size - init_pool_ptr); /* pool size */
-    return;     // abort_flag set
-  }
+    if (pool_ptr + 1 > pool_size)
+    {
+      overflow("pool size", pool_size - init_pool_ptr); /* pool size */
+      return;     // abort_flag set
+    }
 #endif
-  } 
+  }
   if (cur_length < 256)  /* can use xxx1 ? */
   {
     dvi_out(239);
@@ -460,74 +486,72 @@ void special_out_(halfword p)
     }
   }
 #endif
-  {
-    register integer for_end; 
-    k = str_start[str_ptr]; 
-    for_end = pool_ptr - 1; 
-    if (k <= for_end) do
-      dvi_out(str_pool[k]);
-    while(k++ < for_end);
-  } 
-  pool_ptr = str_start[str_ptr]; 
-} 
+  for (k = str_start[str_ptr]; k <= pool_ptr - 1; k++)
+    dvi_out(str_pool[k]);
+  pool_ptr = str_start[str_ptr];
+}
 /* noew returns -1 if it fails */
+/* sec 1370 */
 void write_out_(halfword p)
 {
-  char old_setting; 
+  char old_setting;
 /*  integer oldmode;  */
   int oldmode;          /* 1995/Jan/7 */
 /*  small_number j;  */
   int j;              /* 1995/Jan/7 */
-  halfword q, r; 
+  halfword q, r;
 /* q:=get_avail; info(q):=right_brace_token+"}";@/ */
-  q = get_avail(); 
-  info(q) = 637; 
+  q = get_avail();
+  info(q) = 637;
 /* r:=get_avail; link(q):=r; info(r):=end_write_token; ins_list(q);@/ */
 /* @d end_write_token==cs_token_flag+end_write */
-  r = get_avail(); 
-  link(q) = r; 
+  r = get_avail();
+  link(q) = r;
 /*  mem[r].hh.v.LH = (hash_size + 4617);  */
 /*  mem[r].hh.v.LH = (hash_size + 4095 + 522); */
-  info(r) = (hash_size + hash_extra + 4095 + 522); 
-  begin_token_list(q, 4); 
-  begin_token_list(mem[p + 1].hh.v.RH, 15); 
-  q = get_avail(); 
-  mem[q].hh.v.LH = 379; 
-  begin_token_list(q, 4); 
-  oldmode = mode; 
-  mode = 0; 
-  cur_cs = write_loc; 
-  q = scan_toks(false, true); 
-  get_token(); 
+  info(r) = (hash_size + hash_extra + 4095 + 522);
+  begin_token_list(q, 4);
+  begin_token_list(mem[p + 1].hh.v.RH, 15);
+  q = get_avail();
+  mem[q].hh.v.LH = 379;
+  begin_token_list(q, 4);
+  oldmode = mode;
+  mode = 0;
+  cur_cs = write_loc;
+  q = scan_toks(false, true);
+  get_token();
 /*  if (cur_tok != (hash_size + 4617)) */
 /*  if (cur_tok != (hash_size + 4095 + 522)) */
   if (cur_tok != (hash_size + hash_extra + 4095 + 522))
   {
-	  print_err("Unbalanced write command");
-	  help2("On this page there's a \\write with fewer real {'s than }'s.",
-		  "I can't handle that very well; good luck.");
-    error(); 
-    do {
-    get_token(); 
-/*    } while(!(cur_tok == (hash_size + 4617)));  */
-/*    } while(!(cur_tok == (hash_size + 4095 + 522)));  */
-    } while(!(cur_tok == (hash_size + hash_extra + 4095 + 522))); /*1996/Jan/10*/
-  } 
-  mode = oldmode; 
-  end_token_list(); 
-  old_setting = selector; 
-  j = mem[p + 1].hh.v.LH; 
-  if (write_open[j])selector = j; 
-  else {
-    if ((j == 17)&&(selector == 19)) 
-    selector = 18; 
-    print_nl("");  /*  */
-  } 
-  token_show(def_ref); 
-  print_ln(); 
-  flush_list(def_ref); 
-  selector = old_setting; 
-} 
+    print_err("Unbalanced write command");
+    help2("On this page there's a \\write with fewer real {'s than }'s.",
+        "I can't handle that very well; good luck.");
+    error();
+    do
+    {
+      get_token();
+    }
+    while(!(cur_tok == (hash_size + hash_extra + 4095 + 522))); /*1996/Jan/10*/
+  }
+  mode = oldmode;
+  end_token_list();
+  old_setting = selector;
+  j = mem[p + 1].hh.v.LH;
+  if (write_open[j])
+    selector = j;
+  else
+  {
+    if ((j == 17) && (selector == 19))
+      selector = 18;
+    print_nl("");
+  }
+  token_show(def_ref);
+  print_ln();
+  flush_list(def_ref);
+  selector = old_setting;
+}
+/* sec 1373 */
 void out_what_(halfword p)
 {
 /*  small_number j;  */
@@ -575,175 +599,190 @@ void out_what_(halfword p)
   } 
 } 
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
-void hlist_out (void) 
+/* sec 0619 */
+void hlist_out (void)
 {
-  scaled baseline; 
-  scaled leftedge; 
-  scaled saveh, savev; 
-  halfword thisbox; 
+  scaled baseline;
+  scaled leftedge;
+  scaled saveh, savev;
+  halfword thisbox;
 /*  glue_ord gorder;  */
   int gorder;           /* 95/Jan/7 */
 /*  char gsign;  */
   int gsign;            /* 95/Jan/7 */
-  halfword p; 
-  integer saveloc; 
-  halfword leaderbox; 
-  scaled leaderwd; 
-  scaled lx; 
-  bool outerdoingleaders; 
-  scaled edge; 
-/* ********************************************************************* */
-  real gluetemp;  /* new in 3.14159 */
-/* ********************************************************************* */
-  thisbox = temp_ptr; 
-  gorder = mem[thisbox + 5].hh.b1; 
-  gsign = mem[thisbox + 5].hh.b0; 
-  p = mem[thisbox + 5].hh.v.RH; 
-  incr(cur_s); 
+  halfword p;
+  integer saveloc;
+  halfword leaderbox;
+  scaled leaderwd;
+  scaled lx;
+  bool outerdoingleaders;
+  scaled edge;
+  real gluetemp;
+  real cur_glue;
+  scaled cur_g;
+
+  cur_g = 0;
+  cur_glue = 0.0;
+  thisbox = temp_ptr;
+  gorder = glue_order(thisbox);
+  gsign = glue_sign(thisbox);
+  p = list_ptr(thisbox);
+  incr(cur_s);
   if (cur_s > 0)
     dvi_out(141);
   if (cur_s > max_push)
-  max_push = cur_s; 
-  saveloc = dvi_offset + dvi_ptr; 
-  baseline = cur_v; 
-  leftedge = cur_h; 
+    max_push = cur_s;
+  saveloc = dvi_offset + dvi_ptr;
+  baseline = cur_v;
+  leftedge = cur_h;
 /* while p<>null do l.12314 */
   while(p != 0)
 lab21:
-  if ((p >= hi_mem_min)) 
+  if (is_char_node(p))
   {
     if (cur_h != dvi_h)
     {
       movement(cur_h - dvi_h, 143);   /* 143 == right1 */
-      dvi_h = cur_h; 
-    } 
+      dvi_h = cur_h;
+    }
     if (cur_v != dvi_v)
     {
       movement(cur_v - dvi_v, 157);   /* 157 == down1 */
-      dvi_v = cur_v; 
-    } 
-    do {
-      f = mem[p].hh.b0;
-      c = mem[p].hh.b1;
+      dvi_v = cur_v;
+    }
+    do
+    {
+      f = font(p);
+      c = character(p);
       if (f != dvi_f)
       {
-  if (!font_used[f])
-  {
-    dvi_font_def(f); 
-    font_used[f] = true; 
-  } 
-  if (f <= 64)
-    dvi_out(f + 170); /* fnt_num_0 --- fnt_num_63 */
+        if (!font_used[f])
+        {
+          dvi_font_def(f);
+          font_used[f] = true;
+        }
+        if (f <= 64)
+          dvi_out(f + 170); /* fnt_num_0 --- fnt_num_63 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef INCREASEFONTS
-  else if (f <= 256){      /* if we allow greater than 256 fonts */
+        /* if we allow greater than 256 fonts */
+        else if (f <= 256)
+        {
+          dvi_out(235); /* fnt1 followed by f */
+          dvi_out(f - 1);
+        }
 #else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  else {              /* normal TeX 82 case */
+        /* normal TeX 82 case */
+        else
+        {
+          dvi_out(235); /* fnt1 followed by f */
+          dvi_out(f - 1);
+        }
 #endif
-    dvi_out(235); /* fnt1 followed by f */
-    dvi_out(f - 1);
-  } 
+
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef INCREASEFONTS
-  else {              /* fnt2 followed by f / 256,  f % 256 */
-    dvi_out(236);
-    dvi_out(((f - 1) >> 8)); /* top byte */
-    dvi_out(((f - 1) & 255)); /* bottom byte */     
-  }
+        /* fnt2 followed by f / 256,  f % 256 */
+        else
+        {
+          dvi_out(236);
+          dvi_out(((f - 1) >> 8)); /* top byte */
+          dvi_out(((f - 1) & 255)); /* bottom byte */
+        }
 #endif
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    dvi_f = f; 
-      } 
+        dvi_f = f;
+      }
       if (c >= 128)
         dvi_out(128);
-      dvi_out(c); 
-      cur_h = cur_h + font_info[width_base[f] + font_info[char_base[f] + c].qqqq.b0].cint; 
-      p = mem[p].hh.v.RH; 
-    } while(!(!(p >= hi_mem_min))); 
-    dvi_h = cur_h; 
-  } else {
-    switch(mem[p].hh.b0)
-    {case 0 : 
-    case 1 : 
-/* if list_ptr(p)=null then cur_h:=cur_h+width(p) l.12371 */
-      if (mem[p + 5].hh.v.RH == 0)
-      cur_h = cur_h + mem[p + 1].cint; 
-      else {
-    
-  saveh = dvi_h; 
-  savev = dvi_v; 
-  cur_v = baseline + mem[p + 4].cint; 
-  temp_ptr = p; 
-  edge = cur_h; 
-  if (mem[p].hh.b0 == 1)vlist_out(); 
-  else hlist_out();
-  dvi_h = saveh; 
-  dvi_v = savev; 
-  cur_h = edge + mem[p + 1].cint; 
-  cur_v = baseline; 
-      } 
-      break; 
-    case 2 : 
-      {
-  rule_ht = mem[p + 3].cint; 
-  rule_dp = mem[p + 2].cint; 
-  rule_wd = mem[p + 1].cint; 
-  goto lab14; 
-      } 
-      break; 
-    case 8 : 
-      out_what(p);
-      break; 
-    case 10 : 
-      {
-  g = mem[p + 1].hh.v.LH; 
-  rule_wd = mem[g + 1].cint; 
-  if (gsign != 0)
+      dvi_out(c);
+      cur_h = cur_h + font_info[width_base[f] + font_info[char_base[f] + c].qqqq.b0].cint;
+      p = link(p);
+    } while(!(!(p >= hi_mem_min)));
+    dvi_h = cur_h;
+  }
+  else
   {
-    if (gsign == 1)
+    switch (type(p))
     {
-      if (mem[g].hh.b0 == gorder)
-/* *********************************************************************** */
-/*      rule_wd = rule_wd + round(mem[thisbox + 6].gr * mem[g + 2].cint); */
-/* ******************** 3.14159 ******************************************* */
-      {
-        gluetemp = mem[thisbox + 6].gr * mem[g + 2].cint; 
-        if (gluetemp > 1000000000.0)
-        gluetemp = 1000000000.0; 
-        else if (gluetemp < -1000000000.0)
-        gluetemp = -1000000000.0; 
-        rule_wd = rule_wd + round(gluetemp); 
-      } 
-/* ************************************************************************* */
-    } 
-/*    else { */
-/*      if (mem[g].hh.b1 == gorder)*/
-/*      rule_wd = rule_wd - round(mem[thisbox + 6].gr * mem[g + 3].cint); */
-/*    }  */
-/* ******************** 3.14159 ******************************************* */
-    else if (mem[g].hh.b1 == gorder)
-    {
-      gluetemp = mem[thisbox + 6].gr * mem[g + 3].cint; 
-      if (gluetemp > 1000000000.0)
-      gluetemp = 1000000000.0; 
-      else if (gluetemp < -1000000000.0)
-      gluetemp = -1000000000.0; 
-      rule_wd = rule_wd - round(gluetemp); 
-    } 
-/* ************************************************************************* */
-  } 
-  if (mem[p].hh.b1 >= 100)
-  {
-    leaderbox = mem[p + 1].hh.v.RH; 
-    if (mem[leaderbox].hh.b0 == 2)
-    {
-      rule_ht = mem[leaderbox + 3].cint; 
-      rule_dp = mem[leaderbox + 2].cint; 
-      goto lab14; 
-    } 
-    leaderwd = mem[leaderbox + 1].cint; 
-    if ((leaderwd > 0)&&(rule_wd > 0)) 
+      case hlist_node:
+      case vlist_node:
+        if (list_ptr(p) == 0)
+          cur_h = cur_h + width(p);
+        else
+        {
+          saveh = dvi_h;
+          savev = dvi_v;
+          cur_v = baseline + shift_amount(p);
+          temp_ptr = p;
+          edge = cur_h;
+          if (type(p) == vlist_node)
+            vlist_out();
+          else
+            hlist_out();
+          dvi_h = saveh;
+          dvi_v = savev;
+          cur_h = edge + width(p);
+          cur_v = baseline;
+        }
+        break;
+      case rule_node:
+        {
+          rule_ht = height(p);
+          rule_dp = depth(p);
+          rule_wd = width(p);
+          goto lab14;
+        }
+        break;
+      case whatsit_node:
+        out_what(p);
+        break;
+      case glue_node:
+        {
+          g = glue_ptr(p);
+          rule_wd = width(g) - cur_g;
+          if (gsign != normal)
+          {
+            if (gsign == stretching)
+            {
+              if (stretch_order(g) == gorder)
+              {
+                //gluetemp = glue_set(thisbox) * stretch(g);
+                cur_glue = cur_glue + stretch(g);
+                gluetemp = glue_set(thisbox) * cur_glue;
+                if (gluetemp > 1000000000.0)
+                  gluetemp = 1000000000.0;
+                else if (gluetemp < -1000000000.0)
+                  gluetemp = -1000000000.0;
+                cur_g = round(gluetemp);
+                //rule_wd = rule_wd + round(gluetemp);
+              }
+            }
+            else if (shrink_order(g) == gorder)
+            {
+              //gluetemp = glue_set(thisbox) * shrink(g);
+              cur_glue = cur_glue - shrink(g);
+              gluetemp = glue_set(thisbox) * cur_glue;
+              if (gluetemp > 1000000000.0)
+                gluetemp = 1000000000.0;
+              else if (gluetemp < -1000000000.0)
+                gluetemp = -1000000000.0;
+              cur_g = round(gluetemp);
+              //rule_wd = rule_wd - round(gluetemp);
+            }
+          }
+          rule_wd = rule_wd + cur_g;
+          if (subtype(p) >= a_leaders)
+          {
+            leaderbox = mem[p + 1].hh.v.RH;
+            if (mem[leaderbox].hh.b0 == 2)
+            {
+              rule_ht = mem[leaderbox + 3].cint;
+              rule_dp = mem[leaderbox + 2].cint;
+              goto lab14;
+            }
+            leaderwd = mem[leaderbox + 1].cint;
+            if ((leaderwd > 0)&&(rule_wd > 0)) 
     {
       rule_wd = rule_wd + 10; 
       edge = cur_h + rule_wd; 
