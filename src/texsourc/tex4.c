@@ -774,349 +774,355 @@ lab21:
           rule_wd = rule_wd + cur_g;
           if (subtype(p) >= a_leaders)
           {
-            leaderbox = mem[p + 1].hh.v.RH;
-            if (mem[leaderbox].hh.b0 == 2)
+            leaderbox = leader_ptr(p);
+            if (type(leaderbox) == rule_node)
             {
-              rule_ht = mem[leaderbox + 3].cint;
-              rule_dp = mem[leaderbox + 2].cint;
+              rule_ht = height(leaderbox);
+              rule_dp = depth(leaderbox);
               goto lab14;
             }
-            leaderwd = mem[leaderbox + 1].cint;
-            if ((leaderwd > 0)&&(rule_wd > 0)) 
-    {
-      rule_wd = rule_wd + 10; 
-      edge = cur_h + rule_wd; 
-      lx = 0; 
-      if (mem[p].hh.b1 == 100)
-      {
-        saveh = cur_h; 
-        cur_h = leftedge + leaderwd *((cur_h - leftedge)/ leaderwd)
-     ; 
-        if (cur_h < saveh)
-        cur_h = cur_h + leaderwd; 
-      } 
-      else {
-    
-        lq = rule_wd / leaderwd; 
-        lr = rule_wd % leaderwd; 
-        if (mem[p].hh.b1 == 101)
-        cur_h = cur_h +(lr / 2); 
-        else {
-      
-    lx =(2 * lr + lq + 1)/(2 * lq + 2); 
-    cur_h = cur_h +((lr -(lq - 1)* lx)/ 2); 
-        } 
-      } 
-      while(cur_h + leaderwd <= edge){
-    
-        cur_v = baseline + mem[leaderbox + 4].cint; 
-        if (cur_v != dvi_v)
+            leaderwd = width(leaderbox);
+            if ((leaderwd > 0) && (rule_wd > 0))
+            {
+              rule_wd = rule_wd + 10;
+              edge = cur_h + rule_wd;
+              lx = 0;
+              if (subtype(p) == a_leaders)
+              {
+                saveh = cur_h;
+                cur_h = leftedge + leaderwd * ((cur_h - leftedge) / leaderwd);
+                if (cur_h < saveh)
+                  cur_h = cur_h + leaderwd;
+              }
+              else
+              {
+                lq = rule_wd / leaderwd;
+                lr = rule_wd % leaderwd;
+                if (subtype(p) == c_leaders)
+                  cur_h = cur_h + (lr / 2);
+                else
+                {
+                  lx =(2 * lr + lq + 1) / (2 * lq + 2);
+                  cur_h = cur_h + ((lr - (lq - 1)* lx) / 2);
+                }
+              }
+              while (cur_h + leaderwd <= edge)
+              {
+                cur_v = baseline + shift_amount(leaderbox);
+                if (cur_v != dvi_v)
+                {
+                  movement(cur_v - dvi_v, 157); /* 157 == down1 */
+                  dvi_v = cur_v;
+                }
+                savev = dvi_v;
+                if (cur_h != dvi_h)
+                {
+                  movement(cur_h - dvi_h, 143); /* 143 == right1 */
+                  dvi_h = cur_h;
+                }
+                saveh = dvi_h;
+                temp_ptr = leaderbox;
+                outerdoingleaders = doing_leaders;
+                doing_leaders = true;
+                if (type(leaderbox) == vlist_node)
+                  vlist_out();
+                else
+                  hlist_out();
+                doing_leaders = outerdoingleaders;
+                dvi_v = savev;
+                dvi_h = saveh;
+                cur_v = baseline;
+                cur_h = saveh + leaderwd + lx;
+              }
+              cur_h = edge - 10;
+              goto lab15;
+            }
+          }
+          goto lab13;
+        }
+        break;
+      case kern_node:
+      case math_node:
+        cur_h = cur_h + width(p);
+        break;
+      case ligature_node:
         {
-    movement(cur_v - dvi_v, 157); /* 157 == down1 */
-    dvi_v = cur_v; 
-        } 
-        savev = dvi_v; 
-        if (cur_h != dvi_h)
-        {
-    movement(cur_h - dvi_h, 143); /* 143 == right1 */
-    dvi_h = cur_h; 
-        } 
-        saveh = dvi_h; 
-        temp_ptr = leaderbox; 
-        outerdoingleaders = doing_leaders; 
-        doing_leaders = true; 
-        if (mem[leaderbox].hh.b0 == 1)vlist_out(); 
-        else hlist_out();
-        doing_leaders = outerdoingleaders; 
-        dvi_v = savev; 
-        dvi_h = saveh; 
-/* ****************************************************************** */
-/*        cur_v = saveh;  */  
-        cur_v = baseline;   /* changed in 3.1415 */
-/* ****************************************************************** */
-        cur_h = saveh + leaderwd + lx; 
-      } 
-      cur_h = edge - 10; 
-      goto lab15; 
-    } 
-  } 
-  goto lab13; 
-      } 
-      break; 
-    case 11 : 
-    case 9 : 
-      cur_h = cur_h + mem[p + 1].cint; 
-      break; 
-    case 6 : 
-      {
-  mem[lig_trick]= mem[p + 1]; 
-  mem[lig_trick].hh.v.RH = mem[p].hh.v.RH; 
-  p = lig_trick; 
-  goto lab21; 
-      } 
-      break; 
-      default: 
-   ; 
-      break; 
-    } 
-    goto lab15; 
-    lab14: if ((rule_ht == -1073741824L))  /* - 2^30 */
-    rule_ht = mem[thisbox + 3].cint; 
+          mem[lig_trick]= mem[p + 1];
+          mem[lig_trick].hh.v.RH = mem[p].hh.v.RH;
+          p = lig_trick;
+          goto lab21;
+        }
+        break;
+      default:
+        break;
+    }
+    goto lab15;
+lab14:
+    if ((rule_ht == -1073741824L))  /* - 2^30 */
+      rule_ht = height(thisbox);
     if ((rule_dp == -1073741824L))     /* - 2^30 */
-    rule_dp = mem[thisbox + 2].cint; 
-    rule_ht = rule_ht + rule_dp; 
-    if ((rule_ht > 0)&&(rule_wd > 0)) 
+      rule_dp = depth(thisbox);
+    rule_ht = rule_ht + rule_dp;
+    if ((rule_ht > 0)&&(rule_wd > 0))
     {
       if (cur_h != dvi_h)
       {
-  movement(cur_h - dvi_h, 143);   /* 143 == right1 */
-  dvi_h = cur_h; 
-      } 
-      cur_v = baseline + rule_dp; 
+        movement(cur_h - dvi_h, 143);   /* 143 == right1 */
+        dvi_h = cur_h;
+      }
+      cur_v = baseline + rule_dp;
       if (cur_v != dvi_v)
       {
-  movement(cur_v - dvi_v, 157);   /* 157 == down1 */
-  dvi_v = cur_v; 
+        movement(cur_v - dvi_v, 157);   /* 157 == down1 */
+        dvi_v = cur_v;
       }
       dvi_out(132);
-      dvi_four(rule_ht); 
-      dvi_four(rule_wd); 
-      cur_v = baseline; 
-      dvi_h = dvi_h + rule_wd; 
-    } 
-    lab13: cur_h = cur_h + rule_wd; 
-    lab15: p = mem[p].hh.v.RH; 
-  } 
-  prune_movements(saveloc); 
+      dvi_four(rule_ht);
+      dvi_four(rule_wd);
+      cur_v = baseline;
+      dvi_h = dvi_h + rule_wd;
+    }
+lab13:
+    cur_h = cur_h + rule_wd;
+lab15:
+    p = link(p);
+  }
+  prune_movements(saveloc);
   if (cur_s > 0)
-  dvi_pop(saveloc); 
-  decr(cur_s); 
-} 
+    dvi_pop(saveloc);
+  decr(cur_s);
+}
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
-void vlist_out (void) 
-{/* 13 14 15 */ 
-  scaled leftedge; 
-  scaled topedge; 
-  scaled saveh, savev; 
-  halfword thisbox; 
+/* sec 0629 */
+void vlist_out (void)
+{
+  scaled leftedge;
+  scaled topedge;
+  scaled saveh, savev;
+  halfword thisbox;
 /*  glue_ord gorder;  */
   int gorder;         /* 95/Jan/7 */
 /*  char gsign;  */
   int gsign;          /* 95/Jan/7 */
-  halfword p; 
-  integer saveloc; 
-  halfword leaderbox; 
-  scaled leaderht; 
-  scaled lx; 
-  bool outerdoingleaders; 
-  scaled edge; 
-/* ************************************************************************ */
-  real gluetemp;  /* new in 3.14159 */
-/* ************************************************************************ */
-  thisbox = temp_ptr; 
-  gorder = mem[thisbox + 5].hh.b1; 
-  gsign = mem[thisbox + 5].hh.b0; 
-  p = mem[thisbox + 5].hh.v.RH; 
-  incr(cur_s); 
+  halfword p;
+  integer saveloc;
+  halfword leaderbox;
+  scaled leaderht;
+  scaled lx;
+  bool outerdoingleaders;
+  scaled edge;
+  real gluetemp;
+  real cur_glue;
+  scaled cur_g;
+
+  cur_g = 0;
+  cur_glue = 0.0;
+  thisbox = temp_ptr;
+  gorder = glue_order(thisbox);
+  gsign = glue_sign(thisbox);
+  p = list_ptr(thisbox);
+  incr(cur_s);
   if (cur_s > 0)
     dvi_out(141);
   if (cur_s > max_push)
-  max_push = cur_s; 
-  saveloc = dvi_offset + dvi_ptr; 
-  leftedge = cur_h; 
-  cur_v = cur_v - mem[thisbox + 3].cint; 
-  topedge = cur_v; 
-  while(p != 0){  /* while p<>null do l.12494 OK */
-    if ((p >= hi_mem_min)) {
-    confusion("vlistout");
-    return;       // abort_flag set
+    max_push = cur_s;
+  saveloc = dvi_offset + dvi_ptr;
+  leftedge = cur_h;
+  cur_v = cur_v - height(thisbox);
+  topedge = cur_v;
+
+  while (p != 0)
+  {  /* while p<>null do l.12494 OK */
+    if ((p >= hi_mem_min))
+    {
+      confusion("vlistout");
+      return;       // abort_flag set
+    }
+    else
+    {
+      switch (mem[p].hh.b0)
+      {
+        case hlist_node:
+        case vlist_node:
+          if (mem[p + 5].hh.v.RH == 0)
+            cur_v = cur_v + height(p) + depth(p);
+          else
+          {
+            cur_v = cur_v + height(p);
+            if (cur_v != dvi_v)
+            {
+              movement(cur_v - dvi_v, 157);   /* 157 == down1 */
+              dvi_v = cur_v;
+            }
+            saveh = dvi_h;
+            savev = dvi_v;
+            cur_h = leftedge + shift_amount(p);
+            temp_ptr = p;
+            if (type(p) == vlist_node)
+              vlist_out();
+            else
+              hlist_out();
+            dvi_h = saveh;
+            dvi_v = savev;
+            cur_v = savev + depth(p);
+            cur_h = leftedge;
+          }
+          break;
+        case rule_node:
+          {
+            rule_ht = height(p);
+            rule_dp = depth(p);
+            rule_wd = width(p);
+            goto lab14;
+          }
+          break;
+        case whatsit_node:
+          out_what(p);
+          break;
+        case glue_node:
+          {
+            g = glue_ptr(p);
+            rule_ht = width(g) - cur_g;
+            if (gsign != normal)
+            {
+              if (gsign == stretching)
+              {
+                if (stretch_order(g) == gorder)
+                {
+                  //gluetemp = glue_set(thisbox) * mem[g + 2].cint;
+                  cur_glue = cur_glue + stretch(g);
+                  gluetemp = glue_set(thisbox) * cur_glue;
+                  if (gluetemp > 1000000000.0)
+                    gluetemp = 1000000000.0;
+                  else if (gluetemp < -1000000000.0)
+                    gluetemp = -1000000000.0;
+                  //rule_ht = rule_ht + round(gluetemp);
+                  cur_g = round(gluetemp);
+                }
+              }
+              else if (mem[g].hh.b1 == gorder)   /* BUG FIX !!! */
+              {
+                //gluetemp = glue_set(thisbox) * mem[g + 3].cint;
+                cur_glue = cur_glue - shrink(g);
+                gluetemp = glue_set(thisbox) * cur_glue;
+                if (gluetemp > 1000000000.0)
+                  gluetemp = 1000000000.0;
+                else if (gluetemp < -1000000000.0)
+                  gluetemp = -1000000000.0;
+                //rule_ht = rule_ht - round(gluetemp);
+                cur_g = round(gluetemp);
+              }
+            }
+            rule_ht = rule_ht + cur_g;
+            if (subtype(p) >= a_leaders)
+            {
+              leaderbox = leader_ptr(p);
+              if (type(leaderbox) == rule_node)
+              {
+                rule_wd = width(leaderbox);
+                rule_dp = 0;
+                goto lab14;
+              }
+              leaderht = height(leaderbox) + depth(leaderbox);
+              if ((leaderht > 0) && (rule_ht > 0))
+              {
+                rule_ht = rule_ht + 10;
+                edge = cur_v + rule_ht;
+                lx = 0;
+                if (subtype(p) == a_leaders)
+                {
+                  savev = cur_v;
+                  cur_v = topedge + leaderht * ((cur_v - topedge) / leaderht);
+                  if (cur_v < savev)
+                    cur_v = cur_v + leaderht;
+                }
+                else
+                {
+                  lq = rule_ht / leaderht;
+                  lr = rule_ht % leaderht;
+                  if (subtype(p) == c_leaders)
+                    cur_v = cur_v + (lr / 2);
+                  else
+                  {
+                    lx =(2 * lr + lq + 1) / (2 * lq + 2);
+                    cur_v = cur_v + ((lr - (lq - 1) * lx) / 2);
+                  }
+                }
+                while (cur_v + leaderht <= edge)
+                {
+                  cur_h = leftedge + shift_amount(leaderbox);
+                  if (cur_h != dvi_h)
+                  {
+                    movement(cur_h - dvi_h, 143);   /* 143 == right1 */
+                    dvi_h = cur_h;
+                  }
+                  saveh = dvi_h;
+                  cur_v = cur_v + height(leaderbox);
+                  if (cur_v != dvi_v)
+                  {
+                    movement(cur_v - dvi_v, 157);   /* 157 == down1 */
+                    dvi_v = cur_v;
+                  }
+                  savev = dvi_v;
+                  temp_ptr = leaderbox;
+                  outerdoingleaders = doing_leaders;
+                  doing_leaders = true;
+                  if (type(leaderbox) == vlist_node)
+                    vlist_out();
+                  else
+                    hlist_out();
+                  doing_leaders = outerdoingleaders;
+                  dvi_v = savev;
+                  dvi_h = saveh;
+                  cur_h = leftedge;
+                  cur_v = savev - height(leaderbox) + leaderht + lx;
+                }
+                cur_v = edge - 10;
+                goto lab15;
+              }
+            }
+            goto lab13;
+          }
+          break;
+        case kern_node:
+          cur_v = cur_v + width(p);
+          break;
+        default:
+          break;
+      }
+      goto lab15;
+lab14:
+      if ((rule_wd == -1073741824L))    /* -2^30 */
+        rule_wd = width(thisbox);
+      rule_ht = rule_ht + rule_dp;
+      cur_v = cur_v + rule_ht;
+      if ((rule_ht > 0) && (rule_wd > 0))
+      {
+        if (cur_h != dvi_h)
+        {
+          movement(cur_h - dvi_h, 143);   /* 143 == right1 */
+          dvi_h = cur_h;
+        }
+        if (cur_v != dvi_v)
+        {
+          movement(cur_v - dvi_v, 157);   /* 157 == down1 */
+          dvi_v = cur_v;
+        }
+        dvi_out(137);
+        dvi_four(rule_ht);
+        dvi_four(rule_wd);
+      }
+      goto lab15;
+lab13:
+      cur_v = cur_v + rule_ht;
+    }
+lab15:
+    p = link(p);
   }
-    else {
-      switch(mem[p].hh.b0)
-      {case 0 : 
-      case 1 : 
-/* if list_ptr(p)=null then cur_v:=cur_v+height(p)+depth(p) l.12529 */
-  if (mem[p + 5].hh.v.RH == 0)
-  cur_v = cur_v + mem[p + 3].cint + mem[p + 2].cint; 
-  else {
-      
-    cur_v = cur_v + mem[p + 3].cint; 
-    if (cur_v != dvi_v)
-    {
-      movement(cur_v - dvi_v, 157);   /* 157 == down1 */
-      dvi_v = cur_v; 
-    } 
-    saveh = dvi_h; 
-    savev = dvi_v; 
-    cur_h = leftedge + mem[p + 4].cint; 
-    temp_ptr = p; 
-    if (mem[p].hh.b0 == 1)vlist_out(); 
-    else hlist_out();
-    dvi_h = saveh; 
-    dvi_v = savev; 
-    cur_v = savev + mem[p + 2].cint; 
-    cur_h = leftedge; 
-  } 
-  break; 
-      case 2 : 
-  {
-    rule_ht = mem[p + 3].cint; 
-    rule_dp = mem[p + 2].cint; 
-    rule_wd = mem[p + 1].cint; 
-    goto lab14; 
-  } 
-  break; 
-      case 8 : 
-      out_what(p);
-      break; 
-      case 10 : 
-  {
-    g = mem[p + 1].hh.v.LH; 
-    rule_ht = mem[g + 1].cint; 
-    if (gsign != 0)
-    {
-      if (gsign == 1)
-      {
-        if (mem[g].hh.b0 == gorder)
-/* ************************************************************************ */
-/*        rule_ht = rule_ht + round(mem[thisbox + 6].gr * mem[g + 2].cint); */
-/* ************************ 3.14159 **************************************** */
-        {
-    gluetemp = mem[thisbox + 6].gr * mem[g + 2].cint; 
-    if (gluetemp > 1000000000.0)
-    gluetemp = 1000000000.0; 
-    else if (gluetemp < -1000000000.0)
-    gluetemp = -1000000000.0; 
-    rule_ht = rule_ht + round(gluetemp); 
-        } 
-/* ************************************************************************* */
-      } 
-/* ************************************************************************* */
-/*      else { */
-/*        if (mem[g].hh.b1 == gorder) */
-/*        rule_ht = rule_ht - round(mem[thisbox + 6].gr * mem[g + 3].cint); */
-/*      } */
-      else if (mem[g].hh.b1 == gorder)   /* BUG FIX !!! */
-        {
-        gluetemp = mem[thisbox + 6].gr * mem[g + 3].cint; 
-        if (gluetemp > 1000000000.0)
-        gluetemp = 1000000000.0; 
-        else if (gluetemp < -1000000000.0)
-        gluetemp = -1000000000.0; 
-        rule_ht = rule_ht - round(gluetemp); 
-      } 
-/* ************************************************************************* */
-    } 
-    if (mem[p].hh.b1 >= 100)
-    {
-      leaderbox = mem[p + 1].hh.v.RH; 
-      if (mem[leaderbox].hh.b0 == 2)
-      {
-        rule_wd = mem[leaderbox + 1].cint; 
-        rule_dp = 0; 
-        goto lab14; 
-      } 
-      leaderht = mem[leaderbox + 3].cint + mem[leaderbox + 2]
-     .cint; 
-      if ((leaderht > 0)&&(rule_ht > 0)) 
-      {
-        rule_ht = rule_ht + 10; 
-        edge = cur_v + rule_ht; 
-        lx = 0; 
-        if (mem[p].hh.b1 == 100)
-        {
-    savev = cur_v; 
-    cur_v = topedge + leaderht *((cur_v - topedge)/ leaderht)
-    ; 
-    if (cur_v < savev)
-    cur_v = cur_v + leaderht; 
-        } 
-        else {
-      
-    lq = rule_ht / leaderht; 
-    lr = rule_ht % leaderht; 
-    if (mem[p].hh.b1 == 101)
-    cur_v = cur_v +(lr / 2); 
-    else {
-        
-      lx =(2 * lr + lq + 1)/(2 * lq + 2); 
-      cur_v = cur_v +((lr -(lq - 1)* lx)/ 2); 
-    } 
-        } 
-        while(cur_v + leaderht <= edge){
-      
-    cur_h = leftedge + mem[leaderbox + 4].cint; 
-    if (cur_h != dvi_h)
-    {
-      movement(cur_h - dvi_h, 143);   /* 143 == right1 */
-      dvi_h = cur_h; 
-    } 
-    saveh = dvi_h; 
-    cur_v = cur_v + mem[leaderbox + 3].cint; 
-    if (cur_v != dvi_v)
-    {
-      movement(cur_v - dvi_v, 157);   /* 157 == down1 */
-      dvi_v = cur_v; 
-    } 
-    savev = dvi_v; 
-    temp_ptr = leaderbox; 
-    outerdoingleaders = doing_leaders; 
-    doing_leaders = true; 
-    if (mem[leaderbox].hh.b0 == 1)vlist_out(); 
-    else hlist_out(); 
-    doing_leaders = outerdoingleaders; 
-    dvi_v = savev; 
-    dvi_h = saveh; 
-/* ************************************************************************ */
-/*    cur_h = saveh;  */
-    cur_h = leftedge;  /* 3.1415 */
-/* ************************************************************************ */
-    cur_v = savev - mem[leaderbox + 3].cint + leaderht + lx; 
-        } 
-        cur_v = edge - 10; 
-        goto lab15; 
-      } 
-    } 
-    goto lab13; 
-  } 
-  break; 
-      case 11 : 
-  cur_v = cur_v + mem[p + 1].cint; 
-  break; 
-  default: 
-  ; 
-  break; 
-      } 
-      goto lab15; 
-      lab14: if ((rule_wd == -1073741824L))    /* -2^30 */
-      rule_wd = mem[thisbox + 1].cint; 
-      rule_ht = rule_ht + rule_dp; 
-      cur_v = cur_v + rule_ht; 
-      if ((rule_ht > 0)&&(rule_wd > 0)) 
-      {
-  if (cur_h != dvi_h)
-  {
-    movement(cur_h - dvi_h, 143);   /* 143 == right1 */
-    dvi_h = cur_h; 
-  } 
-  if (cur_v != dvi_v)
-  {
-    movement(cur_v - dvi_v, 157);   /* 157 == down1 */
-    dvi_v = cur_v; 
-  }
-  dvi_out(137);
-  dvi_four(rule_ht); 
-  dvi_four(rule_wd); 
-      } 
-      goto lab15; 
-      lab13: cur_v = cur_v + rule_ht; 
-    } 
-    lab15: p = mem[p].hh.v.RH; 
-  } 
-  prune_movements(saveloc); 
+  prune_movements(saveloc);
   if (cur_s > 0)
-  dvi_pop(saveloc); 
-  decr(cur_s); 
+    dvi_pop(saveloc);
+  decr(cur_s);
 }
 /****************HPDF******************/
 /*
@@ -1128,81 +1134,85 @@ void error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void * user_dat
 /****************HPDF******************/
 /* sec 0638 */
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
+/* sec 0638 */
 void ship_out_(halfword p)
 {
   integer pageloc;
   char j, k;
   pool_pointer s;
   char old_setting;
-  if (tracing_output > 0) {
+
+  if (tracing_output > 0)
+  {
     print_nl("");
     print_ln();
     print_string("Completed box being shipped out");
   }
+
   if (term_offset > max_print_line - 9)
-    print_ln(); 
-  else if ((term_offset > 0)||(file_offset > 0))
+    print_ln();
+  else if ((term_offset > 0) || (file_offset > 0))
     print_char(' ');
   print_char('[');
   j = 9;
-  while((eqtb[(hash_size + 3218) + j].cint == 0) && (j > 0))
+  while((count(j) == 0) && (j > 0))
     decr(j);
+  for (k = 0; k <= j; k++)
   {
-    register integer for_end; 
-    k = 0; 
-    for_end = j; 
-    if (k <= for_end) do 
-    {
-      print_int(eqtb[(hash_size + 3218) + k].cint); 
-      if (k < j)
-        print_char('.');
-    } while(k++ < for_end);
-  } 
+    print_int(count(k));
+    if (k < j)
+      print_char('.');
+  }
 #ifndef _WINDOWS
-  fflush(stdout); 
+  fflush(stdout);
 #endif
   if (tracing_output > 0)
   {
     print_char(']');
-    begin_diagnostic(); 
-    show_box(p); 
-    end_diagnostic(true); 
-  } 
-  if ((mem[p + 3].cint > 1073741823L) || /* 2^30 - 1 */
-    (mem[p + 2].cint > 1073741823L) ||
-    (mem[p + 3].cint + mem[p + 2].cint + v_offset > 1073741823L) ||
-    (mem[p + 1].cint + h_offset > 1073741823L)) {
-	  print_err("Huge page cannot be shipped out");
-	  help2("The page just created is more than 18 feet tall or",
-		  "more than 18 feet wide, so I suspect something went wrong.");
-    error(); 
-    if (tracing_output <= 0) {
-      begin_diagnostic(); 
+    begin_diagnostic();
+    show_box(p);
+    end_diagnostic(true);
+  }
+  if ((height(p) > 1073741823L) || /* 2^30 - 1 */
+      (depth(p) > 1073741823L) ||
+      (height(p) + depth(p) + v_offset > 1073741823L) ||
+      (width(p) + h_offset > 1073741823L))
+  {
+    print_err("Huge page cannot be shipped out");
+    help2("The page just created is more than 18 feet tall or",
+        "more than 18 feet wide, so I suspect something went wrong.");
+    error();
+    if (tracing_output <= 0)
+    {
+      begin_diagnostic();
       print_nl("The following box has been deleted:");
-      show_box(p); 
-      end_diagnostic(true); 
-    } 
-    goto lab30; 
-  } 
-  if (mem[p + 3].cint + mem[p + 2].cint + v_offset > max_v)
-    max_v = mem[p + 3].cint + mem[p + 2].cint + v_offset;
-  if (mem[p + 1].cint + h_offset > max_h)
-    max_h = mem[p + 1].cint + h_offset;
+      show_box(p);
+      end_diagnostic(true);
+    }
+    goto lab30;
+  }
+  if (height(p) + depth(p) + v_offset > max_v)
+    max_v = height(p) + depth(p) + v_offset;
+  if (width(p) + h_offset > max_h)
+    max_h = height(p) + h_offset;
   dvi_h = 0;
   dvi_v = 0;
   cur_h = h_offset;
   dvi_f = 0;
-  if (output_file_name == 0) {
+  if (output_file_name == 0)
+  {
     if (job_name == 0)
       open_log_file();
     pack_job_name(788);   /* .dvi */
-    while(!b_open_out(dvi_file)) {
+    while(!b_open_out(dvi_file))
+    {
       prompt_file_name(789, 788); /* file name for output  .dvi */
     }
     output_file_name = b_make_name_string(dvi_file);
   }
 
-  if (total_pages == 0) {
+  if (total_pages == 0)
+  {
     dvi_out(247);
     dvi_out(2);
 /********BINDING WITH LIBHARU*********/
@@ -1227,7 +1237,7 @@ void ship_out_(halfword p)
     prepare_mag();
     dvi_four(mag);
     old_setting = selector;
-    selector = 21;
+    selector = new_string;
     print_string(" TeX output ");
     print_int(year);
     print_char('.');
@@ -1240,18 +1250,20 @@ void ship_out_(halfword p)
     selector = old_setting;
 /* long to unsigned char ... */
     dvi_out(cur_length);
-    for (s = str_start[str_ptr]; s <= pool_ptr - 1; s++) dvi_out(str_pool[s]);
-    pool_ptr = str_start[str_ptr]; 
+    for (s = str_start[str_ptr]; s <= pool_ptr - 1; s++)
+      dvi_out(str_pool[s]);
+    pool_ptr = str_start[str_ptr];
   } // end of if total_pages == 0
 
   pageloc = dvi_offset + dvi_ptr;
   dvi_out(139);
-  for (k = 0; k <= 9; k++) dvi_four(eqtb[(hash_size + 3218) + k].cint);
+  for (k = 0; k <= 9; k++)
+    dvi_four(count(k));
   dvi_four(last_bop);
   last_bop = pageloc;
-  cur_v = mem[p + 3].cint + v_offset;
+  cur_v = height(p) + v_offset;
   temp_ptr = p;
-  if (mem[p].hh.b0 == 1)
+  if (type(p) == vlist_node)
     vlist_out();
   else
     hlist_out();
@@ -1265,9 +1277,10 @@ lab30:;
 #ifndef _WINDOWS
   fflush(stdout);
 #endif
-  ;
+
 #ifdef STAT
-  if (tracing_stats > 1) {
+  if (tracing_stats > 1)
+  {
     print_nl("Memory usage before: ");
     print_int(var_used);
     print_char('&');
@@ -1276,37 +1289,41 @@ lab30:;
   }
 #endif /* STAT */
   flush_node_list(p);
-  ;
 #ifdef STAT
-  if (tracing_stats > 1) {
-    print_string("after");
+  if (tracing_stats > 1)
+  {
+    print_string(" after: ");
     print_int(var_used);
     print_char('&');
     print_int(dyn_used);
-    print_string("still utouched");
+    print_string("; still utouched: ");
     print_int(hi_mem_min - lo_mem_max - 1); /* somewhat inaccurate free mem */
     print_ln();
-  } 
+  }
 #endif /* STAT */
-} 
+}
+/* sec 0645 */
 void scan_spec_(group_code c, bool threecodes)
 {
   integer s;
   char speccode;
+
   if (threecodes)
     s = save_stack[save_ptr + 0].cint;
   if (scan_keyword("to"))
     speccode = 0;
   else if (scan_keyword("spread"))
     speccode = 1;
-  else {
+  else
+  {
     speccode = 1;
     cur_val = 0;
     goto lab40;
   }
   scan_dimen(false, false, false);
 lab40:
-  if (threecodes) {
+  if (threecodes)
+  {
     save_stack[save_ptr + 0].cint = s;  /* s may be used without ... */
     incr(save_ptr);
   }
@@ -1316,6 +1333,7 @@ lab40:
   new_save_level(c);
   scan_left_brace();
 }
+/* sec 0649 */
 halfword hpack_(halfword p, scaled w, small_number m)
 {
   register halfword Result;

@@ -151,7 +151,8 @@ unsigned char wintodos[128] = {
   155, 151, 163, 150, 129, 236, 231, 152
 };  
 
-void show_usage (char * program) {
+void show_usage (char * program)
+{
   char * s = log_line;
   sprintf (s, "\n"
       " yandytex [-?ivnwdrzpK] [-m=ini_mem] [-e=hyph_size] [-h=trie_size]\n"
@@ -231,7 +232,7 @@ void stamp_it (char *s)
   char date[11 + 1];
 
   strcpy(date, compiledate);
-  scivilize(date);   
+  scivilize(date);
   sprintf(s, "%s %s ", application, yandyversion);
   s += strlen(s);
   sprintf(s, "(compiled time: %s %s)", date, compiletime);
@@ -240,7 +241,8 @@ void stamp_it (char *s)
 
 void stampcopy (char *s)
 {
-  if (wantcopyrght) {
+  if (wantcopyrght)
+  {
     sprintf(s, "%s %s", copyright, www);    /* 99/Oct/25 */
   }
 }
