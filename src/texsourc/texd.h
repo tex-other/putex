@@ -2038,6 +2038,79 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define u_part(a)     mem[(a) + height_offset].cint
 #define v_part(a)     mem[(a) + depth_offset].cint
 #define extra_info(a) info((a) + list_offset)
+/* sec 0681 */
+#define noad_size      4
+#define nucleus(a)     (a) + 1
+#define supscr(a)      (a) + 2
+#define subscr(a)      (a) + 3
+#define math_type      link
+#define fam            font
+#define math_char      1
+#define sub_box        2
+#define sub_mlist      3
+#define math_text_char 4
+/* sec 0682 */
+#define ord_noad   unset_node + 3
+#define op_noad    ord_noad + 1
+#define bin_noad   ord_noad + 2
+#define rel_noad   ord_noad + 3
+#define open_noad  ord_noad + 4
+#define close_noad ord_noad + 5
+#define punct_noad ord_noad + 6
+#define inner_noad ord_noad + 7
+#define limits    1
+#define no_limits 2
+/* sec 0683 */
+#define left_delimiter(a)  (a) + 4
+#define right_delimiter(a) (a) + 5
+#define radical_noad       inner_noad + 1
+#define radical_noad_size  5
+#define fraction_noad      radical_noad + 1
+#define fraction_noad_size 6
+#define small_fam(a)       mem[(a)].qqqq.b0
+#define small_char(a)      mem[(a)].qqqq.b1
+#define large_fam(a)       mem[(a)].qqqq.b2
+#define large_char(a)      mem[(a)].qqqq.b3
+#define trickness          width
+#define default_code       010000000000L
+#define numerator          supscr
+#define denominator        subscr
+/* sec 0687 */
+#define under_noad        fraction_noad + 1
+#define over_noad         under_noad + 1
+#define accent_noad       over_noad + 1
+#define accent_noad_size  5
+#define accent_chr(a)     (a) + 4
+#define vcenter_noad      accent_noad + 1
+#define left_noad         vcenter_noad + 1
+#define right_noad        left_noad + 1
+#define delimiter         nucleus
+#define script_allowed(a) ((type(a) >= ord_noad) && (type(a) < left_noad))
+/* sec 0688 */
+#define style_node          unset_node + 1
+#define style_node_size     3
+#define display_style       0
+#define text_style          2
+#define script_style        4
+#define script_script_style 6
+#define cramped             1
+/* sec 0689 */
+#define choice_node            unset_node + 2
+#define display_mlist(a)       info(a + 1)
+#define text_mlist(a)          link(a + 1)
+#define script_mlist(a)        info(a + 2)
+#define script_script_mlist(a) link(a + 2)
+/* sec 0699 */
+#define text_size         0
+#define script_size       16
+#define script_sript_size 32
+/* sec 0700 */
+/* sec 0702 */
+#define cramped_style(a) 2 * ((a) / 2) + cramped
+#define sub_style(a)     2 * ((a) / 4) + script_style + cramped
+#define sup_stype(a)     2 * ((a) / 4) + script_style + ((a) % 2)
+#define num_style(a)     (a) + 2 - 2 * ((a) / 6)
+#define denom_style(a)   2 * ((a) / 2) + cramped + 2 - 2 * ((a) / 6)
 /* sec 79 */
 
 extern INLINE void tex_help (unsigned int n, ...);
