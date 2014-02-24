@@ -28,12 +28,14 @@
 /* rebox_ used to be in tex4.c */
 
 halfword rebox_(halfword b, scaled w)
-{register halfword Result; 
-  halfword p; 
-  internal_font_number f; 
-  scaled v; 
+{
+  register halfword Result;
+  halfword p;
+  internal_font_number f;
+  scaled v;
 /* begin if (width(b)<>w)and(list_ptr(b)<>null) then l.14010 */
-  if ((mem[b + 1].cint != w) && (mem[b + 5].hh.v.RH != 0)) {
+  if ((mem[b + 1].cint != w) && (mem[b + 5].hh.v.RH != 0))
+  {
     if (mem[b].hh.b0 == 1)
       b = hpack(b, 0, 1);
     p = mem[b + 5].hh.v.RH;

@@ -33,6 +33,7 @@
 #pragma warning(disable:4127) // conditional expression is constant
 
 #include <setjmp.h>
+#include <assert.h>
 
 #pragma hdrstop
 
@@ -103,7 +104,7 @@ extern char * xconcat3 (char *buffer, char *s1, char *s2, char *s3); /* openinou
 
 // used only in jump_out in tex0.c, and in texbody in itex.c
 // and main in texmf.c and a few other abort situations in texmf.c
-
+/* texk/web2c/lib/uexit.c */
 void uexit (int unix_code)
 {
   int final_code;
@@ -111,57 +112,75 @@ void uexit (int unix_code)
 #ifndef _WINDOWS
   fflush(stdout);
 #endif
+
   if (unix_code == 0)
     final_code = EXIT_SUCCESS;
   else if (unix_code == 1)
     final_code = EXIT_FAILURE;
   else
     final_code = unix_code;
-  if (jump_used) {
+/*---->*/
+  if (jump_used)
+  {
     show_line("Jump Buffer already used\n", 1);
     exit(1);
   }
   jump_used++;
-  // I removed the longjmp.
-  //longjmp(jumpbuffer, final_code + 1);    // 1999/Nov/7
+/*<----*/
   exit(final_code);
 }
 
 // round a double being careful about very large and very small values
 // used only in tex0.c, a Pascal function
-
+/* texk/web2c/lib/zround.c */
 integer zround (double r)
 {
   integer i;
-/*  R can be outside the range of an integer if glue is stretching or
-  shrinking a lot.  We can't do any better than returning the largest
-  or smallest integer possible in that case.  It doesn't seem to make
-  any practical difference. */
-  if (r > LONG_MAX)
-    i = LONG_MAX;
-  else if (r < LONG_MIN)
-    i = LONG_MIN;
+
+  /* R can be outside the range of an integer if glue is stretching or
+     shrinking a lot.  We can't do any better than returning the largest
+     or smallest integer possible in that case.  It doesn't seem to make
+     any practical difference.  Here is a sample input file which
+     demonstrates the problem, from phil@cs.arizona.edu:
+       \documentstyle{article}
+       \begin{document}
+       \begin{flushleft}
+       $\hbox{} $\hfill 
+       \filbreak
+       \eject
+
+     djb@silverton.berkeley.edu points out we should testing against
+     TeX's largest or smallest integer (32 bits), not the machine's.  So
+     we might as well use a floating-point constant, and avoid potential
+     compiler bugs (also noted by djb, on BSDI).  */
+  if (r > 2147483647.0)
+    i = 2147483647;
+  else if (r < -2147483647.0)
+    i = -2147483647;
   else if (r >= 0.0)
-    i = (int) (r + 0.5);
+    i = (integer)(r + 0.5);
   else
-    i = (int) (r - 0.5);
+    i = (integer)(r - 0.5);
+
   return i;
 }
 
 /****************************************************************************/
 
 // malloc with error checking and error message
-
-address xmalloc (unsigned size)
+/* kpathsea/xmalloc.c */
+void * xmalloc (unsigned size)
 {
-  address new_mem = (address) malloc (size);
+  void * new_mem = (void*) malloc (size ? size : 1);
+
   if (new_mem == NULL) {
     sprintf(log_line, "malloc: Unable to honor request for %u bytes.\n", size);
     show_line(log_line, 1);
     abort();         // ???
   }
 #ifdef MYDEBUG
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "XMALLOC %d\n", size);    /* 1996/Jan/20 */
     show_line(log_line, 0);
   }
@@ -170,11 +189,12 @@ address xmalloc (unsigned size)
 }
 
 // calloc with error checking - used by map_create
-
+/* kpathsea/xcalloc.c */
 address xcalloc (unsigned nelem, unsigned elsize)
 {
   address new_mem = (address) calloc (nelem, elsize);
-  if (new_mem == NULL) {
+  if (new_mem == NULL)
+  {
     sprintf(log_line, "Unable to honor request for %u elements of size %u.\n", nelem, elsize);
     show_line(log_line, 1);
     abort();
@@ -183,12 +203,13 @@ address xcalloc (unsigned nelem, unsigned elsize)
 }
 
 /* Return a copy of s in new storage. */ /* xmalloc does error checking */
-
+/* kpathsea/xstrdup.c */
 string xstrdup (string s)
 {
   string pnew_string = (string) xmalloc (strlen (s) + 1);
 #ifdef MYDEBUG
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "XSTRDUP %d %s\n", strlen(s)+1, s);
     show_line(log_line, 0);
   }
@@ -197,15 +218,17 @@ string xstrdup (string s)
 }
 
 /* only used by line.c (which in turn is only used by  fontmap.c) */
-
+/* kpathsea/xrealloc.c */
 address xrealloc (address old_ptr, unsigned size)
 {
   address new_mem;
 
   if (old_ptr == NULL) new_mem = xmalloc (size);
-  else {
+  else
+  {
     new_mem = (address) realloc (old_ptr, size);
-    if (new_mem == NULL) {
+    if (new_mem == NULL)
+    {
       sprintf(log_line, "Unable to honor request for %u bytes.\n", size);
       show_line(log_line, 1);
       abort();
@@ -215,12 +238,13 @@ address xrealloc (address old_ptr, unsigned size)
 }
 
 // returns newly allocated string
-
+/* kpathsea/concat.c */
 string concat (string s1, string s2)
 {
   string answer;
 #ifdef MYDEBUG
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "CONCAT %s and %s ", s1, s2);
     show_line(log_line, 0);
   }
@@ -229,7 +253,8 @@ string concat (string s1, string s2)
   strcpy (answer, s1);
   strcat (answer, s2);
 #ifdef MYDEBUG
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "=> %s\n", answer);
     show_line(log_line, 0);
   }
@@ -238,12 +263,13 @@ string concat (string s1, string s2)
 }
 
 // returns newly allocated string
-
+/* kpathsea/concat3.c */
 string concat3 (string s1, string s2, string s3)
 {
   string answer;
 #ifdef MYDEBUG
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "CONCAT3 %s, %s, and %s ", s1, s2, s3);
     show_line(log_line, 0);
   }
@@ -253,7 +279,8 @@ string concat3 (string s1, string s2, string s3)
   strcat (answer, s2);
   strcat (answer, s3);
 #ifdef MYDEBUG
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "=> %s\n", answer);
     show_line(log_line, 0);
   }
@@ -269,13 +296,17 @@ string concat3 (string s1, string s2, string s3)
 /*  Pascal's `eof' builtin.                                              */
 /* It differs from C feof in that the latter is not true at end of file
    unless an attempt has actually been made to read past EOF             */
-
+/* texk/web2c/lib/eofeoln.c */
 bool test_eof (FILE * file)
 {
   int c;
 /* Maybe we're already at the end?  */
+  if (!file)
+    return true;
+
   if (feof (file))
     return true;
+
   if ((c = getc (file)) == EOF)
     return true;
 /* We weren't at the end.  Back up.  */
@@ -284,16 +315,19 @@ bool test_eof (FILE * file)
 }
 
 /* Return true on end-of-line in FILE or at the end of FILE, else false.  */
-
+/* texk/web2c/lib/eofeoln.c */
 bool eoln (FILE * file)
 {
-  int c;
+  register int c;
+
   if (feof (file))
     return true;
+
   c = getc (file);
+
   if (c != EOF)
     (void) ungetc (c, file);
-//  return c == '\n' || c == EOF;
+
   return c == '\n' || c == '\r' || c == EOF; // ???
 /* Type mismatch (return) (int/enum) ? */
 }
@@ -310,17 +344,20 @@ bool eoln (FILE * file)
    routines and abort if an error happens.  */
 
 // xfopen used in open_input in openinou.c
-
+/* kpathsea/xfopen.c */
 FILE * xfopen (char *filename, char * fmode)
 {
   FILE *f;
+
+  assert(filename && mode);
 /* if share_flag is non-zero and we are opening for reading use fsopen */
 /* f = fopen (filename, mode); */
   if (share_flag == 0 || *fmode != 'r')
     f = fopen (filename, fmode);
   else
     f = _fsopen (filename, fmode, share_flag);
-  if (f == NULL) {
+  if (f == NULL)
+  {
 //    FATAL_PERROR (filename);
     perrormod(filename);
     uexit(1);   // ???
@@ -329,10 +366,13 @@ FILE * xfopen (char *filename, char * fmode)
 }
 
 // xfclose not used ...
-
+/* kpathsea/xfopen.c */
 int xfclose (FILE *f, char *filename)
 {
-  if (ferror(f) != 0 || fclose(f) != 0) {
+  assert(f);
+
+  if (ferror(f) != 0 || fclose(f) != 0)
+  {
 //    FATAL_PERROR (filename);
     perrormod(filename);
     uexit(1);   // ???
@@ -345,7 +385,7 @@ int xfclose (FILE *f, char *filename)
 // following used only in map_lookup
 
 // return pointer to start of extension --- or NULL if there isn't one
-
+/* kpathsea/find-suffix.c */
 string find_suffix (string name)
 {
   string dot_pos;
@@ -366,7 +406,7 @@ string find_suffix (string name)
 }
 
 // remove extension of file name - returns copy or NULL
-
+/* kpathsea/rm-suffix.c */
 string remove_suffix (string s)
 {
   string ret;
@@ -385,7 +425,7 @@ string remove_suffix (string s)
 
 // add extension to file name unless it already has one
 // returns copy or the old one (warning: danger when freeing)
-
+/* kpathsea/extend-fname.c */
 string extend_filename (string name, string default_suffix)
 {
   string new_s;
@@ -411,13 +451,15 @@ char *read_line (FILE * f)
   char * line = (char *) xmalloc (limit);
 
 /*  while ((c = getc (f)) != EOF && c != '\n')  */
-  while ((c = getc (f)) != EOF && c != '\n' && c != '\r') {
+  while ((c = getc (f)) != EOF && c != '\n' && c != '\r')
+  {
     line[loc] = (char) c;
     loc++;
 /* By testing after the assignment, we guarantee that we'll always
    have space for the null we append below.  We know we always
    have room for the first char, since we start with BLOCK_SIZE.  */
-    if (loc == limit) {
+    if (loc == limit)
+    {
       limit += BLOCK_SIZE;
       line = (char *) xrealloc (line, limit);
     }
@@ -426,15 +468,18 @@ char *read_line (FILE * f)
 /* If we read anything, return it.  This can't represent a last
    ``line'' which doesn't end in a newline, but so what.  */
 /* This is Tom Rokicki's mistake -- lets fix it ! 1994/March/18 */
-  if (c != EOF)  {
+  if (c != EOF)
+  {
 /* Terminate the string.  We can't represent nulls in the file,
    either.  Again, it doesn't matter.  */
     line[loc] = 0;
   }
-  else if (loc > 0) { /* c == EOF, but line not empty 1994/March/18 */
+  else if (loc > 0)
+  { /* c == EOF, but line not empty 1994/March/18 */
     line[loc] = 0;
   }
-  else { /* Real EOF --- at end of file.  */
+  else
+  { /* Real EOF --- at end of file.  */
     free (line);
     line = NULL;
   }
@@ -451,14 +496,17 @@ char * read_a_line (FILE *f,  char *line, int limit)
   int loc = 0;
 
 /*  while ((c = getc (f)) != EOF && c != '\n')  */
-  while ((c = getc (f)) != EOF) {
-    if (c == '\n' || c == '\r') {
+  while ((c = getc (f)) != EOF)
+  {
+    if (c == '\n' || c == '\r')
+    {
       if (loc > 0) break;
       else continue;        /* ignore \r\n and blank lines */
     }
     line[loc] = (char) c;
     loc++;
-    if (loc == limit-1) {     /* very unlikely */
+    if (loc == limit - 1)
+    {     /* very unlikely */
       sprintf(log_line, " ERROR: line too long\n");
       show_line(log_line, 1);
       show_line(line, 0);
@@ -467,7 +515,8 @@ char * read_a_line (FILE *f,  char *line, int limit)
     }
   }
 
-  if (c != EOF || loc > 0) {      /* normal line or EOF at end of line */
+  if (c != EOF || loc > 0)
+  {      /* normal line or EOF at end of line */
     line[loc] = '\0';       /* terminate */
     return line;          /* and return */
   }
@@ -478,10 +527,10 @@ char * read_a_line (FILE *f,  char *line, int limit)
 
 /* from ourpaths.c */
 
-#define BUILDNAMEDIRECT   /* avoid malloc for string concat */
+#define BUILDNAMEDIRECT /* avoid malloc for string concat */
 
 #define CACHEFILENAME   /* cache last full path/file name 96/Nov/16 */
-              /* to speed up LaTeX 2e which opens files twice */
+                        /* to speed up LaTeX 2e which opens files twice */
 
 /* `path_dirs' is initialized in `set_paths', to a null-terminated array
    of directories to search for.  */
@@ -1078,7 +1127,8 @@ bool dir_p (string fn)
   char tmpfn[FILENAME_MAX];       /* long enough ??? */
 
   strcpy (tmpfn, fn);           /* make copy so can modify */
-  if (open_trace_flag) {
+  if (open_trace_flag)
+  {
     sprintf(log_line, "Is `%s' a directory? ", tmpfn);
     show_line(log_line, 0);
   }
@@ -1546,7 +1596,7 @@ string truncate_pathname (string name)
 /* Return true if FILENAME is absolute or explicitly relative, else false.  */
 /* Absolute: in DOS name starts with PATH_SEP, or with DRIVE letter and colon */
 /* Explicitly relative: starts with ./ or ../ */
-
+/* kpathsea/absolute.c */
 // static bool absolute_p (string filename) {
 bool absolute_p (string filename)
 {
@@ -1608,29 +1658,38 @@ void striptrailing (string env_value, string env_name, string default_path)
 /* convert /! and /!! to / and // 97/Mar/22 */
 
 #ifdef MSDOS
-void convertexclam (string env_value) { /* 97/Mar/22 */
+/* 97/Mar/22 */
+void convertexclam (string env_value)
+{
   char *s;
   if (env_value == NULL) return;
   s = env_value;
   if (strchr(s, '!') == NULL) return;
-  while ((s = strchr(s, '!')) != NULL) {
-    if (*(s+1) == '!') {  /* double !! */
-      if (*(s+2) == PATH_DELIMITER || *(s+2) == '\0') {
-        if (s > env_value && *(s-1) == PATH_SEP) {
+  while ((s = strchr(s, '!')) != NULL)
+  {
+    if (*(s+1) == '!')
+    {  /* double !! */
+      if (*(s+2) == PATH_DELIMITER || *(s+2) == '\0')
+      {
+        if (s > env_value && *(s-1) == PATH_SEP)
+        {
           *s = PATH_SEP;    /* convert the first ! */
           strcpy(s+1, s+2); /* flush the second ! */
         }
       }
     }
-    else {    /* single ! */  /* assume already unixified */
-      if (*(s+1) == PATH_DELIMITER || *(s+1) == '\0') {
+    else
+    {    /* single ! */  /* assume already unixified */
+      if (*(s+1) == PATH_DELIMITER || *(s+1) == '\0')
+      {
         if (s > env_value && *(s-1) == PATH_SEP)
           strcpy(s, s+1); /* just flush the ! */
       }
     }
     s++;
   }
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line,"Now is %s\n", env_value);
     show_line(log_line, 0);
   }
@@ -1865,10 +1924,11 @@ void add_directory (string **dir_list_ptr, unsigned *dir_count_ptr, string dir)
   XRETALLOC (*dir_list_ptr, *dir_count_ptr, string);
   (*dir_list_ptr)[*dir_count_ptr - 1] = dir;
 }
-
+/* 1994/Jan/25 */
 void lowercase (char *s)
-{             /* 1994/Jan/25 */
-  while (*s) *s++ = (char) tolower(*s);
+{
+  while (*s)
+    *s++ = (char) tolower(*s);
 }
 
 
@@ -2043,8 +2103,8 @@ char *unixify (char * t)
 /* moved here to avoid problems with pragma */
 
 /* struct _finddata_t findt; */ /* make global, can be reused unlike _find_t */
-                /* avoids heavy stack usage in tree search */
-                /* but ties up some global fixed space ... */
+                                /* avoids heavy stack usage in tree search */
+                                /* but ties up some global fixed space ... */
 
 #pragma optimize ("g", off)   /* try and avoid compiler bug here _dos_find */
 
@@ -2055,7 +2115,8 @@ char *unixify (char * t)
 /* Yes, so lets flush it! use _findfirst, _findnext, _findclose instead */
 
 /* called only from initialize_path_list  (and recursively) */
-
+/* kpathsea/elt-dirs.c */
+/* renamed to do_subdir */
 void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirname,
           struct _finddata_t findt, integer recurseflag)
 {
@@ -2320,7 +2381,7 @@ static int last_nonopt;
 
    `first_nonopt' and `last_nonopt' are relocated so that they describe
    the new indices of the non-options in ARGV after they are moved.  */
-
+/* kpathsea/getopt.c */
 static void exchange (char **argv)
 {
   int nonopts_size;         /* paranoia - bkph */
@@ -2403,7 +2464,7 @@ char *get_env_shroud (char *);    /* in texmf.c */
 
    If LONG_ONLY is nonzero, '-' as well as '--' can introduce
    long-named options.  */
-
+/* kpathsea/getopt.c */
 int _getopt_internal (int argc, char *const *argv, const char *optstring,
             const struct option *longopts, int *longind, int long_only)
 {
@@ -2699,7 +2760,7 @@ int _getopt_internal (int argc, char *const *argv, const char *optstring,
     return c;
   }
 }
-
+/* kpathsea/getopt1.c */
 int getopt (int argc, char *const *argv, const char *optstring)
 {
   return _getopt_internal (argc, argv, optstring,
