@@ -661,24 +661,27 @@ void alter_box_dimen (void)
 }
 /* sec 1257 */
 void new_font_(small_number a)
-{/* 50 */ 
-  halfword u; 
-  scaled s; 
-  internal_font_number f; 
-  str_number t; 
-  char old_setting; 
-  str_number flushablestring; 
-  if (job_name == 0) open_log_file(); 
-  get_r_token(); 
-  u = cur_cs; 
+{
+  halfword u;
+  scaled s;
+  internal_font_number f;
+  str_number t;
+  char old_setting;
+  str_number flushablestring;
+
+  if (job_name == 0)
+    open_log_file();
+  get_r_token();
+  u = cur_cs;
   if (u >= hash_base)      /* if u >= hash_base then t <- text(u); p.1257 */
-    t = hash[u].v.RH; 
+    t = hash[u].v.RH;
   else if (u >= single_base)   /* if u >= single_base then ... */
 /*    if u=null_cs then t:="FONT"@+else t:=u-single_base */
   if (u == null_cs)
     t = 1213;     /* FONT */
   else t = u - single_base;   /* else t <- u - single_base */
-  else {
+  else
+  {
     old_setting = selector; 
     selector = 21; 
     print_string("FONT");
@@ -694,8 +697,7 @@ void new_font_(small_number a)
       return;     // abort_flag set
     }
 #else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-      if (pool_ptr + 1 > pool_size) {
+    if (pool_ptr + 1 > pool_size) {
       overflow("pool size", pool_size - init_pool_ptr); /* pool size */
       return;     // abort_flag set
     }
@@ -719,7 +721,7 @@ void new_font_(small_number a)
       print_err("Improper `at' size(");
       print_scaled(s); 
       print_string("pt), replaced by 10pt");
-	  help2("I can only handle fonts at positive sizes that are",
+      help2("I can only handle fonts at positive sizes that are",
 		  "less than 2048pt, so I've changed what you said to 10pt.");
       error(); 
       s = 10 * 65536L;    /* 10pt */
@@ -729,13 +731,14 @@ void new_font_(small_number a)
   {
     scan_int(); 
     s = - (integer) cur_val; 
-    if ((cur_val <= 0)||(cur_val > 32768L))  {
-		print_err("Illegal magnification has been changed to 1000");
-		help1("The magnification ratio must be between 1 and 32768.");
-      int_error(cur_val); 
-      s = -1000; 
-    } 
-  } 
+    if ((cur_val <= 0) || (cur_val > 32768L))
+    {
+      print_err("Illegal magnification has been changed to 1000");
+      help1("The magnification ratio must be between 1 and 32768.");
+      int_error(cur_val);
+      s = -1000;
+    }
+  }
   else s = -1000; 
   name_in_progress = false; 
 
@@ -810,14 +813,14 @@ void new_font_(small_number a)
   f = read_font_info(u, cur_name, cur_area, s); 
 
 /* common_ending: equiv[u] <- f;  */  /* use existing font info */
-  lab50:
+lab50:
   if (trace_flag) {
     sprintf(log_line, "NEW FONT %d ", f); /* debugging only */
     show_line(log_line, 0);
   }
   eqtb[u].hh.v.RH = f; 
 /*  eqtb[(hash_size + 524) + f]= eqtb[u];*/ /* eqtb[frozen_null+font+f] */
-  eqtb[(hash_size + hash_extra + 524) + f]= eqtb[u]; /* 96/Jan/10 */
+  eqtb[(hash_size + hash_extra + 524) + f] = eqtb[u]; /* 96/Jan/10 */
 #ifdef SHORTHASH            /*  debugging only  1996/Jan/20 */
   if (t > 65535L) {
     sprintf(log_line, "ERROR: %s too large %d\n",  "hash_used", t);

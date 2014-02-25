@@ -115,7 +115,7 @@ char **gargv;   /* char *gargv[] -- bkph ? */
 #endif /* INIVIR */ 
 
 /* bkph */
-char * set_program_name(char *comm)
+char * set_program_name (char *comm)
 {
   char *s;
   if ((s = strrchr (comm, '\\')) != NULL)
@@ -227,58 +227,58 @@ int main (int ac, char *av[])
    buffer, so they can handle them.  If nothing is available, or we've
    been called already (and hence, gargc==0), we return with
    `last=first'.  */
-
+/* texk/web2c/lib/texmfmp.c */
 void t_open_in (void)
 {
-/* int ch, flag; */
   int i;
 
-/*  if (trace_flag) show_line("Entering t_open_in (texmf)\n", 0); */
+  buffer[first] = 0;  /* In case there are no arguments.  */
 
-  buffer[first] = 0;  /* So the first `strcat' will work.  */
-
-/*  We just string the command line arguments together with spaces */
 #ifdef MSDOS
-/*  if (gargc > optind) {   */ /* command line stuff after arguments ? */
-  if (gargc > optind && optind > 0) {   /* command line arguments? 94/Apr/10 */
-/*      for (i = 1; i < gargc; i++) */
+/* command line arguments? 94/Apr/10 */
+  if (gargc > optind && optind > 0)
+  {
     for (i = optind; i < gargc; i++)      /* 94/Apr/10 */
 #else
-      if (gargc > 1) {      /* We do have command line arguments.  */
-        for (i = 1; i < gargc; i++)
+/* We do have command line arguments. */
+  if (gargc > 1)
+  {
+    for (i = 1; i < gargc; i++)
 #endif
-        {
+    {
 /*  the following won't happen if pseudo_space is set ... */
-          if (allow_quoted_names && strchr(gargv[i], ' ') != NULL)
-          {
-            (void) strcat ((char *) &buffer[first], "\"");
-            (void) strcat ((char *) &buffer[first], gargv[i]);
-            (void) strcat ((char *) &buffer[first], "\"");
-          }
-          else
-            (void) strcat ((char *) &buffer[first], gargv[i]);
-          (void) strcat ((char *) &buffer[first], " ");
-        }
-        gargc = 0;  /* Don't do this again.  */
+      if (allow_quoted_names && strchr(gargv[i], ' ') != NULL)
+      {
+        (void) strcat ((char *) &buffer[first], "\"");
+        (void) strcat ((char *) &buffer[first], gargv[i]);
+        (void) strcat ((char *) &buffer[first], "\"");
       }
+      else
+        (void) strcat ((char *) &buffer[first], gargv[i]);
+      (void) strcat ((char *) &buffer[first], " ");
+    }
+    gargc = 0;  /* Don't do this again.  */
+  }
 
   /* Find the end of the buffer.  */
-    for (last = first; buffer[last]; ++last) ;
+  for (last = first; buffer[last]; ++last) ;
 
   /* Make `last' be one past the last non-blank non-formfeed character
      in `buffer'.  */
-    for (--last; last >= first && ISSPACE (buffer[last]) && buffer[last] != '\f'; --last);
-    last++;
+  for (--last; last >= first
+      && ISSPACE (buffer[last]) && buffer[last] != '\f'; --last);
+  last++;
 
 /* do we want to check line for non-ASCII at this point ? */
 
   /* One more time, this time converting to TeX's internal character
      representation.  */ /* for command line input in this case */
 /* #ifdef NONASCII */
-    if (non_ascii) {
-      for (i = first; i < last; i++)
-        buffer[i] = xord[buffer[i]];
-    }
+  if (non_ascii)
+  {
+    for (i = first; i < last; i++)
+      buffer[i] = xord[buffer[i]];
+  }
 /* #endif */
 }
 

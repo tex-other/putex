@@ -521,15 +521,16 @@ void testfloating (void) {
 char *debugfile;      /* NULL or name of file to try and open */
 
 #ifdef SHOWHEAPERROR
-  char *heapstrings[] = {
+ char *heapstrings[] =
+ {
     "", "Empty", "OK", "Bad Begin", "Bad Node", "End", "Bad Pointer"
-  };
+ };
 #endif
 
 /* Attempt to get at problem with eqtb ... temporarily abandoned */
-
 #ifdef CHECKEQTB
-void check_eqtb (char *act) {
+void check_eqtb (char *act) 
+{
   int k, count=0;
   memory_word *eqtb = zeqtb;
 /*  for (k = 10280 + hash_extra; k < 10280 + eqtb_extra; k++) { */
@@ -582,7 +583,8 @@ unsigned int heap_dump (FILE *output, int verbose)
 #ifdef SHOWHEAPERROR
   n = _heapchk();
 #endif
-  if (n != _HEAPOK) { 
+  if (n != _HEAPOK)
+  {
     fprintf(stderr, "WARNING: Heap corrupted (%d)\n", n);
 #ifdef SHOWHEAPERROR
     fprintf(stderr, "HEAP %s (%s)\n", heapstrings[-n], "heap_dump");
@@ -811,7 +813,9 @@ int current_prime = 0;         /* remember in case reallocated later */
 int realloc_hyphen (int hyphen_prime)
 {
   int n, nw, nl;
-  if (!prime(hyphen_prime)) {
+
+  if (!prime(hyphen_prime))
+  {
     sprintf(log_line, "ERROR: non-prime hyphen exception number (%d)\n", hyphen_prime); 
     show_line(log_line, 1);
 //    exit (1);
@@ -1566,16 +1570,16 @@ memory_word *allocatezeqtb (int k)
 
 /* here is the main memory allocation routine -- calls the above */
 /* returns -1 if it fails */
-
+/* allocate rather than static 93/Nov/26 */
 int allocate_memory (void)
-{ /* allocate rather than static 93/Nov/26 */
+{
 /*  int n;  */
 #ifdef PREALLOCHOLE
   char *holeadr = malloc (300000);  /* testing - preallocate 95/Jan/20 */
 #endif
 
 #ifdef ALLOCATEHASH
-#error ERROR: Not ready for ALLOCATEHASH...
+  #error ERROR: Not ready for ALLOCATEHASH...
 #endif
 
 /* probably not worth while/not a good idea allocating following */
@@ -1587,24 +1591,22 @@ int allocate_memory (void)
 /*  n = (9767 + eqtb_extra) * sizeof (twohalves); */
 #ifdef SHORTHASH
   n = (hash_size + 267 + eqtb_extra) * sizeof (htwohalves);   /* 95/Feb/19 */
-#else
-  n = (hash_size + 267 + eqtb_extra) * sizeof (twohalves);  /* 95/Feb/19 */
-#endif
-  if (trace_flag)  trace_memory("hash table", n);
-#ifdef SHORTHASH
   zzzae = (htwohalves *) malloc (roundup(n));
 #else
+  n = (hash_size + 267 + eqtb_extra) * sizeof (twohalves);  /* 95/Feb/19 */
   zzzae = (twohalves *) malloc (roundup(n));
 #endif
+  if (trace_flag)  trace_memory("hash table", n);
 /*  zzzae = (twohalves *) malloc ((hash_size + 267) * sizeof (twohalves)); */
-  if (zzzae == NULL)  {
+  if (zzzae == NULL)
+  {
     memory_error("hash table", n);
 //    exit (1);           /* serious error */
     return -1;            /* serious error */
   }
 
   n = (inputsize + 1) * sizeof(memory_word);
-  if (trace_flag)  trace_memory("input_stack", n);
+  if (trace_flag) trace_memory("input_stack", n);
 /*  input_stack = (memory_word *) malloc ((inputsize + 1) * sizeof (memory_word)); */
   input_stack = (memory_word *) malloc (roundup(n));
   if (input_stack == NULL)   {
@@ -1711,9 +1713,11 @@ int allocate_memory (void)
 /*  this will be overridden later by what is in format file */
   hyphen_prime = default_hyphen_prime;
 /*  non ini-TeX use assumes format will be read and that specifies size */
-  if (is_initex) {
-    if (new_hyphen_prime) hyphen_prime = new_hyphen_prime;
-    if (realloc_hyphen (hyphen_prime)) /* allocate just in case no format */
+  if (is_initex)
+  {
+    if (new_hyphen_prime)
+      hyphen_prime = new_hyphen_prime;
+    if (realloc_hyphen(hyphen_prime)) /* allocate just in case no format */
       return -1;
   }
 #endif
@@ -1722,17 +1726,22 @@ int allocate_memory (void)
 /*  if iniTeX, need to allocate pre-determined fixed amount - trie_size */
 /*  if iniTeX not selected, allocate only enough later - undump in itex.c ! */
 #ifdef ALLOCATETRIES
-  if (is_initex) {
-    if (allocate_tries (trie_size)) return -1;
+  if (is_initex)
+  {
+    if (allocate_tries (trie_size))
+      return -1;
   }
 #endif
 
 /*  now for memory for hyphenation stuff needed only when running iniTeX */
 #ifdef ALLOCATEINI
-  if (is_initex) {
-    if (allocate_ini(trie_size)) return -1;
+  if (is_initex)
+  {
+    if (allocate_ini(trie_size))
+      return -1;
   }
-  else {
+  else
+  {
     trie_l = trie_r = trie_o = trie_hash = NULL; /* (trie_size + 1) * integer */
     trie_c = NULL;       /* (trie_size + 1) * char */
     trie_taken = NULL;     /* (trie_size + 1) * bool */
@@ -1745,9 +1754,9 @@ int allocate_memory (void)
 }
 
 /* returns non-zero if error - done to test integrity of stack mostly */
-
+/* free in reverse order 93/Nov/26 */
 int free_memory (void)
-{     /* free in reverse order 93/Nov/26 */
+{
   int n;
   unsigned heaptotal=0;
 /*  unsigned total; */
@@ -2190,10 +2199,10 @@ char *wndsection        = "[Window]";         /* Window section in `dviwindo.ini
 char *workdirect        = "WorkingDirectory"; /* key in [Window] section */
 bool usesourcedirectory = true;               /* use source file directory as local when WorkingDirectory is set */
 bool workingdirectory   = false;              /* if working directory set in ini */
-/* set up full file name for dviwindo.ini and check for [Environment] */
 
+/* set up full file name for dviwindo.ini and check for [Environment] */
 bool setupdviwindo (void)
-{ /* set up full file name for dviwindo.ini */
+{
   char dviwindoini[PATH_MAX];
   char line[PATH_MAX];
   FILE *pinput;
@@ -2217,7 +2226,8 @@ bool setupdviwindo (void)
     strcat(dviwindoini, inifilename);
 /*    sprintf(log_line, "Using WINDIR %s\n", dviwindoini); */
   }
-  else {
+  else
+  {
     _searchenv (inifilename, "PATH", dviwindoini);
 /*    sprintf(log_line, "Using SEARCHENV %s\n", dviwindoini); */
   }
@@ -2445,7 +2455,8 @@ char *replfile = NULL;/* save space use xstrdup */
 
 int analyze_flag (int c, char *optarg)
 {
-  switch (c)  {
+  switch (c)
+  {
     case 'v':
       want_version = true;
       verbose_flag = true;
@@ -3024,28 +3035,39 @@ int init_commands (int ac, char **av)
 void initial_memory (void)
 {
   /* set initial memory allocations */
-  if (mem_extra_high < 0) mem_extra_high = 0;
-  if (mem_extra_low < 0) mem_extra_low = 0;
-  if (mem_initex < 0) mem_initex = 0;
-  if (is_initex) {
+  if (mem_extra_high < 0)
+    mem_extra_high = 0;
+  if (mem_extra_low < 0)
+    mem_extra_low = 0;
+  if (mem_initex < 0)
+    mem_initex = 0;
+  if (is_initex)
+  {
  #if defined(ALLOCATEHIGH) || defined(ALLOCATELOW)
-    if (mem_extra_high != 0 || mem_extra_low != 0) {
+    if (mem_extra_high != 0 || mem_extra_low != 0)
+    {
       show_line("ERROR: Cannot extend main memory in iniTeX\n", 1);
       mem_extra_high = 0;   mem_extra_low = 0;
     }
 #endif
-  } else {
-    if (mem_initex != 0) {
+  }
+  else
+  {
+    if (mem_initex != 0)
+    {
       show_line("ERROR: Can only set initial main memory size in iniTeX\n", 1);
       mem_initex = 0;
     }
-    if (trie_size != 0) {
+    if (trie_size != 0)
+    {
       show_line("ERROR: Need only set hyphenation trie size in iniTeX\n", 1);
 /* trie_size = 0; */
     }
   }
-  if (mem_initex == 0) mem_initex = default_mem_top;
-  if (trie_size == 0) trie_size = default_trie_size;
+  if (mem_initex == 0)
+    mem_initex = default_mem_top;
+  if (trie_size == 0)
+    trie_size = default_trie_size;
 /* Just in case user mistakenly specified words instead of kilo words */
   if (mem_extra_high > 10000L * 1024L) mem_extra_high = mem_extra_high / 1024;
   if (mem_extra_low > 10000L * 1024L) mem_extra_low = mem_extra_low / 1024;
@@ -3114,7 +3136,8 @@ void checkpause (int flag)
   int debug_pause = 0;
 /*  don't stop if in Q (quiet) or R (run) mode */
 /*  stop only in S (scroll) and T (TeX) mode */
-  if (interaction >= 0 && interaction < 2) flag = 0;    /* 98/Jun/30 */
+  if (interaction >= 0 && interaction < 2)
+    flag = 0;    /* 98/Jun/30 */
   s = grabenv("DEBUGPAUSE");
   if (s != NULL) sscanf(s, "%d", &debug_pause);
   if (flag < 0) return;
@@ -3146,7 +3169,8 @@ void check_enter (int argc, char *argv[])
 }
 
 #ifdef IGNORED
-void checkexit (int n) {              /* 95/Oct/28 */
+void checkexit (int n)
+{              /* 95/Oct/28 */
   checkpause(1);
   exit(n);
 }

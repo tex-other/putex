@@ -1,45 +1,33 @@
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef MSDOS
-  /* allocate iniTeX (550 k) trie_c, trie_o, trie_l, trie_r, trie_hash, trie_taken */
-  #define ALLOCATEINI
-  /* allocate main memory for TeX (2 Meg) zmem = zzzaa */
-  #define ALLOCATEMAIN
+  #define ALLOCATEINI        /* allocate iniTeX (550 k) trie_c, trie_o, trie_l, trie_r, trie_hash, trie_taken */
+  #define ALLOCATEMAIN       /* allocate main memory for TeX (2 Meg) zmem = zzzaa */
+  #define ALLOCATEFONT       /* allocate font_info (800 k) (dynamically now) */
+  #define ALLOCATETRIES      /* allocate hyphenation trie stuff (270 k) trie_trl, trie_tro, trie_trc */
+  #define ALLOCATEHYPHEN     /* allocate hyphenation exception tables */
+  #define VARIABLETRIESIZE   /* allow trie_size to be variable */
+  #define ALLOCATESTRING     /* allocate strings and string pointers (184 k)str_pool & str_start */
+  #define ALLOCATESAVESTACK  /* experiment to dynamically deal with save_stack 99/Jan/4 */
+  #define ALLOCATEINPUTSTACK /* experiment to dynamically deal with input_stack 99/Jan/21 */
+  #define ALLOCATENESTSTACK  /* experiment to dynamically deal with nest_stack 99/Jan/21 */
+  #define ALLOCATEPARAMSTACK /* experiment to dynamically deal with param_stack 99/Jan/21 */
+  #define ALLOCATEBUFFER     /* experiment to dynamically deal with input buffer 99/Jan/22 */
   /* NOT *//* allow increasing high area of main memory */ /* FLUSH */
-  #undef ALLOCATEHIGH  
+  #undef ALLOCATEHIGH
   /* NOT *//* allow increasing low area of main memory */ /* FLUSH */
-  #undef ALLOCATELOW  
-  /* allocate font_info (800 k) (dynamically now) */
-  #define ALLOCATEFONT 
-  /* allocate hyphenation trie stuff (270 k) trie_trl, trie_tro, trie_trc */
-  #define ALLOCATETRIES
-  /* allocate hyphenation exception tables */
-  #define ALLOCATEHYPHEN 
-  /* allow trie_size to be variable */
-  #define VARIABLETRIESIZE
-  /* allocate strings and string pointers (184 k)str_pool & str_start */
-  #define ALLOCATESTRING 
+  #undef ALLOCATELOW
   /* NOT */ /* allocate hash table (zzzae) (78k) */
   #undef ALLOCATEHASH
   /* NOT */ /* allocate dvi_buf (16k) */ /* changed in 1.3 1996/Jan/18 */
   /* #define ALLOCATEDVIBUF */
-  #undef ALLOCATEDVIBUF 
-  /* experiment to dynamically deal with save_stack 99/Jan/4 */
-  #define ALLOCATESAVESTACK
-  /* experiment to dynamically deal with input_stack 99/Jan/21 */
-  #define ALLOCATEINPUTSTACK
-  /* experiment to dynamically deal with neststack 99/Jan/21 */
-  #define ALLOCATENESTSTACK
-  /* experiment to dynamically deal with param_stack 99/Jan/21 */
-  #define ALLOCATEPARAMSTACK
-  /* experiment to dynamically deal with input buffer 99/Jan/22 */
-  #define ALLOCATEBUFFER
+  #undef ALLOCATEDVIBUF
   /* increase fixed allocations */
   #define INCREASEFIXED
   /* increase number of fonts - quarterword 16 bit - max_quarterword limit */
   /* there may still be some bugs with this however ... also may slow down */
   /* also: should split use of quarterword for (i) font from (ii) char */
   /* for example, xeq_level ? hyphenation trie_trc ? */
-  #define INCREASEFONTS 
+  #define INCREASEFONTS
   /* NOT NOT *//* allocate eqtb (108k) */ /* changed in 1.3 1996/Jan/18 */
   #undef ALLOCATEZEQTB
   /* make font_info array fmemoryword == 32 bit instead of memory_word = 64 bit */
@@ -67,9 +55,9 @@
 
 #define MAXLINE 256         // for log_line buffer
 
-/* #define max_halfword 65535L  */ /* for 32 bit memory word */
-/* #define max_halfword 262143L */ /* for 36 bit memory word */
-#define min_halfword -2147483647L  /* for 64 bit memory word (signed) */
+/* #define max_halfword 65535L  */  /* for 32 bit memory word */
+/* #define max_halfword 262143L */  /* for 36 bit memory word */
+#define min_halfword -2147483647L   /* for 64 bit memory word (signed) */
 #define max_halfword  2147483647L   /* for 64 bit memory word (signed) */
 
 #define block_size 1000 /* block_size for variable length node alloc */
@@ -84,7 +72,7 @@
 
 /* #define default_mem_top 262140L */ /* usual big TeX allocation 2 Meg bytes */
 /* #define default_mem_top 131070L */ /* usual big TeX allocation 1 Meg bytes */
-#define default_mem_top 65534L      /* usual small TeX allocation 0.5 Meg   */
+#define default_mem_top 65534L        /* usual small TeX allocation 0.5 Meg   */
 
 /* mem_bot smallest index in mem array dumped by iniTeX mem_top >= mem_min */
 #define mem_bot 0
@@ -93,7 +81,7 @@
   EXTERN integer mem_top;
   #define max_mem_size (max_halfword / sizeof(memory_word) -1)
 #else
-  #define mem_top 262140L 
+  #define mem_top 262140L
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -105,8 +93,7 @@
 #ifdef ALLOCATEMAIN
   EXTERN integer mem_max;
 #else
-  /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  /* #define mem_max 262140L */
+/* #define mem_max 262140L */
   #define mem_max mem_top
 #endif
 
@@ -117,7 +104,6 @@
 #ifdef ALLOCATEMAIN
   EXTERN integer mem_min;
 #else
-  /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   #define mem_min 0
 #endif
 
@@ -125,30 +111,27 @@
 
 #define pool_name TEXPOOLNAME
 
-/* #define mem_top 262140L */
-
 /* type definitions follow */
 
-typedef unsigned char ASCII_code; 
-typedef unsigned char eight_bits; 
-typedef integer pool_pointer; 
-typedef integer str_number; 
-typedef unsigned char packed_ASCII_code; 
-typedef integer scaled; 
-typedef integer nonnegative_integer; 
-typedef char small_number; 
+typedef unsigned char ASCII_code;
+typedef unsigned char eight_bits;
+typedef integer pool_pointer;
+typedef integer str_number;
+typedef unsigned char packed_ASCII_code;
+typedef integer scaled;
+typedef integer nonnegative_integer;
+typedef char small_number;
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/* buf_size is max size of input line and max size of csname */
-/* make sure its multiple of four bytes long */
+/* buf_size is max size of input line and max size of csname               */
+/* make sure its multiple of four bytes long                               */
 /* want to increase this so it can handle whole paragraph imported from WP */
 #ifdef INCREASEFIXED
 /* #define buf_size 8192 */
 /* #define buf_size 12000 */    /* 1996/Jan/17 */
-/* #define buf_size 16384 */      /* 1998/June/30 */
-/* #define buf_size 20000 */      /* 1999/Jan/7 */
+/* #define buf_size 16384 */    /* 1998/June/30 */
+/* #define buf_size 20000 */    /* 1999/Jan/7 */
 #else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* #define buf_size 3000  */
 #endif
 
@@ -178,10 +161,10 @@ EXTERN integer max_buf_stack;
 /* #define max_in_open 15 */    /* for Y&Y TeX 1.2 */
 /* #define max_in_open 31 */    /* 1996/Jan/17 */
 /* #define max_in_open 63 */    /* 1996/Jan/18 */
-  #define max_in_open 127     /* 1996/Jan/20 - really ? */
+  #define max_in_open 127       /* 1996/Jan/20 - really ? */
 /* save_size space for saving values outside of current group */
 /* #define save_size 6000 */
-/* #define save_size 8000 */      /* 1999/Jan/6 */
+/* #define save_size 8000 */    /* 1999/Jan/6 */
 #else
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* #define stack_size 300 */    /* Unix C version default */
@@ -191,13 +174,11 @@ EXTERN integer max_buf_stack;
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/* maximum internal font number - cannot be greated than max_quarter_word ! */
+/* maximum internal font number - cannot be greated than max_quarter_word! */
 #ifdef INCREASEFONTS
-/* #define font_max 511 */
   #define font_max 1023     /* 1996/Jan/17 */
 #else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  #define font_max 255 
+  #define font_max 255
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -206,7 +187,6 @@ EXTERN integer max_buf_stack;
 /* #define font_mem_size 262140L */
   #define font_mem_size (max_halfword / sizeof(memory_word) -1)
 #else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   #define font_mem_size 100000L
 #endif
 
@@ -306,7 +286,7 @@ EXTERN integer max_buf_stack;
 #define hash_size 32768       /* 96/Jan/17 */
 /* trick to try and get around eqtb_extra problem */
 /* #define hash_extra -256 */
-#define hash_extra (255 - font_max) 
+#define hash_extra (255 - font_max)
 /* hash prime about 85% of hash_size (+ hash_extra) */
 /* #define hashprime 7919  */
 /* #define hash_prime 21247 */    /* 96/Jan/10 */
@@ -1234,21 +1214,21 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
  #endif /* DOS */
 
 #ifdef MSDOS
-  extern int current_pool_size;       /* in local.c - bkph */
-  extern int current_max_strings;     /* in local.c - bkph */
-  extern int current_mem_size;        /* in local.c - bkph */
-  extern int current_font_mem_size;     /* in local.c - bkph */
-  extern int current_save_size;       /* in local.c - bkph */
-  extern int current_stack_size;      /* in local.c - bkph */
-  extern int current_nest_size;       /* in local.c - bkph */
-  extern int current_param_size;      /* in local.c - bkph */
-  extern int current_buf_size;        /* in local.c - bkph */
-  extern char *tex_version;       /* in local.c - bkph */
-  extern char *application;       /* in local.c - bkph */
-  extern char *yandyversion;        /* in local.c - bkph */
-  extern unsigned char wintodos[128];        /* in local.c - bkph */
-  extern char last_filename[PATH_MAX];    /* in ourpaths.c */
-  extern char log_line[MAXLINE];        /* in local.c */
+  extern int current_pool_size;        /* in local.c - bkph */
+  extern int current_max_strings;      /* in local.c - bkph */
+  extern int current_mem_size;         /* in local.c - bkph */
+  extern int current_font_mem_size;    /* in local.c - bkph */
+  extern int current_save_size;        /* in local.c - bkph */
+  extern int current_stack_size;       /* in local.c - bkph */
+  extern int current_nest_size;        /* in local.c - bkph */
+  extern int current_param_size;       /* in local.c - bkph */
+  extern int current_buf_size;         /* in local.c - bkph */
+  extern char *tex_version;            /* in local.c - bkph */
+  extern char *application;            /* in local.c - bkph */
+  extern char *yandyversion;           /* in local.c - bkph */
+  extern unsigned char wintodos[128];  /* in local.c - bkph */
+  extern char last_filename[PATH_MAX]; /* in ourpaths.c */
+  extern char log_line[MAXLINE];       /* in local.c */
   extern char *texpath;           /* in local.c */
 
   memory_word * allocate_main_memory (int);   /* in local.c - bkph */
@@ -1457,6 +1437,12 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define glue_shrink(q)  shift_amount
 #define span_count      subtype
 /* sec 0162 */
+#define zero_glue         mem_bot // 0
+#define fil_glue          zero_glue + glue_spec_size // 4
+#define fill_glue         fil_glue + glue_spec_size // 8
+#define ss_glue           fill_glue + glue_spec_size // 12
+#define fil_neg_glue      ss_glue + glue_spec_size // 16
+#define lo_mem_stat_max   fil_neg_glue + glue_spec_size - 1 // 19
 #define contrib_head      mem_top - 1
 #define page_head         mem_top - 2
 #define temp_head         mem_top - 3
@@ -1642,21 +1628,21 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define single_base                   active_base + 256      // 257
 #define null_cs                       single_base + 256      // 513
 #define hash_base                     null_cs + 1            // 514
-#define frozen_control_sequence       hash_base + hash_size  // hash_size + 514
-#define frozen_protection             frozen_control_sequence
-#define frozen_cr                     frozen_control_sequence + 1
-#define frozen_end_group              frozen_control_sequence + 2
-#define frozen_right                  frozen_control_sequence + 3
-#define frozen_fi                     frozen_control_sequence + 4
-#define frozen_end_template           frozen_control_sequence + 5
-#define frozen_endv                   frozen_control_sequence + 6
-#define frozen_relax                  frozen_control_sequence + 7
-#define end_write                     frozen_control_sequence + 8
-#define frozen_dont_expand            frozen_control_sequence + 9
-#define frozen_null_font              frozen_control_sequence + 10 // 524
-#define font_id_base                  frozen_null_font - font_base
-#define undefined_control_sequence    frozen_null_font + 257 // 781
-#define glue_base                     undefined_control_sequence + 1 // 782
+#define frozen_control_sequence       hash_base + hash_size + hash_extra // (hash_size + hash_extra + 514)
+#define frozen_protection             frozen_control_sequence        // (hash_size + hash_extra + 514)
+#define frozen_cr                     frozen_control_sequence + 1    // (hash_size + hash_extra + 515)
+#define frozen_end_group              frozen_control_sequence + 2    // (hash_size + hash_extra + 516)
+#define frozen_right                  frozen_control_sequence + 3    // (hash_size + hash_extra + 517)
+#define frozen_fi                     frozen_control_sequence + 4    // (hash_size + hash_extra + 518)
+#define frozen_end_template           frozen_control_sequence + 5    // (hash_size + hash_extra + 519)
+#define frozen_endv                   frozen_control_sequence + 6    // (hash_size + hash_extra + 520)
+#define frozen_relax                  frozen_control_sequence + 7    // (hash_size + hash_extra + 521)
+#define end_write                     frozen_control_sequence + 8    // (hash_size + hash_extra + 522)
+#define frozen_dont_expand            frozen_control_sequence + 9    // (hash_size + hash_extra + 523)
+#define frozen_null_font              frozen_control_sequence + 10   // (hash_size + hash_extra + 524)
+#define font_id_base                  frozen_null_font - font_base   // (hash_size + hash_extra + 524)
+#define undefined_control_sequence    frozen_null_font + 1025        // (hash_size + hash_extra + 781) = font_max + 2
+#define glue_base                     undefined_control_sequence + 1 // (hash_size + hash_extra + 782)
 /* sec 0224 */
 #define line_skip_code                0  // 782
 #define baseline_skip_code            1  // 783

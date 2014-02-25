@@ -1786,7 +1786,7 @@ void show_eqtb_(halfword n)
         print_int(n - math_font_base - 32);
       }
       print_char('=');
-      print_esc("");print(hash[(hash_size + hash_extra + 524) + equiv(n)].v.RH);
+      print_esc(""); print(hash[(hash_size + hash_extra + 524) + equiv(n)].v.RH);
     }
     else if (n < math_code_base)
     {

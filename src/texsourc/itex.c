@@ -2187,11 +2187,10 @@ int texbody (void)					/* now returns a value --- bkph */
 
   set_paths(TEXFORMATPATHBIT + TEXINPUTPATHBIT + TEXPOOLPATHBIT + TFMFILEPATHBIT); 
 
-  if (ready_already == 314159L)goto lab1; /* magic number */
+  if (ready_already == 314159L) goto lab1; /* magic number */
 /*	These tests are almost all compile time tests and so could be eliminated */
-  bad = 0; 
-  if ((half_error_line < 30)||(half_error_line > error_line - 15)) 
-	  bad = 1; 
+  bad = 0;
+  if ((half_error_line < 30) || (half_error_line > error_line - 15)) bad = 1; 
   if (max_print_line < 60)	bad = 2; 
   if (dvi_buf_size % 8 != 0) bad = 3; 
   if (1100 > mem_top)bad = 4;		/* not compile time */
@@ -2263,7 +2262,8 @@ int texbody (void)					/* now returns a value --- bkph */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (is_initex) {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-	  if (! get_strings_started ()) goto lab9999;		// abort
+	  if (!get_strings_started ())
+      goto lab9999;		// abort
 	  init_prim(); 
 	  init_str_ptr = str_ptr; 
 	  init_pool_ptr = pool_ptr; 
@@ -2291,76 +2291,80 @@ lab1:			/* get here directly if ready_already already set ... */
   output_file_name = 0; 
   {
     {
-      input_ptr = 0; 
-      max_in_stack = 0; 
-      in_open = 0; 
-	  high_in_open = 0;	/* max_in_open name already used 1999 Jan 17 */
-      open_parens = 0; 
-	  max_open_parens = 0;	/* max_open_parens */
-      max_buf_stack = 0; 
-      param_ptr = 0; 
-      max_param_stack = 0; 
+      input_ptr = 0;
+      max_in_stack = 0;
+      in_open = 0;
+      high_in_open = 0;	/* max_in_open name already used 1999 Jan 17 */
+      open_parens = 0;
+      max_open_parens = 0;	/* max_open_parens */
+      max_buf_stack = 0;
+      param_ptr = 0;
+      max_param_stack = 0;
 #ifdef ALLOCATEBUFFER
 /*	  first = current_buf_size; */
-	  memset (buffer, 0, current_buf_size);	/* redundant */
+      memset (buffer, 0, current_buf_size);	/* redundant */
 #else
 /*	  first = buf_size; */
-	  memset (buffer, 0, buf_size);			/* redundant ? */
+      memset (buffer, 0, buf_size);			/* redundant ? */
 #endif
 /*      do {
 		  buffer[first]= 0; 
 		  decr(first); 
       } while(!(first == 0)); */
-	  first = 0;							/* 1999/Jan/22 */
+      first = 0;							/* 1999/Jan/22 */
 
-      scanner_status = 0; 
+      scanner_status = 0;
       warning_index = 0; /* warning_index:=null; l.7068 */
-      first = 1; 
-      cur_input.state_field = 33; 
-      cur_input.start_field = 1; 
-      cur_input.index_field = 0; 
-      line = 0; 
-      cur_input.name_field = 0; 
-      force_eof = false; 
-      align_state = 1000000L; 
-      if (! init_terminal ())goto lab9999;	// abort
-      cur_input.limit_field = last; 
+      first = 1;
+      cur_input.state_field = 33;
+      cur_input.start_field = 1;
+      cur_input.index_field = 0;
+      line = 0;
+      cur_input.name_field = 0;
+      force_eof = false;
+      align_state = 1000000L;
+      if (!init_terminal ())
+        goto lab9999;	// abort
+      cur_input.limit_field = last;
       first = last + 1; 
     } 
 /*    if ((format_ident == 0)||(buffer[cur_input.loc_field]== 38)) */
 /*		For Windows NT, lets allow + instead of & for format specification */
-    if ((format_ident == 0)||
-		(buffer[cur_input.loc_field]== '&')||
-		(buffer[cur_input.loc_field]==  '+')) 
+    if ((format_ident == 0) ||
+      (buffer[cur_input.loc_field] == '&') ||
+      (buffer[cur_input.loc_field] == '+'))
     {
-      if (format_ident != 0)initialize(); 
-      if (! open_fmt_file ())goto lab9999; // abort
-      if (! load_fmt_file ()){
-		  w_close(fmt_file); 
-		  goto lab9999;	// abort
+      if (format_ident != 0)
+        initialize(); 
+      if (!open_fmt_file ())
+        goto lab9999; // abort
+      if (!load_fmt_file ())
+      {
+        w_close(fmt_file);
+        goto lab9999;	// abort
       } 
       w_close(fmt_file); 
-      while((cur_input.loc_field < cur_input.limit_field)&&
-			 (buffer[cur_input.loc_field]== 32))
-		  incr(cur_input.loc_field); 
-    } 
+      while((cur_input.loc_field < cur_input.limit_field) &&
+        (buffer[cur_input.loc_field] == 32))
+        incr(cur_input.loc_field);
+    }
 #ifdef CHECKEQTB
 	if (debug_flag) check_eqtb("after format");	/* debugging 94/Apr/5 */
 #endif
-    if ((end_line_char < 0)|| 
-		(end_line_char > 255)) 
-		decr(cur_input.limit_field); 
-/*	long to unsigned char ... */
-    else buffer[cur_input.limit_field] = end_line_char; 
-    dateandtime(tex_time, day, month, year); 
+    if ((end_line_char < 0) || (end_line_char > 255))
+      decr(cur_input.limit_field);
+    else
+      buffer[cur_input.limit_field] = end_line_char;
+    dateandtime(tex_time, day, month, year);
     magic_offset = str_start[886]- 9 * 16;	/* following: */
 /*	"0234000122*4000133**3**344*0400400*000000234000111*1111112341011" */
-    if (interaction == 0)	selector = 16; 
-    else selector = 17; 
-     if ((cur_input.loc_field < cur_input.limit_field)&&
-		(eqtb[(hash_size + 1883) + 
-		   buffer[cur_input.loc_field]].hh.v.RH != 0)) 
-    start_input(); 
+    if (interaction == 0)
+      selector = 16;
+    else
+      selector = 17; 
+     if ((cur_input.loc_field < cur_input.limit_field) &&
+       (eqtb[(hash_size + 1883) + buffer[cur_input.loc_field]].hh.v.RH != 0))
+       start_input();
   }
 
 /*	show font TFMs frozen into format file */
@@ -2374,13 +2378,15 @@ lab1:			/* get here directly if ready_already already set ... */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   history = 0; 
 
-  if (show_cs_names) print_cs_names(stdout, 0);		/* 98/Mar/31 */
+  if (show_cs_names)
+    print_cs_names(stdout, 0);		/* 98/Mar/31 */
 
   main_control();			/* read-eval-print loop :-) in tex8.c */
 
 //	what if abort_flag is set now ?
 
-  if (show_cs_names) print_cs_names(stdout, 1);		/* 98/Mar/31 */
+  if (show_cs_names)
+    print_cs_names(stdout, 1);		/* 98/Mar/31 */
 
 //	what if abort_flag is set now ?
 
@@ -2390,19 +2396,20 @@ lab1:			/* get here directly if ready_already already set ... */
 
   close_files_and_terminate(); 
 
-  lab9999:
+lab9999:
   {
 	  int code;
 #ifndef _WINDOWS
 	  fflush(stdout); 
 #endif
 	  ready_already = 0; 
-	  if ((history != 0)&&(history != 1)) code = 1;
+	  if ((history != 0) && (history != 1))
+      code = 1;
 	  else code = 0;
 //	  now return instead of exit to allow cleanup in local.c
 	  return code;
 //	  uexit(code);  
-  } 
+  }
 }	/* end of texbody */
 
 #ifdef ALLOCATEMAIN
@@ -2452,43 +2459,26 @@ void add_variable_space(int size)
 void reset_trie (void)
 {
 	integer k;
-	{
-		register integer for_end;
-		k = - (integer) trie_op_size;
-		for_end = trie_op_size;
-		if (k <= for_end)
-			do trie_op_hash[k]= 0; 
-		while(k++ < for_end);
-	} 
-	{
-		register integer for_end;
-		k = 0; for_end = 255;
-		if (k <= for_end)
-			do   trie_used[k]= min_trie_op; 
-		while(k++ < for_end);
-	} 
-	max_op_used = min_trie_op; 
-	trie_op_ptr = 0; 
-	trie_not_ready = true; 
-	trie_l[0]= 0; 
-	trie_c[0]= 0; 
-	trie_ptr = 0; 
+  for (k = - (integer) trie_op_size; k <= trie_op_size; k++)
+    trie_op_hash[k] = 0;
+  for (k = 0; k <= 255; k++)
+    trie_used[k] = min_trie_op;
+	max_op_used = min_trie_op;
+	trie_op_ptr = 0;
+	trie_not_ready = true;
+	trie_l[0] = 0;
+	trie_c[0] = 0;
+	trie_ptr = 0;
 	trie_not_ready = true;
 }
-
+/* borrowed code from initialize() */
 void reset_hyphen (void)
-{	/* borrowed code from initialize() */
+{
 	hyph_pointer z;
+  for (z = 0; z <= hyphen_prime; z++)
   {
-	  register integer for_end;
-	  z = 0;
-	  for_end = hyphen_prime;
-	  if (z <= for_end) do 
-	  {
-		  hyph_word[z]= 0; 
-		  hyph_list[z]= 0; /* hyph_list[z]:=null; l.18131 */
-	  } 
-	  while(z++ < for_end);
+    hyph_word[z] = 0;
+    hyph_list[z] = 0; /* hyph_list[z]:=null; l.18131 */
   } 
   hyph_count = 0;
 }
@@ -2500,53 +2490,37 @@ void do_initex (void)
   integer k; 
 /*  hyph_pointer z; */
 
-/* for k:=mem_bot+1 to lo_mem_stat_max do mem[k].sc:=0; p.164 */
+/* -> 0164 */
+  for (k = mem_bot + 1; k <= lo_mem_stat_max; k++)
+    mem[k].cint = 0;
+  k = mem_bot;
+  while(k <= lo_mem_stat_max)
   {
-	  register integer for_end;
-	  k = 1;
-	  for_end = 19;
-	  if (k <= for_end)
-		  do mem[k].cint = 0; 
-	  while(k++ < for_end);
-  } 
-  k = 0; 
-  while(k <= 19){			/* while k <= lo_mem_stat-max ... */
-/*  glue_ref_count(k):=null+1; */
-    mem[k].hh.v.RH = 1; 
-    mem[k].hh.b0 = 0; 
-    mem[k].hh.b1 = 0; 
-    k = k + 4; 
-  } 
-  mem[6].cint = 65536L; 
-  mem[4].hh.b0 = 1; 
-  mem[10].cint = 65536L; 
-  mem[8].hh.b0 = 2; 
-  mem[14].cint = 65536L; 
-  mem[12].hh.b0 = 1; 
-  mem[15].cint = 65536L; 
-  mem[12].hh.b1 = 1; 
-  mem[18].cint = -65536L; 
-  mem[16].hh.b0 = 1; 
-  rover = 20;					/* rover = lo_mem_stat-max + 1 ... */
-/*  mem[rover].hh.v.RH = 262143L;  */
-  mem[rover].hh.v.RH = empty_flag; 
-/*  mem[rover].hh.v.LH = 1000; */
-  mem[rover].hh.v.LH = block_size; 
-  mem[rover + 1].hh.v.LH = rover; 
-  mem[rover + 1].hh.v.RH = rover; 
-/*  lo_mem_max = rover + 1000; */
+    glue_ref_count(k) = 1;
+    stretch_order(k) = normal;
+    shrink_order(k) = normal;
+    k = k + glue_spec_size;
+  }
+  stretch(fil_glue) = 65535L;
+  stretch_order(fil_glue) = fil;
+  stretch(fill_glue) = 65535L;
+  stretch_order(fill_glue) = fill;
+  stretch(ss_glue) = 65535L;
+  stretch_order(ss_glue) = fil;
+  shrink(ss_glue) = 65535L;
+  shrink_order(ss_glue) = fil; 
+  stretch(fil_neg_glue) = -65536L;
+  stretch_order(fil_neg_glue) = fil; 
+  rover = lo_mem_stat_max + 1;
+  link(rover) = empty_flag; 
+  node_size(rover) = block_size;
+  llink(rover) = rover;
+  rlink(rover) = rover;
   lo_mem_max = rover + block_size;
-  mem[lo_mem_max].hh.v.RH = 0; 
-  mem[lo_mem_max].hh.v.LH = 0; 
-/* for k <- hi_mem_stat_min to mem_top do mem[k] = mem[lo_mem_max]; */
-  {
-	  register integer for_end;
-	  k = mem_top - 13;
-	  for_end = mem_top;
-	  if (k <= for_end)
-		  do  mem[k]= mem[lo_mem_max]; 
-	  while(k++ < for_end);
-  } 
+  link(lo_mem_max) = 0; 
+  info(lo_mem_max) = 0; 
+  for (k = hi_mem_stat_min; k <= mem_top; k++)
+    mem[k] = mem[lo_mem_max];
 /* info(omit_template) <- end_template_token; p.790 */
 /* @d end_template_token==cs_token_flag+frozen_end_template */
 /*  mem[omit_template].hh.v.LH = 14114;  */
@@ -2624,7 +2598,8 @@ void do_initex (void)
 /* for k:="0" to "9" do math_code(k):=hi(k+var_code); */
   for (k = '0'; k <= '9'; k++) eqtb[(hash_size + 2907) + k].hh.v.RH = k + 28672;
 /* cat_code of uppercase and lowercase letters ... */
-  for (k = 'A'; k <= 'Z'; k++) {
+  for (k = 'A'; k <= 'Z'; k++)
+  {
 /* cat_code ... */
     eqtb[(hash_size + 1883) + k].hh.v.RH = 11;
     eqtb[(hash_size + 1883) + k + 32].hh.v.RH = 11;

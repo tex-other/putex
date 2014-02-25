@@ -187,7 +187,6 @@ void * xmalloc (unsigned size)
 #endif
   return new_mem;
 }
-
 // calloc with error checking - used by map_create
 /* kpathsea/xcalloc.c */
 address xcalloc (unsigned nelem, unsigned elsize)
@@ -201,7 +200,6 @@ address xcalloc (unsigned nelem, unsigned elsize)
   }
   return new_mem;
 }
-
 /* Return a copy of s in new storage. */ /* xmalloc does error checking */
 /* kpathsea/xstrdup.c */
 string xstrdup (string s)
@@ -216,7 +214,6 @@ string xstrdup (string s)
 #endif
   return strcpy (pnew_string, s);
 }
-
 /* only used by line.c (which in turn is only used by  fontmap.c) */
 /* kpathsea/xrealloc.c */
 address xrealloc (address old_ptr, unsigned size)
@@ -236,7 +233,6 @@ address xrealloc (address old_ptr, unsigned size)
   }
   return new_mem;
 }
-
 // returns newly allocated string
 /* kpathsea/concat.c */
 string concat (string s1, string s2)
@@ -261,7 +257,6 @@ string concat (string s1, string s2)
 #endif
   return answer;
 }
-
 // returns newly allocated string
 /* kpathsea/concat3.c */
 string concat3 (string s1, string s2, string s3)
@@ -289,9 +284,7 @@ string concat3 (string s1, string s2, string s3)
 }
 
 /***********************************************************************/
-
 // following used only in itex.c on pool file
-
 /* Return true if we're at the end of FILE, else false.  This implements */
 /*  Pascal's `eof' builtin.                                              */
 /* It differs from C feof in that the latter is not true at end of file
@@ -313,7 +306,6 @@ bool test_eof (FILE * file)
   (void) ungetc (c, file);
   return false;
 }
-
 /* Return true on end-of-line in FILE or at the end of FILE, else false.  */
 /* texk/web2c/lib/eofeoln.c */
 bool eoln (FILE * file)
@@ -331,7 +323,6 @@ bool eoln (FILE * file)
   return c == '\n' || c == '\r' || c == EOF; // ???
 /* Type mismatch (return) (int/enum) ? */
 }
-
 /***********************************************************************/
 
 // following used only by fontmap.c and openinou.c
@@ -364,7 +355,6 @@ FILE * xfopen (char *filename, char * fmode)
   }
   return f;
 }
-
 // xfclose not used ...
 /* kpathsea/xfopen.c */
 int xfclose (FILE *f, char *filename)
@@ -381,9 +371,7 @@ int xfclose (FILE *f, char *filename)
 }
 
 /********************************************************************************/
-
 // following used only in map_lookup
-
 // return pointer to start of extension --- or NULL if there isn't one
 /* kpathsea/find-suffix.c */
 string find_suffix (string name)
@@ -404,7 +392,6 @@ string find_suffix (string name)
 /* If the name is `foo' or `/foo.bar/baz', we have no extension.  */
   return dot_pos == NULL || dot_pos < slash_pos ? NULL : dot_pos + 1;
 }
-
 // remove extension of file name - returns copy or NULL
 /* kpathsea/rm-suffix.c */
 string remove_suffix (string s)
@@ -422,7 +409,6 @@ string remove_suffix (string s)
 
   return ret;
 }
-
 // add extension to file name unless it already has one
 // returns copy or the old one (warning: danger when freeing)
 /* kpathsea/extend-fname.c */
@@ -434,9 +420,7 @@ string extend_filename (string name, string default_suffix)
   new_s = (suffix == NULL ? concat3 (name, ".", default_suffix) : name);
   return new_s;
 }
-
 /****************************************************************************************/
-
 #ifdef MALLOCLINE
 
 #define BLOCK_SIZE 64
@@ -489,7 +473,6 @@ char *read_line (FILE * f)
 #endif
 
 /* Modified version 97/May/17 to avoid malloc for every line read ... */
-
 char * read_a_line (FILE *f,  char *line, int limit)
 {
   int c;
@@ -522,7 +505,6 @@ char * read_a_line (FILE *f,  char *line, int limit)
   }
   else return(NULL);          /* true EOF */
 }
-
 /****************************************************************************************/
 
 /* from ourpaths.c */
@@ -541,7 +523,6 @@ static string *path_dirs[LAST_PATH];
    or using the default path, which is defined as a preprocessor symbol
    (with the same name as the environment variable) in `site.h'.  The
    parameter PATH_BITS is a logical or of the paths we need to set.  */
-
 void set_paths (int path_bits)
 {
   int n;                          /* 97/Apr/2 */

@@ -13,8 +13,8 @@
 # NOTE: assuming no aliasing causes some problems especially in TEXMF.C
 
 CC = cl
-
 LINK = link
+RC = rc
 
 # -Gf saves about 7k bytes in EXE file
 
@@ -34,14 +34,14 @@ CFLAGS=/nologo /c /Gy /Ox /W4 /DMSDOS /DTeX /DPHARLAP /DNDEBUG
 # LFLAGS=@yandytex.nt /MAP lib\libdos.lib
 # Release version
 # LFLAGS=/MAP lib\libdos.lib
-LFLAGS=/MAP
+LFLAGS=/MAP /MACHINE:X86
 # debugging version
 # LFLAGS=@yandytex.nt /MAP /DEBUG /PDB:yandytex.pdb lib\libdos.lib
 # LFLAGS=/MAP /DEBUG /PDB:yandytex.pdb
 
 objs = texmf.obj itex.obj openinou.obj subroute.obj local.obj \
 	tex0.obj tex1.obj tex2.obj tex3.obj tex4.obj \
-	tex5.obj tex6.obj tex7.obj tex8.obj tex9.obj
+	tex5.obj tex6.obj tex7.obj tex8.obj tex9.obj yandytex.res
 
 # ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
 # # LIBHARU
@@ -49,11 +49,13 @@ objs = texmf.obj itex.obj openinou.obj subroute.obj local.obj \
 
 texmf.exe: $(objs) 
 	$(LINK) $(LFLAGS) texmf itex openinou subroute local \
-	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9
+	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9 yandytex.res
 	copy texmf.exe yandytex.exe
 	del ..\yandy\bin\texmf.exe
 	copy texmf.exe ..\yandy\bin\texmf.exe
 # ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+yandytex.res: yandytex.rc
+	rc yandytex.rc
 
 texmf.obj: texmf.c \
 	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
