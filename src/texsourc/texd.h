@@ -209,12 +209,12 @@ EXTERN integer max_buf_stack;
 #ifdef INCREASEFIXED
 /* #define param_size 60 */     /* 3.14159 C version */
 /* #define param_size 120 */
-/* #define param_size 200 */      /* 1994/Oct/11 */
-/* #define param_size 300 */      /* 1995/May/15 */
-/* #define param_size 500 */      /* 1997/Jan/17 */
+/* #define param_size 200 */    /* 1994/Oct/11 */
+/* #define param_size 300 */    /* 1995/May/15 */
+/* #define param_size 500 */    /* 1997/Jan/17 */
 /* #define nest_size 40 */      /* 3.14159 C version */
 /* #define nest_size 80 */
-/* #define nest_size 100  */      /* 1994/Oct/11 */
+/* #define nest_size 100  */    /* 1994/Oct/11 */
 /* #define nest_size 120 */     /* 1995/May/15 */
 /* #define nest_size 200 */     /* 1999/Jan/7 */
 #else
@@ -229,7 +229,7 @@ EXTERN integer max_buf_stack;
 #ifdef ALLOCATESTRING
 /* #define max_strings 262140L */
 // #define max_strings (max_halfword / sizeof(integer) -1)
-  #define max_strings (max_halfword / sizeof(pool_pointer) -1)
+  #define max_strings (max_halfword / sizeof(pool_pointer) - 1)
 /* #define pool_size 4032000L */
   #define pool_size (max_halfword - 1)
 /* #define stringmargin 32768L */
@@ -238,16 +238,15 @@ EXTERN integer max_buf_stack;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* #define max_strings 15000 */
 #define max_strings 16384
-#define pool_size 124000L 
+#define pool_size 124000L
 #endif
-#define stringvacancies 100000L 
+#define stringvacancies 100000L
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* #if defined (ALLOCATEINITRIE) && defined (ALLOCATEHYPHEN) */
 #ifdef VARIABLETRIESIZE
   EXTERN integer trie_size;
   #define default_trie_size 60000
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #else
   #define trie_size 30000     /* 3.14159 C version */
 #endif
@@ -273,7 +272,6 @@ EXTERN integer max_buf_stack;
 /* #define default_dvi_buf_size 32768 */    /* ? */
   EXTERN int dvi_buf_size;
 #else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   #define dvi_buf_size 16384      /* 3.14159 C version */
 /* #define dvi_buf_size 32768 */        /* ? */
 #endif
@@ -285,6 +283,7 @@ EXTERN integer max_buf_stack;
 /* #define hash_size 25000 */   /* 96/Jan/10 */
 #define hash_size 32768       /* 96/Jan/17 */
 /* trick to try and get around eqtb_extra problem */
+/* 1024 fonts = font_max + 2 */
 /* #define hash_extra -256 */
 #define hash_extra (255 - font_max)
 /* hash prime about 85% of hash_size (+ hash_extra) */
@@ -869,47 +868,46 @@ EXTERN internal_font_number cur_f;
 /* EXTERN integer cur_c; */  /* padded out */
 EXTERN int cur_c;  /* padded out */     /* 95/Jan/7 */
 
-EXTERN ffourquarters cur_i; 
-
-EXTERN integer magic_offset; 
-EXTERN halfword cur_align; 
-EXTERN halfword cur_span; 
-EXTERN halfword cur_loop; 
-EXTERN halfword align_ptr; 
-EXTERN halfword cur_head, cur_tail; 
-EXTERN halfword just_box; 
-EXTERN halfword passive; 
-EXTERN halfword printed_node; 
-EXTERN halfword pass_number; 
+EXTERN ffourquarters cur_i;
+EXTERN integer magic_offset;
+EXTERN halfword cur_align;
+EXTERN halfword cur_span;
+EXTERN halfword cur_loop;
+EXTERN halfword align_ptr;
+EXTERN halfword cur_head, cur_tail;
+EXTERN halfword just_box;
+EXTERN halfword passive;
+EXTERN halfword printed_node;
+EXTERN halfword pass_number;
 /* EXTERN scaled active_width[7]; */
-EXTERN scaled active_width[8]; 
+EXTERN scaled active_width[8];
 /* EXTERN scaled cur_active_width[7]; */
-EXTERN scaled cur_active_width[8]; 
+EXTERN scaled cur_active_width[8];
 /* EXTERN scaled background[7]; */
-EXTERN scaled background[8]; 
+EXTERN scaled background[8];
 /* EXTERN scaled break_width[7]; */
-EXTERN scaled break_width[8]; 
-EXTERN bool noshrinkerroryet; 
-EXTERN halfword cur_p; 
-EXTERN bool second_pass; 
-EXTERN bool final_pass; 
-EXTERN integer threshold; 
-EXTERN integer minimal_demerits[4]; 
-EXTERN integer minimum_demerits; 
-EXTERN halfword best_place[4]; 
-EXTERN halfword best_pl_line[4]; 
-EXTERN scaled disc_width; 
-EXTERN halfword easyline; 
-EXTERN halfword last_special_line; 
-EXTERN scaled first_width; 
-EXTERN scaled second_width; 
-EXTERN scaled first_indent; 
-EXTERN scaled second_indent; 
-EXTERN halfword best_bet; 
-EXTERN integer fewest_demerits; 
-EXTERN halfword best_line; 
-EXTERN integer actual_looseness; 
-EXTERN integer line_diff; 
+EXTERN scaled break_width[8];
+EXTERN bool noshrinkerroryet;
+EXTERN halfword cur_p;
+EXTERN bool second_pass;
+EXTERN bool final_pass;
+EXTERN integer threshold;
+EXTERN integer minimal_demerits[4];
+EXTERN integer minimum_demerits;
+EXTERN halfword best_place[4];
+EXTERN halfword best_pl_line[4];
+EXTERN scaled disc_width;
+EXTERN halfword easyline;
+EXTERN halfword last_special_line;
+EXTERN scaled first_width;
+EXTERN scaled second_width;
+EXTERN scaled first_indent;
+EXTERN scaled second_indent;
+EXTERN halfword best_bet;
+EXTERN integer fewest_demerits;
+EXTERN halfword best_line;
+EXTERN integer actual_looseness;
+EXTERN integer line_diff;
 /* EXTERN short hc[64+2]; */  /* padded OK 66 * 2 = 132 which is divisible by 4 */
 EXTERN int hc[66];  /* padded OK 66 * 2 = 132 which is divisible by 4 */
 
@@ -917,7 +915,7 @@ EXTERN int hc[66];  /* padded OK 66 * 2 = 132 which is divisible by 4 */
 /* EXTERN integer hn; */  /* padded out */
 EXTERN int hn;  /* padded out */      /* 95/Jan/7 */
 
-EXTERN halfword ha, hb; 
+EXTERN halfword ha, hb;
 
 /* EXTERN internal_font_number hf;  */
 EXTERN int hf;              /* 95/Jan/7 */
@@ -937,12 +935,12 @@ EXTERN integer lhyf, rhyf;
 /* EXTERN init_l_hyf, init_r_hyf; */ /* new in 3.14159 */
 EXTERN integer init_l_hyf, init_r_hyf;  /* new in 3.14159 */
 
-EXTERN halfword hyfbchar; 
+EXTERN halfword hyfbchar;
 /* EXTERN char hyf[65];  */
 EXTERN char hyf[68]; /* padded out */
-EXTERN halfword init_list; 
-EXTERN bool init_lig; 
-EXTERN bool init_lft; 
+EXTERN halfword init_list;
+EXTERN bool init_lig;
+EXTERN bool init_lft;
 
 /* EXTERN small_number hyphen_passed; */
 /* EXTERN integer hyphen_passed; */  /* padded out */
@@ -951,34 +949,34 @@ EXTERN int hyphen_passed;  /* padded out */     /* 95/Jan/7 */
 /* EXTERN halfword cur_l, cur_r; */   /* make int's ? 95/Jan/7 */
 EXTERN int cur_l, cur_r;    /* make int's ? 95/Jan/7 */
 
-EXTERN halfword cur_q; 
-EXTERN halfword lig_stack; 
-EXTERN bool ligature_present; 
-EXTERN bool lft_hit, rt_hit; 
+EXTERN halfword cur_q;
+EXTERN halfword lig_stack;
+EXTERN bool ligature_present;
+EXTERN bool lft_hit, rt_hit;
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* could perhaps use packed_ASCII_code for trie_trc ? */
 #ifdef ALLOCATETRIES
-  EXTERN halfword *trie_trl; 
-  EXTERN halfword *trie_tro; 
-  EXTERN quarterword *trie_trc; 
+  EXTERN halfword *trie_trl;
+  EXTERN halfword *trie_tro;
+  EXTERN quarterword *trie_trc;
 #else
   /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  EXTERN halfword trie_trl[trie_size + 1]; 
-  EXTERN halfword trie_tro[trie_size + 1]; 
-  EXTERN quarterword trie_trc[trie_size + 1]; 
+  EXTERN halfword trie_trl[trie_size + 1];
+  EXTERN halfword trie_tro[trie_size + 1];
+  EXTERN quarterword trie_trc[trie_size + 1];
 #endif
 EXTERN small_number hyf_distance[trie_op_size + 1]; /* already padded 751 + 1 */
 EXTERN small_number hyf_num[trie_op_size + 1];    /* already padded 751 + 1 */
-EXTERN trie_op_code hyf_next[trie_op_size + 1]; 
-EXTERN integer op_start[256]; 
+EXTERN trie_op_code hyf_next[trie_op_size + 1];
+EXTERN integer op_start[256];
 
 /* if ALLOCATEHYPHEN is true, then hyphen_prime is a variable */
 /* otherwise it is a pre-processor defined constant */
 #ifdef ALLOCATEHYPHEN
   #define default_hyphen_prime 1009
   EXTERN str_number * hyph_word;
-  EXTERN halfword * hyph_list; 
+  EXTERN halfword * hyph_list;
   /* EXTERN hyphen_prime; */
   EXTERN integer hyphen_prime;
 #else
