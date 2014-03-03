@@ -1039,8 +1039,6 @@ EXTERN halfword page_tail;
 /* EXTERN integer page_contents; */ /* padded out */
 EXTERN int page_contents; /* padded out */      /* 95/Jan/7 */
 
-#define cs_token_flag 4095    /* if we should want to use this ... */
-
 /* ********************************************************************* */
 
 /* do *some* sanity checking here --- rather than in TeX later 96/Jan/18 */
@@ -1441,6 +1439,7 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define ss_glue           fill_glue + glue_spec_size // 12
 #define fil_neg_glue      ss_glue + glue_spec_size // 16
 #define lo_mem_stat_max   fil_neg_glue + glue_spec_size - 1 // 19
+#define page_ins_head     mem_top
 #define contrib_head      mem_top - 1
 #define page_head         mem_top - 2
 #define temp_head         mem_top - 3
@@ -1927,6 +1926,20 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define math_shift_group  15
 #define math_left_group   16
 #define max_group_code    16
+/* sec 0289 */
+#define cs_token_flag     07777 // 4095
+#define left_brace_token  0400  // 256  = 2^8 * left_brace
+#define left_brace_limit  0400  // 512  = 2^8 * (left_brace + 1)
+#define right_brace_token 01000 // 512  = 2^8 * right_brace
+#define right_brace_limit 01400 // 768  = 2^8 * (right_brace + 1)
+#define math_shift_token  01400 // 768  = 2^8 * math_shift
+#define tab_token         02000 // 1024 = 2^8 * tab_mark
+#define out_param_token   02400 // 1280 = 2^8 * out_param
+#define space_token       05040 // 2592 = 2^8 * spacer + ' '
+#define letter_token      05400 // 2816 = 2^8 * letter
+#define other_token       06000 // 3072 = 2^8 * other_char
+#define match_token       06400 // 3328 = 2^8 * match
+#define end_match_token   07000 // 3584 = 2^8 * end_match
 /* sec 0303 */
 #define mid_line    1
 #define skip_blanks 2 + max_char_code // 17
@@ -2095,6 +2108,28 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define sup_stype(a)     2 * ((a) / 4) + script_style + ((a) % 2)
 #define num_style(a)     (a) + 2 - 2 * ((a) / 6)
 #define denom_style(a)   2 * ((a) / 2) + cramped + 2 - 2 * ((a) / 6)
+/* sec 0780 */
+#define span_code          256
+#define cr_code            257
+#define cr_cr_code         cr_code + 1
+#define end_template_token cs_token_flag + frozen_end_template
+/* sec 0819 */
+#define active_node_sie   3
+#define fitness           subtype
+#define break_node        rlink
+#define line_number       llink
+#define total_demerits(a) mem[a + 2].cint
+#define unhyphenated      0
+#define hyphenated        1
+#define last_active       active
+/* sec 0981 */
+#define page_ins_node_size 4
+#define inserting          0
+#define split_up           1
+#define broken_ptr(a)      link(a + 1)
+#define broken_ins(a)      info(a + 1)
+#define last_ins_ptr(a)    link(a + 2)
+#define best_ins_ptr(a)    info(a + 2)
 /* sec 79 */
 
 extern INLINE void tex_help (unsigned int n, ...);

@@ -2424,45 +2424,46 @@ lab9999:
 
 #ifdef ALLOCATEMAIN
 /* add a block of variable size node space below mem_bot */
+/* used in tex0.c, local.c, itex.c */
 void add_variable_space(int size)
-{ /* used in tex0.c, local.c, itex.c */
-  
+{
   halfword p;
   halfword q;
   integer t;
 
-  if (mem_min == 0) t = mem_min;  /* bottom of present block */
-  else t = mem_min + 1; 
+  if (mem_min == 0)
+    t = mem_min;  /* bottom of present block */
+  else
+    t = mem_min + 1;
+
   mem_min = t - (size + 1);     /* first word in new block - 1 */
-/*  mem_min = mem_start; */       /* allocate all of it at once */
-  if (mem_min < mem_start) {      /* sanity test */
-    if (trace_flag) show_line("WARNING: mem_min < mem_start!\n", 0);
+/*  mem_min = mem_start; */     /* allocate all of it at once */
+  if (mem_min < mem_start)      /* sanity test */
+  {
+    if (trace_flag)
+      show_line("WARNING: mem_min < mem_start!\n", 0);
     mem_min = mem_start;
   }
-  p = mem[rover + 1].hh.v.LH; 
-  q = mem_min + 1; 
+  p = mem[rover + 1].hh.v.LH;
+  q = mem_min + 1;
   mem[mem_min].hh.v.RH = 0; /* insert blank word below ??? */
   mem[mem_min].hh.v.LH = 0; /* insert blank word below ??? */
   mem[p + 1].hh.v.RH = q;
-  mem[rover + 1].hh.v.LH = q; 
-  mem[q + 1].hh.v.RH = rover; 
-  mem[q + 1].hh.v.LH = p; 
-  mem[q].hh.v.RH = empty_flag; 
+  mem[rover + 1].hh.v.LH = q;
+  mem[q + 1].hh.v.RH = rover;
+  mem[q + 1].hh.v.LH = p;
+  mem[q].hh.v.RH = empty_flag;
   mem[q].hh.v.LH = t - q; /* block size */
-  rover = q; 
+  rover = q;
 }
 #endif
 
 /*************************************************************************/
-
 /* All ini TeX code is here at end so can use same pragma optimize for it */
-
 /* Ini-TeX code is rarely needed/used so make it small rather than fast */
 
 #pragma optimize("t", off)
-/* #pragma optimize("2", off) */
 #pragma optimize("s", on)
-/* #pragma optimize("1", on) */
 
 #ifdef INITEX
 /* split out to allow sharing of code from do_initex and newpattern */
@@ -2485,6 +2486,7 @@ void reset_trie (void)
 void reset_hyphen (void)
 {
   hyph_pointer z;
+
   for (z = 0; z <= hyphen_prime; z++)
   {
     hyph_word[z] = 0;
@@ -2492,7 +2494,6 @@ void reset_hyphen (void)
   } 
   hyph_count = 0;
 }
-
 /* split out to allow optimize for space, not time */
 void do_initex (void)
 { 
@@ -2520,55 +2521,38 @@ void do_initex (void)
   shrink(ss_glue) = 65535L;
   shrink_order(ss_glue) = fil; 
   stretch(fil_neg_glue) = -65536L;
-  stretch_order(fil_neg_glue) = fil; 
+  stretch_order(fil_neg_glue) = fil;
   rover = lo_mem_stat_max + 1;
-  link(rover) = empty_flag; 
+  link(rover) = empty_flag;
   node_size(rover) = block_size;
   llink(rover) = rover;
   rlink(rover) = rover;
   lo_mem_max = rover + block_size;
-  link(lo_mem_max) = 0; 
-  info(lo_mem_max) = 0; 
+  link(lo_mem_max) = 0;
+  info(lo_mem_max) = 0;
   for (k = hi_mem_stat_min; k <= mem_top; k++)
     mem[k] = mem[lo_mem_max];
-/* info(omit_template) <- end_template_token; p.790 */
-/* @d end_template_token==cs_token_flag+frozen_end_template */
-/*  mem[omit_template].hh.v.LH = 14114;  */
-/*  mem[omit_template].hh.v.LH = 10019 + 4095; */  /* + eqtbextra ? NO */
-/*  mem[omit_template].hh.v.LH = (hash_size + 4614); */
-/*  mem[omit_template].hh.v.LH = (hash_size + 4095 + 519); */
-  mem[omit_template].hh.v.LH = (hash_size + hash_extra + 4095 + 519); 
-/* link(end_span) <- max_quarterword + 1 p.797 */
-/*  mem[end_span].hh.v.RH = 256;  */      /* 94/Apr/4 ? */
-  mem[end_span].hh.v.RH = max_quarterword + 1;   /* 96/Oct/12 ??? */
-/* info(end_span) <- null p.797 */
-  mem[end_span].hh.v.LH = 0; 
-/* type(last_active) <- hyphenated; p.820 */
-  mem[active].hh.b0 = 1; 
-/* line_number(last_active) <- max_halfword; p.820 */
-/*  mem[mem_top - 6].hh.v.LH = 262143L;  */
-  mem[mem_top - 6].hh.v.LH = empty_flag;  /* max_halfword ? */
-/* subtype(last_active) <- 0; p.820 */
-  mem[active].hh.b1 = 0; 
-/* subtype(page_ins_head) <- 255; p.981 */
-  mem[mem_top].hh.b1 = 255; /* subtype(page_ins_head) = qi(255)  p.981 */ 
-/* type(page_ins_head) <- split_up; p.981 */
-  mem[mem_top].hh.b0 = 1; 
-/* link(page_ins_head) <- page_ins_head; p.981 */
-  mem[mem_top].hh.v.RH = mem_top; 
-/* type(page_head) <- glue_node; p. 988 */
-  mem[page_head].hh.b0 = 10; 
-/* subtype(page_head) <- normal; p. 988 */
-  mem[page_head].hh.b1 = 0; 
+  info(omit_template) = end_template_token;
+  link(end_span) = max_quarterword + 1;
+  info(end_span) = 0;
+  type(last_active) = hyphenated;
+  line_number(last_active) = max_halfword;
+  subtype(last_active) = 0;
+  subtype(page_ins_head) = 255;
+  type(page_ins_head) = split_up;
+  link(mem_top) = page_ins_head;
+  type(page_head) = glue_node;
+  subtype(page_head) = normal;
   avail = 0;              /* avail <- null p.164 */
   mem_end = mem_top;            /* mem_end <- mem_top */
-  hi_mem_min = mem_top - 13;        /* hi_mem_min <- hi_mem_stat_min */
+  hi_mem_min = hi_mem_stat_min;
   var_used = 20;            /* var_used <- lo_mem_stat_max */
   dyn_used = 14;            /* dyn_used <- hi_mem_stat_usage */
   eq_type(undefined_control_sequence) = undefined_cs;
   equiv(undefined_control_sequence) = 0;
   eq_level(undefined_control_sequence) = level_zero;
-  for (k = active_base; k <= undefined_control_sequence - 1; k++) eqtb[k]= eqtb[undefined_control_sequence];
+  for (k = active_base; k <= undefined_control_sequence - 1; k++)
+    eqtb[k]= eqtb[undefined_control_sequence];
   eqtb[(hash_size + 782)].hh.v.RH = 0; /* glue_base (hash_size + 782) */
   eq_level(glue_base) = level_one;
   eqtb[(hash_size + 782)].hh.b0 = 117;
@@ -2633,9 +2617,11 @@ void do_initex (void)
   max_dead_cycles = 25;
   escape_char = 92;
   end_line_char = 13;
-  for (k = 0; k <= 255; k++) eqtb[(hash_size + 3474) + k].cint = -1; 
+  for (k = 0; k <= 255; k++)
+    eqtb[(hash_size + 3474) + k].cint = -1; 
   eqtb[(hash_size + 3520)].cint = 0;
-  for (k = dimen_base; k <= eqtb_size; k++) eqtb[k].cint = 0;
+  for (k = dimen_base; k <= eqtb_size; k++)
+    eqtb[k].cint = 0;
 /*  hash_used = 10014;  */ /*   hash_used = frozen_control_sequence */
 /* frozen_control_sequence =  hashsize + hashbase p.222 */
 /*  hash_used = (hash_size + 514);  */
@@ -2662,21 +2648,21 @@ void do_initex (void)
 /* ************************************************************************ */
   font_bchar[0]       = 256; /* font_bchar[null_font]:=non_char; */
   font_false_bchar[0] = 256; /* font_false_bchar[null_font]:=non_char; */
-  font_bc[0]          = 1; 
-  font_ec[0]          = 0; 
-  font_size[0]        = 0; 
-  font_dsize[0]       = 0; 
-  char_base[0]        = 0; 
-  width_base[0]       = 0; 
-  height_base[0]      = 0; 
-  depth_base[0]       = 0; 
-  italic_base[0]      = 0; 
-  lig_kern_base[0]    = 0; 
-  kern_base[0]        = 0; 
-  exten_base[0]       = 0; 
-  font_glue[0]        = 0; 
-  font_params[0]      = 7; 
-  param_base[0]       = -1; 
+  font_bc[0]          = 1;
+  font_ec[0]          = 0;
+  font_size[0]        = 0;
+  font_dsize[0]       = 0;
+  char_base[0]        = 0;
+  width_base[0]       = 0;
+  height_base[0]      = 0;
+  depth_base[0]       = 0;
+  italic_base[0]      = 0;
+  lig_kern_base[0]    = 0;
+  kern_base[0]        = 0;
+  exten_base[0]       = 0;
+  font_glue[0]        = 0;
+  font_params[0]      = 7;
+  param_base[0]       = -1;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***  */
   reset_trie();         /* shared 93/Nov/26 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***  */
@@ -2737,7 +2723,7 @@ bool get_strings_started (void)
     for_end = 255;
     if (k <= for_end) 
       do {
-        if (((k < 32)||(k > 126))) {
+        if (((k < 32) || (k > 126))) {
           append_char('^');
           append_char('^');
           if (k < 64)
@@ -2773,11 +2759,12 @@ bool get_strings_started (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /*  if (a_open_in(pool_file, TEXPOOLPATH))  */
   flag = a_open_in(pool_file, TEXPOOLPATH);
-  if (flag == 0) { /* 95/Feb/19 */
+  if (flag == 0) /* 95/Feb/19 */
+  {
     pool_name [name_length - 1] = '\0'; /* `tex.pool' => `tex.poo' */
     vstrcpy((char *) name_of_file + 1, pool_name);
     name_of_file[0]= ' ';
-    name_of_file[strlen(pool_name)+ 1]= ' ';
+    name_of_file[strlen(pool_name) + 1]= ' ';
     name_length = strlen(pool_name);
     flag = a_open_in(pool_file, TEXPOOLPATH);
   }
@@ -3193,7 +3180,7 @@ void trie_fix_ (trie_pointer p)
   } while(!(p == 0)); 
 } 
 void new_patterns (void) 
-{/* 30 31 */ 
+{
 /* ******************************************************************* */
 /*  was small_number k, l;  in 3.141 */
   char k, l; 
@@ -3205,12 +3192,17 @@ void new_patterns (void)
 /*  ASCII_code c;  */
   int c;                /* 95/Jan/7 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if (!trie_not_ready) {          /* new stuff */
-    if (allow_patterns) { 
-      if (trace_flag) show_line("Resetting patterns\n", 0);
+  if (!trie_not_ready)
+  {          /* new stuff */
+    if (allow_patterns)
+    { 
+      if (trace_flag)
+        show_line("Resetting patterns\n", 0);
       reset_trie();         /* RESET PATTERNS -  93/Nov/26 */
-      if (reset_exceptions) {
-        if (trace_flag) show_line("Resetting exceptions\n", 0);
+      if (reset_exceptions)
+      {
+        if (trace_flag)
+          show_line("Resetting exceptions\n", 0);
         reset_hyphen();     /* RESET HYPHENEXCEPTIONS -  93/Nov/26 */
       }
     }
