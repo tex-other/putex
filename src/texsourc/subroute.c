@@ -97,7 +97,7 @@ char *map_lookup (map_type map, char *key);
 
 // the following do *not* use MALLOC
 
-extern char * xconcat  (char *buffer, char *s1, char *s2);            /* openinou.c */
+extern char * xconcat  (char *buffer, char *s1, char *s2);           /* openinou.c */
 extern char * xconcat3 (char *buffer, char *s1, char *s2, char *s3); /* openinou.c */
 
 /////////////////////////////////////////////////////////////////////////
@@ -129,7 +129,6 @@ void uexit (int unix_code)
 /*<----*/
   exit(final_code);
 }
-
 // round a double being careful about very large and very small values
 // used only in tex0.c, a Pascal function
 /* texk/web2c/lib/zround.c */
@@ -164,9 +163,7 @@ integer zround (double r)
 
   return i;
 }
-
 /****************************************************************************/
-
 // malloc with error checking and error message
 /* kpathsea/xmalloc.c */
 void * xmalloc (unsigned size)
@@ -282,7 +279,6 @@ string concat3 (string s1, string s2, string s3)
 #endif
   return answer;
 }
-
 /***********************************************************************/
 // following used only in itex.c on pool file
 /* Return true if we're at the end of FILE, else false.  This implements */
@@ -369,7 +365,6 @@ int xfclose (FILE *f, char *filename)
   }
   return 0;
 }
-
 /********************************************************************************/
 // following used only in map_lookup
 // return pointer to start of extension --- or NULL if there isn't one
@@ -426,7 +421,7 @@ string extend_filename (string name, string default_suffix)
 #define BLOCK_SIZE 64
 
 // this returns newly allocated character string
-
+/* kpathsea/line.c */
 char *read_line (FILE * f)
 {
   int c;
@@ -675,7 +670,7 @@ void set_paths (int path_bits)
 
 /*  changed to take C string 97/June/5 - used to take Pascal strings */
 /*  now expects null terminated strings */
-
+/* used only in open_input.*/
 bool test_read_access (unsigned char *name, int path_index)
 { 
 #ifdef BUILDNAMEDIRECT
@@ -807,17 +802,13 @@ bool test_read_access (unsigned char *name, int path_index)
 }
 
 /********************************************************************/
-
-#define STREQ(s1, s2) (strcmp (s1, s2) == 0)
-
 /* from fontmap.c */
-
 /* Fontname mapping.  We use a straightforward hash table.  */
 
 #define MAP_SIZE 199
 
 /* The hash function.  We go for simplicity here.  */
-
+/* NOT USED! */
 static unsigned map_hash (char * key)
 {
   unsigned n = 0;
@@ -830,14 +821,14 @@ static unsigned map_hash (char * key)
 }
 
 /* Look up STR in MAP.  Return the corresponding `value' or NULL.  */
-
+/* NOT USED! */
 static char *map_lookup_str (map_type map, char *key)
 {
   map_element_type *p;
   unsigned n = map_hash (key);
 
   for (p = map[n]; p != NULL; p = p->next)
-    if (STREQ (key, p->key)) return p->value;
+    if (strcmp(key, p->key) == 0) return p->value;
 
   return NULL;
 }
@@ -845,7 +836,7 @@ static char *map_lookup_str (map_type map, char *key)
 
 /* Look up KEY in MAP; if it's not found, remove any suffix from KEY and
    try again.  */
-
+/* NOT USED! */
 char *map_lookup (map_type map, char *key)
 {
   string suffix = find_suffix (key);
@@ -875,14 +866,14 @@ char *map_lookup (map_type map, char *key)
 
 /* If KEY is not already in MAP, insert it and VALUE.  */
 /* This was very buggy (when hash codes collided) - rewritten 94/March/18 */
-
+/* NOT USED! */
 void map_insert (map_type map, char *key, char *value)
 {
   unsigned n = map_hash (key);
   map_element_type **ptr = &map[n];
 /*  map_element_type ***trailer = &p; */
 
-  while (*ptr != NULL && ! STREQ (key, (*ptr)->key)) {
+  while (*ptr != NULL && !(strcmp(key, (*ptr)->key) == 0)) {
 /*       *p = (*p)->next; */
     ptr = &((*ptr)->next);
 /*       trailer = &p; */
@@ -915,7 +906,7 @@ void map_insert (map_type map, char *key, char *value)
 #ifndef MALLOCLINE
   #define MAXLINE 256
 #endif
-
+/* NOT USED! */
 int map_file_parse (map_type map, char *map_filename)
 {
   char *l;
@@ -981,14 +972,13 @@ int map_file_parse (map_type map, char *map_filename)
   (void) fclose (f);    // we don't care about errors at this stage
   return 0;       // success
 }
-
+/* NOT USED! */
 void unshroud_string (char *, char *, int); /* in texmf.c */
-
 /* Look for the file `texfonts.map' in each of the directories in
    DIR_LIST.  Entries in earlier files override later files.  */
 
 /* This is probably quite silly - but what the hell lets leave it in */
-
+/* NOT USED! */
 map_type map_create (string *dir_list)
 {
   map_type map = (map_type) xcalloc (MAP_SIZE, sizeof (map_element_type *));
@@ -1023,7 +1013,6 @@ map_type map_create (string *dir_list)
   }
   return map;
 }
-
 /**********************************************************************/
 
 /* #pragma optimize ("g", off) *//* try and avoid compiler bug here _dos_find */
@@ -1035,7 +1024,7 @@ map_type map_create (string *dir_list)
 /* see whether a file exists, is readable and is not a directory */
 /* 1994/Feb/13 may be faster than `access' in `readable' */
 /* returns NULL or the name filename passed in ??? */
-
+/* kpathsea/file_p.c */
 char *file_p (string fn)
 {
   struct _finddata_t fi;
@@ -1097,7 +1086,7 @@ char *file_p (string fn)
 
 /* NOTE: _dos_find... prevents running under Windows NT ??? */
 /* and presently dir_method = true so we do use this _dos_find_first */
-
+/* kpathsea/dir.c */
 bool dir_p (string fn)
 {
   FILE *test;
@@ -1226,7 +1215,7 @@ bool dir_p (string fn)
 #ifdef BUILDNAMEDIRECT
 
 /* this string allocation / concatination is silly - use fixed buffer! */
-
+/* NOT USED£¡ */
 int xfind_path_filename (string buffer, string filename, string * dir_list)
 {
   string found_name = NULL;
@@ -1343,9 +1332,7 @@ int xfind_path_filename (string buffer, string filename, string * dir_list)
 }
 
 #else
-
 /* We are dealing with a C string here for filename presumably ... */
-
 /* Also, this returns a string that was allocated --- */
 /* unless it happens to equal the filename sent in ... */
 /* this needs to be freed later - unless it happens to be ... */
@@ -1478,6 +1465,7 @@ string find_path_filename (string filename,  string * dir_list)
 /* returns NULL or the file name passed in ??? */
 
 /* static string readable (name) */
+/* kpathsea/readable.c */
 string readable (string name)
 {
   string ret;
@@ -2025,7 +2013,7 @@ static unsigned saved_paths_length = 0;
    unlikely to ever be more than a dozen or so elements long.  We don't
    bother to check here if PATH has already been saved; we always add it
    to our list.  */
-
+/* NOT USED! */
 void save_dir_list (string path,  string *dir_list)
 {
 //  saved_paths_length++;
@@ -2036,7 +2024,7 @@ void save_dir_list (string path,  string *dir_list)
 }
 
 /* When we retrieve, just check the list in order.  */
-
+/* NOT USED! */
 string *find_dir_list (string path)
 {
   unsigned p;
@@ -2056,7 +2044,7 @@ string *find_dir_list (string path)
 }
 
 /* Unixify filename and path (turn \ into /) --- assumes null terminated */
-
+/* NEED HACK! */
 char *unixify (char * t)
 {
   char * s = t;

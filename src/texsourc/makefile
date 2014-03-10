@@ -41,7 +41,7 @@ LFLAGS=/MAP /MACHINE:X86
 
 objs = texmf.obj itex.obj openinou.obj subroute.obj local.obj \
 	tex0.obj tex1.obj tex2.obj tex3.obj tex4.obj \
-	tex5.obj tex6.obj tex7.obj tex8.obj tex9.obj yandytex.res
+	tex5.obj tex6.obj tex7.obj tex8.obj tex9.obj yandy_pool.obj yandytex.res
 
 # ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
 # # LIBHARU
@@ -49,7 +49,7 @@ objs = texmf.obj itex.obj openinou.obj subroute.obj local.obj \
 
 texmf.exe: $(objs) 
 	$(LINK) $(LFLAGS) texmf itex openinou subroute local \
-	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9 yandytex.res
+	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9 yandy_pool yandytex.res
 	copy texmf.exe yandytex.exe
 	del ..\yandy\bin\texmf.exe
 	copy texmf.exe ..\yandy\bin\texmf.exe
@@ -107,6 +107,9 @@ tex8.obj: tex8.c \
 	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
 
 tex9.obj: tex9.c \
+	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+
+yandy_pool.obj: yandy_pool.c \
 	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
 
 .SUFFIXES:

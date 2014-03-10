@@ -730,7 +730,7 @@ void new_font_(small_number a)
 
 /* paragraph 1258 */
   name_in_progress = true; 
-  if (scan_keyword("at"))  /* at */
+  if (scan_keyword("at"))
   {
     scan_dimen(false, false, false); 
     s = cur_val; 
@@ -745,10 +745,10 @@ void new_font_(small_number a)
       s = 10 * 65536L;    /* 10pt */
     } 
   } 
-  else if (scan_keyword("scaled")) /* scaled */
+  else if (scan_keyword("scaled"))
   {
-    scan_int(); 
-    s = - (integer) cur_val; 
+    scan_int();
+    s = - (integer) cur_val;
     if ((cur_val <= 0) || (cur_val > 32768L))
     {
       print_err("Illegal magnification has been changed to 1000");
@@ -758,10 +758,13 @@ void new_font_(small_number a)
     }
   }
   else
-    s = -1000; 
-  name_in_progress = false; 
+    s = -1000;
+/* scan_keyword("weight"); */
+/* scan_keyword("style");*/
+/* scan_keyword("") */
+  name_in_progress = false;
 
-  flushablestring = str_ptr - 1; 
+  flushablestring = str_ptr - 1;
   if (trace_flag)
   {         /* debugging stuff only 98/Oct/5 */
     int i, k1, k2, l1, l2;
@@ -863,16 +866,21 @@ lab50:
   hash[(hash_size + hash_extra + 524) + f].v.RH = t; /* 96/Jan/10 */
 }
 /* sec 1265 */
-void new_interaction (void) 
-{ 
-  print_ln(); 
-  interaction = cur_chr; 
-  if (interaction == batch_mode) selector = 16; 
-  else selector = 17; 
-  if (log_opened) selector = selector + 2; 
+void new_interaction (void)
+{
+  print_ln();
+  interaction = cur_chr;
+
+  if (interaction == batch_mode)
+    selector = 16; 
+  else
+    selector = 17;
+
+  if (log_opened)
+    selector = selector + 2;
 }
 /* sec 1270 */
-void do_assignments (void) 
+void do_assignments (void)
 {
   while (true)
   {

@@ -499,14 +499,16 @@ int read_xchr_file (char *filename, int flag, char *argv[])
 /* Following may be useful if link without floating point emulation */
 
 #ifdef DEBUG
-void testfloating (void) {
+void testfloating (void)
+{
 /*  double x = 1.0; */
 /*  double dx = DBL_EPSILON; */
   double dx = 1.0;
   double dxold = 0.0;
   int k = 0;
 /*  while (x + dx != 1.0) { */
-  while (1.0 + dx != 1.0) {
+  while (1.0 + dx != 1.0)
+  {
     dxold = dx;
     dx = dx / 2.0;
     k++;
@@ -782,11 +784,13 @@ int allocate_tries (int trie_max)
   trie_trl = (halfword *) malloc (roundup(nl));
   trie_tro = (halfword *) malloc (roundup(no));
   trie_trc = (quarterword *) malloc (roundup(nc));
-  if (trie_trl == NULL || trie_tro == NULL || trie_trc == NULL) {
+  if (trie_trl == NULL || trie_tro == NULL || trie_trc == NULL)
+  {
     memory_error("hyphen trie", n);
     return -1;
   }
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "Addresses trie_trl %d trie_tro %d trie_trc %d\n", trie_trl, trie_tro, trie_trc);
     show_line(log_line, 0);
   }
@@ -816,7 +820,7 @@ int realloc_hyphen (int hyphen_prime)
 
   if (!prime(hyphen_prime))
   {
-    sprintf(log_line, "ERROR: non-prime hyphen exception number (%d)\n", hyphen_prime); 
+    sprintf(log_line, "ERROR: non-prime hyphen exception number (%d)\n", hyphen_prime);
     show_line(log_line, 1);
 //    exit (1);
     return -1;
@@ -835,11 +839,14 @@ int realloc_hyphen (int hyphen_prime)
 /*  initially hyph_list will be NULL so this acts like malloc */
 /*  hyph_list = (halfword *) malloc (nl); */
   hyph_list = (halfword *) REALLOC (hyph_list, nl);   /* 94/Mar/24 */
-  if (hyph_word == NULL || hyph_list == NULL) {
+
+  if (hyph_word == NULL || hyph_list == NULL)
+  {
     memory_error("hyphen exception", n);
     return -1;
   }
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "Addresses hyph_word %d hyph_list %d\n", hyph_word, hyph_list);
     show_line(log_line, 0);
   }
@@ -855,18 +862,18 @@ int realloc_hyphen (int hyphen_prime)
   for (k = 0; k <= hyphen_prime; k++) hyph_list[k]= 0; 
 #endif
   hyph_count = 0;   /* or use reset_hyphen() in itex.c */
-  if (current_prime != 0) {
-    update_statistics ((int) hyph_word, nw, 
-      (current_prime + 1) * sizeof(str_number));
-    update_statistics ((int) hyph_list, nl, 
-      (current_prime + 1) * sizeof(halfword));
+  if (current_prime != 0)
+  {
+    update_statistics ((int) hyph_word, nw, (current_prime + 1) * sizeof(str_number));
+    update_statistics ((int) hyph_list, nl, (current_prime + 1) * sizeof(halfword));
   }
-  else {
+  else
+  {
     update_statistics ((int) hyph_word, nw, 0);
     update_statistics ((int) hyph_list, nl, 0);
   }
   current_prime = hyphen_prime;
-  if (trace_flag)  probe_show();     /* 94/Mar/25 */
+  if (trace_flag) probe_show();     /* 94/Mar/25 */
   return 0;               // success
 }
 #endif
@@ -890,7 +897,8 @@ memory_word *allocate_main_memory (int size)
 /*  Could we avoid this by detecting presence of & before allocating ? */
 /*  Also, if its already large enough, maybe we can avoid this ? */
 /*  don't bother if current_mem_size == mem_max - mem_start ? */
-  if (mainmemory != NULL) {
+  if (mainmemory != NULL)
+  {
 /*    free(mainmemory); */
 /*    mainmemory = NULL; */
     if (trace_flag) show_line("Reallocating initial memory allocation\n", 1);

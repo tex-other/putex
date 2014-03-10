@@ -2193,7 +2193,7 @@ void show_frozen (void)
 /* void texbody()  */
 int texbody (void)          /* now returns a value --- bkph */
 { 
-  history = 3; 
+  history = 3;
 
   set_paths(TEXFORMATPATHBIT + TEXINPUTPATHBIT + TEXPOOLPATHBIT + TFMFILEPATHBIT); 
 
@@ -2703,6 +2703,7 @@ void do_initex (void)
 /* adjusted to try both "tex.pool" and "tex.poo" 95/Feb/19               */
 /* I have added a texpool file, but I need merge the pool to the binary  */
 /* lots of things updates the kpathsea sources -- Clerk Ma               */
+
 bool get_strings_started (void)
 {
   register bool Result;
@@ -2723,35 +2724,45 @@ bool get_strings_started (void)
     for_end = 255;
     if (k <= for_end) 
       do {
-        if (((k < 32) || (k > 126))) {
+        if (((k < 32) || (k > 126)))
+        {
           append_char('^');
           append_char('^');
           if (k < 64)
             append_char(k + 64);
           else if (k < 128)
             append_char(k - 64);
-          else {
+          else
+          {
             l = k / 16;
-            if (l < 10) {
-              str_pool[pool_ptr] = l + 48; /* '0' */
+            if (l < 10)
+            {
+              str_pool[pool_ptr] = l + '0';
               incr(pool_ptr);
-            } else {
+            }
+            else
+            {
               str_pool[pool_ptr] = l + 87; /* 'a' - 10 */
               incr(pool_ptr);
             }
             l = k % 16;
-            if (l < 10) {
-              str_pool[pool_ptr] = l + 48; /* '0' */
+            if (l < 10)
+            {
+              str_pool[pool_ptr] = l + '0';
               incr(pool_ptr);
-            } else {
+            }
+            else
+            {
               str_pool[pool_ptr] = l + 87; /* 'a' - 10 */
               incr(pool_ptr);
             }
           }
-        } else append_char(k);
+        }
+        else append_char(k);
         g = make_string();
       } while(k++ < for_end);
   }
+#ifdef STDPOOL
   vstrcpy((char *) name_of_file + 1, pool_name);
   name_of_file[0] = ' ';
   name_of_file[strlen(pool_name) + 1] = ' '; 
@@ -2772,15 +2783,10 @@ bool get_strings_started (void)
     c = false;
     do {
       {
-/* if (eof(pool_file)) */ /* feof(pool_file)??? */
         if (test_eof(pool_file)) {
-          ;
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
           show_line("! string pool file has no check sum.\n", 1);
-/* added following bit of explanation 96/Jan/16 */
           if (! knuth_flag)
             bad_formator_pool(string_file, "the pool file", "TEXPOOL");
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
           (void) a_close(pool_file);
           Result = false;
           return(Result);
@@ -2792,14 +2798,10 @@ bool get_strings_started (void)
           a = 0;
           k = 1;
           while (true) {
-            if ((xord[n]< 48)||(xord[n]> 57)) {
-              ; 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+            if ((xord[n]< 48) || (xord[n]> 57)) {
               show_line("! string pool file check sum doesn't have nine digits.\n", 1);
-/* added following bit of explanation 96/Jan/16 */
               if (!knuth_flag)
                 bad_formator_pool(string_file, "the pool file", "TEXPOOL");
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
               (void) a_close(pool_file);
               Result = false;
               return(Result);
@@ -2814,37 +2816,31 @@ bool get_strings_started (void)
 lab30: 
           if (a != BEGINFMTCHECKSUM) {
             ; 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
             show_line("! string pool check sum doesn't match; tangle me again.\n", 1);
-/* added following bit of explanation 96/Jan/16 */
             if (!knuth_flag)
               bad_formator_pool(string_file, "the pool file", "TEXPOOL");
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
             (void) a_close(pool_file);
             Result = false;
             return(Result);
           }
           c = true;
         } else {
-          if ((xord[m] < 48)||(xord[m] > 57)||(xord[n] < 48)||(xord[n] > 57)) 
+          if ((xord[m] < 48) || (xord[m] > 57) || (xord[n] < 48) || (xord[n] > 57)) 
           {
-            ; 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
             show_line("! string pool line doesn't begin with two digits.\n", 1);
-/* added following bit of explanation 96/Jan/16 */
             if (! knuth_flag)
               bad_formator_pool(string_file, "the pool file", "TEXPOOL");
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
             (void) a_close(pool_file);
             Result = false;
             return(Result);
           }
-          l = xord[m]* 10 + xord[n]- 48 * 11;
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+          l = xord[m] * 10 + xord[n] - 48 * 11;
+
 #ifdef ALLOCATESTRING
 /* can freely extend memory, so we need not be paranoid - stringvacancies */
 /* if (pool_ptr + l + stringvacancies > current_pool_size)*/
-          if (pool_ptr + l + stringmargin > current_pool_size) {
+          if (pool_ptr + l + stringmargin > current_pool_size)
+          {
             if (trace_flag)
               show_line("String margin reallocation\n", 0);
 /* str_pool =  realloc_str_pool (pool_ptr + l + stringvacancies */
@@ -2885,8 +2881,6 @@ lab30:
     (void) a_close(pool_file);
     Result = true;
   } else {
-    ; 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     sprintf(log_line, "! I can't read %s.\n", pool_name);
     show_line(log_line, 1);
     if (!knuth_flag)
@@ -2895,6 +2889,15 @@ lab30:
     Result = false;
     return(Result); 
   }
+#endif
+  g = load_pool_strings (pool_size - stringvacancies);
+  if (g == 0)
+  {
+    fprintf(stdout , "%s\n",  "! You have to increase POOLSIZE." );
+    Result = false;
+    return Result;
+  }
+  Result = true;
   return Result;
 }
 #endif /* INITEX */

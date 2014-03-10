@@ -204,27 +204,6 @@ EXTERN integer max_buf_stack;
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/* param_size maximum number of simultaneous macro parameters */
-/* nest_size  maximum number of semantic levels simultaneously active */
-#ifdef INCREASEFIXED
-/* #define param_size 60 */     /* 3.14159 C version */
-/* #define param_size 120 */
-/* #define param_size 200 */    /* 1994/Oct/11 */
-/* #define param_size 300 */    /* 1995/May/15 */
-/* #define param_size 500 */    /* 1997/Jan/17 */
-/* #define nest_size 40 */      /* 3.14159 C version */
-/* #define nest_size 80 */
-/* #define nest_size 100  */    /* 1994/Oct/11 */
-/* #define nest_size 120 */     /* 1995/May/15 */
-/* #define nest_size 200 */     /* 1999/Jan/7 */
-#else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/* #define param_size 60 */     /* Unix C default */
-/* #define nest_size 40 */      /* Unix C default */
-/* #define nest_size 100 */     /* Unix C default */
-#endif
-
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* max_strings max number of strings */ /* (2^32 - 1) / sizeof (integer) */
 #ifdef ALLOCATESTRING
 /* #define max_strings 262140L */
@@ -347,13 +326,13 @@ typedef char glue_ord;
 
 typedef struct {
 /*  short mode_field;  */
-  int mode_field; 
-  halfword head_field, tail_field; 
-  integer pg_field, ml_field; 
-  memory_word aux_field; 
-} list_state_record; 
+  int mode_field;
+  halfword head_field, tail_field;
+  integer pg_field, ml_field;
+  memory_word aux_field;
+} list_state_record;
 
-typedef char group_code; 
+typedef char group_code;
 
 typedef struct {
   quarterword state_field, index_field; 
@@ -2140,6 +2119,7 @@ extern INLINE void dvi_out_ (ASCII_code op);
 extern INLINE void free_avail_(halfword p);
 #define free_avail(p) free_avail_((halfword) (p))
 extern INLINE void flush_string (void);
+extern int load_pool_strings (integer spare_size);
 #define help0()     tex_help(0)
 #define help1(...)  tex_help(1, __VA_ARGS__)
 #define help2(...)  tex_help(2, __VA_ARGS__)

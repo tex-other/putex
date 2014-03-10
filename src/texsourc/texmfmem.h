@@ -75,7 +75,7 @@ typedef union
     halfword junk;
     quarterword B0, B1;
 #else /* not WORDS_BIGENDIAN */
-  /* If 32-bit TeX/MF, have to have an extra two bytes of junk.  
+  /* If 32-bit TeX/MF, have to have an extra two bytes of junk.
      I would like to break this line, but I'm afraid that some
      preprocessors don't properly handle backslash-newline in # commands.  */
 #if (defined (TeX) && !defined (SMALLTeX)) || !defined (TeX) && !defined (SMALLMF)

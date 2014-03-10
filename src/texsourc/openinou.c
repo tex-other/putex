@@ -100,12 +100,14 @@ char *xconcat3 (char *buffer, char *s1, char *s2, char *s3)
   int n1 = strlen(s1);
   int n2 = strlen(s2);
   int n3 = strlen(s3);
-  if (buffer == s3) {     /* treat special case of overlap */
+  if (buffer == s3)
+  {     /* treat special case of overlap */
     memmove (buffer + n1 + n2, buffer, n3 + 1); /* trailing null ! */
     strncpy (buffer, s1, n1);
     strncpy (buffer + n1, s2, n2);
   }
-  else {
+  else
+  {
     strcpy(buffer, s1);
     strcat(buffer + n1, s2);
     strcat(buffer + n1 + n2, s3);
@@ -218,7 +220,7 @@ void retwiddle (unsigned char *s)
    string. We return whether or not the open succeeded.  If it did, we
    also set `name_length' to the length of the full pathname that we
    opened.  */
-
+/* in lib/openclose.c */
 bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 {
   bool openable = false;
@@ -284,7 +286,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
   
   if (open_trace_flag)
   {
-    sprintf(log_line, " Open `%s' for input ", name_of_file+1); /* Pascal */
+    sprintf(log_line, " Open `%s' for input ", name_of_file + 1); /* Pascal */
     show_line(log_line, 0);
   }
 

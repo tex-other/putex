@@ -67,9 +67,9 @@
    This type is set automatically to `float' by configure if a small TeX
    is built.  */
 #ifndef GLUERATIO_TYPE
-#define GLUERATIO_TYPE double
+  #define GLUERATIO_TYPE double
 #endif
-typedef GLUERATIO_TYPE glueratio;
+  typedef GLUERATIO_TYPE glueratio;
 #endif
 
 /* Declarations for the routines we provide ourselves.  */
@@ -77,31 +77,12 @@ typedef GLUERATIO_TYPE glueratio;
 extern integer zround (double);			/* extern integer zround(); */
 
 /* File routines.  */
-extern FILE *xfopen_pas (unsigned char *, char *);	/* extern FILE *xfopen_pas(); */
-extern bool test_eof (FILE *);
-extern bool eoln (FILE *);			/* extern bool eoln(); */
-extern bool open_input (FILE **, path_constant_type, char *);
-/* extern bool open_input(); */
-extern bool open_output (FILE **, char *);
-/* extern bool open_output(); */
-extern void fprintreal (FILE *, double, int, int);
-/* extern void fprintreal(); */
-extern void printpascalstring (char *); /* extern void printpascalstring(); */
-extern void errprintpascalstring (char *); /* extern void errprintpascalstring(); */
-extern integer inputint (FILE *);	/* extern integer inputint(); */
-extern void zinput3ints (integer *, integer *, integer *);
-/* extern void zinput3ints(); */
-extern void set_paths (int);		/* extern void set_paths(); */
-// extern void check_fclose (FILE *);	/* in openinou.c 93/Nov/20 */
-extern int check_fclose (FILE *);	/* in openinou.c 93/Nov/20 */
-
-/* String routines.  */
-/* extern void makesuffixpas(); */ /* not defined, not used ? bkph */
-extern void make_c_string (char **); /* extern void make_c_string(); */
-extern void make_pascal_string (char **); /* extern void make_pascal_string(); */
-extern void null_terminate (char *); /* extern void null_terminate(); */
-extern void space_terminate (char *); /* extern void space_terminate(); */
-
+extern bool test_eof (FILE * file);
+extern bool eoln (FILE * file);
+extern bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode);
+extern bool open_output (FILE **f, char *fopen_mode);
+extern void set_paths (int path_bits);
+extern int check_fclose (FILE * f);	/* in openinou.c 93/Nov/20 */
 
 /* Argument handling, etc.  */
 /* extern int argc; */

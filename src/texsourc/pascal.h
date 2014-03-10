@@ -27,7 +27,7 @@
    Specifically, a test in diag_round (in Metafont) on a quarterword
    comes out differently without the cast, thus causing the trap test to
    fail.  (A path at line 86 is constructed slightly differently).  */
-#define	abs(x) ((integer)(x)>=0?(integer)(x):(integer)-(x))
+#define	abs(x) ((integer)(x) >= 0 ? (integer)(x) : (integer)-(x))
 
 /* above conflicts with math.h ... */
 
@@ -39,9 +39,6 @@
 #define trunc(x)	((integer) (x))
 
 /* File routines.  */
-#define	reset(f, n, mode)	((f) ? fclose (f) : 0), \
-			 (f) = xfopen_pas ((char *) (n), "r" mode)
-#define rewrite(f, n, mode)	(f) = xfopen_pas ((char *) (n), "w" mode)
 #define flush(f)	(void) fflush (f)
 
 /* flush - used only in itex.c and conflicts with io.h -- bkph 93/Nov/26 */
@@ -55,12 +52,6 @@
 #define	decr(x)		--(x)
 #define	incr(x)		++(x)
 
-/* PatGen 2 uses this.  */
-#define	input2ints(a, b)  zinput2ints (&a, &b)
-
-/* We need this routine only if TeX is being debugged.  */
-#define	input3ints(a, b, c)  zinput3ints (&a, &b, &c)
-
 /* Pascal has no address-of operator, and we need pointers to integers
    to set up the option table.  */
 /* #define addressofint(x)	((int *) &(x)) */ /* not used */
@@ -69,9 +60,6 @@
 #define	fabs(x)		((x) >= 0.0 ? (x) : -(x))
 
 /* above conflicts with math.h ... */
-
-/* The fixwrites program outputs this.  */
-#define	Fputs(f, s)	(void) fputs (s, f)
 
 /* Tangle removes underscores from names, but the `struct option'
    structure has a field name with an underscore.  So we have to put it
@@ -84,9 +72,6 @@
 
 /* We need a new type for the argument parsing, too.  */
 typedef struct option getoptstruct;
-
-#define printreal(r, n, m)  fprintreal (stdout, r, n, m)
-#define	putbyte(x, f)	putc ((char) (x) & 255, f)
 
 #define	toint(x)	((integer) (x))
 
@@ -131,11 +116,5 @@ typedef FILE *text, *file_ptr, *alpha_file;
 /* #define a_close(f) if (f) { if (ferror (f)) {perror(""); exit(1);} } if (f) (void) fclose (f) */
 /* #define a_close(f)	if (f) (void) check_fclose (f) */
 #define a_close(f)	check_fclose (f)
-
-#ifdef BibTeX
-/* See bibtex.ch for why these are necessary.  */
-extern FILE *standardinput;
-extern FILE *standardoutput;
-#endif
 
 #endif /* not PASCAL_H */

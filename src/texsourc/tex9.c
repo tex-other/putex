@@ -27,36 +27,39 @@
 
 /* end of the old tex8.c */
 /* sec 1284 */
-void give_err_help (void) 
+void give_err_help (void)
 {
-  token_show(err_help); 
+  token_show(err_help);
 }
 /* sec 0524 */
-bool open_fmt_file (void) 
+bool open_fmt_file (void)
 {
   register bool Result;
   integer j;
   j = cur_input.loc_field;
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
 /* For Windows NT, lets allow + instead of & for format specification */
-/* if (buffer[cur_input.loc_field]== 38) */  /* 95/Jan/22 */
+/*  User specified a format name on the command line                  */
   if (buffer[cur_input.loc_field]== '&' || buffer[cur_input.loc_field]== '+')
   {
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/*  User specified a format name on the command line */
     incr(cur_input.loc_field);
     j = cur_input.loc_field;
-    buffer[last]= 32;
-    while (buffer[j]!= 32) incr(j);
+    buffer[last]= ' ';
+    while (buffer[j] != ' ')
+      incr(j);
     pack_buffered_name(0, cur_input.loc_field, j - 1);
+
     if (w_open_in(fmt_file))
       goto lab40;  // format file opened OK
   
 //  format file open failed
-  if (knuth_flag) {
+  if (knuth_flag)
+  {
     (void) sprintf(log_line, "%s;%s\n", "Sorry, I can't find that format", " will try the default.");
     show_line(log_line, 1);
-  } else {
+  }
+  else
+  {
     char *s = log_line;
     name_of_file[name_length + 1] = '\0';
     (void) sprintf(s, "%s (%s);%s\n", "Sorry, I can't find that format", name_of_file+1, " will try the default."); 
@@ -66,26 +69,33 @@ bool open_fmt_file (void)
     s += strlen(s);
     {
       char *t;            /* extra info 97/June/13 */
-      if ((t = grabenv("TEXFORMATS")) != NULL) {
+      if ((t = grabenv("TEXFORMATS")) != NULL)
+      {
           sprintf(s, "(%s=%s)\n", "TEXFORMATS", t);
-      } else {
+      }
+      else
+      {
         sprintf(s, "%s environment variable not set\n", "TEXFORMATS");
       }
     }
     show_line(log_line, 1); // show all three lines at once
   }
 #ifndef _WINDOWS
-    fflush(stdout); 
+    fflush(stdout);
 #endif
-  } 
-/*  Try the default format (either because no format specified or failed) */
-  pack_buffered_name(format_default_length - 4, 1, 0); 
-  if (! w_open_in(fmt_file)) {
-    ;
-    if (knuth_flag) {
+  }
+/* Try the default format (either because no format specified or failed) */
+  pack_buffered_name(format_default_length - 4, 1, 0);
+
+  if (!w_open_in(fmt_file))
+  {
+    if (knuth_flag)
+    {
       (void) sprintf(log_line, "%s!\n", "I can't find the default format file");
       show_line(log_line, 1);
-    } else {
+    }
+    else
+    {
       char *s = log_line;
       name_of_file[name_length + 1] = '\0';
       (void) sprintf(s, "%s (%s)!\n", "I can't find the default format file", name_of_file + 1);
@@ -95,16 +105,19 @@ bool open_fmt_file (void)
       s += strlen(s);
       {
         char *t;            /* extra info 97/June/13 */
-        if ((t = grabenv("TEXFORMATS")) != NULL) {
+        if ((t = grabenv("TEXFORMATS")) != NULL)
+        {
           sprintf(s, "(%s=%s)\n", "TEXFORMATS", t);
-        } else {
+        }
+        else
+        {
           sprintf(s, "%s environment variable not set\n", "TEXFORMATS");
         }
       }
       show_line(log_line, 1);   // show all three lines at once
     }
     Result = false;
-    return(Result); 
+    return(Result);
   }
 lab40:
   cur_input.loc_field = j;
@@ -114,8 +127,8 @@ lab40:
 /**************************************************************************/
 void print_char_string (unsigned char *s)
 {
-  // 2000 Jun 18
-  while (*s > 0) print_char(*s++);
+  while (*s > 0)
+    print_char(*s++);
 }
 void show_font_info (void);   // now in local.c
 extern int closed_already;     // make sure we don't try this more than once
@@ -123,138 +136,135 @@ extern int closed_already;     // make sure we don't try this more than once
 /* done in closefilesandterminate_regmem  in coerce.h */
 /* sec 1333 */
 void close_files_and_terminate (void)
-{ 
+{
   integer k; 
 
-  if (closed_already++) {
+  if (closed_already++)
+  {
     show_line("close_files_and_terminated already ", 0);
     return;     // sanity check
   }
+
   if (trace_flag)
     show_line("\nclose_files_and_terminate ", 0);
 //  close all open files
   for (k = 0; k <= 15; k++)
-    if (write_open[k]) {
+    if (write_open[k])
+    {
       (void) a_close(write_file[k]);
     }
 
 #ifdef STAT
 /* if tracing_stats>0 then @<Output statistics about this job@>; */
 /*  if (eqtb[(hash_size + 3194)].cint > 0) */
-  if (tracing_stats > 0 ||
-     verbose_flag != 0)  /* 93/Nov/30 - bkph */
-  if (log_opened) {
+  if (tracing_stats > 0 || verbose_flag != 0)  /* 93/Nov/30 - bkph */
+    if (log_opened)
+    {
 /*   used to output paragraph breaking statistics here */
-    (void) fprintf(log_file, "%c\n", ' ');
-    (void) fprintf(log_file, "\n");
-    (void) fprintf(log_file, "%s%s\n", "Here is how much of TeX's memory", " you used:"); 
-    (void) fprintf(log_file, "%c%ld%s", ' ', (long)str_ptr - init_str_ptr, " string"); 
-    if (str_ptr != init_str_ptr + 1)
-      (void) putc('s',  log_file);
+      (void) fprintf(log_file, "%c\n", ' ');
+      (void) fprintf(log_file, "\n");
+      (void) fprintf(log_file, "%s%s\n", "Here is how much of TeX's memory", " you used:");
+      (void) fprintf(log_file, "%c%ld%s", ' ', (long)str_ptr - init_str_ptr, " string");
+      if (str_ptr != init_str_ptr + 1)
+        (void) putc('s',  log_file);
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATESTRING
-  if (show_current)
-    (void) fprintf(log_file, "%s%ld\n", " out of ", (long) current_max_strings - init_str_ptr); 
-  else
+      if (show_current)
+        (void) fprintf(log_file, "%s%ld\n", " out of ", (long) current_max_strings - init_str_ptr);
+      else
 #endif
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    (void) fprintf(log_file, "%s%ld\n", " out of ", (long) max_strings - init_str_ptr); 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+        (void) fprintf(log_file, "%s%ld\n", " out of ", (long) max_strings - init_str_ptr);
 #ifdef ALLOCATESTRING
-  if (show_current)
-    (void) fprintf(log_file, "%c%ld%s%ld\n", ' ', (long) pool_ptr - init_pool_ptr, " string characters out of ", (long) current_pool_size - init_pool_ptr);
-  else
+      if (show_current)
+        (void) fprintf(log_file, "%c%ld%s%ld\n", ' ', (long) pool_ptr - init_pool_ptr, " string characters out of ", (long) current_pool_size - init_pool_ptr);
+      else
 #endif
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    (void) fprintf(log_file, "%c%ld%s%ld\n", ' ', (long) pool_ptr - init_pool_ptr, " string characters out of ", (long) pool_size - init_pool_ptr);
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+        (void) fprintf(log_file, "%c%ld%s%ld\n", ' ', (long) pool_ptr - init_pool_ptr, " string characters out of ", (long) pool_size - init_pool_ptr);
 #ifdef ALLOCATEMAIN
-  if (show_current)
-    (void) fprintf(log_file, "%c%ld%s%ld\n", ' ', (long)lo_mem_max - mem_min + mem_end - hi_mem_min + 2, " words of memory out of ", (long)current_mem_size);
-  else
+      if (show_current)
+        (void) fprintf(log_file, "%c%ld%s%ld\n", ' ', (long)lo_mem_max - mem_min + mem_end - hi_mem_min + 2, " words of memory out of ", (long)current_mem_size);
+      else
 #endif
-    (void) fprintf(log_file, "%c%ld%s%ld\n", ' ', (long)lo_mem_max - mem_min + mem_end - hi_mem_min + 2, " words of memory out of ", (long)mem_end + 1 - mem_min);
-/*  (void) fprintf(log_file, "%c%ld%s%ld\n", ' ', (long)lo_mem_max - mem_min + mem_end - hi_mem_min + 2, " words of memory out of ", (long)max_mem_size); */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    (void) fprintf(log_file, "%c%ld%s%ld\n", ' ', (long)cs_count, " multiletter control sequences out of ", (long)(hash_size + hash_extra));
-    (void) fprintf(log_file, "%c%ld%s%ld%s", ' ', (long)fmem_ptr, " words of font info for ", (long)font_ptr - 0, " font");
-    if (font_ptr != 1)
-      (void) putc('s',  log_file);
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+        (void) fprintf(log_file, "%c%ld%s%ld\n", ' ', (long)lo_mem_max - mem_min + mem_end - hi_mem_min + 2, " words of memory out of ", (long)mem_end + 1 - mem_min);
+      (void) fprintf(log_file, "%c%ld%s%ld\n", ' ', (long)cs_count, " multiletter control sequences out of ", (long)(hash_size + hash_extra));
+      (void) fprintf(log_file, "%c%ld%s%ld%s", ' ', (long)fmem_ptr, " words of font info for ", (long)font_ptr - 0, " font");
+      if (font_ptr != 1)
+        (void) putc('s',  log_file);
 #ifdef ALLOCATEFONT
-  if (show_current)
-    (void) fprintf(log_file, "%s%ld%s%ld\n", ", out of ", (long)current_font_mem_size, " for ", (long)font_max - 0); 
-   else
+      if (show_current)
+        (void) fprintf(log_file, "%s%ld%s%ld\n", ", out of ", (long)current_font_mem_size, " for ", (long)font_max - 0);
+      else
 #endif
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    (void) fprintf(log_file, "%s%ld%s%ld\n", ", out of ", (long)font_mem_size, " for ", (long)font_max - 0); 
-    (void) fprintf(log_file, "%c%ld%s", ' ', (long)hyph_count, " hyphenation exception");
-    if (hyph_count != 1)
-      (void) putc('s',  log_file);
-/*  (void) fprintf(log_file, "%s%ld\n",  " out of ", (long)607);  */
-    (void) fprintf(log_file, "%s%ld\n",  " out of ", (long) hyphen_prime);
-    (void) fprintf(log_file, " ");
-    (void) fprintf(log_file, "%ld%s", (long)max_in_stack, "i,");
-    (void) fprintf(log_file, "%ld%s", (long)max_nest_stack, "n,");
-    (void) fprintf(log_file, "%ld%s", (long)max_param_stack, "p,");
-    (void) fprintf(log_file, "%ld%s", (long)max_buf_stack + 1, "b,");
-    (void) fprintf(log_file, "%ld%s", (long)max_save_stack + 6, "s");
-    (void) fprintf(log_file, " stack positions out of ");
+        (void) fprintf(log_file, "%s%ld%s%ld\n", ", out of ", (long)font_mem_size, " for ", (long)font_max - 0);
+      (void) fprintf(log_file, "%c%ld%s", ' ', (long)hyph_count, " hyphenation exception");
+      if (hyph_count != 1)
+        (void) putc('s',  log_file);
+      (void) fprintf(log_file, "%s%ld\n",  " out of ", (long) hyphen_prime);
+      (void) fprintf(log_file, " ");
+      (void) fprintf(log_file, "%ld%s", (long)max_in_stack, "i,");
+      (void) fprintf(log_file, "%ld%s", (long)max_nest_stack, "n,");
+      (void) fprintf(log_file, "%ld%s", (long)max_param_stack, "p,");
+      (void) fprintf(log_file, "%ld%s", (long)max_buf_stack + 1, "b,");
+      (void) fprintf(log_file, "%ld%s", (long)max_save_stack + 6, "s");
+      (void) fprintf(log_file, " stack positions out of ");
 #ifdef ALLOCATESAVESTACK
-  if (show_current)
-    (void) fprintf(log_file, "%ld%s", (long)current_stack_size, "i,");
-  else
+      if (show_current)
+        (void) fprintf(log_file, "%ld%s", (long)current_stack_size, "i,");
+      else
 #endif
-    (void) fprintf(log_file, "%ld%s", (long)stack_size, "i,");
+        (void) fprintf(log_file, "%ld%s", (long)stack_size, "i,");
 #ifdef ALLOCATENESTSTACK
-  if (show_current)
-    (void) fprintf(log_file, "%ld%s", (long)current_nest_size, "n,");
-  else
+      if (show_current)
+        (void) fprintf(log_file, "%ld%s", (long)current_nest_size, "n,");
+      else
 #endif
-    (void) fprintf(log_file, "%ld%s", (long)nest_size, "n,");
+        (void) fprintf(log_file, "%ld%s", (long)nest_size, "n,");
 #ifdef ALLOCATEPARAMSTACK
-  if (show_current)
-    (void) fprintf(log_file, "%ld%s", (long)current_param_size, "p,");
-  else
+      if (show_current)
+        (void) fprintf(log_file, "%ld%s", (long)current_param_size, "p,");
+      else
 #endif
-    (void) fprintf(log_file, "%ld%s", (long)param_size, "p,");
+        (void) fprintf(log_file, "%ld%s", (long)param_size, "p,");
 #ifdef ALLOCATEBUFFER
-  if (show_current)
-    (void) fprintf(log_file, "%ld%s", (long)current_buf_size, "b,");
-  else
+      if (show_current)
+        (void) fprintf(log_file, "%ld%s", (long)current_buf_size, "b,");
+      else
 #endif
-    (void) fprintf(log_file, "%ld%s", (long)buf_size, "b,");
+        (void) fprintf(log_file, "%ld%s", (long)buf_size, "b,");
 #ifdef ALLOCATESAVESTACK
-  if (show_current)
-    (void) fprintf(log_file, "%ld%s", (long)current_save_size, "s"); 
-  else
+      if (show_current)
+        (void) fprintf(log_file, "%ld%s", (long)current_save_size, "s");
+      else
 #endif
-    (void) fprintf(log_file, "%ld%s", (long)save_size, "s"); 
-  (void) fprintf(log_file, "\n");
+        (void) fprintf(log_file, "%ld%s", (long)save_size, "s");
+      (void) fprintf(log_file, "\n");
 /************************************************************************/
-  if (! knuth_flag)
-    fprintf(log_file, " (i = in_stack, n = nest_stack, p = param_stack, b = buf_stack, s = save_stack)\n");
+      if (!knuth_flag)
+        fprintf(log_file, " (i = in_stack, n = nest_stack, p = param_stack, b = buf_stack, s = save_stack)\n");
 /************************************************************************/
-  if (! knuth_flag)          /* 1999/Jan/17 */
-    fprintf(log_file,
-        " %d inputs open max out of %d\n",  /* (%d max parens open) */
-        high_in_open, max_in_open);             /* max_open_parens */
+      if (! knuth_flag)          /* 1999/Jan/17 */
+        fprintf(log_file,
+            " %d inputs open max out of %d\n",  /* (%d max parens open) */
+            high_in_open, max_in_open);             /* max_open_parens */
 /************************************************************************/
 /*  Modified 98/Jan/14 to leave out lines with zero counts */
-  if (show_line_break_stats && first_pass_count > 0) {     /* 96/Feb/8 */
+  if (show_line_break_stats && first_pass_count > 0)
+  {     /* 96/Feb/8 */
     int first_count, secondcount, thirdcount;
     (void) fprintf(log_file, "\nSuccess at breaking %d paragraph%s:", first_pass_count, (first_pass_count == 1) ? "" : "s");
     if (singleline > 0)
       (void) fprintf(log_file, "\n %d single line `paragraph%s'", singleline, (singleline == 1) ? "" : "s");  /* 96/Apr/23 */
     first_count = first_pass_count-singleline-second_pass_count;
-    if (first_count < 0) first_count = 0;       /* sanity check */
-    secondcount = second_pass_count-final_pass_count;
-    thirdcount = final_pass_count-paragraph_failed;
-    if (first_count != 0 || secondcount != 0 || thirdcount != 0) 
+    if (first_count < 0)
+      first_count = 0;       /* sanity check */
+    secondcount = second_pass_count - final_pass_count;
+    thirdcount = final_pass_count - paragraph_failed;
+    if (first_count != 0 || secondcount != 0 || thirdcount != 0)
       (void) fprintf(log_file, "\n %d first pass (\\pretolerance = %d)", first_count, pretolerance);
-    if (secondcount != 0 || thirdcount != 0) 
+    if (secondcount != 0 || thirdcount != 0)
       (void) fprintf(log_file, "\n %d second pass (\\tolerance = %d)", secondcount, tolerance);
-    if (final_pass_count > 0 || emergency_stretch > 0) {
+    if (final_pass_count > 0 || emergency_stretch > 0)
+    {
       (void) fprintf(log_file, "\n %d third pass (\\emergencystretch = %lgpt)", thirdcount, (double) emergency_stretch / 65536.0);
 /*      above converted from scaled points to printer's points */
     }
@@ -348,11 +358,13 @@ void close_files_and_terminate (void)
     print_string(" bytes).");
     b_close(dvi_file);
   } 
-  if (log_opened) {
+  if (log_opened)
+  {
     (void) putc ('\n', log_file);
     (void) a_close(log_file); 
     selector = selector - 2; 
-    if (selector == 17) {
+    if (selector == 17)
+    {
       print_nl("Transcript written on ");
       if (full_file_name_flag && log_file_name != NULL)
         print_char_string((unsigned char *) log_file_name);
@@ -362,7 +374,9 @@ void close_files_and_terminate (void)
     }
   }
   print_ln();
-  if ((edit_name_start != 0) && (interaction > 0)) {
+
+  if ((edit_name_start != 0) && (interaction > 0))
+  {
     call_edit(str_pool, edit_name_start, edit_name_length, edit_line);
   }
 } /* end of close_files_and_terminate */
