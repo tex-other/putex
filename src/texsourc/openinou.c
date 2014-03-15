@@ -59,7 +59,6 @@
 #define BUILDNAMEDIRECT         /* avoid malloc for string concat */
 
 bool test_read_access (unsigned char *, int);   /* in ourpaths.c - bkph */
-/* bool test_read_access (char *, int, int); */ /* in ourpaths.c - bkph */
 
 extern char *unixify (char *);      /* in pathsrch.c bkph */
 
@@ -135,6 +134,7 @@ void patch_in_path (unsigned char *buffer, unsigned char *name, unsigned char *p
   free (temp_name);
 #endif
 }
+
 int qualified (unsigned char * name)
 {
   if (strchr((char *) name, PATH_SEP) != NULL ||
@@ -199,9 +199,10 @@ void check_short_name (unsigned char *s)
 /* reconvert 254 to '~' in file name 95/Sep/26 */
 /* reconvert 255 to ' ' in file name 95/Sep/26 */
 /* we do this in tex3.c start_input() -> scan_file_name() now 95/Sep/26 */
-
+/* kpathsea/tilde.c */
 void retwiddle (unsigned char *s)
-{ /* assumes null terminated - 97/June/5 */
+{
+/* assumes null terminated - 97/June/5 */
 /*  while (*s != '\0' && *s != ' ') { */
   while (*s != '\0')
   {
@@ -227,7 +228,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 
 #if defined (FUNNY_CORE_DUMP) && !defined (BibTeX)
 /*  This only applies if a preloaded TeX (or Metafont) is being made;
-  it allows for automatic creation of the core dump (typing ^\
+  it allows for automatic creation of the core dump (typing ^
   requires manual intervention).  */
   if (path_index == TEXINPUTPATH &&
       strncmp (name_of_file + 1, "HackyInputFileNameForCoreDump.tex", 33) == 0)
@@ -427,8 +428,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 
 /* the string program is unreferenced in DOS NO_MAKETEX */
 
-static bool
-make_tex_file (string program)
+static bool make_tex_file (string program)
 {
 #ifdef NO_MAKETEX
   return 0;
@@ -504,9 +504,9 @@ char *get_env_shroud (char *);    /* defined in texmf.c */
 
 /* char outputdirectory[PATH_MAX]; */       /* defined in local.c */
 
-extern char *dvi_directory;       /* defined in local.c */
-extern char *log_directory;       /* defined in local.c */
-extern char *aux_directory;       /* defined in local.c */
+extern char * dvi_directory;       /* defined in local.c */
+extern char * log_directory;       /* defined in local.c */
+extern char * aux_directory;       /* defined in local.c */
 
 #ifdef IGNORED
 /* Try and figure out if can write to current directory */
@@ -602,7 +602,7 @@ void perrormod (char *s);       /* in local.c */
 
 // check_fclose not used by anything
 /* 1993/Nov/20 - bkph */
-int check_fclose (FILE *f)
+int check_fclose (FILE * f)
 {
   if (f == NULL)
     return 0;      // sanity check
@@ -630,7 +630,6 @@ bool open_output (FILE **f, char *fopen_mode)
 {
   unsigned temp_length;
 
-/*  null_terminate (name_of_file + 1);  */  /* moved here 95/Sep/26  */
   name_of_file[name_length + 1] = '\0'; /* null terminate */
 
 /* reinsert '~' and ' ' in file names -  95/June/5 */
@@ -655,9 +654,9 @@ bool open_output (FILE **f, char *fopen_mode)
 #ifdef MSDOS
 /* write into user specified output directory if given on command line */
 /* following code added 1993/Dec/12 */ /* separated 1996/Jan/20 */
-  if (prepend_path_if (name_of_file+1, name_of_file+1, ".dvi", (unsigned char *) dvi_directory) ||
-      prepend_path_if (name_of_file+1, name_of_file+1, ".log", (unsigned char *) log_directory) ||
-      prepend_path_if (name_of_file+1, name_of_file+1, ".aux", (unsigned char *) aux_directory))
+  if (prepend_path_if (name_of_file + 1, name_of_file+1, ".dvi", (unsigned char *) dvi_directory) ||
+      prepend_path_if (name_of_file + 1, name_of_file+1, ".log", (unsigned char *) log_directory) ||
+      prepend_path_if (name_of_file + 1, name_of_file+1, ".aux", (unsigned char *) aux_directory))
   {
     if (open_trace_flag)
     {
@@ -684,9 +683,6 @@ bool open_output (FILE **f, char *fopen_mode)
 /* Can't open as given.  Try the envvar.  */
   if (*f == NULL)
   {
-/*    string temp_dir = getenv ("TEXMFOUTPUT"); */  /* 93/Nov/20 */
-/*    string temp_dir = getenv ("TEXMFOUT"); */ /* 93/Nov/20 */
-/*      string temp_dir = get_env_shroud ("UFYNGPVUQVU"); */
     string temp_dir = get_env_shroud ("UFYNGPVU");
 
 /*    if (deslash) unixify(temp_dir); */    /* deslashify 93/Dec/28 */

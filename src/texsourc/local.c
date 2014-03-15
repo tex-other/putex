@@ -114,9 +114,9 @@ char *tex_version  = "This is TeX, Version 3.14159265";
 
 clock_t start_time, main_time, finish_time;
 
-char *dvi_directory = ""; /* user specified directory for dvi file */
-char *log_directory = ""; /* user specified directory for log file */
-char *aux_directory = ""; /* user specified directory for aux file */
+char * dvi_directory = ""; /* user specified directory for dvi file */
+char * log_directory = ""; /* user specified directory for log file */
+char * aux_directory = ""; /* user specified directory for aux file */
 
 char *texpath = "";   /* path to executable - used if env vars not set */
 
@@ -536,9 +536,12 @@ void check_eqtb (char *act)
   int k, count=0;
   memory_word *eqtb = zeqtb;
 /*  for (k = 10280 + hash_extra; k < 10280 + eqtb_extra; k++) { */
-  for (k = hash_size + 780 + hash_extra; k < hash_size + 780 + eqtb_extra; k++) {
-    if (eqtb[k].cint != 0) {
-      if (count == 0) {
+  for (k = hash_size + 780 + hash_extra; k < hash_size + 780 + eqtb_extra; k++)
+  {
+    if (eqtb[k].cint != 0)
+    {
+      if (count == 0)
+      {
         show_char('\n');
         show_line("EQTB ", 0);
       }
@@ -547,7 +550,8 @@ void check_eqtb (char *act)
       if (count++ > 256) break;
     }
   }
-  if (count != 0) show_char('\n');
+  if (count != 0)
+    show_char('\n');
 }
 #endif
 
@@ -593,19 +597,22 @@ unsigned int heap_dump (FILE *output, int verbose)
 #endif
   }
   hinfo._pentry = NULL;
-  while ((heapstatus = _heapwalk(&hinfo)) == _HEAPOK) {
-    if (end_block > 0 && (int) hinfo._pentry > end_block + 1024) {
+  while ((heapstatus = _heapwalk(&hinfo)) == _HEAPOK)
+  {
+    if (end_block > 0 && (int) hinfo._pentry > end_block + 1024)
+    {
 //      if (verbose) printf("GAP of %d bytes!\n", (int) hinfo._pentry - end_block);
     }
     end_block = (int) hinfo._pentry + hinfo._size;
     if (hinfo._useflag == _USEDENTRY) total += hinfo._size;
     if (hinfo._size >= heapthreshold && verbose)
-    fprintf(output, "%6s block at %p (%7d) of size %6X (%7d) => (%7d)\n",
-      (hinfo._useflag == _USEDENTRY ? "USED" : "...."),
-        hinfo._pentry, hinfo._pentry, hinfo._size, hinfo._size,
+      fprintf(output, "%6s block at %p (%7d) of size %6X (%7d) => (%7d)\n",
+          (hinfo._useflag == _USEDENTRY ? "USED" : "...."),
+          hinfo._pentry, hinfo._pentry, hinfo._size, hinfo._size,
           end_block);
   }
-  switch (heapstatus) {
+  switch (heapstatus)
+  {
     case _HEAPEMPTY:
       if (verbose) fprintf(output, "OK - empty heap\n");
       break;
@@ -637,9 +644,12 @@ void show_maximums (FILE *output)
 //  if (output != NULL) fputs(log_line, output); // log file
 //  else if (flag == 0) show_line(log_line, 0); // informative
 //  else if (flag == 1) show_line(log_line, 1); // error
-  if (output == stderr) show_line(log_line, 1);
-  else if (output == stdout) show_line(log_line, 0);
-  else fputs(log_line, output);
+  if (output == stderr)
+    show_line(log_line, 1);
+  else if (output == stdout)
+    show_line(log_line, 0);
+  else
+    fputs(log_line, output);
 }
 
 /* our own version of realloc --- avoid supposed MicroSoft version bug */
@@ -652,15 +662,19 @@ void *ourrealloc (void *old, size_t new_size)
   size_t old_size, overlap;
 
 /*  round up to nearest multiple of four bytes *//* avoid unlikely alignment */
-  if ((new_size % 4) != 0) new_size = ((new_size / 4) + 1) * 4;
+  if ((new_size % 4) != 0)
+    new_size = ((new_size / 4) + 1) * 4;
 
-  if (old == NULL) return malloc (new_size);  /* no old block - use malloc */
+  if (old == NULL)
+    return malloc (new_size);  /* no old block - use malloc */
 
   old_size = _msize (old);
-  if (old_size >= new_size && old_size < new_size + 4) return old;
+  if (old_size >= new_size && old_size < new_size + 4)
+    return old;
 /*  _heapmin(); */  /* release unused heap space to the system - no op ? */
 #ifdef HEAPSHOW
-  if (trace_flag) {
+  if (trace_flag)
+  {
     show_line("BEFORE REALLOC: \n", 0);
 #ifdef HEAPWALK
     (void) heap_dump(stdout, 1);     /* debugging 96/Jan/18 */
@@ -668,10 +682,12 @@ void *ourrealloc (void *old, size_t new_size)
   }
 #endif
   mnew = _expand (old, new_size);      /* first try and expand in place */
-  if (mnew != NULL) {
-    if (trace_flag) {
+  if (mnew != NULL)
+  {
+    if (trace_flag)
+    {
       sprintf(log_line, "EXPANDED! %d (%d) == %d (%d)\n",
-        mnew, new_size, old, old_size);
+          mnew, new_size, old, old_size);
       show_line(log_line, 0);
     }
     return mnew;
@@ -680,20 +696,25 @@ void *ourrealloc (void *old, size_t new_size)
 /*  do this if you want to call the real realloc next -  */
   mnew = realloc (old, new_size);
 #ifdef HEAPSHOW
-  if (trace_flag) {
+  if (trace_flag)
+  {
     show_line("AFTER REALLOC: \n", 0);
 #ifdef HEAPWALK
     (void) heap_dump(stdout, 1);     /* debugging 96/Jan/18 */
 #endif
   }
 #endif
-  if (mnew != NULL) return mnew;
+  if (mnew != NULL)
+    return mnew;
 /*  we are screwed typically if we ever drop through here - no more space */
 /*  *********************************************************************** */
   mnew = malloc (new_size);          /* otherwise find new space */
-  if (mnew == NULL) return mnew;        /* if unable to allocate */
-  if (old_size < new_size) overlap = old_size;
-  else overlap = new_size;
+  if (mnew == NULL)
+    return mnew;        /* if unable to allocate */
+  if (old_size < new_size)
+    overlap = old_size;
+  else
+    overlap = new_size;
   memcpy (mnew, old, overlap);         /* copy old data to new area */
   free(old);                  /* free the old area */
   return mnew;
@@ -702,21 +723,24 @@ void *ourrealloc (void *old, size_t new_size)
 
 void memory_error (char *s, int n)
 {
-  if (log_opened) {
+  if (log_opened)
+  {
     fprintf(log_file, "\n! Unable to allocate %d bytes for %s\n", n, s);
     show_maximums(log_file);
 #ifdef HEAPWALK
-    if (heap_flag) (void) heap_dump(log_file, 1);
+    if (heap_flag)
+      (void) heap_dump(log_file, 1);
 #endif
   }
   sprintf(log_line, "\n! Unable to allocate %d bytes for %s\n", n, s);
   show_line(log_line, 1);
   show_maximums(stderr);
 #ifdef HEAPWALK
-  if (heap_flag) (void) heap_dump(stderr, 1);
+  if (heap_flag)
+    (void) heap_dump(stderr, 1);
 #endif
 /*  exit (1); */      /* 94/Jan/22 */
-/*  return to let TeX do its thing (such as complain about runaway) */  
+/*  return to let TeX do its thing (such as complain about runaway) */
 /*  don't set abort_flag here */
 }
 
@@ -728,7 +752,8 @@ void trace_memory (char *s, int n)
 
 void update_statistics (int address, int size, int oldsize)
 {
-  if (address + size > max_address) max_address = address + size;
+  if (address + size > max_address)
+    max_address = address + size;
   total_allocated =  total_allocated + size - oldsize;
 }
 
@@ -745,14 +770,17 @@ void probe_show (void)
   probe_memory();
   show_maximums(stdout);
 #ifdef HEAPWALK
-  if (heap_flag) (void) heap_dump(stdout, 1);
+  if (heap_flag)
+    (void) heap_dump(stdout, 1);
 #endif
 }
 
 size_t roundup (size_t n)
 {
-  if ((n % 4) == 0) return n;
-  else return ((n / 4) + 1) * 4;
+  if ((n % 4) == 0)
+    return n;
+  else
+    return ((n / 4) + 1) * 4;
 }
 
 #ifdef ALLOCATETRIES
@@ -774,7 +802,8 @@ int allocate_tries (int trie_max)
       show_line(log_line, 1);
     exit (1);
   } */ /* ??? removed 1993/dec/17 */
-  if (trie_max > 1000000) trie_max = 1000000; /* some sort of sanity limit */
+  if (trie_max > 1000000)
+    trie_max = 1000000; /* some sort of sanity limit */
 /*  important + 1 because original was halfword trie_trl[trie_size + 1] etc. */
   nl = (trie_max + 1) * sizeof(halfword);    /* trie_trl[trie_size + 1] */
   no = (trie_max + 1) * sizeof(halfword);    /* trie_tro[trie_size + 1] */
@@ -832,7 +861,8 @@ int realloc_hyphen (int hyphen_prime)
   nw = (hyphen_prime + 1) * sizeof(str_number);
   nl = (hyphen_prime + 1) * sizeof(halfword);
   n = nw + nl;
-  if (trace_flag) trace_memory("hyphen exception", n);
+  if (trace_flag)
+    trace_memory("hyphen exception", n);
 /*  initially hyph_word will be NULL so this acts like malloc */
 /*  hyph_word = (str_number *) malloc (nw); */
   hyph_word = (str_number *) REALLOC (hyph_word, nw);  /* 94/Mar/24 */
@@ -891,7 +921,7 @@ int current_mem_size=0;   /* current total words in main mem allocated -1 */
 memory_word *allocate_main_memory (int size)
 {
   int n;
-  
+
 /*  Using -i *and* pre-loading format */ /* in this case get called twice */
 /*  Get rid of initial blank memory again or use realloc ... */
 /*  Could we avoid this by detecting presence of & before allocating ? */

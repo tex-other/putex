@@ -23,9 +23,9 @@
 
 static const char *pool_file_arr[] =
 {
-  "buffer size",
-  "pool size",
-  "number of strings",
+/* 0256 */  "buffer size",
+/* 0257 */  "pool size",
+/* 0258 */  "number of strings",
   "" "?" "?" "?",
   "m2d5c2l5x2v5i",
   "End of file on the terminal!",
@@ -1070,9 +1070,10 @@ int load_pool_strings (integer spare_size)
   str_number g = 0;
   int i = 0;
   int j = 0;
+  int l;
   while ((s = pool_file_arr[j++]))
   {
-    int l = strlen (s);
+    l = strlen (s);
     i += l;
     if (i >= spare_size)
       return 0;

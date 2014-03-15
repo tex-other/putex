@@ -22,12 +22,6 @@
 /* The meanings of these paths are described in the man pages.
    This file is created from the defaults in Makefile.in.  */
 
-/* #define TEXPATH "c:/texas/" */
-
-/* #define TEXPATH "c:/y&ytex/" */
-
-/* #define TEXPATH "c:/yandytex/" */
-
 #define TEXPATH "c:/yandy/yandytex/" /* changed default 97/Mar/22 */
 
 #ifndef TEXFONTS

@@ -2622,30 +2622,20 @@ void do_initex (void)
   eqtb[(hash_size + 3520)].cint = 0;
   for (k = dimen_base; k <= eqtb_size; k++)
     eqtb[k].cint = 0;
-/*  hash_used = 10014;  */ /*   hash_used = frozen_control_sequence */
-/* frozen_control_sequence =  hashsize + hashbase p.222 */
-/*  hash_used = (hash_size + 514);  */
-  hash_used = (hash_size + hash_extra + 514); /* 96/Jan/10 */
+  hash_used = frozen_control_sequence;
   cs_count = 0; 
-  if (trace_flag) show_line("itex cs_count = 0 ", 0);   /* debugging */
-/* eq_type(frozen_dont_expand) <- dont_expand; */
-/*  eqtb[10023].hh.b0 = 116;  */
-/*  eqtb[(hash_size + 523)].hh.b0 = 116;  */
-  eqtb[(hash_size + hash_extra + 523)].hh.b0 = dont_expand;
-/*  hash[(hash_size + 523)].v.RH = 499;  */
-  hash[(hash_size + hash_extra + 523)].v.RH = 499;  /* notexpanded */
+  if (trace_flag)
+    show_line("itex cs_count = 0 ", 0); /* debugging */
+  eq_type(frozen_dont_expand) = dont_expand;
+  text(frozen_dont_expand) = 499;  /* notexpanded */
 /* @<Initialize table...@>= l.10750 */
-  font_ptr = 0;       /* font_ptr:=null_font; */
-  fmem_ptr = 7;       /* fmem_ptr:=7; */
-  font_name[0] = 795; /* nullfont */
-  font_area[0] = 335; /* "" */
-  hyphen_char[0] = 45;  /* - */
-  skew_char[0] = -1; 
-/* ************************************************************************ */
-/* bchar_label[null_font]:=non_address; */ /* 3.14159 */
-/*  bchar_label[0]= font_mem_size; */ /* OK ? 93/Nov/26 */
-  bchar_label[0]= non_address;  /* i.e. 0 --- 96/Jan/16  */
-/* ************************************************************************ */
+  font_ptr            = 0;
+  fmem_ptr            = 7;
+  font_name[0]        = 795; /* nullfont */
+  font_area[0]        = 335; /* "" */
+  hyphen_char[0]      = '-';
+  skew_char[0]        = -1; 
+  bchar_label[0]      = non_address;
   font_bchar[0]       = 256; /* font_bchar[null_font]:=non_char; */
   font_false_bchar[0] = 256; /* font_false_bchar[null_font]:=non_char; */
   font_bc[0]          = 1;
@@ -2682,11 +2672,9 @@ void do_initex (void)
   trie_l[0]= 0; 
   trie_c[0]= 0; 
   trie_ptr = 0; */
-/* text(frozen_protection):="inaccessible"; */
-/*  hash[10014].v.RH = 1183; */
-/*  hash[(hash_size + 514)].v.RH = 1184;  */
-  hash[(hash_size + hash_extra + 514)].v.RH = 1184; /* 1183 */
-  format_ident = 1251;  /* 1250 */
+
+  text(frozen_protection) = 1184; /* "inaccessible" */
+  format_ident = 1251;  /* " (INITEX)" */
 /*  hash[(hash_size + 522)].v.RH = 1290; */ /* 1288 */
   hash[(hash_size + hash_extra + 522)].v.RH = 1290; /* 1288 */
 /*  eqtb[(hash_size + 522)].hh.b1 = 1;  */
