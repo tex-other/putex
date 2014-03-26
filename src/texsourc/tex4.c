@@ -1913,12 +1913,12 @@ halfword char_box_(internal_font_number f, quarterword c)
   ffourquarters q;
   eight_bits hd;
   halfword b, p;
-  q = font_info[char_base[f]+ c].qqqq;
+  q = font_info[char_base[f] + c].qqqq;
   hd = q.b1;
   b = new_null_box();
-  mem[b + 1].cint = font_info[width_base[f]+ q.b0].cint + font_info[italic_base[f]+(q.b2) / 4].cint;
-  mem[b + 3].cint = font_info[height_base[f]+(hd) / 16].cint;
-  mem[b + 2].cint = font_info[depth_base[f]+(hd) % 16].cint;
+  mem[b + 1].cint = font_info[width_base[f] + q.b0].cint + font_info[italic_base[f] + (q.b2) / 4].cint;
+  mem[b + 3].cint = font_info[height_base[f] + (hd) / 16].cint;
+  mem[b + 2].cint = font_info[depth_base[f] + (hd) % 16].cint;
 /*  long to unsigned short ... */
   p = get_avail();
   mem[p].hh.b1 = c;
@@ -1942,7 +1942,7 @@ scaled height_plus_depth_(internal_font_number f, fquarterword c)
   eight_bits hd;
   q = font_info[char_base[f]+ c].qqqq;
   hd = q.b1;
-  Result = font_info[height_base[f]+(hd)/ 16].cint + font_info[depth_base[f]+(hd) % 16].cint;
+  Result = font_info[height_base[f] + (hd) / 16].cint + font_info[depth_base[f] + (hd) % 16].cint;
   return Result;
 }
 halfword var_delimiter_(halfword d, small_number s, scaled v)
@@ -1966,25 +1966,31 @@ halfword var_delimiter_(halfword d, small_number s, scaled v)
   largeattempt = false;
   z = mem[d].qqqq.b0;
   x = mem[d].qqqq.b1;
-  while (true) {
-    if ((z != 0) || (x != 0)) {
+  while (true)
+  {
+    if ((z != 0) || (x != 0))
+    {
       z = z + s + 16;
-      do {
+      do
+      {
         z = z - 16;
         g = eqtb[(hash_size + 1835) + z].hh.v.RH;
         if (g != 0) {
           y = x;
-          if ((y >= font_bc[g]) && (y <= font_ec[g])) {
+          if ((y >= font_bc[g]) && (y <= font_ec[g]))
+          {
 lab22:
             q = font_info[char_base[g]+ y].qqqq;
-            if ((q.b0 > 0)) {
-              if (((q.b2) % 4) == 3) {
+            if ((q.b0 > 0))
+            {
+              if (((q.b2) % 4) == 3)
+              {
                 f = g;
                 c = y;
                 goto lab40;
               }
               hd = q.b1;
-              u = font_info[height_base[g]+(hd)/ 16].cint + font_info[depth_base[g]+(hd)% 16].cint;
+              u = font_info[height_base[g] + (hd) / 16].cint + font_info[depth_base[g] + (hd) % 16].cint;
               if (u > w) {
                 f = g;
                 c = y;
