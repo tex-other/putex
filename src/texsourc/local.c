@@ -117,8 +117,10 @@ clock_t start_time, main_time, finish_time;
 char * dvi_directory = ""; /* user specified directory for dvi file */
 char * log_directory = ""; /* user specified directory for log file */
 char * aux_directory = ""; /* user specified directory for aux file */
+char * fmt_directory = ""; /* user specified directory for fmt file */
+char * pdf_directory = ""; /* user specified directory for pdf file */
 
-char *texpath = "";   /* path to executable - used if env vars not set */
+char * texpath = "";   /* path to executable - used if env vars not set */
 
 // #define MAXLINE 256
 
@@ -2341,8 +2343,10 @@ char *grabenv (char *varname)
   if (*varname == '\0') return NULL;    /* sanity check */
 /*  speedup to avoid double lookup when called from set_paths in ourpaths.c */
 /*  if (lastname != NULL && strcmp(lastname, varname) == 0) { */
-  if (lastname != NULL && _strcmpi(lastname, varname) == 0) {
-    if (trace_flag) {
+  if (lastname != NULL && _strcmpi(lastname, varname) == 0)
+  {
+    if (trace_flag)
+    {
       sprintf(log_line, "Cache hit: %s=%s\n", lastname, lastvalue);
       show_line(log_line, 0);
     }
@@ -3264,6 +3268,8 @@ void deslash_all (int ac, char **av)
   if ((s = grabenv("TEXDVI")) != NULL) dvi_directory = s;
   if ((s = grabenv("TEXLOG")) != NULL) log_directory = s;
   if ((s = grabenv("TEXAUX")) != NULL) aux_directory = s;
+  if ((s = grabenv("TEXFMT")) != NULL) fmt_directory = s;
+  if ((s = grabenv("TEXPDF")) != NULL) pdf_directory = s;
 
   strcpy(buffer, av[0]);            /* get path to executable */
   if ((s = strrchr(buffer, '\\')) != NULL) *(s+1) = '\0';
@@ -3278,6 +3284,8 @@ void deslash_all (int ac, char **av)
   if (strcmp(dvi_directory, "") != 0) flush_trailing_slash (dvi_directory);
   if (strcmp(log_directory, "") != 0) flush_trailing_slash (log_directory);
   if (strcmp(aux_directory, "") != 0) flush_trailing_slash (aux_directory);
+  if (strcmp(fmt_directory, "") != 0) flush_trailing_slash (fmt_directory);
+  if (strcmp(pdf_directory, "") != 0) flush_trailing_slash (pdf_directory);
 
   if (deslash) {
       unixify (texpath);          /* 94/Jan/25 */
@@ -3285,6 +3293,8 @@ void deslash_all (int ac, char **av)
       if (strcmp(dvi_directory, "") != 0) unixify(dvi_directory);
       if (strcmp(log_directory, "") != 0) unixify(log_directory);
       if (strcmp(aux_directory, "") != 0) unixify(aux_directory);
+      if (strcmp(fmt_directory, "") != 0) unixify(fmt_directory);
+      if (strcmp(pdf_directory, "") != 0) unixify(pdf_directory);
   }
 
 /*  deslash TeX source file (and format, if format specified) */

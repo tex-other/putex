@@ -574,7 +574,8 @@ void show_activities (void)
           }
           break;
       }
-    } while(p-- > for_end); } 
+    } while(p-- > for_end);
+ }
 }
 /* sec 0237 */
 void print_param_(integer n)
@@ -891,16 +892,17 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
     case 76:
       if (chrcode < skip_base)
         print_skip_param(chrcode - glue_base);
-      else if (chrcode < mu_skip_base)
-      {
-        print_esc("skip");
-        print_int(chrcode - skip_base);
-      }
       else
-      {
-        print_esc("muskip");
-        print_int(chrcode - mu_skip_base);
-      }
+        if (chrcode < mu_skip_base)
+        {
+          print_esc("skip");
+          print_int(chrcode - skip_base);
+        }
+        else
+        {
+          print_esc("muskip");
+          print_int(chrcode - mu_skip_base);
+        }
       break;
     case 72:
       if (chrcode >= toks_base)
@@ -942,7 +944,8 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
     case 73:
       if (chrcode < count_base)
         print_param(chrcode - int_base);
-      else {
+      else
+      {
         print_esc("count");
         print_int(chrcode - count_base);
       }
@@ -950,7 +953,8 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
     case 74:
       if (chrcode < scaled_base)
         print_length_param(chrcode - dimen_base);
-      else {
+      else
+      {
         print_esc("dimen");
         print_int(chrcode - scaled_base);
       }

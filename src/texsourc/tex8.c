@@ -66,10 +66,8 @@ void math_fraction (void)
     switch(c % 3)
     {
       case 0:
-        {
-          scan_dimen(false, false, false);
-          mem[cur_list.aux_field.cint + 1].cint = cur_val;
-        }
+        scan_dimen(false, false, false);
+        mem[cur_list.aux_field.cint + 1].cint = cur_val;
         break;
       case 1:
         mem[cur_list.aux_field.cint + 1].cint = 1073741824L;  /* 2^30 */
@@ -86,6 +84,7 @@ void math_left_right (void)
   small_number t;
   halfword p;
   t = cur_chr;
+
   if ((t == 31) && (cur_group != 16))
   {
     if (cur_group == 15)

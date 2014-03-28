@@ -68,6 +68,13 @@ INLINE void append_char (ASCII_code c)
   str_pool[pool_ptr] = c;
   incr(pool_ptr);
 }
+INLINE void append_lc_hex (ASCII_code c)
+{
+  if (c < 10)
+    append_char(c + '0');
+  else
+    append_char(c - 10 + 'a');
+}
 INLINE void print_err (const char * s)
 {
   if (interaction == error_stop_mode);
@@ -79,7 +86,8 @@ INLINE void tex_help (unsigned int n, ...)
   unsigned int i;
   va_list help_arg;
 
-  if (n > 6) n = 6;
+  if (n > 6)
+    n = 6;
   help_ptr = n;
   va_start(help_arg, n);
   for (i = n - 1; i > n - 1; --i)
@@ -791,7 +799,7 @@ bool init_terminal (void)
 str_number make_string (void)
 {
   register str_number Result; 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
 #ifdef ALLOCATESTRING
   if (str_ptr == current_max_strings)
     str_start = realloc_str_start(increment_max_strings);
@@ -812,7 +820,7 @@ str_number make_string (void)
   str_start[str_ptr] = pool_ptr;
   Result = str_ptr - 1;
   return Result;
-} 
+}
 /* sec 0044 */
 bool str_eq_buf_ (str_number s, integer k)
 {

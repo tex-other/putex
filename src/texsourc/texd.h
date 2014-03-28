@@ -1618,6 +1618,8 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define frozen_null_font              frozen_control_sequence + 10   // (hash_size + hash_extra + 524)
 #define font_id_base                  frozen_null_font - font_base   // (hash_size + hash_extra + 524)
 #define undefined_control_sequence    frozen_null_font + 1025        // (hash_size + hash_extra + 781) = font_max + 2
+                                                                     // (hash_size + (255 - 1024) + 1025 + 524)
+                                                                     // (hash_size + 780)
 #define glue_base                     undefined_control_sequence + 1 // (hash_size + hash_extra + 782)
 /* sec 0224 */
 #define line_skip_code                0  // 782
@@ -2113,6 +2115,7 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 
 extern INLINE void tex_help (unsigned int n, ...);
 extern INLINE void append_char(ASCII_code c);
+extern INLINE void append_lc_hex(ASCII_code c);
 extern INLINE void succumb(void);
 extern INLINE void dvi_out_ (ASCII_code op);
 #define dvi_out(op) dvi_out_((ASCII_code) (op))

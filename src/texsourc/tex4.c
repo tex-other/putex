@@ -2046,25 +2046,17 @@ lab40:
         if (c != 0)
           stack_into_box(b, f, c); 
         c = r.b3;
+        for (m = 1; m <= n; m++)
         {
-          register integer for_end;
-          m = 1;
-          for_end = n;
-          if (m <= for_end) do
-          stack_into_box(b, f, c); 
-          while (m++ < for_end);
+          stack_into_box(b, f, c);
         }
         c = r.b1;
         if (c != 0) {
           stack_into_box(b, f, c); 
           c = r.b3;
+          for (m = 1; m <= n; m++)
           {
-            register integer for_end;
-            m = 1;
-            for_end = n;
-            if (m <= for_end) do
             stack_into_box(b, f, c);
-            while(m++ < for_end);
           }
         }
         c = r.b0;

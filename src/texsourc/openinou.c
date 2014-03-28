@@ -504,9 +504,11 @@ char *get_env_shroud (char *);    /* defined in texmf.c */
 
 /* char outputdirectory[PATH_MAX]; */       /* defined in local.c */
 
-extern char * dvi_directory;       /* defined in local.c */
-extern char * log_directory;       /* defined in local.c */
-extern char * aux_directory;       /* defined in local.c */
+extern char * dvi_directory; /* defined in local.c */
+extern char * log_directory; /* defined in local.c */
+extern char * aux_directory; /* defined in local.c */
+extern char * fmt_directory; /* defined in local.c */
+extern char * pdf_directory; /* defined in local.c */
 
 #ifdef IGNORED
 /* Try and figure out if can write to current directory */
@@ -654,9 +656,11 @@ bool open_output (FILE **f, char *fopen_mode)
 #ifdef MSDOS
 /* write into user specified output directory if given on command line */
 /* following code added 1993/Dec/12 */ /* separated 1996/Jan/20 */
-  if (prepend_path_if (name_of_file + 1, name_of_file+1, ".dvi", (unsigned char *) dvi_directory) ||
-      prepend_path_if (name_of_file + 1, name_of_file+1, ".log", (unsigned char *) log_directory) ||
-      prepend_path_if (name_of_file + 1, name_of_file+1, ".aux", (unsigned char *) aux_directory))
+  if (prepend_path_if (name_of_file + 1, name_of_file + 1, ".dvi", (unsigned char *) dvi_directory) ||
+      prepend_path_if (name_of_file + 1, name_of_file + 1, ".log", (unsigned char *) log_directory) ||
+      prepend_path_if (name_of_file + 1, name_of_file + 1, ".aux", (unsigned char *) aux_directory) ||
+      prepend_path_if (name_of_file + 1, name_of_file + 1, ".fmt", (unsigned char *) fmt_directory) ||
+      prepend_path_if (name_of_file + 1, name_of_file + 1, ".pdf", (unsigned char *) pdf_directory))
   {
     if (open_trace_flag)
     {
@@ -672,7 +676,7 @@ bool open_output (FILE **f, char *fopen_mode)
   {
     sprintf(log_line, " Open `%s' for output ", name_of_file + 1); /* C string */
     show_line(log_line, 0);
-  }   // debugging only
+  }
 
 /* Is the filename openable as given?  */
 
@@ -693,7 +697,7 @@ bool open_output (FILE **f, char *fopen_mode)
       unsigned char temp_name[PATH_MAX];
       xconcat3((char *) temp_name, temp_dir, PATH_SEP_STRING, (char *)name_of_file + 1);
 #else
-/*          string temp_name = concat3 (temp_dir, "/", name_of_file + 1); */
+/*    string temp_name = concat3 (temp_dir, "/", name_of_file + 1); */
       string temp_name = concat3 (temp_dir, PATH_SEP_STRING, name_of_file + 1);
 #endif
       if (deslash) unixify((char *) temp_name);     /* deslashify 93/Dec/28 */
@@ -713,21 +717,21 @@ bool open_output (FILE **f, char *fopen_mode)
 //  To remember for output at the end 2000 June 18
   if (strstr((char *)name_of_file + 1, ".dvi") != NULL)
   {
-    if (qualified(name_of_file+1))
+    if (qualified(name_of_file + 1))
       *log_line = '\0';
     else
     {
       (void) _getcwd(log_line, sizeof(log_line));
       strcat(log_line, PATH_SEP_STRING);
     }
-    strcat(log_line, (char*) name_of_file+1);
+    strcat(log_line, (char*) name_of_file + 1);
     unixify(log_line);
     dvi_file_name = xstrdup(log_line);
 //    show_line(dvi_file_name, 1);  // debugging only
   }
   else if (strstr((char *)name_of_file + 1, ".log") != NULL)
   {
-    if (qualified(name_of_file+1))
+    if (qualified(name_of_file + 1))
       *log_line = '\0';
     else
     {

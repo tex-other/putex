@@ -1549,8 +1549,7 @@ bool load_fmt_file (void)
   halfword p, q;
   integer x;
 
-/* sec 1308 */
-  undump_int(x); /* CHECKSUM */
+  undump_int(x);
   if (x != BEGINFMTCHECKSUM) /* magic FMT file start 4C 20 E6 15 hex */
     goto lab6666;
 
@@ -1578,7 +1577,7 @@ bool load_fmt_file (void)
     goto lab6666;
 
   undump_int(x); /* eqtbsize */
-  if (x != (hash_size + 4006)) /* eqtbsize */
+  if (x != (eqtb_size))
     goto lab6666;
   undump_int(x); /* hash_prime */
   if (x != hash_prime)
@@ -1587,7 +1586,7 @@ bool load_fmt_file (void)
 
 #ifdef ALLOCATEHYPHEN
 /* allow format files dumped with arbitrary (prime) hyphenation exceptions */
-  realloc_hyphen (x);            /* reset_hyphen(); */
+  realloc_hyphen(x); /* reset_hyphen(); */
   hyphen_prime = x;
 #endif
 
@@ -1648,40 +1647,38 @@ bool load_fmt_file (void)
       str_ptr = x;
   }
 
-  if (undumpthings(str_start[0], str_ptr + 1))
-    return -1; /* undump string ptrs */
-  if (undumpthings(str_pool[0], pool_ptr))
-    return -1; /*  undump string pool */
+  if (undumpthings(str_start[0], str_ptr + 1)) /* undump string ptrs */
+    return -1;
+  if (undumpthings(str_pool[0], pool_ptr)) /*  undump string pool */
+    return -1;
 
   init_str_ptr = str_ptr;
   init_pool_ptr = pool_ptr;
 /*  undump the dynamic memory - paragraph 1312 in the book */
   {
     undump_int(x);
-    if ((x < 1019) || (x > mem_top - 14))
+    if ((x < lo_mem_stat_max + 1000) || (x > hi_mem_stat_min - 1))
       goto lab6666;
     else
       lo_mem_max = x;
   }
   {
     undump_int(x);
-    if ((x < 20) || (x > lo_mem_max))
+    if ((x < lo_mem_stat_max + 1) || (x > lo_mem_max))
       goto lab6666;
     else
       rover = x;
   }
   p = 0;                  /* mem_bot */
   q = rover;
-  do
-  {
+  do {
     if (undumpthings(mem[p], q + 2 - p))
       return -1;
-    p = q + mem[q].hh.v.LH;
-    if ((p > lo_mem_max) || ((q >= mem[q + 1].hh.v.RH) && (mem[q + 1].hh.v.RH != rover)))
+    p = q + node_size(q);
+    if ((p > lo_mem_max) || ((q >= rlink(q)) && (rlink(q) != rover)))
       goto lab6666;
-    q = mem[q + 1].hh.v.RH;
-  }
-  while(!(q == rover));
+    q = rlink(q);
+  } while (!(q == rover));
   if (undumpthings(mem[p], lo_mem_max + 1 - p))
     return -1;
 /*  if (mem_min < -2) */
@@ -1690,22 +1687,20 @@ bool load_fmt_file (void)
 /*  or call add_variable_space(mem_bot - (mem_min + 1)) */
     if (trace_flag)
       show_line("Splicing in mem_min space in undump!\n", 0);
-    p = mem[rover + 1].hh.v.LH;
+    p = llink(rover);
     q = mem_min + 1;
-    mem[mem_min].hh.v.RH = 0;       /* null */
-    mem[mem_min].hh.v.LH = 0;       /* null */
-    mem[p + 1].hh.v.RH = q;
-    mem[rover + 1].hh.v.LH = q;
-    mem[q + 1].hh.v.RH = rover;
-    mem[q + 1].hh.v.LH = p;
-/*    mem[q].hh.v.RH = 262143L;  */ /* NO! */
-    mem[q].hh.v.RH = empty_flag;
-/*    mem[q].hh.v.LH = -0 - q;  */
-    mem[q].hh.v.LH = mem_bot - q;     /* ? size of block  */
+    link(mem_min) = 0;       /* null */
+    info(mem_min) = 0;       /* null */
+    rlink(p) = q;
+    llink(rover) = q;
+    rlink(q) = rover;
+    llink(q) = p;
+    link(q) = empty_flag;
+    node_size(q) = mem_bot - q;     /* ? size of block  */
   }
   {
     undump_int(x);
-    if ((x < lo_mem_max + 1) || (x > mem_top - 13))
+    if ((x < lo_mem_max + 1) || (x > hi_mem_stat_min))
       goto lab6666;
     else
       hi_mem_min = x;
@@ -1723,29 +1718,27 @@ bool load_fmt_file (void)
     return -1;
   undump_int(var_used);
   undump_int(dyn_used);
-  k = 1;
-  do
-  {
+
+  k = active_base;
+  do {
     undump_int(x);
-    if ((x < 1) || (k + x > (hash_size + 4007)))
+    if ((x < 1) || (k + x > (eqtb_size + 1)))
       goto lab6666;
     if (undumpthings(eqtb[k], x))
       return -1;
     k = k + x;
     undump_int(x);
-    if ((x < 0) || (k + x > (hash_size + 4007)))
+    if ((x < 0) || (k + x > (eqtb_size + 1)))
       goto lab6666;
     for (j = k; j <= k + x - 1; j++)
     {
       eqtb[j] = eqtb[k - 1];
     }
     k = k + x;
-  } while(!(k > (hash_size + 4006)));
+  } while(!(k > (eqtb_size)));
   {
     undump_int(x);
-/*  if ((x < hashbase)||(x > hashbase + hashsize)) */
-/*    if ((x < 514)||(x > (hash_size + 514)))  */
-    if ((x < 514)||(x > (hash_size + hash_extra + 514)))  /*96/Jan/10*/
+    if ((x < hash_base) || (x > (frozen_control_sequence)))  /*96/Jan/10*/
       goto lab6666;
     else
       par_loc = x;
@@ -1753,23 +1746,19 @@ bool load_fmt_file (void)
   par_token = 4095 + par_loc;
   {
     undump_int(x);
-/*  if ((x < hashbase)||(x > hashbase + hashsize)) */
-/*    if ((x < 514)||(x > (hash_size + 514)))  */
-    if ((x < 514) || (x > (hash_size + hash_extra + 514))) /*96/Jan/10*/
+    if ((x < hash_base) || (x > (frozen_control_sequence))) /*96/Jan/10*/
       goto lab6666;
     else
       write_loc = x;
   }
   {
     undump_int(x);
-/*  if ((x < hashbase)||(x > hashbase + hashsize)) */
-/*    if ((x < 514)||(x > (hash_size + 514)))  */
-    if ((x < 514) || (x > (hash_size + hash_extra + 514))) /*96/Jan/10*/
+    if ((x < hash_base) || (x > (frozen_control_sequence))) /*96/Jan/10*/
       goto lab6666;
     else
       hash_used = x;
   }
-  p = 513;
+  p = hash_base - 1;
   do {
     {
       undump_int(x);
@@ -1779,8 +1768,9 @@ bool load_fmt_file (void)
         p = x;
     }
     undump_hh(hash[p]);
-  } while(!(p == hash_used));
-  if (undumpthings(hash[hash_used + 1], (hash_size + 780) - hash_used))
+  } while (!(p == hash_used));
+
+  if (undumpthings(hash[hash_used + 1], (undefined_control_sequence - 1) - hash_used))
     return -1;
 
   undump_int(cs_count);     /* cs_count */
@@ -1886,10 +1876,9 @@ bool load_fmt_file (void)
   }
 
 /* log not opened yet, so can't show fonts frozen into format */
-  
 /* May be able to avoid the following since we switched to */
 /* non_address from font_mem_size to 0 96/Jan/15 ??? */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
 #ifdef ALLOCATEFONT
 /* deal with fmt files dumped with *different* font_mem_size 93/Nov/29 */
  {
@@ -1926,7 +1915,6 @@ bool load_fmt_file (void)
 /* undump(0)(hyph_size)(hyph_count); */
   {
     undump_int(x);
-/* if ((x < 0)||(x > 607))  */
     if ((x < 0) || (x > hyphen_prime))
       goto lab6666;
     else
@@ -1942,7 +1930,6 @@ bool load_fmt_file (void)
       else
         j = x;
     }
-/* undump(0)(str_ptr)(hyph_word[j]); */
     {
       undump_int(x);
       if ((x < 0) || (x > str_ptr))
@@ -1950,7 +1937,6 @@ bool load_fmt_file (void)
       else
         hyph_word[j] = x;
     }
-/* undump(min_halfword)(max_halfword)(hyph_list[j]); */
     {
       undump_int(x);
       if ((x < 0) || (x > max_halfword)) /* mem_top ? no p.1325 */
@@ -1959,7 +1945,7 @@ bool load_fmt_file (void)
         hyph_list[j] = x;
     }
   }
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
 #ifdef ALLOCATEHYPHEN
 /* if user specified new hyphen prime - flush existing exception patterns ! */
 /* but, we can reclaim the string storage wasted ... */
@@ -1967,17 +1953,17 @@ bool load_fmt_file (void)
   {
     if (new_hyphen_prime != 0)
     {
-      realloc_hyphen(new_hyphen_prime); /*  reset_hyphen(); */
+      realloc_hyphen(new_hyphen_prime); /* reset_hyphen(); */
       hyphen_prime = new_hyphen_prime;
     }
   }
 #endif
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
   {
     undump_int(x);
     if (x < 0)
       goto lab6666;
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
 #ifdef ALLOCATETRIES
     if (!is_initex)
     {
@@ -1985,7 +1971,7 @@ bool load_fmt_file (void)
 /* trie_size = x; */ /* ??? */
     }
 #endif
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
     if (x > trie_size)
     {
       sprintf(log_line, "%s%s\n",  "---! Must increase the ", "trie size");
@@ -1996,7 +1982,6 @@ bool load_fmt_file (void)
       j = x;
   }
 #ifdef INITEX
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (is_initex) /* bkph */
     trie_max = j;
 #endif /* INITEX */
@@ -2019,15 +2004,11 @@ bool load_fmt_file (void)
     else
       j = x;
   }
+
 #ifdef INITEX
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (is_initex)   /* bkph */
     trie_op_ptr = j;
 #endif /* INITEX */
-/* for k:=1 to j do
-  begin undump(0)(63)(hyf_distance[k]); {a |small_number|}
-  undump(0)(63)(hyf_num[k]);
-  undump(min_quarterword)(max_quarterword)(hyf_next[k]); end; */
   
   if (undumpthings(hyf_distance[1], j))
     return -1;
@@ -2037,7 +2018,6 @@ bool load_fmt_file (void)
     return -1;
 
 #ifdef INITEX
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (is_initex)    /* bkph */
   {
     for (k = 0; k <= 255; k++)
@@ -2048,7 +2028,6 @@ bool load_fmt_file (void)
 #endif /* INITEX */
   k = 256;
   while (j > 0) {
-/* undump(0)(k-1)(k) */
     {
       undump_int(x);
       if ((x < 0) || (x > k - 1))
@@ -2056,7 +2035,6 @@ bool load_fmt_file (void)
       else
         k = x;
     }
-/* undump(1)(j)(x) */
     {
       undump_int(x);
       if ((x < 1) || (x > j))
@@ -2065,7 +2043,6 @@ bool load_fmt_file (void)
         x = x;
     }
 #ifdef INITEX
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     if (is_initex)          /* bkph */
       trie_used[k] = x;
 #endif /* INITEX */
@@ -2074,18 +2051,15 @@ bool load_fmt_file (void)
     op_start[k] = j;
   }
 #ifdef INITEX
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (is_initex)          /* bkph */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     trie_not_ready = false;
 #endif /* INITEX */
   {
     undump_int(x);
-    if ((x < 0) || (x > 3))
+    if ((x < batch_mode) || (x > error_stop_mode))
       goto lab6666;
 /*    else interaction = x;  */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    if (interaction < 0)    /* may now set in local.c bkph 94/Jan/8 */
+    if (interaction < batch_mode)    /* may now set in local.c bkph 94/Jan/8 */
       interaction = x;
   }
   {
@@ -2108,7 +2082,7 @@ lab6666:;
   sprintf(log_line, "(Fatal format file error; I'm stymied)\n");
   show_line(log_line, 1);
 /* added following bit of explanation 96/Jan/10 */
-  if (! knuth_flag)
+  if (!knuth_flag)
     bad_formator_pool(format_file, "the format file", "TEXFORMATS");
   Result = false;
   return Result;
@@ -2120,6 +2094,7 @@ void final_cleanup (void)
   c = cur_chr;
   if (job_name == 0)
     open_log_file();
+
   while (input_ptr > 0) {
     if (cur_input.state_field == 0)
     {
@@ -2128,10 +2103,12 @@ void final_cleanup (void)
     else
       end_file_reading();
   }
+
   while (open_parens > 0) {
     print_string(" )");
     decr(open_parens);
   }
+
   if (cur_level > level_one)
   {
     print_nl("(");
@@ -2140,16 +2117,19 @@ void final_cleanup (void)
     print_int(cur_level - 1);
     print_char(')');
   }
+
   while (cond_ptr != 0) {
     print_nl("(");
     print_esc("end occurred ");
     print_string("when ");
-    print_cmd_chr(105, cur_if); /* i */
+    print_cmd_chr('i', cur_if);
+
     if (if_line != 0)
     {
       print_string("on line ");
       print_int(if_line);
     }
+
     print_string(" was incomplete)");
     if_line = mem[cond_ptr + 1].cint;
     cur_if = mem[cond_ptr].hh.b1;
@@ -2157,18 +2137,17 @@ void final_cleanup (void)
     cond_ptr = mem[cond_ptr].hh.v.RH;
     free_node(temp_ptr, 2);
   }
-  if (history != 0)
-    if (((history == 1) || (interaction < 3)))
-      if (selector == 19)
+  if (history != spotless)
+    if (((history == warning_issued) || (interaction < error_stop_mode)))
+      if (selector == term_and_log)
       {
-        selector = 17;
+        selector = term_only;
         print_nl(" (see the transcript file for additional information)");
-        selector = 19;
+        selector = term_and_log;
       }
   if (c == 1)
   {
 #ifdef INITEX
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     if (is_initex)
     {
       for (c = 0; c <= 4; c++)
@@ -2357,12 +2336,12 @@ int texbody (void)          /* now returns a value --- bkph */
   }
 #endif /* INITEX */
 /*  if ((mem_min > 0)||(mem_max < mem_top))  */
-  if ((mem_min > mem_bot)||(mem_max < mem_top))
+  if ((mem_min > mem_bot) || (mem_max < mem_top))
     bad = 10;
-  if ((min_quarterword > 0)||(max_quarterword < 255))
+  if ((min_quarterword > 0) || (max_quarterword < 255))
     bad = 11;
 /*  if ((0 > 0)||(262143L < 32767))  */
-  if ((min_halfword > 0)||(max_halfword < 32767))
+  if ((min_halfword > 0) || (max_halfword < 32767))
     bad = 12;
 /*  if ((0 < 0)||(255 > 262143L))  */
   if ((min_quarterword < min_halfword) || (max_quarterword > max_halfword))
@@ -2425,7 +2404,7 @@ int texbody (void)          /* now returns a value --- bkph */
   ready_already = 314159L;      /* magic number */
 
 lab1:     /* get here directly if ready_already already set ... */
-  selector = 17;
+  selector = term_only;
   tally = 0;
   term_offset = 0;
   file_offset = 0;
@@ -2460,9 +2439,9 @@ lab1:     /* get here directly if ready_already already set ... */
 /*    first = buf_size; */
       memset (buffer, 0, buf_size);     /* redundant ? */
 #endif
-/*      do {
-      buffer[first]= 0;
-      decr(first);
+/*    do {
+        buffer[first]= 0;
+        decr(first);
       } while(!(first == 0)); */
       first = 0;              /* 1999/Jan/22 */
 
@@ -2512,10 +2491,10 @@ lab1:     /* get here directly if ready_already already set ... */
     dateandtime(tex_time, day, month, year);
     magic_offset = str_start[886] - 9 * 16;  /* following: */
 /*  "0234000122*4000133**3**344*0400400*000000234000111*1111112341011" */
-    if (interaction == 0)
-      selector = 16;
+    if (interaction == batch_mode)
+      selector = no_print;
     else
-      selector = 17;
+      selector = term_only;
      if ((cur_input.loc_field < cur_input.limit_field) &&
        (eqtb[(hash_size + 1883) + buffer[cur_input.loc_field]].hh.v.RH != 0))
        start_input();
@@ -2856,47 +2835,30 @@ bool get_strings_started (void)
   pool_ptr = 0;
   str_ptr = 0;
   str_start[0] = 0;
+
   {
     register integer for_end;
     k = 0;
     for_end = 255;
     if (k <= for_end)
       do {
-        if (((k < 32) || (k > 126)))
+        if (((k < ' ') || (k > '~')))
         {
           append_char('^');
           append_char('^');
           if (k < 64)
             append_char(k + 64);
-          else if (k < 128)
-            append_char(k - 64);
           else
-          {
-            l = k / 16;
-            if (l < 10)
-            {
-              str_pool[pool_ptr] = l + '0';
-              incr(pool_ptr);
-            }
+            if (k < 128)
+              append_char(k - 64);
             else
             {
-              str_pool[pool_ptr] = l + 87; /* 'a' - 10 */
-              incr(pool_ptr);
+              append_lc_hex(k / 16);
+              append_lc_hex(k % 16);
             }
-            l = k % 16;
-            if (l < 10)
-            {
-              str_pool[pool_ptr] = l + '0';
-              incr(pool_ptr);
-            }
-            else
-            {
-              str_pool[pool_ptr] = l + 87; /* 'a' - 10 */
-              incr(pool_ptr);
-            }
-          }
         }
-        else append_char(k);
+        else
+          append_char(k);
         g = make_string();
       } while(k++ < for_end);
   }
@@ -3030,7 +2992,7 @@ lab30:
     return(Result);
   }
 #endif
-  g = load_pool_strings (pool_size - stringvacancies);
+  g = load_pool_strings(pool_size - stringvacancies);
   if (g == 0)
   {
     fprintf(stdout , "%s\n",  "! You have to increase POOLSIZE." );
@@ -3051,7 +3013,7 @@ void sort_avail (void)
   p = rlink(rover);
   rlink(rover) = empty_flag;
   old_rover = rover;
-  while (p != old_rover)
+  while (p != old_rover) {
     if (p < rover)
     {
       q = p;
@@ -3069,6 +3031,7 @@ void sort_avail (void)
       rlink(q) = p;
       p = r;
     }
+  }
   p = rover;
   while (rlink(p) != empty_flag) {
     llink(rlink(p)) = p;
@@ -3122,7 +3085,7 @@ void primitive_ (str_number s, quarterword c, halfword o)
     l = str_start[s + 1] - k; /* small_number l */
     for (j = 0; j <= l - 1; j++)
     {
-        buffer[j] = str_pool[k + j];
+      buffer[j] = str_pool[k + j];
     }
     cur_val = id_lookup(0, l);
     flush_string();
@@ -3150,16 +3113,15 @@ trie_op_code new_trie_op_ (small_number d, small_number n, trie_op_code v)
   integer l;
 /* the 313, 361 and 1009 are hard-wired constants here p.944 */
 /* begin h:=abs(n+313*d+361*v+1009*cur_lang) mod (trie_op_size+trie_op_size) */
-  h = abs(toint(n) + 313 * toint(d) + 361 * toint(v) +
-      1009 * toint(cur_lang)) % (trie_op_size - neg_trie_op_size) + neg_trie_op_size;
+  h = abs(toint(n) + 313 * toint(d) + 361 * toint(v) + 1009 * toint(cur_lang)) % (trie_op_size - neg_trie_op_size) + neg_trie_op_size;
   while (true) {
-/*  if l=0 then {empty position found for a new op} */
     l = trie_op_hash[h];
     if (l == 0)
     {
       if (trie_op_ptr == trie_op_size)
       {
-        overflow("pattern memory ops", trie_op_size); /* pattern memory ops  - NOT DYNAMIC */
+        /* pattern memory ops  - NOT DYNAMIC */
+        overflow("pattern memory ops", trie_op_size);
         return 0;     // abort_flag set
       }
       u = trie_used[cur_lang];
@@ -3167,7 +3129,8 @@ trie_op_code new_trie_op_ (small_number d, small_number n, trie_op_code v)
       if (u == max_trie_op)
       {
 /*      overflow("pattern memory ops per language", max_quarterword-min_quarterword); ??? */
-        overflow("pattern memory ops per language", max_trie_op - min_trie_op); /* pattern memory ops per language */
+        /* pattern memory ops per language */
+        overflow("pattern memory ops per language", max_trie_op - min_trie_op);
         return 0;     // abort_flag set
       }
       incr(trie_op_ptr);
@@ -3184,11 +3147,10 @@ trie_op_code new_trie_op_ (small_number d, small_number n, trie_op_code v)
       Result = u;
       return(Result);
     }
-    if ((hyf_distance[l]== d) && (hyf_num[l]== n) &&
-      (hyf_next[l]== v) && (trie_op_lang[l]== cur_lang))
+    if ((hyf_distance[l]== d) && (hyf_num[l]== n) && (hyf_next[l]== v) && (trie_op_lang[l]== cur_lang))
     {
-        Result = trie_op_val[l];
-        return(Result);
+      Result = trie_op_val[l];
+      return(Result);
     }
     if (h > - (integer) trie_op_size)
       decr(h);
@@ -3217,8 +3179,8 @@ trie_pointer trie_node_ (trie_pointer p)
     if ((trie_c[q] == trie_c[p]) && (trie_o[q] == trie_o[p]) &&
       (trie_l[q]== trie_l[p]) && (trie_r[q]== trie_r[p]))
     {
-        Result = q;
-        return(Result);
+      Result = q;
+      return(Result);
     }
     if (h > 0)
       decr(h);
@@ -3258,7 +3220,8 @@ void first_fit_ (trie_pointer p)
     {
       if (trie_size <= h + 256)
       {
-        overflow("pattern memory", trie_size);  /* pattern memory - NOT DYNAMIC */
+        /* pattern memory - NOT DYNAMIC */
+        overflow("pattern memory", trie_size);
 /*      not dynamic ---- but can be set -h=... from command line in ini-TeX */
         return;     // abort_flag set
       }
@@ -3356,11 +3319,14 @@ void new_patterns (void)
     {
       if (trace_flag)
         show_line("Resetting patterns\n", 0);
+
       reset_trie();         /* RESET PATTERNS -  93/Nov/26 */
+
       if (reset_exceptions)
       {
         if (trace_flag)
           show_line("Resetting exceptions\n", 0);
+
         reset_hyphen();     /* RESET HYPHENEXCEPTIONS -  93/Nov/26 */
       }
     }
@@ -3522,7 +3488,7 @@ void init_trie (void)
   }
   for (j = 1; j <= trie_op_ptr; j++)
   {
-    while (trie_op_hash[j]> j) {
+    while (trie_op_hash[j] > j) {
       k = trie_op_hash[j];
       t = hyf_distance[k];
       hyf_distance[k] = hyf_distance[j];
@@ -3534,7 +3500,7 @@ void init_trie (void)
       hyf_next[k] = hyf_next[j];
       hyf_next[j]= t;
       trie_op_hash[j] = trie_op_hash[k];
-      trie_op_hash[k]= k;
+      trie_op_hash[k] = k;
     }
   }
   for (p = 0; p <= trie_size; p++)
@@ -3609,7 +3575,7 @@ void store_fmt_file (void)
     succumb();
   } /* end of if save_ptr != 0 */
 
-  selector = 21;
+  selector = new_string;
   print_string(" (format=");
   print(job_name);
   print_char(' ');
@@ -3619,10 +3585,12 @@ void store_fmt_file (void)
   print_char('.');
   print_int(day);
   print_char(')');
+
   if (interaction == 0)
-    selector = 18;
+    selector = log_only;
   else
-    selector = 19;
+    selector = term_and_log;
+
   {
 #ifdef ALLOCATESTRING
     if (pool_ptr + 1 > current_pool_size)
@@ -3642,9 +3610,11 @@ void store_fmt_file (void)
   }
   format_ident = make_string();
   pack_job_name(780);   /* .fmt */
+
   while(! w_open_out(fmt_file)) {
     prompt_file_name(1267, 780); /* format file name  .fmt */
   }
+
   print_nl(" Beginning to dump on file ");
   slow_print(w_make_name_string(fmt_file));
   flush_string();
@@ -3654,10 +3624,11 @@ void store_fmt_file (void)
 /*  dump_int(0); */
   dump_int(mem_bot);
   dump_int(mem_top);
-  dump_int((hash_size + 4006)); /* eqtbsize */
+  dump_int(eqtb_size);
   dump_int(hash_prime); 
 /*  dump_int(607);  */
   dump_int(hyphen_prime);   /* bkph */
+
   dump_int(pool_ptr);
   dump_int(str_ptr);
   if (dumpthings(str_start[0], str_ptr + 1))
@@ -3668,6 +3639,7 @@ void store_fmt_file (void)
   print_int(str_ptr);
   print_string(" strings of total length ");
   print_int(pool_ptr);
+
   sort_avail();
   var_used = 0;
   dump_int(lo_mem_max);
@@ -3706,25 +3678,26 @@ void store_fmt_file (void)
   print_int(var_used);
   print_char('&');
   print_int(dyn_used);
-  k = 1;
+
+  k = active_base;
   do {
     j = k;
-    while (j < (hash_size + 3162)) {
-      if ((eqtb[j].hh.v.RH == eqtb[j + 1].hh.v.RH) &&
-          (eqtb[j].hh.b0 == eqtb[j + 1].hh.b0) &&
-          (eqtb[j].hh.b1 == eqtb[j + 1].hh.b1))
+    while (j < (int_base - 1)) {
+      if ((equiv(j) == equiv(j + 1)) &&
+          (eq_type(j) == eq_type(j + 1)) &&
+          (eq_level(j) == eq_level(j + 1)))
         goto lab41;
       incr(j);
     }
-    l = (hash_size + 3163);
+    l = (int_base);
     goto lab31;
 lab41:
     incr(j);
     l = j;
-    while (j < (hash_size + 3162)) {
-      if ((eqtb[j].hh.v.RH != eqtb[j + 1].hh.v.RH) ||
-          (eqtb[j].hh.b0 != eqtb[j + 1].hh.b0) ||
-          (eqtb[j].hh.b1 != eqtb[j + 1].hh.b1))
+    while (j < (int_base - 1)) {
+      if ((equiv(j) != equiv(j + 1)) ||
+          (eq_type(j) != eq_type(j + 1)) ||
+          (eq_level(j) != eq_level(j + 1)))
         goto lab31;
       incr(j);
     }
@@ -3734,20 +3707,21 @@ lab31:
       return;
     k = j + 1;
     dump_int(k - l);
-  } while (!(k == (hash_size + 3163)));
+  } while (!(k == (int_base)));
+
   do {
     j = k;
-    while (j < (hash_size + 4006)) {
+    while (j < (eqtb_size)) {
       if (eqtb[j].cint == eqtb[j + 1].cint)
         goto lab42;
       incr(j);
     }
-    l = (hash_size + 4007);
+    l = (eqtb_size + 1);
     goto lab32;
 lab42:
     incr(j);
     l = j;
-    while (j < (hash_size + 4006)) {
+    while (j < (eqtb_size)) {
       if (eqtb[j].cint != eqtb[j + 1].cint)
         goto lab32;
       incr(j);
@@ -3758,33 +3732,36 @@ lab32:
       return;
     k = j + 1;
     dump_int(k - l);
-  } while (!(k > (hash_size + 4006)));
+  } while (!(k > (eqtb_size)));
+
   dump_int(par_loc);
   dump_int(write_loc);
+
   dump_int(hash_used);
-/*  cs_count:=frozen_control_sequence-1-hash_used; */
-/*  cs_count = (hash_size + 513) - hash_used;  */
-  cs_count = (hash_size + hash_extra + 513) - hash_used;
-/*  cs_count = (hash_size + 780) - hash_used;  */ /* ??? */
+  cs_count = frozen_control_sequence - 1 - hash_used;
+
   if (trace_flag)
   {
+    /* debugging */
     sprintf(log_line, "itex cs_count %d hash_size %d hash_extra %d hash_used %d",
-        cs_count, hash_size, hash_extra, hash_used);      /* debugging */
+        cs_count, hash_size, hash_extra, hash_used);
     show_line(log_line, 0);
   }
-/*  for p <- hash_base to hash_used do */
-  for (p = 514; p <= hash_used; p++)
+
+  for (p = hash_base; p <= hash_used; p++)
   {
     if (hash[p].v.RH != 0)
     {
       dump_int(p);
       dump_hh(hash[p]);
       incr(cs_count);
+
       if (trace_flag)
       {
         sprintf(log_line, "itex cs_count++ ");
         show_line(log_line, 0); /* debugging */
       }
+
     }
   }
 /*  ??? */
@@ -3795,6 +3772,7 @@ lab32:
   print_ln();
   print_int(cs_count);
   print_string(" multiletter control sequences");
+
   dump_int(fmem_ptr);
   {
     if (dumpthings(font_info[0], fmem_ptr))
@@ -3851,7 +3829,7 @@ lab32:
     {
       print_nl("\\font");
 /*  print_esc(hash[(hash_size + 524) + k].v.RH);  */
-  //print_esc(hash[(hash_size + hash_extra + 524) + k].v.RH);
+/*  print_esc(hash[(hash_size + hash_extra + 524) + k].v.RH); */
       print_esc("");print(hash[(hash_size + hash_extra + 524) + k].v.RH);
       print_char('=');
       print_file_name(font_name[k], font_area[k], 335);
@@ -3870,8 +3848,8 @@ lab32:
   print_string(" preloaded font");
   if (font_ptr != 1)
     print_char('s');
+
   dump_int(hyph_count);
-/*  {register integer for_end; k = 0; for_end = 607; if (k <= for_end) do */
   for (k = 0; k <= hyphen_prime; k++)
   {
     if (hyph_word[k]!= 0)
@@ -3927,8 +3905,8 @@ lab32:
   dump_int(format_ident);
   dump_int(ENDFMTCHECKSUM); /* magic checksum end of FMT file --- change ??? */ 
   tracing_stats = 0;
+
   w_close(fmt_file);
-//  return 0;
 } /* end of store_fmt_file */
 #endif /* INITEX */
 
@@ -4310,7 +4288,5 @@ void init_prim (void)
 } 
 #endif /* INITEX */
 
-#pragma optimize("s", off)            /* 96/Sep/12 */
-/* #pragma optimize("1", off) */
-#pragma optimize("t", on)           /* 96/Sep/12 */
-/* #pragma optimize("2", on) */
+#pragma optimize("s", off) /* 96/Sep/12 */
+#pragma optimize("t", on)  /* 96/Sep/12 */
