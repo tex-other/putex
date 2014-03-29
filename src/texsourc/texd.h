@@ -1152,9 +1152,9 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   /* EXTERN int waitflush; */
   EXTERN int show_fmt_flag;
   EXTERN int show_tfm_flag;
-  EXTERN bool show_texinput_flag; /* 1998/Jan/28 */
-  EXTERN bool truncate_long_lines;  /* 1998/Feb/2 */
-  EXTERN bool show_cs_names;      /* 1998/Mar/31 */
+  EXTERN bool show_texinput_flag;  /* 1998/Jan/28 */
+  EXTERN bool truncate_long_lines; /* 1998/Feb/2 */
+  EXTERN bool show_cs_names;       /* 1998/Mar/31 */
   EXTERN int tab_step;
   EXTERN int pseudo_tilde;
   EXTERN int pseudo_space;
@@ -1169,23 +1169,23 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   EXTERN bool format_specific;
   EXTERN bool encoding_specific;
   EXTERN bool show_line_break_stats;  /* 1996/Feb/9 */
-  EXTERN int first_pass_count;      /* 1996/Feb/9 */
-  EXTERN int second_pass_count;     /* 1996/Feb/9 */
-  EXTERN int final_pass_count;      /* 1996/Feb/9 */
-  EXTERN int underfull_hbox;      /* 1996/Feb/9 */
-  EXTERN int overfull_hbox;     /* 1996/Feb/9 */
-  EXTERN int underfull_vbox;      /* 1996/Feb/9 */
-  EXTERN int overfull_vbox;     /* 1996/Feb/9 */
-  EXTERN int paragraph_failed;      /* 1996/Feb/9 */
-  EXTERN int singleline;        /* 1996/Feb/15 */
+  EXTERN int first_pass_count;        /* 1996/Feb/9 */
+  EXTERN int second_pass_count;       /* 1996/Feb/9 */
+  EXTERN int final_pass_count;        /* 1996/Feb/9 */
+  EXTERN int underfull_hbox;          /* 1996/Feb/9 */
+  EXTERN int overfull_hbox;           /* 1996/Feb/9 */
+  EXTERN int underfull_vbox;          /* 1996/Feb/9 */
+  EXTERN int overfull_vbox;           /* 1996/Feb/9 */
+  EXTERN int paragraph_failed;        /* 1996/Feb/9 */
+  EXTERN int single_line;             /* 1996/Feb/15 */
   EXTERN FILE *errout;
-  EXTERN int font_dimen_zero;     /* 1998/Oct/5 */
+  EXTERN int font_dimen_zero;   /* 1998/Oct/5 */
   EXTERN int ignore_frozen;     /* 1998/Oct/5 */
-  EXTERN bool suppress_f_ligs;    /* 1999/Jan/5 */
+  EXTERN bool suppress_f_ligs;  /* 1999/Jan/5 */
   EXTERN int abort_flag;      // not yet hooked up ???
   EXTERN int err_level;     // not yet hooked up ???
   EXTERN int jump_used;       /* 1999/Nov/28 */
-  EXTERN jmp_buf jumpbuffer;      /* 1999/Nov/7 */
+  EXTERN jmp_buf jumpbuffer;  /* 1999/Nov/7 */
  #endif /* DOS */
 
 #ifdef MSDOS
@@ -1206,51 +1206,51 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   extern char log_line[MAXLINE];       /* in local.c */
   extern char *texpath;           /* in local.c */
 
-  memory_word * allocate_main_memory (int);   /* in local.c - bkph */
-  memory_word * realloc_main (int, int);      /* in local.c - bkph */
+  memory_word * allocate_main_memory (int);     /* in local.c - bkph */
+  memory_word * realloc_main (int, int);        /* in local.c - bkph */
   packed_ASCII_code * realloc_str_pool (int);   /* in local.c - bkph */
-  pool_pointer * realloc_str_start (int);     /* in local.c - bkph */
-  memory_word * realloc_save_stack (int);     /* in local.c - bkph */
+  pool_pointer * realloc_str_start (int);       /* in local.c - bkph */
+  memory_word * realloc_save_stack (int);       /* in local.c - bkph */
   list_state_record * realloc_nest_stack (int); /* in local.c - bkph */
-  in_state_record * realloc_input_stack (int);    /* in local.c - bkph */
-  halfword * realloc_param_stack (int);     /* in local.c - bkph */
-  ASCII_code * realloc_buffer (int);        /* in local.c - bkph */
-  fmemoryword * realloc_font_info (int);      /* in local.c - bkph */
+  in_state_record * realloc_input_stack (int);  /* in local.c - bkph */
+  halfword * realloc_param_stack (int);         /* in local.c - bkph */
+  ASCII_code * realloc_buffer (int);            /* in local.c - bkph */
+  fmemoryword * realloc_font_info (int);        /* in local.c - bkph */
 
-  int realloc_hyphen (int);       /* in local.c - bkph */
-  int allocate_tries (int);       /* in local.c - bkph */
+  int realloc_hyphen (int);         /* in local.c - bkph */
+  int allocate_tries (int);         /* in local.c - bkph */
 
-void try_and_open (char *);       /* in local.c - bkph */
-void check_eqtb (char *);       /* in local.c - bkph */
-void probe_memory (void);       /* in local.c - bkph */
-// void show_maximums (FILE *);     /* in local.c - bkph */
-void print_cs_names (FILE *, int);    /* in local.c - bkph */
-void perrormod(char *);         /* in local.c */
+  void try_and_open (char *);        /* in local.c - bkph */
+  void check_eqtb (char *);          /* in local.c - bkph */
+  void probe_memory (void);          /* in local.c - bkph */
+// void show_maximums (FILE *);      /* in local.c - bkph */
+  void print_cs_names (FILE *, int); /* in local.c - bkph */
+  void perrormod(char *);            /* in local.c */
 
-char *grabenv(char *);      /* in local.c - bkph */
-// void showversion (FILE *);     /* in local.c - bkph */
-void stamp_it (char *);         /* in local.c - bkph */
-void stampcopy (char *);        /* in local.c - bkph */
-bool prime (int);         /* in local.c - bkph */
-int endit (int);            /* in local.c - bkph */
+  char *grabenv(char *);             /* in local.c - bkph */
+// void showversion (FILE *);        /* in local.c - bkph */
+  void stamp_it (char *);            /* in local.c - bkph */
+  void stampcopy (char *);           /* in local.c - bkph */
+  bool prime (int);                  /* in local.c - bkph */
+  int endit (int);                   /* in local.c - bkph */
 
-void uexit (int unix_code);     /* in lib/uexit.c - bkph */
-void t_open_in (void);          /* in lib/texmf.c - bkph */
+  void uexit (int unix_code);     /* in lib/uexit.c - bkph */
+  void t_open_in (void);          /* in lib/texmf.c - bkph */
 
-bool extensionirrelevantp (unsigned char *base, int nlen, char *suffix);
+  bool extensionirrelevantp (unsigned char *base, int nlen, char *suffix);
 
-void call_edit (ASCII_code *filename, pool_pointer fnstart,
+  void call_edit (ASCII_code *filename, pool_pointer fnstart,
          integer fnlength, integer linenumber); /* from lib/texmf.c - bkph */
 
-void add_variable_space(int);       /* in itex.c - bkph */
+  void add_variable_space(int);       /* in itex.c - bkph */
 
-void get_date_and_time (integer *minutes, integer *day,
+  void get_date_and_time (integer *minutes, integer *day,
             integer *month, integer *year);   /* in lib/texmf.c - bkph */
 
-bool maketextex (void);       /* in openinou.c */
-bool maketextfm (void);       /* in openinou.c */
+  bool maketextex (void);       /* in openinou.c */
+  bool maketextfm (void);       /* in openinou.c */
 
-char *unixify (char *);       /* in pathsrch.c bkph */
+  char *unixify (char *);       /* in pathsrch.c bkph */
 
 #ifdef _WINDOWS
   void show_line (char *, int);     /* in local.c */
@@ -1961,6 +1961,12 @@ char *unixify (char *);       /* in pathsrch.c bkph */
   case (a) + sub_mark:   \
   case (a) + letter:     \
   case (a) + other_char
+/* sec 0382 */
+#define top_mark_code         0
+#define first_mark_code       1
+#define bot_mark_code         2
+#define split_first_mark_code 3
+#define split_bot_mark_code   4
 /* sec 0400 */
 #define int_val   0
 #define dimen_val 1
@@ -1968,6 +1974,9 @@ char *unixify (char *);       /* in pathsrch.c bkph */
 #define mu_val    3
 #define ident_val 4
 #define tok_val   5
+/* sec 0416 */
+#define input_line_no_code glue_val + 1
+#define badness_code       glue_val + 2
 /* sec 0468 */
 #define number_code        0
 #define roman_numeral_code 1

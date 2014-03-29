@@ -261,9 +261,9 @@ void close_files_and_terminate (void)
       {
         int first_count, secondcount, thirdcount;
         (void) fprintf(log_file, "\nSuccess at breaking %d paragraph%s:", first_pass_count, (first_pass_count == 1) ? "" : "s");
-        if (singleline > 0)
-          (void) fprintf(log_file, "\n %d single line `paragraph%s'", singleline, (singleline == 1) ? "" : "s");  /* 96/Apr/23 */
-        first_count = first_pass_count-singleline-second_pass_count;
+        if (single_line > 0)
+          (void) fprintf(log_file, "\n %d single line `paragraph%s'", single_line, (single_line == 1) ? "" : "s");  /* 96/Apr/23 */
+        first_count = first_pass_count-single_line-second_pass_count;
         if (first_count < 0)
           first_count = 0;       /* sanity check */
         secondcount = second_pass_count - final_pass_count;

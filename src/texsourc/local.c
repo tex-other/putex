@@ -3287,7 +3287,8 @@ void deslash_all (int ac, char **av)
   if (strcmp(fmt_directory, "") != 0) flush_trailing_slash (fmt_directory);
   if (strcmp(pdf_directory, "") != 0) flush_trailing_slash (pdf_directory);
 
-  if (deslash) {
+  if (deslash)
+  {
       unixify (texpath);          /* 94/Jan/25 */
 /* if output directories given, deslashify them also 1993/Dec/12 */
       if (strcmp(dvi_directory, "") != 0) unixify(dvi_directory);
@@ -3439,7 +3440,7 @@ int init (int ac, char **av)
   second_pass_count = 0;
   final_pass_count  = 0;
   paragraph_failed  = 0;
-  singleline        = 0;
+  single_line       = 0;
   overfull_hbox     = 0;
   underfull_hbox    = 0;
   overfull_vbox     = 0;

@@ -958,11 +958,11 @@ lab30:                /* common exit point */
 /*    if (savedbadness > threshold){ */ /* do we believe this ??? */ 
 /*    paragraph_failed++; */  /* 96/Feb/9 */
 /*  } */
-/*    if (prevgraf == 1) singleline++; */
-/*    if (nest[nest_ptr].pg_field == 1) singleline++; */
+/*    if (prevgraf == 1) single_line++; */
+/*    if (nest[nest_ptr].pg_field == 1) single_line++; */
 /*    At this point best_line is number of lines in paragraph + 1 */
   if (best_line == 2)
-    singleline++;
+    single_line++;
 #ifdef STAT
   if (tracing_paragraphs > 0)
   {

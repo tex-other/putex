@@ -849,47 +849,47 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
 {
   switch (cmd)
   {
-    case 1:
+    case left_brace:
       print_string("begin-group character ");
       print(chrcode);
       break;
-    case 2:
+    case right_brace:
       print_string("end-group character ");
       print(chrcode);
       break;
-    case 3:
+    case math_shift:
       print_string("math shift character ");
       print(chrcode);
       break;
-    case 6:
+    case mac_param:
       print_string("macro parameter character ");
       print(chrcode);
       break;
-    case 7:
+    case sup_mark:
       print_string("superscript character ");
       print(chrcode);
       break;
-    case 8:
+    case sub_mark:
       print_string("subscript character ");
       print(chrcode);
       break;
-    case 9:
+    case endv:
       print_string("end of alignment template");
       break;
-    case 10:
+    case spacer:
       print_string("blank space ");
       print(chrcode);
       break;
-    case 11:
+    case letter:
       print_string("the letter ");
       print(chrcode);
       break;
-    case 12:
+    case other_char:
       print_string("the character ");
       print(chrcode);
       break;
-    case 75:
-    case 76:
+    case assign_glue:
+    case assign_mu_glue:
       if (chrcode < skip_base)
         print_skip_param(chrcode - glue_base);
       else
@@ -904,7 +904,7 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           print_int(chrcode - mu_skip_base);
         }
       break;
-    case 72:
+    case assign_toks:
       if (chrcode >= toks_base)
       {
         print_esc("toks");
@@ -941,7 +941,7 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 73:
+    case assign_int:
       if (chrcode < count_base)
         print_param(chrcode - int_base);
       else
@@ -950,7 +950,7 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
         print_int(chrcode - count_base);
       }
       break;
-    case 74:
+    case assign_dimen:
       if (chrcode < scaled_base)
         print_length_param(chrcode - dimen_base);
       else
@@ -959,157 +959,157 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
         print_int(chrcode - scaled_base);
       }
       break;
-    case 45:
+    case accent:
       print_esc("accent");
       break;
-    case 90:
+    case advance:
       print_esc("advance");
       break;
-    case 40:
+    case after_assignment:
       print_esc("afterassignment");
       break;
-    case 41:
+    case after_group:
       print_esc("aftergroup");
       break;
-    case 77:
+    case assign_font_dimen:
       print_esc("fontdimen");
       break;
-    case 61:
+    case begin_group:
       print_esc("begingroup");
       break;
-    case 42:
+    case break_penalty:
       print_esc("penalty");
       break;
-    case 16:
+    case char_num:
       print_esc("char");
       break;
-    case 107:
+    case cs_name:
       print_esc("csname");
       break;
-    case 88:
+    case def_font:
       print_esc("font");
       break;
-    case 15:
+    case delim_num:
       print_esc("delimiter");
       break;
-    case 92:
+    case divide:
       print_esc("divide");
       break;
-    case 67:
+    case end_cs_name:
       print_esc("endcsname");
       break;
-    case 62:
+    case end_group:
       print_esc("endgroup");
       break;
-    case 64:
+    case ex_space:
       print_esc(" ");
       break;
-    case 102:
+    case expand_after:
       print_esc("expandafter");
       break;
-    case 32:
+    case halign:
       print_esc("halign");
       break;
-    case 36:
+    case hrule:
       print_esc("hrule");
       break;
-    case 39:
+    case ignore_spaces:
       print_esc("ignorespaces");
       break;
-    case 37:
+    case insert:
       print_esc("insert");
       break;
-    case 44:
+    case ital_corr:
       print_esc("/");
       break;
-    case 18:
+    case mark:
       print_esc("mark");
       break;
-    case 46:
+    case math_accent:
       print_esc("mathaccent");
       break;
-    case 17:
+    case math_char_num:
       print_esc("mathchar");
       break;
-    case 54:
+    case math_choice:
       print_esc("mathchoice");
       break;
-    case 91:
+    case multiply:
       print_esc("multiply");
       break;
-    case 34:
+    case no_align:
       print_esc("noalign");
       break;
-    case 65:
+    case no_boundary:
       print_esc("noboundary");
       break;
-    case 103:
+    case no_expand:
       print_esc("noexpand");
       break;
-    case 55:
+    case non_script:
       print_esc("nonscript");
       break;
-    case 63:
+    case omit:
       print_esc("omit");
       break;
-    case 66:
+    case radical:
       print_esc("radical");
       break;
-    case 96:
+    case read_to_cs:
       print_esc("read");
       break;
-    case 0:
+    case relax:
       print_esc("relax");
       break;
-    case 98:
+    case set_box:
       print_esc("setbox");
       break;
-    case 80:
+    case set_prev_graf:
       print_esc("prevgraf");
       break;
-    case 84:
+    case set_shape:
       print_esc("parshape");
       break;
-    case 109:
+    case the:
       print_esc("the");
       break;
-    case 71:
+    case toks_register:
       print_esc("toks");
       break;
-    case 38:
+    case vadjust:
       print_esc("vadjust");
       break;
-    case 33:
+    case valign:
       print_esc("valign");
       break;
-    case 56:
+    case vcenter:
       print_esc("vcenter");
       break;
-    case 35:
+    case vrule:
       print_esc("vrule");
       break;
-    case 13:
+    case par_end:
       print_esc("par");
       break;
-    case 104:
+    case input:
       if (chrcode == 0)
         print_esc("input");
       else
         print_esc("endinput");
       break;
-    case 110:
+    case top_bot_mark:
       switch (chrcode)
       {
-        case 1:
+        case first_mark_code:
           print_esc("firstmark");
           break;
-        case 2:
+        case bot_mark_code:
           print_esc("botmark");
           break;
-        case 3:
+        case split_first_mark_code:
           print_esc("splitfirstmark");
           break;
-        case 4:
+        case split_bot_mark_code:
           print_esc("splitbotmark");
           break;
         default:
@@ -1117,49 +1117,49 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 89:
-      if (chrcode == 0)
+    case tex_register:
+      if (chrcode == int_val)
         print_esc("count");
-      else if (chrcode == 1)
+      else if (chrcode == dimen_val)
         print_esc("dimen");
-      else if (chrcode == 2)
+      else if (chrcode == glue_val)
         print_esc("skip");
       else
         print_esc("muskip");
       break;
-    case 79:
+    case set_aux:
       if (chrcode == 1)
         print_esc("prevdepth");
       else
         print_esc("spacefactor");
       break;
-    case 82:
+    case set_page_int:
       if (chrcode == 0)
         print_esc("deadcycles");
       else
         print_esc("insertpenalties");
       break;
-    case 83:
-      if (chrcode == 1)
+    case set_box_dimen:
+      if (chrcode == width_offset)
         print_esc("wd");
-      else if (chrcode == 3)
+      else if (chrcode == height_offset)
         print_esc("ht");
       else
         print_esc("dp");
       break;
-    case 70:
+    case last_item:
       switch (chrcode)
       {
-        case 0:
+        case int_val:
           print_esc("lastpenalty");
           break;
-        case 1:
+        case dimen_val:
           print_esc("lastkern");
           break;
-        case 2:
+        case glue_val:
           print_esc("lastskip");
           break;
-        case 3:
+        case input_line_no_code:
           print_esc("inputlineno");
           break;
         default:
@@ -1167,22 +1167,22 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 108:
+    case convert:
       switch (chrcode)
       {
-        case 0:
+        case number_code:
           print_esc("number");
           break;
-        case 1:
+        case roman_numeral_code:
           print_esc("romannumeral");
           break;
-        case 2:
+        case string_code:
           print_esc("string");
           break;
-        case 3:
+        case meaning_code:
           print_esc("meaning");
           break;
-        case 4:
+        case font_name_code:
           print_esc("fontname");
           break;
         default:
@@ -1190,55 +1190,55 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 105:
+    case if_test:
       switch (chrcode)
       {
-        case 1:
+        case if_cat_code:
           print_esc("ifcat");
           break;
-        case 2:
+        case if_int_code:
           print_esc("ifnum");
           break;
-        case 3:
+        case if_dim_code:
           print_esc("ifdim");
           break;
-        case 4:
+        case if_odd_code:
           print_esc("ifodd");
           break;
-        case 5:
+        case if_vmode_code:
           print_esc("ifvmode");
           break;
-        case 6:
+        case if_hmode_code:
           print_esc("ifhmode");
           break;
-        case 7:
+        case if_mmode_code:
           print_esc("ifmmode");
           break;
-        case 8:
+        case if_inner_code:
           print_esc("ifinner");
           break;
-        case 9:
+        case if_void_code:
           print_esc("ifvoid");
           break;
-        case 10:
+        case if_hbox_code:
           print_esc("ifhbox");
           break;
-        case 11:
+        case if_vbox_code:
           print_esc("ifvbox");
           break;
-        case 12:
+        case ifx_code:
           print_esc("ifx");
           break;
-        case 13:
+        case if_eof_code:
           print_esc("ifeof");
           break;
-        case 14:
+        case if_true_code:
           print_esc("iftrue");
           break;
-        case 15:
+        case if_false_code:
           print_esc("iffalse");
           break;
-        case 16:
+        case if_case_code:
           print_esc("ifcase");
           break;
         default:
@@ -1246,12 +1246,13 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 106:
-      if (chrcode == 2)
+    case fi_or_else:
+      if (chrcode == fi_code)
         print_esc("fi");
-      else if (chrcode == 4)
+      else if (chrcode == or_code)
         print_esc("or");
-      else print_esc("else");
+      else
+        print_esc("else");
       break;
     case 4:
       if (chrcode == 256)  /* pool size */ /* max_quarterword + 1 ? */
