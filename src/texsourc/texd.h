@@ -1577,6 +1577,10 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define shape_ref       max_command + 18
 #define box_ref         max_command + 19 
 #define data            max_command + 20
+/* sec 0211 */
+#define vmode 1
+#define hmode vmode + max_command + 1
+#define mmode hmode + max_command + 1
 /* sec 0212 */
 #define ignore_depth -65536000L
 /* sec 0213 */
@@ -2037,22 +2041,22 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define sub_mlist      3
 #define math_text_char 4
 /* sec 0682 */
-#define ord_noad   unset_node + 3
-#define op_noad    ord_noad + 1
-#define bin_noad   ord_noad + 2
-#define rel_noad   ord_noad + 3
-#define open_noad  ord_noad + 4
-#define close_noad ord_noad + 5
-#define punct_noad ord_noad + 6
-#define inner_noad ord_noad + 7
+#define ord_noad   unset_node + 3 // 16
+#define op_noad    ord_noad + 1   // 17
+#define bin_noad   ord_noad + 2   // 18
+#define rel_noad   ord_noad + 3   // 19
+#define open_noad  ord_noad + 4   // 20
+#define close_noad ord_noad + 5   // 21
+#define punct_noad ord_noad + 6   // 22
+#define inner_noad ord_noad + 7   // 23
 #define limits    1
 #define no_limits 2
 /* sec 0683 */
 #define left_delimiter(a)  (a) + 4
 #define right_delimiter(a) (a) + 5
-#define radical_noad       inner_noad + 1
+#define radical_noad       inner_noad + 1 // 24
 #define radical_noad_size  5
-#define fraction_noad      radical_noad + 1
+#define fraction_noad      radical_noad + 1 // 25
 #define fraction_noad_size 6
 #define small_fam(a)       mem[(a)].qqqq.b0
 #define small_char(a)      mem[(a)].qqqq.b1
@@ -2063,14 +2067,14 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define numerator          supscr
 #define denominator        subscr
 /* sec 0687 */
-#define under_noad        fraction_noad + 1
-#define over_noad         under_noad + 1
-#define accent_noad       over_noad + 1
+#define under_noad        fraction_noad + 1 // 26
+#define over_noad         under_noad + 1    // 27
+#define accent_noad       over_noad + 1     // 28
 #define accent_noad_size  5
 #define accent_chr(a)     (a) + 4
-#define vcenter_noad      accent_noad + 1
-#define left_noad         vcenter_noad + 1
-#define right_noad        left_noad + 1
+#define vcenter_noad      accent_noad + 1   // 29
+#define left_noad         vcenter_noad + 1  // 30
+#define right_noad        left_noad + 1     // 31
 #define delimiter         nucleus
 #define script_allowed(a) ((type(a) >= ord_noad) && (type(a) < left_noad))
 /* sec 0688 */
@@ -2120,6 +2124,59 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define broken_ins(a)      info(a + 1)
 #define last_ins_ptr(a)    link(a + 2)
 #define best_ins_ptr(a)    info(a + 2)
+/* sec 1058 */
+#define fil_code     0
+#define fill_code    1
+#define ss_code      2
+#define fil_neg_code 3
+#define skip_code    4
+#define mskip_code   5
+/* sec 1071 */
+#define box_flag      010000000000
+#define ship_out_flag box_flag + 512
+#define leader_flag   box_flag + 513
+#define box_code      0
+#define copy_code     1
+#define last_box_code 2
+#define vsplit_code   3
+#define vtop_code     4
+/* sec 1178 */
+#define above_code     0
+#define over_code      1
+#define atop_code      2
+#define delimited_code 3
+/* sec 1222 */
+#define char_def_code      0
+#define math_char_def_code 1
+#define count_def_code     2
+#define dimen_def_code     3
+#define skip_def_code      4
+#define mu_skip_def_code   5
+#define toks_def_code      6
+/* sec 1290 */
+#define show_code     0
+#define show_box_code 1
+#define show_the_code 2
+#define show_lists    3
+/* sec 1342 */
+#define write_node_size  2
+#define open_node_size   3
+#define open_node        0
+#define write_node       1
+#define close_node       2
+#define special_node     3
+#define language_node    4
+#define what_lang(s)     link(s+1)
+#define what_lhm(s)      type(s+1)
+#define what_rhm(s)      subtype(s+1)
+#define write_tokens(s)  link(s+1)
+#define write_streams(s) info(s+1)
+#define open_name(s)     link(s+1)
+#define open_area(s)     info(s+2)
+#define open_ext(s)      link(s+2)
+/* sec 1344 */
+#define immediate_code    4
+#define set_language_code 5
 /* sec 79 */
 
 extern INLINE void tex_help (unsigned int n, ...);

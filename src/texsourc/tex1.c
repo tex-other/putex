@@ -72,7 +72,7 @@ void flush_node_list_(halfword p)
       free_avail(p);
     else
     {
-      switch (mem[p].hh.b0)
+      switch (type(p))
       {
         case hlist_node:
         case vlist_node:
@@ -101,20 +101,20 @@ void flush_node_list_(halfword p)
           {
             switch (subtype(p))
             {
-              case 0:
-                free_node(p, 3);
+              case open_node:
+                free_node(p, open_node_size);
                 break;
-              case 1:
-              case 3:
+              case write_node:
+              case special_node:
                 {
-                  delete_token_ref(mem[p + 1].hh.v.RH);
-                  free_node(p, 2);
+                  delete_token_ref(write_tokens(p));
+                  free_node(p, write_node_size);
                   goto lab30;
                 }
                 break;
-              case 2:
-              case 4:
-                free_node(p, 2);
+              case close_node:
+              case set_language_code:
+                free_node(p, small_node_size);
                 break;
               default:
                 {
@@ -154,63 +154,64 @@ void flush_node_list_(halfword p)
         case adjust_node:
           flush_node_list(adjust_ptr(p));
           break;
-        case 14:
+        case style_node:
           {
-            free_node(p, 3);
+            free_node(p, style_node_size);
             goto lab30;
           }
           break;
-        case 15 :
+        case choice_node:
           {
-            flush_node_list(mem[p + 1].hh.v.LH);
-            flush_node_list(mem[p + 1].hh.v.RH);
-            flush_node_list(mem[p + 2].hh.v.LH);
-            flush_node_list(mem[p + 2].hh.v.RH);
-            free_node(p, 3);
+            flush_node_list(display_mlist(p));
+            flush_node_list(text_mlist(p));
+            flush_node_list(script_mlist(p));
+            flush_node_list(script_script_mlist(p));
+            free_node(p, style_node_size);
             goto lab30;
           }
           break;
-        case 16:
-        case 17:
-        case 18:
-        case 19:
-        case 20:
-        case 21:
-        case 22:
-        case 23:
-        case 24:
-        case 27:
-        case 26:
-        case 29:
-        case 28:
+        case ord_noad:
+        case op_noad:
+        case bin_noad:
+        case rel_noad:
+        case open_noad:
+        case close_noad:
+        case punct_noad:
+        case inner_noad:
+        case radical_noad:
+        case over_noad:
+        case under_noad:
+        case vcenter_noad:
+        case accent_noad:
           {
-            if (mem[p + 1].hh.v.RH >= 2)
-              flush_node_list(mem[p + 1].hh.v.LH);
-            if (mem[p + 2].hh.v.RH >= 2)
-              flush_node_list(mem[p + 2].hh.v.LH);
-            if (mem[p + 3].hh.v.RH >= 2)
-              flush_node_list(mem[p + 3].hh.v.LH);
-            if (mem[p].hh.b0 == 24)
-              free_node(p, 5);
-            else if (mem[p].hh.b0 == 28)
-              free_node(p, 5);
+            if (math_type(nucleus(p)) >= sub_box)
+              flush_node_list(info(nucleus(p)));
+            if (math_type(supscr(p)) >= sub_box)
+              flush_node_list(info(supscr(p)));
+            if (math_type(subscr(p)) >= sub_box)
+              flush_node_list(info(subscr(p)));
+            if (type(p) == radical_noad)
+              free_node(p, radical_noad_size);
             else
-              free_node(p, 4);
+              if (type(p) == accent_noad)
+                free_node(p, accent_noad_size);
+              else
+                free_node(p, noad_size);
             goto lab30;
           }
           break;
-        case 30:
-        case 31:
+        case left_noad:
+        case right_noad:
           {
-            free_node(p, 4);
+            free_node(p, noad_size);
             goto lab30;
           }
           break;
-        case 25:
+        case fraction_noad:
           {
-            flush_node_list(mem[p + 2].hh.v.LH);
-            flush_node_list(mem[p + 3].hh.v.LH);
-            free_node(p, 6);
+            flush_node_list(info(numerator(p)));
+            flush_node_list(info(denominator(p)));
+            free_node(p, fraction_noad_size);
             goto lab30;
           }
           break;
@@ -221,7 +222,7 @@ void flush_node_list_(halfword p)
           }
           break;
       }
-      free_node(p, 2);
+      free_node(p, small_node_size);
 lab30:;
     }
     p = q;
@@ -354,7 +355,7 @@ halfword copy_node_list_(halfword p)
     }
     while (words > 0) {
       decr(words);
-      mem[r + words]= mem[p + words]; /* r may be used without having ... */
+      mem[r + words] = mem[p + words]; /* r may be used without having ... */
     }
     mem[q].hh.v.RH = r;
     q = r;
@@ -377,6 +378,7 @@ halfword copy_node_list_(halfword p)
 void print_mode_(integer m)
 { 
   if (m > 0)
+  {
     switch (m /(101))
     {
       case 0:
@@ -389,22 +391,27 @@ void print_mode_(integer m)
         print_string("display math");
         break;
     }
+  }
   else
+  {
     if (m == 0)
       print_string("no");
-  else
-    switch ((- (integer) m)/(101))
+    else
     {
-      case 0:
-        print_string("internal vertical");
-        break;
-      case 1:
-        print_string("restricted horizontal");
-        break;
-      case 2:
-        print_string("math");
-        break;
+      switch ((- (integer) m)/(101))
+      {
+        case 0:
+          print_string("internal vertical");
+          break;
+        case 1:
+          print_string("restricted horizontal");
+          break;
+        case 2:
+          print_string("math");
+          break;
+      }
     }
+  }
   print_string(" mode");
 }
 /* sec 0216 */
@@ -416,12 +423,14 @@ void push_nest (void)
 #ifdef ALLOCATEINPUTSTACK
     if (nest_ptr == current_nest_size)
       nest = realloc_nest_stack(increment_nest_size);
-    if (nest_ptr == current_nest_size) { /* check again after allocation */
+    if (nest_ptr == current_nest_size) /* check again after allocation */
+    {
       overflow("semantic nest size", current_nest_size);
       return;     // abort_flag set
     }
 #else
-    if (nest_ptr == nest_size) {
+    if (nest_ptr == nest_size)
+    {
       overflow("semantic nest size", nest_size); /* semantic next size - not dynamic */
       return;     // abort_flag set
     }
@@ -449,6 +458,7 @@ void show_activities (void)
   memory_word a;
   halfword q, r;
   integer t;
+
   nest[nest_ptr]= cur_list;
   print_nl("  ");
   print_ln(); 
@@ -1254,20 +1264,22 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
       else
         print_esc("else");
       break;
-    case 4:
-      if (chrcode == 256)  /* pool size */ /* max_quarterword + 1 ? */
+    case tab_mark:
+      if (chrcode == span_code)  /* pool size */ /* max_quarterword + 1 ? */
         print_esc("span");
-      else {
+      else
+      {
         print_string("alignment tab character ");
         print(chrcode);
       }
       break;
-    case 5:
-      if (chrcode == 257)    /* cr_code */
+    case car_ret:
+      if (chrcode == cr_code)
         print_esc("cr");
-      else print_esc("crcr");
+      else
+        print_esc("crcr");
       break;
-    case 81:
+    case set_page_dimen:
       switch (chrcode)
       {
         case 0:
@@ -1296,24 +1308,25 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 14:
+    case stop:
       if (chrcode == 1)
         print_esc("dump");
-      else print_esc("end");
+      else
+        print_esc("end");
       break;
-    case 26:
+    case hskip:
       switch (chrcode)
       {
-        case 4:
+        case skip_code:
           print_esc("hskip");
           break;
-        case 0:
+        case fil_code:
           print_esc("hfil");
           break;
-        case 1:
+        case fill_code:
           print_esc("hfill");
           break;
-        case 2:
+        case ss_code:
           print_esc("hss");
           break;
         default:
@@ -1321,19 +1334,19 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 27:
+    case vskip:
       switch (chrcode)
       {
-        case 4:
+        case skip_code:
           print_esc("vskip");
           break;
-        case 0:
+        case fil_code:
           print_esc("vfil");
           break;
-        case 1:
+        case fill_code:
           print_esc("vfill");
           break;
-        case 2:
+        case ss_code:
           print_esc("vss");
           break;
         default:
@@ -1341,44 +1354,46 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 28:
+    case mskip:
       print_esc("mskip");
       break;
-    case 29:
+    case kern:
       print_esc("kern");
       break;
-    case 30:
+    case mkern:
       print_esc("mkern");
       break;
-    case 21:
+    case hmove:
       if (chrcode == 1)
         print_esc("moveleft");
-      else print_esc("moveright");
+      else
+        print_esc("moveright");
       break;
-    case 22:
+    case vmove:
       if (chrcode == 1)
         print_esc("raise");
-      else print_esc("lower");
+      else
+        print_esc("lower");
       break;
-    case 20:
+    case make_box:
       switch (chrcode)
       {
-        case 0:
+        case box_code:
           print_esc("box");
           break;
-        case 1:
+        case copy_code:
           print_esc("copy");
           break;
-        case 2:
+        case last_box_code:
           print_esc("lastbox");
           break;
-        case 3:
+        case vsplit_code:
           print_esc("vsplit");
           break;
-        case 4:
+        case vtop_code:
           print_esc("vtop");
           break;
-        case 5:
+        case vtop_code + vmode:
           print_esc("vbox");
           break;
         default:
@@ -1386,76 +1401,82 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 31:
-      if (chrcode == 100)
+    case leader_ship:
+      if (chrcode == a_leaders)
         print_esc("leaders");
-      else if (chrcode == 101)
+      else if (chrcode == c_leaders)
         print_esc("cleaders");
-      else if (chrcode == 102)
+      else if (chrcode == x_leaders)
         print_esc("xleaders");
-      else print_esc("shipout");
+      else
+        print_esc("shipout");
       break;
-    case 43:
+    case start_par:
       if (chrcode == 0)
         print_esc("noindent");
-      else print_esc("indent");
+      else
+        print_esc("indent");
       break;
-    case 25:
-      if (chrcode == 10)
+    case remove_item:
+      if (chrcode == glue_node)
         print_esc("unskip");
-      else if (chrcode == 11)
+      else if (chrcode == kern_node)
         print_esc("unkern");
-      else print_esc("unpenalty");
+      else
+        print_esc("unpenalty");
       break;
-    case 23:
-      if (chrcode == 1)
+    case un_hbox:
+      if (chrcode == copy_code)
         print_esc("unhcopy");
-      else print_esc("unhbox");
+      else
+        print_esc("unhbox");
       break;
-    case 24:
-      if (chrcode == 1)
+    case un_vbox:
+      if (chrcode == copy_code)
         print_esc("unvcopy");
-      else print_esc("unvbox");
+      else
+        print_esc("unvbox");
       break;
-    case 47:
+    case discretionary:
       if (chrcode == 1)
         print_esc("-");
       else
         print_esc("discretionary");
       break;
-    case 48:
+    case eq_no:
       if (chrcode == 1)
         print_esc("leqno");
-      else print_esc("eqno");
+      else
+        print_esc("eqno");
       break;
-    case 50:
+    case math_comp:
       switch (chrcode)
       {
-        case 16:
+        case ord_noad:
           print_esc("mathord");
           break;
-        case 17:
+        case op_noad:
           print_esc("mathop");
           break;
-        case 18:
+        case bin_noad:
           print_esc("mathbin");
           break;
-        case 19:
+        case rel_noad:
           print_esc("mathrel");
           break;
-        case 20:
+        case open_noad:
           print_esc("mathopen");
           break;
-        case 21:
+        case close_noad:
           print_esc("mathclose");
           break;
-        case 22:
+        case punct_noad:
           print_esc("mathpunct");
           break;
-        case 23:
+        case inner_noad:
           print_esc("mathinner");
           break;
-        case 26:
+        case under_noad:
           print_esc("underline");
           break;
         default:
@@ -1463,32 +1484,33 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 51:
-      if (chrcode == 1)
+    case limit_switch:
+      if (chrcode == limits)
         print_esc("limits");
-      else if (chrcode == 2)
+      else if (chrcode == no_limits)
         print_esc("nolimits");
-      else print_esc("displaylimits");
+      else
+        print_esc("displaylimits");
       break;
-    case 53:
+    case math_style:
       print_style(chrcode);
       break;
-    case 52:
+    case above:
       switch (chrcode)
       {
-        case 1:
+        case over_code:
           print_esc("over");
           break;
-        case 2:
+        case atop_code:
           print_esc("atop");
           break;
-        case 3:
+        case delimited_code + above_code:
           print_esc("abovewithdelims");
           break;
-        case 4:
+        case delimited_code + over_code:
           print_esc("overwithdelims");
           break;
-        case 5:
+        case delimited_code + atop_code:
           print_esc("atopwithdelims");
           break;
         default:
@@ -1496,51 +1518,55 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 49:
-      if (chrcode == 30)
+    case left_right:
+      if (chrcode == left_noad)
         print_esc("left");
-      else print_esc("right");
+      else
+        print_esc("right");
       break;
-    case 93:
+    case prefix:
       if (chrcode == 1)
         print_esc("long");
       else if (chrcode == 2)
         print_esc("outer");
-      else print_esc("global");
+      else
+        print_esc("global");
       break;
-    case 97:
+    case def:
       if (chrcode == 0)
         print_esc("def");
       else if (chrcode == 1)
         print_esc("gdef");
       else if (chrcode == 2)
         print_esc("edef");
-      else print_esc("xdef");
+      else
+        print_esc("xdef");
       break;
-    case 94:
-      if (chrcode != 0)
+    case let:
+      if (chrcode != normal)
         print_esc("futurelet");
-      else print_esc("let");
+      else
+        print_esc("let");
       break;
-    case 95:
+    case shorthand_def:
       switch (chrcode)
       {
-        case 0:
+        case char_def_code:
           print_esc("chardef");
           break;
-        case 1:
+        case math_char_def_code:
           print_esc("mathchardef");
           break;
-        case 2:
+        case count_def_code:
           print_esc("countdef");
           break;
-        case 3:
+        case dimen_def_code:
           print_esc("dimendef");
           break;
-        case 4:
+        case skip_def_code:
           print_esc("skipdef");
           break;
-        case 5:
+        case mu_skip_def_code:
           print_esc("muskipdef");
           break;
         default:
@@ -1548,15 +1574,15 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 68:
+    case char_given:
       print_esc("char");
       print_hex(chrcode);
       break;
-    case 69:
+    case math_given:
       print_esc("mathchar");
       print_hex(chrcode);
       break;
-    case 85:
+    case def_code:
       if (chrcode == cat_code_base)
         print_esc("catcode");
       else if (chrcode == math_code_base)
@@ -1567,22 +1593,25 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
         print_esc("uccode");
       else if (chrcode == sf_code_base)
         print_esc("sfcode");
-      else print_esc("delcode");
+      else
+        print_esc("delcode");
       break;
-    case 86:
+    case def_family:
       print_size(chrcode - math_font_base);
       break; 
-    case 99:
+    case hyph_data:
       if (chrcode == 1)
         print_esc("patterns");
-      else print_esc("hyphenation");
+      else
+        print_esc("hyphenation");
       break;
-    case 78:
+    case assign_font_int:
       if (chrcode == 0)
         print_esc("hyphenchar");
-      else print_esc("skewchar");
+      else
+        print_esc("skewchar");
       break;
-    case 87:
+    case set_font:
       print_string("select font ");
       slow_print(font_name[chrcode]);
       if (font_size[chrcode] != font_dsize[chrcode])
@@ -1592,16 +1621,16 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
         print_string("pt");
       }
       break;
-    case 100:
+    case set_interaction:
       switch (chrcode)
       {
-        case 0:
+        case batch_mode:
           print_esc("batchmode");
           break;
-        case 1:
+        case nonstop_mode:
           print_esc("nonstopmode");
           break;
-        case 2:
+        case scroll_mode:
           print_esc("scrollmode");
           break;
         default:
@@ -1609,31 +1638,34 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 60:
+    case in_stream:
       if (chrcode == 0)
         print_esc("closein");
-      else print_esc("openin");
+      else
+        print_esc("openin");
       break;
-    case 58:
+    case message:
       if (chrcode == 0)
         print_esc("message");
-      else print_esc("errmessage");
+      else
+        print_esc("errmessage");
       break;
-    case 57:
+    case case_shift:
       if (chrcode == lc_code_base)
         print_esc("lowercase");
-      else print_esc("uppercase");
+      else
+        print_esc("uppercase");
       break;
-    case 19:
+    case xray:
       switch (chrcode)
       {
-        case 1:
+        case show_box_code:
           print_esc("showbox");
           break;
-        case 2:
+        case show_the_code:
           print_esc("showthe");
           break;
-        case 3:
+        case show_lists:
           print_esc("showlists");
           break;
         default:
@@ -1641,44 +1673,44 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           break;
       }
       break;
-    case 101:
+    case undefined_cs:
       print_string("undefined");
       break;
-    case 111:
+    case call:
       print_string("macro");
       break;
-    case 112:
+    case long_call:
       print_esc("long macro");
       break;
-    case 113:
+    case outer_call:
       print_esc("outer macro");
       break;
-    case 114:
+    case long_outer_call:
       print_esc("long");
       print_esc("outer macro");
       break;
-    case 115:
+    case end_template:
       print_esc("outer endtemplate");
       break;
-    case 59:
+    case extension:
       switch (chrcode)
       {
-        case 0:
+        case open_node:
           print_esc("openout");
           break;
-        case 1:
+        case write_node:
           print_esc("write");
           break;
-        case 2:
+        case close_node:
           print_esc("closeout");
           break;
-        case 3:
+        case special_node:
           print_esc("special");
           break;
-        case 4:
+        case immediate_code:
           print_esc("immediate");
           break;
-        case 5:
+        case set_language_code:
           print_esc("setlanguage");
           break;
         default:
@@ -1697,165 +1729,183 @@ void show_eqtb_(halfword n)
 { 
   if (n < active_base)
     print_char('?');
-  else if (n < glue_base)
-  {
-    sprint_cs(n); 
-    print_char('=');
-    print_cmd_chr(eq_type(n), equiv(n));
-    if (eqtb[n].hh.b0 >= call)
+  else
+    if (n < glue_base)
     {
-      print_char(':');
-      show_token_list(link(equiv(n)), 0, 32);
-    }
-  }
-  else if (n < local_base)
-    if (n < skip_base)
-    {
-      print_skip_param(n - glue_base);
+      sprint_cs(n);
       print_char('=');
-      if (n < glue_base + thin_mu_skip_code)
-        print_spec(equiv(n), "pt");
-      else
-        print_spec(equiv(n), "mu");
-    }
-    else if (n < mu_skip_base)
-    {
-      print_esc("skip");
-      print_int(n - skip_base);
-      print_char('=');
-      print_spec(equiv(n), "pt");
-    }
-    else
-    {
-      print_esc("muskip");
-      print_int(n - mu_skip_base);
-      print_char('=');
-      print_spec(equiv(n), "mu");
-    }
-  else if (n < int_base)
-    if (n == par_shape_loc)
-    {
-      print_esc("parshape");
-      print_char('=');
-      if (par_shape_ptr == 0)
-        print_char('0');
-      else
-        print_int(info(par_shape_ptr));
-    }
-    else if (n < toks_base)
-    {
-      print_cmd_chr(assign_toks, n);
-      print_char('=');
-      if (equiv(n) != 0)
+      print_cmd_chr(eq_type(n), equiv(n));
+      if (eqtb[n].hh.b0 >= call)
+      {
+        print_char(':');
         show_token_list(link(equiv(n)), 0, 32);
-    }
-    else if (n < box_base)
-    {
-      print_esc("toks");
-      print_int(n - toks_base);
-      print_char('=');
-      if (equiv(n) != 0)
-        show_token_list(link(equiv(n)), 0, 32);
-    }
-    else if (n < cur_font_loc)
-    {
-      print_esc("box");
-      print_int(n - box_base);
-      print_char('=');
-      if (equiv(n) == 0)
-        print_string("void");
-      else
-      {
-        depth_threshold = 0;
-        breadth_max = 1;
-        show_node_list(equiv(n));
       }
-    }
-    else if (n < cat_code_base)
-    {
-      if (n == cur_font_loc)
-        print_string("current font");
-      else if (n < math_font_base + 16)
-      {
-        print_esc("textfont");
-        print_int(n - math_font_base);
-      }
-      else if (n < math_font_base + 32)
-      {
-        print_esc("scriptfont");
-        print_int(n - math_font_base - 16);
-      }
-      else
-      {
-        print_esc("scriptscriptfont");
-        print_int(n - math_font_base - 32);
-      }
-      print_char('=');
-      print_esc(""); print(hash[(hash_size + hash_extra + 524) + equiv(n)].v.RH);
-    }
-    else if (n < math_code_base)
-    {
-      if (n < lc_code_base)
-      {
-        print_esc("catcode");
-        print_int(n - cat_code_base);
-      }
-      else if (n < uc_code_base)
-      {
-        print_esc("lccode");
-        print_int(n - lc_code_base);
-      }
-      else if (n < sf_code_base)
-      {
-        print_esc("uccode");
-        print_int(n - uc_code_base);
-      }
-      else
-      {
-        print_esc("sfcode");
-        print_int(n - sf_code_base);
-      }
-      print_char('=');
-      print_int(equiv(n));
     }
     else
+      if (n < local_base)
+        if (n < skip_base)
+        {
+          print_skip_param(n - glue_base);
+          print_char('=');
+          if (n < glue_base + thin_mu_skip_code)
+            print_spec(equiv(n), "pt");
+          else
+            print_spec(equiv(n), "mu");
+        }
+        else
+          if (n < mu_skip_base)
+          {
+            print_esc("skip");
+            print_int(n - skip_base);
+            print_char('=');
+            print_spec(equiv(n), "pt");
+          }
+          else
+          {
+            print_esc("muskip");
+            print_int(n - mu_skip_base);
+            print_char('=');
+            print_spec(equiv(n), "mu");
+          }
+      else
+        if (n < int_base)
+          if (n == par_shape_loc)
+          {
+            print_esc("parshape");
+            print_char('=');
+            if (par_shape_ptr == 0)
+              print_char('0');
+            else
+              print_int(info(par_shape_ptr));
+          }
+          else
+            if (n < toks_base)
+            {
+              print_cmd_chr(assign_toks, n);
+              print_char('=');
+              if (equiv(n) != 0)
+                show_token_list(link(equiv(n)), 0, 32);
+            }
+            else
+              if (n < box_base)
+              {
+                print_esc("toks");
+                print_int(n - toks_base);
+                print_char('=');
+                if (equiv(n) != 0)
+                  show_token_list(link(equiv(n)), 0, 32);
+              }
+              else
+                if (n < cur_font_loc)
+                {
+                  print_esc("box");
+                  print_int(n - box_base);
+                  print_char('=');
+                  if (equiv(n) == 0)
+                    print_string("void");
+                  else
+                  {
+                    depth_threshold = 0;
+                    breadth_max = 1;
+                    show_node_list(equiv(n));
+                  }
+                }
+                else
+                  if (n < cat_code_base)
+                  {
+                    if (n == cur_font_loc)
+                      print_string("current font");
+                    else
+                      if (n < math_font_base + 16)
+                      {
+                        print_esc("textfont");
+                        print_int(n - math_font_base);
+                      }
+                      else
+                        if (n < math_font_base + 32)
+                        {
+                          print_esc("scriptfont");
+                          print_int(n - math_font_base - 16);
+                        }
+                        else
+                        {
+                          print_esc("scriptscriptfont");
+                          print_int(n - math_font_base - 32);
+                        }
+                        print_char('=');
+                        print_esc("");
+                        print(hash[(hash_size + hash_extra + 524) + equiv(n)].v.RH);
+                  }
+                  else
+                    if (n < math_code_base)
+                    {
+                      if (n < lc_code_base)
+                      {
+                        print_esc("catcode");
+                        print_int(n - cat_code_base);
+                      }
+                      else
+                        if (n < uc_code_base)
+                        {
+                          print_esc("lccode");
+                          print_int(n - lc_code_base);
+                        }
+                        else
+                          if (n < sf_code_base)
+                          {
+                            print_esc("uccode");
+                            print_int(n - uc_code_base);
+                          }
+                          else
+                          {
+                            print_esc("sfcode");
+                            print_int(n - sf_code_base);
+                          }
+                          print_char('=');
+                          print_int(equiv(n));
+                    }
+                    else
+                    {
+                      print_esc("mathcode");
+                      print_int(n - math_code_base);
+                      print_char('=');
+                      print_int(equiv(n));
+                    }
+  else
+    if (n < dimen_base)
     {
-      print_esc("mathcode");
-      print_int(n - math_code_base);
-      print_char('=');
-      print_int(equiv(n));
-    }
-  else if (n < dimen_base)
-  {
-    if (n < count_base)
-      print_param(n - int_base);
-    else if (n < del_code_base)
-    {
-      print_esc("count");
-      print_int(n - count_base);
+      if (n < count_base)
+        print_param(n - int_base);
+      else
+        if (n < del_code_base)
+        {
+          print_esc("count");
+          print_int(n - count_base);
+        }
+        else
+        {
+          print_esc("delcode");
+          print_int(n - del_code_base);
+        }
+        print_char('=');
+        print_int(eqtb[n].cint);
     }
     else
-    {
-      print_esc("delcode");
-      print_int(n - del_code_base);
-    }
-    print_char('=');
-    print_int(eqtb[n].cint);
-  }
-  else if (n <= eqtb_size)
-  {
-    if (n < scaled_base)
-      print_length_param(n - dimen_base);
-    else
-    {
-      print_esc("dimen");
-      print_int(n - scaled_base);
-    }
-    print_char('=');
-    print_scaled(eqtb[n].cint);
-    print_string("pt");
-  }
-  else print_char('?');
+      if (n <= eqtb_size)
+      {
+        if (n < scaled_base)
+          print_length_param(n - dimen_base);
+        else
+        {
+          print_esc("dimen");
+          print_int(n - scaled_base);
+        }
+        print_char('=');
+        print_scaled(eqtb[n].cint);
+        print_string("pt");
+      }
+      else
+        print_char('?');
 }
 #endif /* STAT */
 
@@ -1880,7 +1930,8 @@ halfword id_lookup_(integer j, integer l)
       if (length(text(p)) == l)
         if (str_eq_buf(text(p), j))
           goto lab40;
-    if (hash[p].v.LH == 0) {
+    if (hash[p].v.LH == 0)
+    {
       if (no_new_control_sequence)
         p = undefined_control_sequence;
       else
@@ -1898,8 +1949,8 @@ halfword id_lookup_(integer j, integer l)
             decr(hash_used);
           } while (!(text(hash_used) == 0));
 #ifdef SHORTHASH
-          if (hash_used > 65535L)
-          {     /* debugging only 1996/Jan/20 */
+          if (hash_used > 65535L) /* debugging only 1996/Jan/20 */
+          {
             sprintf(log_line, "ERROR: %s too large %d\n", "hash entry", hash_used);
             show_line(log_line, 1);
           }
@@ -1908,14 +1959,15 @@ halfword id_lookup_(integer j, integer l)
           p = hash_used;
         } 
 #ifdef CHECKPOOL
-        if (checkpool(NULL)) show_line("after hash_used\n", 0); 
+        if (checkpool(NULL))
+          show_line("after hash_used\n", 0); 
 #endif
         {
 #ifdef ALLOCATESTRING
           if (pool_ptr + l > current_pool_size)
             str_pool = realloc_str_pool(increment_pool_size + 1);
-          if (pool_ptr + l > current_pool_size)
-          { /* in case it failed 97/Mar/7 */
+          if (pool_ptr + l > current_pool_size) /* in case it failed 97/Mar/7 */
+          {
             overflow("pool size", current_pool_size - init_pool_ptr); /* pool size */
             return 0;     // abort_flag set
           }
@@ -1935,12 +1987,13 @@ halfword id_lookup_(integer j, integer l)
 #ifdef CHECKPOOL
         if (checkpool(NULL)) show_line("after pool_ptr\n", 0);
 #endif
-        for (k = j; k <= j + l - 1; k++) append_char(buffer[k]);
+        for (k = j; k <= j + l - 1; k++)
+          append_char(buffer[k]);
 #ifdef SHORTHASH
         {
           pool_pointer tempstring = make_string();
-          if (tempstring > 65535L)
-          {      /* cannot happen */
+          if (tempstring > 65535L) /* cannot happen */
+          {
             sprintf(log_line, "ERROR: %s too large %d\n", "string ptr", tempstring);
             show_line(log_line, 1);
           }
@@ -1973,7 +2026,8 @@ halfword id_lookup_(integer j, integer l)
     p = hash[p].v.LH; 
   } 
 #ifdef CHECKPOOL
-  if (checkpool(NULL)) show_line("before return\n", 0); 
+  if (checkpool(NULL))
+    show_line("before return\n", 0); 
 #endif
 lab40:
   Result = p;
@@ -1988,14 +2042,14 @@ void new_save_level_(group_code c)
 #ifdef ALLOCATESAVESTACK
      if (max_save_stack > current_save_size - 6)
        save_stack = realloc_save_stack(increment_save_size);
-     if (max_save_stack > current_save_size - 6)
-     { /* check again after allocation */
+     if (max_save_stack > current_save_size - 6) /* check again after allocation */
+     {
        overflow("save size", current_save_size);
        return;     // abort_flag set
      }
 #else
-     if (max_save_stack > save_size - 6)
-     { /* save size - not dynamic */
+     if (max_save_stack > save_size - 6) /* save size - not dynamic */
+     {
        overflow("save size", save_size);
        return;     // abort_flag set
      }
@@ -2017,7 +2071,7 @@ void new_save_level_(group_code c)
     overflow("grouping levels", max_quarterword - min_quarterword); /* 96/Oct/12 ??? */
     return;     // abort_flag set
   }
-/* cur_boundary <- save_ptr */
+
   cur_boundary = save_ptr;
   incr(cur_level);
   incr(save_ptr);
@@ -2059,14 +2113,14 @@ void eq_save_(halfword p, quarterword l)
 #ifdef ALLOCATESAVESTACK
     if (max_save_stack > current_save_size - 6)
       save_stack = realloc_save_stack (increment_save_size);
-    if (max_save_stack > current_save_size - 6)
-    { /* check again after allocation */
+    if (max_save_stack > current_save_size - 6) /* check again after allocation */
+    {
       overflow("save size", current_save_size);
       return;     // abort_flag set
     }
 #else
-    if (max_save_stack > save_size - 6)
-    { /* save size not dynamic */
+    if (max_save_stack > save_size - 6) /* save size not dynamic */
+    {
       overflow("save size", save_size);
       return;     // abort_flag set
     }
@@ -2130,14 +2184,14 @@ void save_for_after_(halfword t)
 #ifdef ALLOCATESAVESTACK
       if (max_save_stack > current_save_size - 6)
         save_stack = realloc_save_stack (increment_save_size);
-      if (max_save_stack > current_save_size - 6)
-      { /* check again after allocation */
+      if (max_save_stack > current_save_size - 6) /* check again after allocation */
+      {
         overflow("save size", current_save_size);
         return;     // abort_flag set
       }
 #else
-      if (max_save_stack > save_size - 6)
-      { /* save satck - not dynamic */
+      if (max_save_stack > save_size - 6) /* save satck - not dynamic */
+      {
         overflow("save size", save_size);
         return;     // abort_flag set
       }

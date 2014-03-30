@@ -227,9 +227,6 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
   bool openable = false;
 
 #if defined (FUNNY_CORE_DUMP) && !defined (BibTeX)
-/*  This only applies if a preloaded TeX (or Metafont) is being made;
-  it allows for automatic creation of the core dump (typing ^
-  requires manual intervention).  */
   if (path_index == TEXINPUTPATH &&
       strncmp (name_of_file + 1, "HackyInputFileNameForCoreDump.tex", 33) == 0)
     funny_core_dump();
@@ -550,7 +547,7 @@ bool extensionirrelevantaux (char *base, char *suffix)
         if (t > s)
           ret = 0; /* last dot occurs in path - no extension */
         else
-          ret = 1;     /* last dot occurs in file name itself */
+          ret = 1; /* last dot occurs in file name itself */
       }
       else
         ret = 1;       /* name not qualified and has dot */
@@ -700,12 +697,14 @@ bool open_output (FILE **f, char *fopen_mode)
 /*    string temp_name = concat3 (temp_dir, "/", name_of_file + 1); */
       string temp_name = concat3 (temp_dir, PATH_SEP_STRING, name_of_file + 1);
 #endif
-      if (deslash) unixify((char *) temp_name);     /* deslashify 93/Dec/28 */
+      if (deslash)
+        unixify((char *) temp_name);     /* deslashify 93/Dec/28 */
 /*  If share_flag is non-zero and we are opening for reading use fsopen */
 /*  but we can assume this is opening here for *output* */
       *f = fopen((char*)temp_name, fopen_mode);
 /*  If this succeeded, change name_of_file accordingly.  */
-      if (*f) strcpy((char*) name_of_file + 1, (char *) temp_name);
+      if (*f)
+        strcpy((char*) name_of_file + 1, (char *) temp_name);
 #ifndef BUILDNAMEDIRECT
       free (temp_name);
 #endif
