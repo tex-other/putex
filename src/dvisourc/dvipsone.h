@@ -354,8 +354,8 @@ extern void giveup(int);
 extern void tellwhere(FILE *, int);
 extern void ShowLine(char *, int);			/* new in dvipsone.c */
 
-extern getalphatoken(FILE *, char *, int);
-extern gettoken(FILE *, char *, int);
+extern int getalphatoken(FILE *, char *, int);
+extern int gettoken(FILE *, char *, int);
 extern void flushspecial(FILE *);
 extern int skipthispage(long);
 extern int readspecial(FILE *, FILE *, unsigned long);
