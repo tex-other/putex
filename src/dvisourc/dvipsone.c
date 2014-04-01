@@ -1,5 +1,6 @@
 /* Copyright 1990, 1991, 1992 Y&Y, Inc.
    Copyright 2007 TeX Users Group
+   Copyright 2014 Clerk Ma
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -522,9 +523,9 @@ char *compilefile = __FILE__;
 char *compiledate = __DATE__;
 char *compiletime = __TIME__;
 
-char *copyright = "Copyright (C) 1990--2000, Y&Y, Inc.\n"
-                  "Copyright (C) 2007 TeX Users Group.\n"
-                  "Copyright (C) 2014 Clerk Ma.\n";
+char *copyright = "\nCopyright (C) 1990--2000, Y&Y, Inc.\n"
+                  "Copyright (C) 2007, TeX Users Group.\n"
+                  "Copyright (C) 2014, Clerk Ma.\n";
                   //"This program is free software; you can redistribute it and/or modify\n"
                   //"it under the terms of the GNU General Public License as published by\n"
                   //"the Free Software Foundation; either version 2 of the License, or\n"
@@ -578,12 +579,11 @@ char *textenconame = "ansinew";   /* just vector name itself, no path */
 unsigned long nCheckSum=0;      /* checksum for ENCODING= *//* 95/Feb/3 */
 
 // char programpath[MAXPATHLEN]=""; /* pathname of program */
-
-char *programpath=NULL;       /* pathname of program */
+char *programpath = NULL;       /* pathname of program */
 
 // char dvipath[MAXPATHLEN]="";   /* pathname of dvi file - command */
 
-char *dvipath=NULL;         /* pathname of dvi file - command */
+char *dvipath = NULL;         /* pathname of dvi file - command */
 
 /* PFB files could also be in c:\\winnt\\fonts ... */
 
@@ -778,13 +778,12 @@ int usedviwindo = 1;    /* use [Environment] section in `dviwindo.ini' */
 char *dviwindo = NULL;    /* full file name for dviwindo.ini, with path */
 
 #ifdef USELOGFILE
-char *logfilename="dvipsone.log";
+char *logfilename = "dvipsone.log";
 #endif
 
-FILE *logfile=NULL;     /* 1999/Apr/20 */
-
-FILE *input=NULL;     /* used by following */
-FILE *output=NULL;      /* used by `interrupt handler' */
+FILE *logfile = NULL;  /* 1999/Apr/20 */
+FILE *input   = NULL;  /* used by following */
+FILE *output  = NULL;  /* used by `interrupt handler' */
 
 char fn_in[FNAMELEN], fn_out[FNAMELEN];   /* 1994/Mar/1 */
 
@@ -815,7 +814,8 @@ void pause (void)
 #endif
 }
 
-void checkpause (int flag) {            /* 95/Oct/28 */
+void checkpause (int flag) /* 95/Oct/28 */
+{
   char *s;
   int debugpause=0;
 
@@ -839,13 +839,15 @@ void checkpause (int flag) {            /* 95/Oct/28 */
 void checkenter (int argc, char *argv[]) {      /* 95/Oct/28 */
   int m;
   char current[FILENAME_MAX];
-  if (grabenv ("DEBUGPAUSE") != NULL) {
+  if (grabenv ("DEBUGPAUSE") != NULL)
+  {
     (void) _getcwd(current, sizeof(current)); /* FILENAME_MAX */
     sprintf(logline, "Current directory: `%s'\n", current);
     showline(logline, 0);
-    for (m = 0; m < argc; m++) {
-//      sprintf(logline, "%2d:\t`%s'\n", m, argv[m]); 
-      sprintf(logline, "%2d: `%s'\n", m, argv[m]); 
+    for (m = 0; m < argc; m++)
+    {
+//      sprintf(logline, "%2d:\t`%s'\n", m, argv[m]);
+      sprintf(logline, "%2d: `%s'\n", m, argv[m]);
       showline(logline, 0);
     }
 //    checkpause(0);
@@ -855,10 +857,12 @@ void checkenter (int argc, char *argv[]) {      /* 95/Oct/28 */
 
 // Note: in DLL version this returns and sets abortflag - not anymore
 
-void checkexit (int n) {              /* 95/Oct/28 */
+void checkexit (int n) /* 95/Oct/28 */
+{
   checkpause(1);
 #ifdef USELOGFILE
-  if (logfile != NULL) {
+  if (logfile != NULL)
+  {
     fclose(logfile);
     logfile = NULL;
   }
@@ -877,7 +881,8 @@ void checkexit (int n) {              /* 95/Oct/28 */
 
 // Note: in DLL version this returns NULL and sets abortflag if it fails
 
-char *zstrdup (char *s) {     /* new central location 1996/Aug/28 */
+char *zstrdup (char *s)    /* new central location 1996/Aug/28 */
+{
   char *new = _strdup(s);
   if (new != NULL) return new;
   sprintf(logline, " ERROR: Unable to allocate memory for %s\n", s);
@@ -919,7 +924,8 @@ void setupinifilesub (char *ininame, char *fullfilename)
     strcat(fullfilename, ininame);
 /*    printf("Using WINDIR %s\n", fullfilename); */ /* 1992/Jan/22 */
   }
-  else {
+  else
+  {
     _searchenv (ininame, "PATH", fullfilename);
 /*    printf("Using SEARCHENV %s\n", fullfilename); *//* 1992/Jan/22 */
   }
@@ -927,7 +933,7 @@ void setupinifilesub (char *ininame, char *fullfilename)
   if (*fullfilename == '\0') {    /* ugh, then try standard place */
     strcpy(fullfilename, "c:\\winnt");
     strcat(fullfilename, "\\");
-    strcat(fullfilename, ininame);    
+    strcat(fullfilename, ininame);
   }
 }
 
@@ -958,7 +964,8 @@ char *setupinifile (char *ininame, char *section)
 
 /*  check whether ini file actually has required section */
   input = fopen(fullfilename, "r");
-  if (input != NULL) {
+  if (input != NULL)
+  {
     m = strlen(section);
     while (fgets (line, sizeof(line), input) != NULL) { /* MAXLINE */
       if (*line == ';') continue;
@@ -970,8 +977,8 @@ char *setupinifile (char *ininame, char *section)
     }         
     fclose(input);
   }
-//  return "";      // failed, for one reason or another 
-  return NULL;    // failed, for one reason or another 
+//  return "";      // failed, for one reason or another
+  return NULL;    // failed, for one reason or another
 }
 
 char *envsection = "[Environment]";
@@ -997,31 +1004,26 @@ int setupdviwindo (void)
 
 /*  if (useatmini)  setupatmini();  */ /* need to do this before use */
 
-int useatmini = 1;      /* use [Setup] section in `atm.ini' */
-              /* reset if setup of atm.ini file fails */
-
-// char *atmini = "";   /* full file name for atm.ini, with path */
-char *atmini=NULL;    /* full file name for atm.ini, with path */
-
-int useatmreg=1;      /* use ATMREG.ATM for %%IncludeFont */
-              /* reset if setup of ATMREG.ATM file fails */
-
-int usepsfontname=1;    /* allow use of PS FontName in DVI TFM */
-
-// char *szATMRegAtm="";    /* full file name for ATMREG.ATM, with path */
-char *szATMRegAtm=NULL;   /* full file name for ATMREG.ATM, with path */
-
-int useatmfontsmap=1;   /* zero if tried and failed to find atmfonts.map */
-
-// char *atmfontsmap="";    /* file name and path to ATMFONTS.MAP */
- char *atmfontsmap=NULL;    /* file name and path to ATMFONTS.MAP */
+int useatmini = 1;       /* use [Setup] section in `atm.ini' */
+                         /* reset if setup of atm.ini file fails */
+// char *atmini = "";    /* full file name for atm.ini, with path */
+char *atmini=NULL;       /* full file name for atm.ini, with path */
+int useatmreg=1;         /* use ATMREG.ATM for %%IncludeFont */
+                         /* reset if setup of ATMREG.ATM file fails */
+int usepsfontname=1;     /* allow use of PS FontName in DVI TFM */
+// char *szATMRegAtm=""; /* full file name for ATMREG.ATM, with path */
+char *szATMRegAtm=NULL;  /* full file name for ATMREG.ATM, with path */
+int useatmfontsmap=1;    /* zero if tried and failed to find atmfonts.map */
+// char *atmfontsmap=""; /* file name and path to ATMFONTS.MAP */
+ char *atmfontsmap=NULL; /* file name and path to ATMFONTS.MAP */
 
 // char *atmininame = "atm.ini";  /* name of ini file we are looking for */
 
 char *atmsection="[Setup]";   /* ATM.INI section */
 
 #ifndef _WINDOWS
-int setupatmini (void) {
+int setupatmini (void)
+{
   if (! useatmini) return 0;    /* already tried and failed */
   if (atmini != NULL && *atmini != '\0') return 1;/* already tried and succeeded */
   atmini = setupinifile("atm.ini", atmsection);
@@ -1117,7 +1119,9 @@ char *grabenvvar (char *varname, char *inifile, char *section, int useini)
 /* WARNING: this will return NULL if not found anywhere - just like getenv */
 
 #ifdef _WINDOWS
-char *grabenv (char *varname) { /* get from [Environment] in dviwindo.ini */
+/* get from [Environment] in dviwindo.ini */
+char *grabenv (char *varname)
+{
   (void) GetPrivateProfileString("Environment", varname, "",
                    line, sizeof(line), "dviwindo.ini");
   if (traceflag) {
@@ -1128,7 +1132,9 @@ char *grabenv (char *varname) { /* get from [Environment] in dviwindo.ini */
   else return getenv(varname);
 }
 #else
-char *grabenv (char *varname) { /* get from [Environment] in dviwindo.ini */
+/* get from [Environment] in dviwindo.ini */
+char *grabenv (char *varname)
+{
   if (usedviwindo && ! dviwindoinisetup) setupdviwindo();   /* 99/June/16 */
   return grabenvvar (varname, dviwindo, "[Environment]", usedviwindo);
 }
@@ -1141,7 +1147,9 @@ char *grabenv (char *varname) { /* get from [Environment] in dviwindo.ini */
 /* used to return number of characters assembled in buffer */
 /* can handle different line terminations \n, \r, \n followed by \r */
 
-int getline (FILE *input, char *buff) { /* get line from normal ASCII file */
+/* get line from normal ASCII file */
+int getline (FILE *input, char *buff)
+{
   int c, k=0, n=0;
   char *s=buff;
 
@@ -1192,7 +1200,9 @@ int getline (FILE *input, char *buff) { /* get line from normal ASCII file */
   return n;         /* number of bytes read 94/Feb/23 */
 }
 
-int getrealline (FILE *input, char *buff) { /* get non-comment, non-blank */
+/* get non-comment, non-blank */
+int getrealline (FILE *input, char *buff)
+{
   int k;
   k = getline(input, buff);
   while ((*buff == '%' || *buff == '\n') && k > 0)
@@ -1200,35 +1210,45 @@ int getrealline (FILE *input, char *buff) { /* get non-comment, non-blank */
   return k;
 }
 
-void extension (char *fname, char *ext) { /* supply extension if none */
+/* supply extension if none */
+void extension (char *fname, char *ext)
+{
   char *s, *t;
     if ((s = strrchr(fname, '.')) == NULL ||
-    ((t = strrchr(fname, '\\')) != NULL && s < t)) {
+    ((t = strrchr(fname, '\\')) != NULL && s < t))
+    {
       strcat(fname, "."); 
       strcat(fname, ext);
   }
 }
 
-void forceexten (char *fname, char *ext) { /* change extension if present */
+/* change extension if present */
+void forceexten (char *fname, char *ext)
+{
   char *s, *t;
-    if ((s = strrchr(fname, '.')) == NULL ||
-    ((t = strrchr(fname, '\\')) != NULL && s < t)) {
-      strcat(fname, "."); 
-      strcat(fname, ext);
+  if ((s = strrchr(fname, '.')) == NULL ||
+      ((t = strrchr(fname, '\\')) != NULL && s < t))
+  {
+    strcat(fname, ".");
+    strcat(fname, ext);
   }
   else strcpy(s+1, ext);    /* give it default extension */
 }
 
-void removeexten (char *fname) {  /* remove extension if present */
+/* remove extension if present */
+void removeexten (char *fname)
+{
   char *s, *t;
-    if ((s = strrchr(fname, '.')) != NULL) {
+  if ((s = strrchr(fname, '.')) != NULL)
+  {
     if ((t = strrchr(fname, '\\')) == NULL || s > t) *s = '\0';
   }
 } 
 
 /* return pointer to file name - minus path - returns pointer to filename */
 
-char *extractfilename (char *pathname) {
+char *extractfilename (char *pathname)
+{
   char *s;
 
   if ((s=strrchr(pathname, '\\')) != NULL) s++;
@@ -1238,7 +1258,8 @@ char *extractfilename (char *pathname) {
   return s;
 }
 
-void showusage (char *program) {
+void showusage (char *program)
+{
   int k;
   char *s=logline;
 
@@ -1249,7 +1270,8 @@ void showusage (char *program) {
 [-d=<destination>] <dvi-file-1> ... \n",
       program); 
   showline(logline, 0);
-  if (! detailflag) {
+  if (! detailflag)
+  {
 //    uexit(1);
     return;     // 2000 June 18
   }
@@ -1710,14 +1732,18 @@ void tellwhere (FILE *input, int errflag)
   if (errflag > 0) errcount(0);
 }
 
-void giveup (int code) {    /* graceful exit with meaningful error message */
+/* graceful exit with meaningful error message */
+void giveup (int code)
+{
   sprintf(logline, " while %s", task);
   showline(logline, 1);
   tellwhere(input, -1);
   checkexit(code);    /* 1995/Oct/28 */
 }
 
-void waitasec (int delay) { /* possibly futile attempt to let output die */
+/* possibly futile attempt to let output die */
+void waitasec (int delay)
+{
   clock_t starttime;
   starttime = clock();
   for(;;) {
@@ -1729,10 +1755,13 @@ void waitasec (int delay) { /* possibly futile attempt to let output die */
 // Is this OK in DLL version ???
 // output will be NULL in DLL version ???
 
-void cleanup (void) {
+void cleanup (void)
+{
 /*  nothing much to do unless output file open */ 
-  if (output != NULL) {
-    if (directprint) {
+  if (output != NULL)
+  {
+    if (directprint)
+    {
 #ifndef _WINDOWS
       fflush(stdout);           /* ??? 98/Jun/30 */
 #endif
@@ -1751,7 +1780,8 @@ void cleanup (void) {
       fclose(output);       /* close output */
       waitasec(1000);       /* give it time to clear out ? */
     }
-    else {
+    else
+    {
       if (wantcontrold) {   /* added 1993/Mar/5 */
 /*        putc(3, output);    */  /* send control-C */
 //        putc(4, output);      /* send control-D */
@@ -1764,7 +1794,8 @@ void cleanup (void) {
 /*  fcloseall();  */
 }
 
-int abortjob (void) {
+int abortjob (void)
+{
 #ifdef _WINDOWS
   showline("ABORTJOB", 1);  // debugging only - can't happen
 #endif
@@ -1773,7 +1804,9 @@ int abortjob (void) {
   return -1;
 }
 
-void errcount (int flag) {  /* called each time `survivable' error encountered */
+/* called each time `survivable' error encountered */
+void errcount (int flag)
+{
   if (flag) errlevel++;
 /*  if (errlevel > MAXERRORS) { */
   if (errlevel > nMaxErrors && nMaxErrors > 0) {      /* 95/Dec/28 */
@@ -1804,10 +1837,11 @@ int writefontlist (FILE *outfile, int flag, int column)
   int property;
   
 /*  printf("WRITING FONT LIST!\n"); */
-  for (k = 0; k < fnext; k++) {
+  for (k = 0; k < fnext; k++)
+  {
     property = fontproper[k];
     if ((property & C_RESIDENT) != 0) resident++;
-    else if ((property & C_MISSING) != 0) missing++; 
+    else if ((property & C_MISSING) != 0) missing++;
     else if ((property & C_DEPENDENT) != 0) dependent++;/* 92/Sep/2 */
     else if ((property & C_INSTANCE) != 0) instance++;  /* 97/June/1 */
     else if ((property & C_UNUSED) != 0) unused++;  /* 95/Mar/5 */
@@ -1815,7 +1849,8 @@ int writefontlist (FILE *outfile, int flag, int column)
   }
 /*  printf("WANT %d K %d FNEXT %d ", want, k, fnext); */
 /*  no output if all fonts are resident (or missing) */
-  if (wanted == 0) {
+  if (wanted == 0)
+  {
 //    putc('\n', outfile);
     PSputc('\n', outfile);
 /*    return (resident + missing + dependent); */
@@ -1824,7 +1859,8 @@ int writefontlist (FILE *outfile, int flag, int column)
 //  fputs("font ", outfile);
   PSputs("font ", outfile);
   column += 5;
-  for (k = 0; k < fnext; k++) {
+  for (k = 0; k < fnext; k++)
+  {
     property = fontproper[k];
     want=0; 
 /*    don't mention fonts already mentioned elsewhere */
@@ -1987,13 +2023,15 @@ int decodepapersize (char *papersize, double *pagewidth, double *pageheight)
   if (papersize == NULL || *papersize == '\0')
     return -1;
 /*  printf("papersize=%s\n", papersize); */ /* DEBUGGING ONLY */
-  if(sscanf(s, "%lg%n", &width, &n) > 0) {
+  if(sscanf(s, "%lg%n", &width, &n) > 0)
+  {
     s +=  n;
     units[0] = *s++; units[1] = *s++; units[2] = '\0';
     multiple = decodeunits(units);
     width = width * multiple;
   }
-  else {
+  else
+  {
     sprintf(logline, "Don't understand papersize %s\n", papersize);
     showline(logline, 1);
     return -1;
@@ -2006,14 +2044,16 @@ int decodepapersize (char *papersize, double *pagewidth, double *pageheight)
     multiple = decodeunits(units);
     height = height * multiple;
   }
-  else {
+  else
+  {
     sprintf(logline, "Don't understand papersize %s\n", papersize);
     showline(logline, 1);
     return -1;
   }
   *pagewidth = width;   /* in bp */
   *pageheight = height; /* in bp */
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "pagewidth %lg pageheight %lg\n", *pagewidth, *pageheight);
     showline(logline, 0);
   }
@@ -2079,7 +2119,8 @@ int analpapertype (char *papertype, double *pagewidth, double *pageheight)
 
 /* Sep 27 1990 => 1990 Sep 27 */
 
-void scivilize (char *date) {
+void scivilize (char *date)
+{
   int k;
   char year[6];
 
@@ -2094,7 +2135,8 @@ void scivilize (char *date) {
 
 /* Thu Sep 27 06:26:35 1990 => 1990 Sep 27 06:26:35 */
 
-void lcivilize (char *date) {
+void lcivilize (char *date)
+{
   int k;
   char year[6];
 
@@ -2135,10 +2177,10 @@ char *stampit (char *line, int dateflag, int serialflag)
 /*  fprintf(output, "0.%d.%d ", version, revision); */
 //  fprintf(output, "%d.%d", version, revision);
 /*  if (subrevision != 0) */
-//    fprintf(output, ".%d", subrevision);  
+//    fprintf(output, ".%d", subrevision);
   sprintf(s, "%d.%d.%d ", version, revision, subrevision);
   s += strlen(s);
-  if (dateflag) 
+  if (dateflag)
 //    fprintf(output, " %s %s", date, compiletime);
     sprintf(s, " %s %s", date, compiletime);
   s += strlen(s);
@@ -2160,7 +2202,8 @@ char *stampit (char *line, int dateflag, int serialflag)
 //  Have to make copy of comma separated headerfile list 
 //  because strtok messes it up, and the list is needed again later
 
-void prologcomments (char *headerfile, FILE *outfile) { /* 1993/Nov/15 */
+void prologcomments (char *headerfile, FILE *outfile) /* 1993/Nov/15 */
+{
   char *s;
   char filename[MAXLINE];     /* need to work on copy since modify */
 
@@ -2176,11 +2219,14 @@ void prologcomments (char *headerfile, FILE *outfile) { /* 1993/Nov/15 */
   } 
 }
 
-void copyDSCfile (FILE *output, char *name) {
+void copyDSCfile (FILE *output, char *name)
+{
   FILE *input;
   int c, d=0;
   input = findepsfile(name, "dsc", 1, 1);
-  if (input == NULL) {
+
+  if (input == NULL)
+  {
     perrormod(name);
     PSputc('\n', output);
     return;
@@ -2190,7 +2236,8 @@ void copyDSCfile (FILE *output, char *name) {
     PSputc(c, output);
     d = c;
   }
-  if (d >= ' ') {
+  if (d >= ' ')
+  {
 //    putc('\n', output);
     PSputc('\n', output);
   }
@@ -2216,7 +2263,8 @@ void addescapes (char *sline, char *filename, int nlen) { // puts result in line
 
 /* Write DSC header */
 
-void writestruct (FILE *outfile) {
+void writestruct (FILE *outfile)
+{
   time_t ltime;         /* for time and date */
 /*  int pages, missing; */
   long pages;
@@ -2238,7 +2286,7 @@ void writestruct (FILE *outfile) {
     showline(logline, 1);
 /*    ltime = 0; *//* 901621283 1998 July 28 06:21:00 */
   }
-  s = ctime(&ltime); 
+  s = ctime(&ltime);
   if (s == NULL) {        /* "impossible" error */
     sprintf(logline, "ERROR: Cannot convert time (%0ld)!\n", ltime);  /* 96/Jan/4 */
     showline(logline, 1);
@@ -2248,7 +2296,8 @@ void writestruct (FILE *outfile) {
 /*  else lcivilize(s); */           /* ??? */
   lcivilize(s);               // date, used below
   PSputs("%%Title: ", outfile);
-  if (filenamex != NULL) {
+  if (filenamex != NULL)
+  {
     addescapes(line, filenamex, sizeof(line));  /* MAXLINE */
     PSputs(line, outfile);
   }
@@ -2353,13 +2402,13 @@ void writestruct (FILE *outfile) {
   }
 
 /*  should have version and revision? */
-//  if (strcmp(headerfile, "") != 0)    
-  if (headerfile != NULL)     
+//  if (strcmp(headerfile, "") != 0)
+  if (headerfile != NULL)
     prologcomments(headerfile, outfile);  /* 1993/Nov/15 */
 
   if (missing != 0) { /* not reliable - may be non-zero yet nothing? */
-//    fputs("%%DocumentNeededResources: ", outfile);  
-    PSputs("%%DocumentNeededResources: ", outfile);  
+//    fputs("%%DocumentNeededResources: ", outfile);
+    PSputs("%%DocumentNeededResources: ", outfile);
     writemissing(outfile, 27);
   }
 /*  Extra DSC code supplied on command line using -*D=... */
@@ -2407,8 +2456,8 @@ void writestruct (FILE *outfile) {
 //  fputs(copyright + 9, output);     /* step over "Copyright" */
 //  PSputs(copyright + 9, output);      /* step over "Copyright" */
   PSputs("%%Copyright: (C) 1990--2000, Y&Y, Inc.\n", output);
-  PSputs("%%Copyright: (C) 2007 TeX Users Group.\n", output);
-  PSputs("%%Copyright: (C) 2014 Clerk Ma.", output);
+  PSputs("%%Copyright: (C) 2007, TeX Users Group.\n", output);
+  PSputs("%%Copyright: (C) 2014, Clerk Ma.", output);
 //  putc('\n', output);
   PSputc('\n', output);
 //  fputs("%%EndComments", outfile);     /* may omit if next line ... */
@@ -2419,28 +2468,35 @@ void writestruct (FILE *outfile) {
 
 /* Made common routines to save strig space */
 
-void dvidictbegin(FILE *outfile) {      /* 1993/Dec/29 */
-//  fputs("dvidict begin\n", outfile);    
-  PSputs("dvidict begin\n", outfile);     
+void dvidictbegin(FILE *outfile)   /* 1993/Dec/29 */
+{
+//  fputs("dvidict begin\n", outfile);
+  PSputs("dvidict begin\n", outfile);
 }
 
-void dvidictend(FILE *outfile) {      /* 1993/Dec/29 */
+void dvidictend(FILE *outfile)    /* 1993/Dec/29 */
+{
 /*  putc('\n', outfile); */
 /*  fprintf(outfile, "end"); */
 //  fputs("end", outfile);
   PSputs("end", outfile);
-  if (stripcomment == 0) {
+
+  if (stripcomment == 0)
+  {
 //    fputs(" % dvidict", outfile);
     PSputs(" % dvidict\n", outfile);
   }
-  else {
+  else
+  {
 //    putc('\n', outfile);
     PSputc('\n', outfile);
   }
 }
 
-void writeparams(FILE *outfile) {
-  if (stripcomment == 0) {
+void writeparams(FILE *outfile)
+{
+  if (stripcomment == 0)
+  {
 //    fputs("% Doc Setup\n", outfile);
     PSputs("% Doc Setup\n", outfile);
 //    fputs("% Transform\n", outfile);
@@ -2452,10 +2508,12 @@ void writeparams(FILE *outfile) {
   sprintf(logline, "/num %lu def ", num); /* must use ! */
   PSputs(logline, output);
 #ifdef ALLOWSCALE
-  if (outscaleflag) {
+  if (outscaleflag)
+  {
     sprintf(logline, "/den %.9lg def ", (double) den / outscale);
   }
-  else {
+  else
+  {
     sprintf(logline, "/den %lu def ", den);
   }
   PSputs(logline, output);
@@ -2465,8 +2523,10 @@ void writeparams(FILE *outfile) {
     PSputs(logline, output);
   }
 #endif
-  if (verboseflag) {
-    if (num != 25400000 || den != 473628672) {
+  if (verboseflag)
+  {
+    if (num != 25400000 || den != 473628672)
+    {
       sprintf(logline, "Unusual DVI units: %lu/%lu per 0.1 micrometer\n",
         num, den);
       showline(logline, 0);
@@ -2476,11 +2536,11 @@ void writeparams(FILE *outfile) {
   PSputs(logline, output);
 /*  now for user specified transformations: */
   if (evenoddoff == 0)  /* only if the same on even and odd pages */
-  sprintf(logline, "/xoffset %lg def /yoffset %lg def\n", xoffset, yoffset);
+    sprintf(logline, "/xoffset %lg def /yoffset %lg def\n", xoffset, yoffset);
   PSputs(logline, output);
 /*  fprintf(output, "/magnification %lg def /rotation %lg def\n", 
     magnification, rotation); */
-  sprintf(logline, "/xmagnif %lg def /ymagnif %lg def /rotation %lg def\n", 
+  sprintf(logline, "/xmagnif %lg def /ymagnif %lg def /rotation %lg def\n",
     xmagnification, ymagnification, rotation);
   PSputs(logline, output);
 /*  if (flipflag != 0) fprintf(outfile, "/flip true def\n");
@@ -2489,34 +2549,41 @@ void writeparams(FILE *outfile) {
     pageheight, pagewidth);
   PSputs(logline, output);
 /*  if (bCheckVersion & 1)
-    fprintf(output, "(%d.%d.%d) checkversion\n", 
+    fprintf(output, "(%d.%d.%d) checkversion\n",
       version, revision, subrevision); */ /* 1993/Nov/3 */
-  if (bBindFlag) {
+  if (bBindFlag)
+  {
     PSputs("/bindflag true def\n", output);
   }
-  if (bCheckFonts != 0) {
+  if (bCheckFonts != 0)
+  {
     PSputs("/checkfonts true def\n", output);
   }
 /*  following is redundant - since it is already set to false in preamble .. */
-  else {
+  else
+  {
     PSputs("/checkfonts false def\n", output);
   }
-  if (bLandScape != 0) {
+  if (bLandScape != 0)
+  {
     PSputs("/landscape true def\n", output);    /* fixed 95/Aug/12 */
   }
-  if (copies != 1 && collated == 0) {
+  if (copies != 1 && collated == 0)
+  {
     sprintf(logline, "/#copies %d def\n", copies);  /* inside Setup */
     PSputs(logline, output);
   }
 /*  if (bCheckVersion) */
-  if (bCheckVersion & 1) {
+  if (bCheckVersion & 1)
+  {
 /*    fprintf(output, "(%d.%d.%d) checkversion\n", */
     sprintf(logline, "%d %d %d checkversion\n",
       version, revision, subrevision);    /* 1993/Nov/3 */
     PSputs(logline, output);
   }
 /*  Does user want to explicitly set screen frequency ? 94/March/18 */
-  if (frequency >= 0) {
+  if (frequency >= 0)
+  {
     if (frequency > 0) {  /* did user specified frequency & angle ? */
       if (freqrelation != 0) {  /* specified limiting frequency ? */
 /*        fputs("currentscreen pop exch", output); */
@@ -2532,7 +2599,8 @@ void writeparams(FILE *outfile) {
       PSputs(logline, output);
     }
 /*    else if (frequency == 0) */ /* use new spot function - no frequency */
-    else {
+    else
+    {
 //      fputs("currentscreen pop", output); /* frequency == 0 */
       PSputs("currentscreen pop", output); /* frequency == 0 */
     }
@@ -2546,14 +2614,16 @@ void writeparams(FILE *outfile) {
 
 // returns -1 if it fails
 
-int copypreamble (FILE *output, FILE *input, char *procsetfile, int checkflag) {
+int copypreamble (FILE *output, FILE *input, char *procsetfile, int checkflag)
+{
   int c, d, column;
   int goodflag=0;         /* 93/Mar/31 */
   unsigned int k, length;
-  int preversion=1, prerevision=2, presubrevision=0; 
+  int preversion=1, prerevision=2, presubrevision=0;
   char *s;
 
-  if ((bCheckVersion & 2) && checkflag) {         /* 1995/May/30 */
+  if ((bCheckVersion & 2) && checkflag)         /* 1995/May/30 */
+  {
     while ((c = getc(input)) != EOF && c != '%') ;  /* find first line */
     while ((c = getc(input)) != EOF && c >= ' ') ;  /* skip to end line */
     while ((c = getc(input)) != EOF && c < ' ') ; /* skip to next line */
@@ -2562,29 +2632,31 @@ int copypreamble (FILE *output, FILE *input, char *procsetfile, int checkflag) {
     while ((c = getc(input)) != EOF && c >= ' ' && s < line + sizeof(line))
       *s++ = (char) c;              /* read the line */
     *s++ = '\n'; *s = '\0';
-    if ((s = strstr(line, "version")) != NULL) {
-      if (sscanf (s+7, "%d.%d.%d",
-        &preversion, &prerevision, &presubrevision) == 3) {
-        if (preversion == version &&
-          prerevision == revision &&
-          presubrevision == subrevision) {
+    if ((s = strstr(line, "version")) != NULL)
+    {
+      if (sscanf (s+7, "%d.%d.%d", &preversion, &prerevision, &presubrevision) == 3)
+      {
+        if (preversion == version && prerevision == revision && presubrevision == subrevision)
+        {
           goodflag = 1;       /* 95/Mar/31 */
-          if (traceflag) {        /* debug only */
+          if (traceflag)        /* debug only */
+          {
             sprintf(logline, "VERSION OK (%s)\n", procsetfile);
             showline(logline, 0);
           }
-          if (distillerlogflag) {   // made optional 2000 Aug 15
+          if (distillerlogflag)   // made optional 2000 Aug 15
+          {
             strcpy(logline, "(%%[ Preamble Version: ");
             s = logline + strlen(logline);
             sprintf(s, "%d.%d.%d", preversion, prerevision, presubrevision);
             strcat(logline, " ]%%) = flush % for Distiller log\n");
             PSputs(logline, output);
           }
-
         }
       }
     }
-    if (goodflag == 0) {
+    if (goodflag == 0)
+    {
       sprintf(logline, "ERROR: Incorrect preamble version (%s) need %s:\n",
            procsetfile, progversion);
       showline(logline, 1);
@@ -2597,9 +2669,12 @@ int copypreamble (FILE *output, FILE *input, char *procsetfile, int checkflag) {
 
   c = getc(input);
   ungetc(c, input);
-  if (c != 128) {               /* plain ASCII format */
-    if (fgets(line, MAXLINE, input) != NULL) { 
-      if (*line != '%') {
+  if (c != 128)           /* plain ASCII format */
+  {
+    if (fgets(line, MAXLINE, input) != NULL)
+    {
+      if (*line != '%')
+      {
 //        fputs(line, output);    /* flush copyright */
         PSputs(line, output);   /* flush copyright */
       }
@@ -2670,7 +2745,8 @@ int copypreamble (FILE *output, FILE *input, char *procsetfile, int checkflag) {
   return -1;
 }
 
-void expand_separators (char *line) { // for filename in PS string
+void expand_separators (char *line) // for filename in PS string
+{
   char *s=line;
   while ((s = strchr(s, '\\')) != NULL) {
     memmove(s+1, s, strlen(s)+1); // "\" => "\\"
@@ -2682,30 +2758,33 @@ void expand_separators (char *line) { // for filename in PS string
 
 // returns -1 if error
 
-int writepreamble (FILE *outfile, char *procsetfile, char *procsetrest,
-          int checkflag) {
+int writepreamble (FILE *outfile, char *procsetfile, char *procsetrest, int checkflag)
+{
   FILE *infile;
   int ret=0;
 
   if (traceflag) printf("Processing %s (%s)\n", procsetfile, procsetrest);
   if (stripcomment == 0) PSputs("%%BeginResource: ", outfile);
-  if (stripcomment == 0) {
-    sprintf(logline, "procset %s %d %d\n",
-      procsetrest, version, revision);  /* no subrevision number */
+  if (stripcomment == 0)
+  {
+    sprintf(logline, "procset %s %d %d\n", procsetrest, version, revision);  /* no subrevision number */
     PSputs(logline, output);
   }
 
 /*  if ((infile = fopen(procsetfile, "r")) == NULL) { */
   infile = fopen(procsetfile, "rb");
-  if (input == NULL) {  /* 93/Oct/3 */
+  if (input == NULL)  /* 93/Oct/3 */
+  {
     sprintf(logline, "ERROR: Can't find preamble file `%s'\n", procsetfile);
     showline(logline, 1);
     perrormod(procsetfile);
     errcount(0);      /* pretty serious error ? */
     ret = -1;
   }
-  else {    
-    if (distillerlogflag) {   // made optional 2000 Aug 15
+  else
+  {
+    if (distillerlogflag)  // made optional 2000 Aug 15
+    {
       strcpy(logline, "(%%[ Reading: ");
       strcat(logline, procsetfile);
       expand_separators(logline);
@@ -2721,16 +2800,19 @@ int writepreamble (FILE *outfile, char *procsetfile, char *procsetrest,
 }
   
 /* void copyprologfile(char *filename, FILE *outfile) { */
-void copyprologfilesub (char *filename, FILE *outfile) {
+void copyprologfilesub (char *filename, FILE *outfile)
+{
   FILE *infile;
 
-  if (verboseflag) {
+  if (verboseflag)
+  {
     showline("[Header", 0);
   }
 /*  if ((infile = findepsfile(filename)) == NULL) { */
 /*  if ((infile = findepsfile(filename, 1)) == NULL) {*/
 /*  if ((infile = findepsfile(filename, 1, "ps")) == NULL) { */
-  if ((infile = findepsfile(filename, "ps", 1, 0)) == NULL) { 
+  if ((infile = findepsfile(filename, "ps", 1, 0)) == NULL)
+  {
 /*    fprintf(errout, "Can't find prolog file ");
     perrormod(filename);
     errcount(0); */
@@ -2764,40 +2846,50 @@ void copyprologfilesub (char *filename, FILE *outfile) {
 /* Can handle comma separated list of prolog file names */
 /* This DOES mess up the `filename' list passed, but it won't be used again */
 
-void copyprologfiles(char *filenames, FILE *outfile) {  /* 1993/Nov/15 */
+void copyprologfiles(char *filenames, FILE *outfile) /* 1993/Nov/15 */
+{
   char *s;
 
   if (filenames == NULL) return;
-  
+
   s = strtok(filenames, ",;");
   while (s != NULL) {
     copyprologfilesub(s, outfile);
-    s = strtok(NULL, ",;");     
+    s = strtok(NULL, ",;");
   }
 }
 
-int tryencandps(char *restofname) {
+int tryencandps(char *restofname)
+{
   FILE *infile;
 
 //  strcat(procsetfile, procsetrest);
   strcat(procsetfile, restofname);
-  extension(procsetfile, "enc"); 
-  if (traceflag) {
-    sprintf(logline, "Trying: %s\n", procsetfile);  
+  extension(procsetfile, "enc");
+
+  if (traceflag)
+  {
+    sprintf(logline, "Trying: %s\n", procsetfile);
     showline(logline, 0);
   }
   infile = fopen(procsetfile, "r");
-  if (infile != NULL) {
+
+  if (infile != NULL)
+  {
     fclose(infile);
     return 0;
   }
-  forceexten(procsetfile, "ps"); 
-  if (traceflag) {
-    sprintf(logline, "Trying: %s\n", procsetfile);  
+  forceexten(procsetfile, "ps");
+
+  if (traceflag)
+  {
+    sprintf(logline, "Trying: %s\n", procsetfile);
     showline(logline, 0);
   }
   infile = fopen(procsetfile, "r");
-  if (infile != NULL) {
+
+  if (infile != NULL)
+  {
     fclose(infile);
     return 0;
   }
@@ -2813,24 +2905,32 @@ int tryencandps(char *restofname) {
 //  leaves successful file name in procsetfile
 //  returns non-zero if it fails
 
-int setupprocset (char *procsetrest) {  /* figure out procsetfile */
+/* figure out procsetfile */
+int setupprocset (char *procsetrest)
+{
   FILE *infile;
   char *s;
 
 //  if explicit path given use that
-  if (strpbrk(procsetrest, "\\/:") != NULL) {
+  if (strpbrk(procsetrest, "\\/:") != NULL)
+  {
     strcpy(procsetfile, procsetrest);
     infile = fopen(procsetfile, "r");
-    if (infile != NULL) {
+    if (infile != NULL)
+    {
       fclose(infile);
       return 0;
-    }   
+    }
   }
-  else {
-    if (dvipath != NULL) 
+  else
+  {
+    if (dvipath != NULL)
       strcpy(procsetfile, dvipath); /* try dvi file path first */
-    else strcpy(procsetfile, "");
-    if (*procsetfile != '\0') {       /* 1992/Oct/30 */
+    else
+      strcpy(procsetfile, "");
+
+    if (*procsetfile != '\0')      /* 1992/Oct/30 */
+    {
       s = procsetfile + strlen(procsetfile) - 1;
       if (*s != ':' && *s != '\\' && *s != '/')
         strcat(procsetfile, "\\"); 
@@ -2842,7 +2942,8 @@ int setupprocset (char *procsetrest) {  /* figure out procsetfile */
     strcat(procsetfile, "\\");
     if (tryencandps(procsetrest) == 0) return 0;
 
-    if (programpath != NULL) {
+    if (programpath != NULL)
+    {
       strcpy(procsetfile, programpath); /* now try default path */
       strcat(procsetfile, "\\");
       if (tryencandps(procsetrest) == 0) return 0;
@@ -2860,7 +2961,8 @@ char *achFile = "dviwindo.ini";
 /* the following needs more work ... structuring conventions and such */
 /* also no coalesced mostly into on preamble => make file ? */
 
-int writeheader (FILE *outfile) { 
+int writeheader (FILE *outfile)
+{
   int c, k;
   char *u;              /* 1993/Dec/29 */
   int column = 0;
@@ -2880,21 +2982,23 @@ int writeheader (FILE *outfile) {
 /*  if (stripcomment == 0)  fputs("%%BeginProlog\n", outfile);  */
 
 /*  copy DVIPSONE preamble file */
-/*  create own dictionary in case userdict is nearly full */    
+/*  create own dictionary in case userdict is nearly full */
 /*  do we know how many fonts yet ? */ /* reduce DVIDICT default size */
 /*  fprintf(outfile, "/dvidict %d dict def\n", dvidictsize); */
 /*  printf("dvidictsize %d fnext %d\n", dvidictsize, fnext); *//* debugging */
   sprintf(logline, "/dvidict %d dict def\n", dvidictsize + fnext);
   PSputs(logline, output);
-  if (setupprocset(procsetrest) != 0) {
+  if (setupprocset(procsetrest) != 0)
+  {
     sprintf(logline, "ERROR: Problem with %s\n", procsetrest);
     showline(logline, 1);
     return -1;
   }
 #ifdef _WINDOWS
-  (void) WritePrivateProfileString(achDiag,  "ProcSetFile", procsetfile, achFile);
+  (void) WritePrivateProfileString(achDiag, "ProcSetFile", procsetfile, achFile);
 #endif
-  if (writepreamble(outfile, procsetfile, procsetrest, 1) != 0) {
+  if (writepreamble(outfile, procsetfile, procsetrest, 1) != 0)
+  {
     sprintf(logline, "ERROR: Problem with %s\n", procsetfile);
     showline(logline, 1);
     return -1;
@@ -2902,13 +3006,16 @@ int writeheader (FILE *outfile) {
   if (abortflag) return -1;
 
 /*  copy TPIC preamble file */
-  if (needtpic != 0)  {
-    if (setupprocset(tpicrest) != 0) {
+  if (needtpic != 0)
+  {
+    if (setupprocset(tpicrest) != 0)
+    {
       sprintf(logline, "ERROR: Problem with %s\n", tpicrest);
       showline(logline, 1);
       return -1;
     }
-    if (writepreamble(output, procsetfile, tpicrest, 0) != 0) {
+    if (writepreamble(output, procsetfile, tpicrest, 0) != 0)
+    {
       sprintf(logline, "ERROR: Problem with %s\n", procsetfile);
       showline(logline, 1);
       return -1;
@@ -2922,14 +3029,16 @@ int writeheader (FILE *outfile) {
 /*  add to list in structure comments ? */
 /*  if (strcmp(prologfile, "") != 0) copyprologfiles(prologfile, output); */
 /*  first do the ones stipulated on the command line */
-  for (k = 0; k < prologfileindex; k++) {       /* 1993/Dec/21 */
+  for (k = 0; k < prologfileindex; k++)       /* 1993/Dec/21 */
+  {
 /*    if (strcmp(prologfile[k], "") == 0) break; */
-    copyprologfiles(prologfile[k], output); 
+    copyprologfiles(prologfile[k], output);
     if (abortflag) return -1;
   }
 /*  then do the ones specified in \specials */
 //  if (strcmp(headerfile, "") != 0)
-  if (headerfile != NULL) {
+  if (headerfile != NULL)
+  {
     copyprologfiles(headerfile, output);
     if (abortflag) return -1;
   }
@@ -2981,7 +3090,8 @@ int writeheader (FILE *outfile) {
 /* after all, the vectors are not referred to if bAllowShortEncode == 0 */
 /* except possibly textext is needed for something or other */
 
-void writeencodingvecs (FILE *outfile) {  /* separated from above 94/Mar/3 */
+void writeencodingvecs (FILE *outfile)  /* separated from above 94/Mar/3 */
+{
 /*  int k; */
 /*  NOTE: following wrapped in begin/end on `dvidict' */
 /*  dvidictbegin(outfile); */
@@ -3004,10 +3114,12 @@ void writeencodingvecs (FILE *outfile) {  /* separated from above 94/Mar/3 */
 /*  dvidictend(outfile); */
 }
 
-void writetrailer (FILE *outfile) {
+void writetrailer (FILE *outfile)
+{
 /*  do trailer of sorts here ? */
 /*  putc('\n', outfile); */ /* omission slightly risky ? */
-  if (stripcomment == 0) {
+  if (stripcomment == 0)
+  {
 /*    fprintf(outfile, "%%%%Trailer\n"); */
 //    fputs("%%Trailer\n", outfile);
     PSputs("%%Trailer\n", outfile); 
@@ -3016,19 +3128,20 @@ void writetrailer (FILE *outfile) {
     PSputs("%%EOF\n", outfile);
   }
 /*  if (wantcontrold != 0 || directprint != 0) putc(4, outfile); */ /* C-D */
-  if (wantcontrold || 
-    (directprint && stripcomment))    /* 1993/Mar/5 */
+  if (wantcontrold || (directprint && stripcomment))    /* 1993/Mar/5 */
 //    putc(4, outfile); /* C-D */
     PSputc(4, outfile); /* C-D */
 }
 
 // The decrypted owner string may contain \xyz to indicate char <xyz>
-// Or it may contain DOS 850 accented characters 
+// Or it may contain DOS 850 accented characters
 
-void showownerout (char *oline, int pdfflag, int nlen) {
-  char *s=oline;
+void showownerout (char *oline, int pdfflag, int nlen)
+{
+  char *s = oline;
 
   *s = '\0';
+  strcpy(s, getenv("TEXAUTH"));
 //  if (serialnumber > 0) {
 //    showowner(s, hexmagic, nlen);
 //    while ((s = strchr(s+1, '@')) != NULL) *s = ' ';
@@ -3039,10 +3152,11 @@ void showownerout (char *oline, int pdfflag, int nlen) {
 //    fprintf(output, "%s", line);
 //  }
 //  else strcpy(s, "UNKNOWN");
-//  else showline("SERIALNUMBER == 0", 1);    // debugging only 
+//  else showline("SERIALNUMBER == 0", 1);    // debugging only
 }
 
-void showowner (char *buff, char *sour, int nlen) {
+void showowner (char *buff, char *sour, int nlen)
+{
   unsigned short cryptma = REEXEC; /* int */
   unsigned char e;
   int i;
@@ -3088,7 +3202,8 @@ void showowner (char *buff, char *sour, int nlen) {
 /* also check whether DEMO version */
 /* decrypted format is "Berthold K.P. Horn@100@1998 May 23 07:43:48\n" */
 
-int checkowner(char *hex, char *buffer, int nlen) { 
+int checkowner(char *hex, char *buffer, int nlen)
+{
   unsigned short cryptma = REEXEC; /* int */
   unsigned char e=0;
   int i, k;
@@ -3112,7 +3227,7 @@ int checkowner(char *hex, char *buffer, int nlen) {
 //        getenv("CONWAY") == NULL) return -1;
 //    return 0;
 //  }
-
+//
 /*  modified 97/May/23 to allow DOS 850 accented characters, */
 /*  but also now disallows control characters, and checks signature */
 //  for (i = 0; i < 4; i++) {
@@ -3155,7 +3270,8 @@ int checkowner(char *hex, char *buffer, int nlen) {
   return 0; /* seems ok ! */
 }
 
-unsigned long checkcopyright (char *s) {
+unsigned long checkcopyright (char *s)
+{
   int c;
   unsigned long hashed=0;
 
@@ -3174,22 +3290,27 @@ unsigned long checkcopyright (char *s) {
 
 double roundtime(long, long);
 
-int expandpageranges (void) {
+int expandpageranges (void)
+{
   int oldmaxranges = maxranges;
   int k;
-  
+
   if (maxranges == 0) maxranges = MAXRANGES;  // first time
   else maxranges = maxranges * 2;       // expansion
   beginpages = (long *) realloc(beginpages, maxranges * sizeof(long));
   endpages = (long *) realloc(endpages, maxranges * sizeof(long));
   pagerangeseq = (int *) realloc(pagerangeseq, maxranges * sizeof(long));
-  if (beginpages == NULL || endpages == NULL || pagerangeseq == NULL) {
+
+  if (beginpages == NULL || endpages == NULL || pagerangeseq == NULL)
+  {
     sprintf(logline, " ERROR: unable to allocate memory for %d page ranges\n", maxranges);
     showline(logline, 1);
     maxranges = oldmaxranges;
     return -1;
   }
-  for (k = oldmaxranges; k < maxranges; k++) {
+
+  for (k = oldmaxranges; k < maxranges; k++)
+  {
     beginpages[k] = -LINFINITY;
     endpages[k] = LINFINITY;
     pagerangeseq[k] = -1;
@@ -3205,7 +3326,8 @@ int expandpageranges (void) {
 
 char *delimiters=",.;:+_|~^/#!*"; /* imported from changed.c */
 
-int newpageranges (char *pages) { /* 1994/July/6 */
+int newpageranges (char *pages) /* 1994/July/6 */
+{
   char *s;
   int page, bpage, epage, temp;
 
@@ -3213,18 +3335,23 @@ int newpageranges (char *pages) { /* 1994/July/6 */
 /*  countzeroflag = 1; */     /* default, don't need to reset this ? */
   beginorend = -1;        /* matched begin / end pair */
   s = strtok (pages, delimiters);
+
   while (s != NULL) {
-    if (rangeindex >= maxranges) {
+    if (rangeindex >= maxranges)
+    {
       if (expandpageranges() < 0) break;
     }
-    if (rangeindex >= maxranges) {
+    if (rangeindex >= maxranges)
+    {
       sprintf(logline, " ERROR: Too many page ranges (> %d): %s\n",
           maxranges, s);
       showline(logline, 1);
       break;
     }
-    if (sscanf(s, "%d-%d", &bpage, &epage) == 2) {
-      if (bpage > epage) {
+    if (sscanf(s, "%d-%d", &bpage, &epage) == 2)
+    {
+      if (bpage > epage)
+      {
         temp = epage;
         epage = bpage;
         bpage = temp;
@@ -3234,16 +3361,19 @@ int newpageranges (char *pages) { /* 1994/July/6 */
       pagerangeseq[rangeindex] = -1;
       rangeindex++;
     }
-    else if (sscanf(s, "%d", &page) == 1) {
-      beginpages[rangeindex] = (long) page;
-      endpages[rangeindex] = (long) page;
-      pagerangeseq[rangeindex] = -1;
-      rangeindex++;
-    }
-    else {
-      sprintf(logline, " Error in page range: %s", s);
-      showline(logline, 1);
-    }
+    else
+      if (sscanf(s, "%d", &page) == 1)
+      {
+        beginpages[rangeindex] = (long) page;
+        endpages[rangeindex] = (long) page;
+        pagerangeseq[rangeindex] = -1;
+        rangeindex++;
+      }
+      else
+      {
+        sprintf(logline, " Error in page range: %s", s);
+        showline(logline, 1);
+      }
     s = strtok (NULL, delimiters);
   }
 /*  if (traceflag) {
@@ -3260,7 +3390,8 @@ int newpageranges (char *pages) { /* 1994/July/6 */
 
 /* save some space by making this common 1992/Nov/17 */
 
-void complaincommand (char *command, char *s) {
+void complaincommand (char *command, char *s)
+{
   sprintf(logline, "Don't understand: %s ", command);
   if (s != NULL && strlen(s) < sizeof(logline) - strlen(logline))
     strcat(logline, s);
@@ -3275,7 +3406,8 @@ void complaincommand (char *command, char *s) {
 /* Also allow use of `:' for convenience */
 /* Archaic: use space to separate - only for backward compatability */
 
-int decodearg (char *command, char *next, int firstarg) {
+int decodearg (char *command, char *next, int firstarg)
+{
   char *s;
   char *sarg=command;
   int c, n, flag;
@@ -3339,7 +3471,7 @@ int decodearg (char *command, char *next, int firstarg) {
           if (rangeindex >= maxranges) {
             if (expandpageranges() < 0) break;
           }
-//          if (rangeindex == maxranges) 
+//          if (rangeindex == maxranges)
           if (rangeindex >= maxranges) {
 /*            fprintf(errout, " WARNING: too many begins\n"); */
             showline(" WARNING: too many begins\n", 1);
@@ -3354,7 +3486,7 @@ int decodearg (char *command, char *next, int firstarg) {
       else if (endflag != 0) {
         instance=-1;                /* 1994/Jan/16 */
 /*        if (sscanf(s, "%ld", &endpage) < 1) */
-        if (sscanf(s, "%ld:%d", &endpage, &instance) < 1) 
+        if (sscanf(s, "%ld:%d", &endpage, &instance) < 1)
 /*          fprintf(errout, "Don't understand end: %s\n", s); */
           complaincommand(command, s);
         else if (beginorend < 0) {
@@ -3558,12 +3690,14 @@ int decodearg (char *command, char *next, int firstarg) {
 
 /*  check command line flags and command line arguments */
 
-int commandline (int argc, char *argv[], int firstarg) {
+int commandline (int argc, char *argv[], int firstarg)
+{
   int c, flag;
   char *s;
-  
+
 /*  if (argc < 2) showusage(argv[0]); */
-  if (argc < firstarg+1) {
+  if (argc < firstarg+1)
+  {
 //    showusage(argv[0]); /* 1994/Oct/15 */
     return -1;        // 2000 June 21
   }
@@ -3593,9 +3727,10 @@ int commandline (int argc, char *argv[], int firstarg) {
 
 /* return pointer to file name - minus path - returns pointer to filename */
 
-char *removepath (char *pathname) {
+char *removepath (char *pathname)
+{
   char *s;
-  
+
   if ((s=strrchr(pathname, '\\')) != NULL) s++;
   else if ((s=strrchr(pathname, '/')) != NULL) s++;
   else if ((s=strrchr(pathname, ':')) != NULL) s++;
@@ -3605,9 +3740,10 @@ char *removepath (char *pathname) {
 
 /* remove file name - keep only path - inserts '\0' to terminate */
 
-void stripname (char *pathname) {
+void stripname (char *pathname)
+{
   char *s;
-  
+
   if ((s=strrchr(pathname, '\\')) != NULL) ;
   else if ((s=strrchr(pathname, '/')) != NULL) ;
   else if ((s=strrchr(pathname, ':')) != NULL) s++;
@@ -3616,7 +3752,8 @@ void stripname (char *pathname) {
   *s = '\0';
 }
 
-void replaceletter (char *s, int old, int new) {
+void replaceletter (char *s, int old, int new)
+{
   int c;
   while ((c = *s) != '\0') {
     if (c == old) *s = (char) new;
@@ -3624,7 +3761,8 @@ void replaceletter (char *s, int old, int new) {
   }
 }
 
-void lowercase (char *t, char *s) {
+void lowercase (char *t, char *s)
+{
   int c;
   while ((c = *s++) != '\0') {
     if (c >= 'A' && c <= 'Z') *t++ = (char) (c + ('a' - 'A'));
@@ -3633,7 +3771,8 @@ void lowercase (char *t, char *s) {
   *t = '\0';
 }
 
-void uppercase (char *t, char *s) {
+void uppercase (char *t, char *s)
+{
   int c;
   while ((c = *s++) != '\0') {
     if (c >= 'a' && c <= 'z') *t++ = (char) (c - ('a' - 'A'));
@@ -3650,7 +3789,8 @@ void uppercase (char *t, char *s) {
 
 #ifdef CONTROLBREAK
 // void __cdecl ctrlbreak(int err) {
-void ctrlbreak(int err) {
+void ctrlbreak(int err)
+{
 /*  by the way: err should be SIGINT at this point --- err never used */
   (void) signal(SIGINT, SIG_IGN);     /* disallow control-C */
   if (bAbort++ >= 3) exit(3);       /* emergency exit */
@@ -3658,7 +3798,7 @@ void ctrlbreak(int err) {
 }
 #endif
 
-char *dvipsonecmd="DVIPSONE.CMD";   /* name of command line file */
+char *dvipsonecmd = "DVIPSONE.CMD";   /* name of command line file */
 
 /* Try and read default command file - DVIPSONE.CMD */
 /* in current directory and then in directory of DVIPSONE */
@@ -3671,7 +3811,8 @@ char *dvipsonecmd="DVIPSONE.CMD";   /* name of command line file */
 
 char commandfile[FNAMELEN];   /* keep around so can open later */
 
-int scancommands (char *line) {
+int scancommands (char *line)
+{
   char *s, *sn;
   int flag;
   
@@ -3694,7 +3835,8 @@ int scancommands (char *line) {
 
 /* 1993/Nov/15 need to make copy of command line in local memory ! */
 
-int readcommands (char *filename) {
+int readcommands (char *filename)
+{
 /*  char commandfile[FNAMELEN]; */
   FILE *command;
   char line[MAXLINE];   /* why not use global ? reentry ? */
@@ -3717,7 +3859,8 @@ int readcommands (char *filename) {
     strcat(commandfile, filename);
     extension(commandfile, "cmd");
     command = fopen(commandfile, "r");
-    if (command == NULL) {
+    if (command == NULL)
+    {
 /*      perrormod(commandfile); */  /* debugging only */
       strcpy(commandfile, "");  /* indicate failed - 94/Mar/4 */
       return 0;       /* no command line file DVIPSONE.CMD */
@@ -3727,7 +3870,6 @@ int readcommands (char *filename) {
 /*  allow for multiple lines --- ignore args that don't start with `-' */
   while (fgets(line, MAXLINE, command) != NULL) {
 /*    printf("From %s:\t%s", commandfile, line); */
-
 /*    skip over comment lines and blank lines */
     if (*line == '%' || *line == ';' || *line == '\n') continue;
     if (strchr(line, '\n') == NULL) strcat(line, "\n");
@@ -3742,23 +3884,27 @@ int readcommands (char *filename) {
 }
 
 #ifdef ALLOWDEMO
-int monthnumber(char *smonth) {
+int monthnumber(char *smonth)
+{
   int k;
-  char *s=months;
-  for (k = 0; k < 12; k++) {
+  char *s = months;
+  for (k = 0; k < 12; k++)
+  {
     if (strncmp(smonth, s, 3) == 0) return k;
     s += 3;
   }
   return 0;     /* Say what? */
 }
 
-void stripcolon(char *s) {
+void stripcolon(char *s)
+{
   while ((s = strchr(s+1, ':')) != NULL) *s = ' ';
 }
 
 /* Owner is of form "Berthold K.P. Horn@100@1998 May 23 07:43:48\n" */
-
-time_t checkdemo(char *owner) {   /* now returns seconds since customized */
+/* now returns seconds since customized */
+time_t checkdemo(char *owner)
+{
   time_t ltime, otime;      /* for date and time */
   time_t dtime;         /* seconds since customized */
   struct tm loctim;
@@ -3782,10 +3928,10 @@ time_t checkdemo(char *owner) {   /* now returns seconds since customized */
   if (year > 1900) year = year - 1900;
   month = monthnumber(buffer);
   loctim.tm_year = year;
-  loctim.tm_mon = month; 
+  loctim.tm_mon = month;
   loctim.tm_mday = day;
 /*  stripcolon(compiletime); */ /* extra fancy precision */
-/*  sscanf(compiletime, "%d %d %d", 
+/*  sscanf(compiletime, "%d %d %d",
     &loctim.tm_hour, &loctim.tm_min, &loctim.tm_sec); */
   loctim.tm_hour = hour;
   loctim.tm_min = min;
@@ -3806,13 +3952,15 @@ time_t checkdemo(char *owner) {   /* now returns seconds since customized */
   if (dtime < - oneday)
     exit(7);          /* bogus date ! */
 /*  if (dtime > onemonth) {  */
-  if (dtime > onemonth * bDemoFlag) { 
+  if (dtime > onemonth * bDemoFlag)
+  {
     showline("Please contact Y&Y, Inc. for non-DEMO version\n", 1);
     showline("http://www.YandY.com  sales@YandY.com  (978) 371 3286\n", 1);
     pause();
   }
 /*  if (dtime > onemonth * 3) { */
-  if (dtime > onemonth * (bDemoFlag+2)) {
+  if (dtime > onemonth * (bDemoFlag+2))
+  {
     showline("Sorry, but this DEMO version has expired\n", 1);
     pause();
     exit(7);          /* EXPIRED ! */
@@ -3825,7 +3973,8 @@ time_t checkdemo(char *owner) {   /* now returns seconds since customized */
 
 /* flag is zero for on-screen output, non-zero for PS file output */
 
-void showcommand (FILE *output, int argc, char *argv[], int flag) {
+void showcommand (FILE *output, int argc, char *argv[], int flag)
+{
   int k;
   FILE *command;
   int cmdflag=0;
@@ -3908,7 +4057,8 @@ void showcommand (FILE *output, int argc, char *argv[], int flag) {
 
 /* 1995 Sep 27 06:26:35 => 19950927062635 */
 
-void packdatetime (char *date) {  /* rewrite date and time in PDF format */
+void packdatetime (char *date)  /* rewrite date and time in PDF format */
+{
   int k;
   char *s;
   while ((s = strchr(date, ' ')) != NULL) strcpy(s, s+1);
@@ -3920,19 +4070,22 @@ void packdatetime (char *date) {  /* rewrite date and time in PDF format */
   strcpy(date+6, date+7);
 }
 
-void writedocinfo (FILE *output) {    /* write DOCINFO & PAGES pdfmarks */
+void writedocinfo (FILE *output)    /* write DOCINFO & PAGES pdfmarks */
+{
   time_t ltime;   /* for time and date */
-  char *s="";
+  char *s = "";
   int xll, yll, xur, yur;
 
   if (makeepsf) return;       /* don't do this for EPS file */
   if (directprint) return;      /* don't do this when direct */
-  if (titlestring == NULL) {
+  if (titlestring == NULL)
+  {
     if (filenamex != NULL)
       addescapes(line, filenamex, sizeof(line));  /* MAXLINE */
     else *line = '\0';
   }
-  else {
+  else
+  {
     strcpy(line, titlestring);  /* 96/July/4 */
     free(titlestring);
     titlestring = NULL;
@@ -3942,9 +4095,11 @@ void writedocinfo (FILE *output) {    /* write DOCINFO & PAGES pdfmarks */
 /*  for PDFmark need date/time format (D:YYYYMMDDHHmmSS) */
   (void) time(&ltime);      /* get seconds since 1970 */
 /*  added some sanity checks 98/July/29 */
-  if (ltime > 0) {
-    s = ctime(&ltime); 
-    if (s != NULL) {
+  if (ltime > 0)
+  {
+    s = ctime(&ltime);
+    if (s != NULL)
+    {
       lcivilize(s);
       packdatetime(s);      /* convert to PDF format */
       sprintf(logline, "  /CreationDate (D:%s)\n", s);  /* optional */
@@ -3952,10 +4107,12 @@ void writedocinfo (FILE *output) {    /* write DOCINFO & PAGES pdfmarks */
     }
   }
 
-  if (creatorstring == NULL) {      // 99/Dec/18
+  if (creatorstring == NULL)      // 99/Dec/18
+  {
     stampit(line, 0, 0);
   }
-  else {
+  else
+  {
     strcpy(line, creatorstring);
     free(creatorstring);
     creatorstring = NULL;
@@ -3972,27 +4129,32 @@ void writedocinfo (FILE *output) {    /* write DOCINFO & PAGES pdfmarks */
 /*  fputs(URL, output); */
 //  fputs(")\n", output);
 //  PSputs(")\n", output);
-  if (*line != '\0') {
+  if (*line != '\0')
+  {
     sprintf(logline, "  /Creator (%s)\n", line);
     PSputs(logline, output);
   }
 
-  if (subjectstring == NULL) {
+  if (subjectstring == NULL)
+  {
     if (comment != NULL) strcpy(line, comment); /* TeX's comment */
     else strcpy(line, "");
   }
-  else {                        /* 96/July/4 */
+  else                        /* 96/July/4 */
+  {
     strcpy(line, subjectstring);
     free(subjectstring);
     subjectstring = NULL;
   }
-  if (*line != '\0') {
+  if (*line != '\0')
+  {
     sprintf(logline, "  /Subject (%s)\n", line);      /* optional */
     PSputs(logline, output);
   }
 
 /*  Allow insertion of keywords using \special{keywords=...} 96/May/10 */
-  if (keywords != NULL) {
+  if (keywords != NULL)
+  {
     *line = '\0';
     if (strlen(keywords) < MAXLINE) strcpy(line, keywords);
     free(keywords);
@@ -4002,7 +4164,8 @@ void writedocinfo (FILE *output) {    /* write DOCINFO & PAGES pdfmarks */
     PSputs(logline, output);
   }
 /*  Might want to cut short showowner output before date ... */
-  if (authorstring == NULL) {
+  if (authorstring == NULL)
+  {
 //    if (serialnumber != 0) {
 //      PSputs("  /Author (", output);
 //      showownerout(line, 1);
@@ -4015,7 +4178,8 @@ void writedocinfo (FILE *output) {    /* write DOCINFO & PAGES pdfmarks */
     strcat(line, ")\n");
     PSputs(line, output);
   }
-  else {                    /* 96/July/4 */
+  else                    /* 96/July/4 */
+  {
     strcpy(line, authorstring);
     free(authorstring);
     authorstring = NULL;
@@ -4025,12 +4189,14 @@ void writedocinfo (FILE *output) {    /* write DOCINFO & PAGES pdfmarks */
 
   PSputs("/DOCINFO pdfmark\n", output);       /* required */
 /*  now add /CropBox /Page pdfmark */
-  if (BBxll != 0 || BByll != 0 || BBxur != 0 || BByur != 0) { /* 96/May/4 */
+  if (BBxll != 0 || BByll != 0 || BBxur != 0 || BByur != 0) /* 96/May/4 */
+  {
 /*    should really convert from TeX coordinates to PS coordinates */
     xll = BBxll; yll = BByll;
     xur = BBxur; yur = BByur;
   }
-  else {
+  else
+  {
     xll = 0;
     yll = 0;
     xur = (int) pagewidth;
@@ -4043,20 +4209,24 @@ void writedocinfo (FILE *output) {    /* write DOCINFO & PAGES pdfmarks */
 /*  Above should go between %%BeginSetup and %%EndSetup */
 }
 
-void writedocview (FILE *output) {    /* write DOCVIEW pdfmark */
+void writedocview (FILE *output)    /* write DOCVIEW pdfmark */
+{
   if (makeepsf) return;       /* don't do this for EPS file */
   if (directprint) return;      /* don't do this when direct */
   if (basestring == NULL && pagemode == NULL) return;
               /* only if PageMode or Base URL specified */
   PSputs("[", output);
-  if (pagemode != NULL) {
+  if (pagemode != NULL)
+  {
     strcpy(line, pagemode);
     free(pagemode);
     pagemode = NULL;
     sprintf(logline, " /PageMode %s\n", line);
     PSputs(logline, output);
   }
-  if (basestring != NULL) {
+
+  if (basestring != NULL)
+  {
     strcpy(line, basestring);
     free(basestring);
     basestring = NULL;
@@ -4071,15 +4241,17 @@ void writedocview (FILE *output) {    /* write DOCVIEW pdfmark */
 }
 
 /* separated out 94/Mar/3 */
-void writesetup (FILE *output, char *filename) {
+void writesetup (FILE *output, char *filename)
+{
   time_t ltime;   /* for time and date */
   int c;        /* for first letter of papertype */
   char *s;
-  
+
 /*  if (stripcomment == 0) fputs("%%BeginSetup\n", output);*/ /* 1992/July/18 */
 
 /*  Don't bother with following if writing direct to printer ? */
-  if (bPDFmarks) {
+  if (bPDFmarks)
+  {
     writedocinfo(output);   /* new 95/Feb/25 */
     writedocview(output);   /* new 96/Jul/21 */
   }
@@ -4087,7 +4259,8 @@ void writesetup (FILE *output, char *filename) {
 
 /*  fprintf(output, "statusdict begin 0 setjobtimeout end\n"); */
 
-  if (makeepsf == 0) {
+  if (makeepsf == 0)
+  {
 /*    replaceletter(fn_in, '\\', '/'); */ /*  backslash to slash ? */
 /*    must avoid backslash in string ... */ /* fn_in */
 /*    Note: fn_in may still contain a colon! */ 
@@ -4098,26 +4271,28 @@ void writesetup (FILE *output, char *filename) {
 //    fputs("statusdict /jobname\n(DVIPSONE ", output);
     PSputs("statusdict /jobname\n(DVIPSONE ", output);
 /*    fprintf(output, "0.%d.%d SN %ld ", */
-    sprintf(logline, "%d.%d.%d", version, revision, subrevision);
+    sprintf(logline, "%d.%d.%d ", version, revision, subrevision);
     PSputs(logline, output);
 //    if (subrevision != 0) fprintf(output, ".%d", subrevision);
-    sprintf(logline, " SN %ld ", serialnumber/REEXEC);
-    PSputs(logline, output);
+//    sprintf(logline, " SN %ld ", serialnumber/REEXEC);
+//    PSputs(logline, output);
 //    fputs(filename, output);
     PSputs(filename, output);
 //    putc(' ', output);
     PSputc(' ', output);
-/*    not clear need to really avoid jobname setting in EPS mode... */  
+/*    not clear need to really avoid jobname setting in EPS mode... */
 
 /*    stick in current date and time */
     (void) time(&ltime);        /* get seconds since 1970 */
-    if (ltime == -1) {
+    if (ltime == -1)
+    {
       sprintf(logline, "Time not available (%0ld)!\n", ltime);
       showline(logline, 1);
 /*      ltime = 0; *//* 901621283 1998 July 28 06:21:00 */
     }
-    s = ctime(&ltime);      
-    if (s == NULL) {
+    s = ctime(&ltime);
+    if (s == NULL)
+    {
       sprintf(logline, "Cannot convert time (%0ld)!\n", ltime); /* 96/Jan/4 */
       showline(logline, 1);
       s = "Thu Jan 18 22:14:00 2038";
@@ -4130,10 +4305,12 @@ void writesetup (FILE *output, char *filename) {
 //    fputs(")\nput\n", output);
     PSputs(")\nput\n", output);
 //    if (strcmp(papertype, "") != 0 || strcmp(papersize, "") != 0) 
-    if (papertype != NULL || papersize != NULL) {
+    if (papertype != NULL || papersize != NULL)
+    {
 //      fputs("[{\n", output);
       PSputs("[{\n", output);
-      if (stripcomment == 0) {
+      if (stripcomment == 0)
+      {
 /*        %%BeginFeature: *PageSize Letter ??? */
 //        fputs("%%BeginFeature: ", output);  /* 1992/July/18*/
         PSputs("%%BeginFeature: ", output); /* 1992/July/18*/
@@ -4161,8 +4338,8 @@ void writesetup (FILE *output, char *filename) {
 /*      if (strcmp(papertype, "custom") != 0) */
 /*      statusdict /lettertray get exec ??? */
 //      if (strcmp(papertype, "") != 0 && strchr(papertype, '*') == NULL)
-      if (papertype != NULL &&
-        strchr(papertype, '*') == NULL) {
+      if (papertype != NULL && strchr(papertype, '*') == NULL)
+      {
 /*        fprintf(output, "{%s}stopped pop\n", papertype); */
 //        fputs(papertype, output); /* since already stopped context */
         PSputs(papertype, output);  /* since already stopped context */
@@ -4272,7 +4449,8 @@ void writesetup (FILE *output, char *filename) {
 /*    if (bLevel2) { */
 /*    printf("bInsertImage %d\n", bInsertImage); */ /* debugging */
 /*    cause error message on printer if not PS level 2 */
-    if (bLevel2 && bInsertImage) { 
+    if (bLevel2 && bInsertImage)
+    {
       dvidictbegin(output);
       sprintf(logline, "CheckLevel2\n");  /* 1996/Dec/20 */
       PSputs(logline, output);
@@ -4286,7 +4464,8 @@ void writesetup (FILE *output, char *filename) {
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-void setupremap (void) {
+void setupremap (void)
+{
   int k;
 #if MAXREMAP > 32
   for (k = 0; k < 10; k++) remaptable[k] = (unsigned char) (161 + k);
@@ -4298,14 +4477,15 @@ void setupremap (void) {
 #endif
 #else /* MAXREMAP <= 32 */
   for (k = 0; k < 10; k++) remaptable[k] = 161 + k;
-  for (k = 10; k < 32; k++) remaptable[k] = 163 + k;  
+  for (k = 10; k < 32; k++) remaptable[k] = 163 + k;
 #endif
 }
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 // void showpedigree(FILE *output)
-char *showpedigree (char *line, int nlen) {
+char *showpedigree (char *line, int nlen)
+{
   char *s=line;
 //  stampit(output, 1, 1);
   stampit(line, 1, 1);
@@ -4317,18 +4497,19 @@ char *showpedigree (char *line, int nlen) {
 //  putc('\n', output);
   strcat(s, "\n");
   s += strlen(s);
-//  fprintf(output, "%s\n", copyright); 
-  sprintf(s, "%s\n", copyright);  
+//  fprintf(output, "%s\n", copyright);
+  sprintf(s, "%s\n", copyright);
   s += strlen(s);
   return s;
 }
 
 /* called once only when program starts up */
 
-int dodefaults (void) {     /* moved out 1994/May/23 */
+int dodefaults (void)     /* moved out 1994/May/23 */
+{
   char *s;            /* 1996/July/30 */
   int flag=1;
-  
+
 /*  if (bRemapControl) */     /* 1994/June/20 */
     setupremap ();        /* may as well always do this 95/Oct/15 */
 //  if (bMaxSub) maxsubstitute = MAXSUBSTITUTE / 2;
@@ -4351,8 +4532,8 @@ int dodefaults (void) {     /* moved out 1994/May/23 */
   if (xoffsete == UNKNOWNOFFSET) xoffsete = 0.0;
   if (xoffseto == UNKNOWNOFFSET) xoffseto = xoffsete;
   if (yoffsete == UNKNOWNOFFSET) yoffsete = 0.0;
-  if (yoffseto == UNKNOWNOFFSET) yoffseto = yoffsete; 
-  
+  if (yoffseto == UNKNOWNOFFSET) yoffseto = yoffsete;
+
   if (quietflag == 3) {     /* dvipsone -qqq */
 //    showpedigree(stdout);
     showpedigree(line, sizeof(line)); /* MAXLINE */
@@ -4365,7 +4546,8 @@ int dodefaults (void) {     /* moved out 1994/May/23 */
 /*  font paths and such 1994/May/23 */
 /*  get from ATM.INI if possible - won't work in NT since there is no */
 
-  if (fontpath == NULL) {
+  if (fontpath == NULL)
+  {
 /*    try and get it from atm.ini */
 /*    [Setup] PFB_Dir=c:\psfonts */
 #ifndef _WINDOWS
@@ -4373,11 +4555,14 @@ int dodefaults (void) {     /* moved out 1994/May/23 */
 #else
     atmini = "atm.ini";     // zstrdup ?
 #endif
-    if (flag != 0) {
+    if (flag != 0)
+    {
 /*      fontpath = grabenvvar ("PFB_Dir", atmini, "[Setup]", 1); */
       s = grabenvvar("PFB_Dir", atmini, "[Setup]", 1);
       if (s != NULL) fontpath = s;      /* 1996/July/30 */
-      if (traceflag && fontpath != NULL) {
+
+      if (traceflag && fontpath != NULL)
+      {
         sprintf(logline, "PFB_Dir %s\n", fontpath);
         showline(logline, 0);
       }
@@ -4386,7 +4571,8 @@ int dodefaults (void) {     /* moved out 1994/May/23 */
     if (fontpath == NULL) fontpath = deffontpath;
   }
 //  if (strcmp(pfmpath, "") == 0) {
-  if (pfmpath == NULL) {
+  if (pfmpath == NULL)
+  {
 /*    try and get it from atm.ini */
 /*    [Setup] PFM_Dir=c:\psfonts\pfm */
 #ifndef _WINDOWS
@@ -4394,11 +4580,13 @@ int dodefaults (void) {     /* moved out 1994/May/23 */
 #else
     atmini = "atm.ini";     // zstrdup ?
 #endif
-    if (flag != 0) {
+    if (flag != 0)
+    {
 /*      pfmpath = grabenvvar ("PFM_Dir", atmini, "[Setup]", 1); */
       s = grabenvvar("PFM_Dir", atmini, "[Setup]", 1);
       if (s != NULL) pfmpath = s;     /* 1996/July/30 */
-      if (traceflag && (pfmpath != NULL)) {
+      if (traceflag && (pfmpath != NULL))
+      {
         sprintf(logline, "PFM_Dir %s\n", pfmpath);
         showline(logline, 0);
       } 
@@ -4409,9 +4597,12 @@ int dodefaults (void) {     /* moved out 1994/May/23 */
   return 0;
 }
 
-void setupfontchar (int fnt) {  /* set up wantchrs for ONE font */
+/* set up wantchrs for ONE font */
+void setupfontchar (int fnt)
+{
   fontchar[fnt] = (char *) malloc(MAXCHRS);
-  if (fontchar[fnt] == NULL) {
+  if (fontchar[fnt] == NULL)
+  {
     showline(" Unable to allocate memory\n", 1);
     checkexit(1);
     return;
@@ -4419,7 +4610,9 @@ void setupfontchar (int fnt) {  /* set up wantchrs for ONE font */
   memset(fontchar[fnt], 0, MAXCHRS);
 }
 
-void initialtables (void) { /*  now allocate some things in space */
+/* now allocate some things in space */
+void initialtables (void)
+{
   int k;
 
   for (k = 0; k < MAXSUBSTITUTE; k++)
@@ -4430,41 +4623,51 @@ void initialtables (void) { /*  now allocate some things in space */
 }
 
 /* exehdr says: DVIPSONE.EXE needs 190k to load */
-/* In DOS: */ 
+/* In DOS: */
 /* Above says allocated 78848, 22454 avail, 22434 memmax, 2628 stack avail */
-/* In Epsilon 7.0 process buffer in Windows NT: */ 
+/* In Epsilon 7.0 process buffer in Windows NT: */
 /* Above says allocated 39434, 21910 avail, 21890 memmax, 2628 stack avail */
 
-void freememory (void) {  /*   check that heap was not corrupted */
+void freememory (void)  /*   check that heap was not corrupted */
+{
   int k;
-  for (k = 0; k < MAXSUBSTITUTE; k++) {
-    if (fontsubfrom[k] != NULL) {
+  for (k = 0; k < MAXSUBSTITUTE; k++)
+  {
+    if (fontsubfrom[k] != NULL)
+    {
       free(fontsubfrom[k]);
       fontsubfrom[k] = NULL;
     }
-    if (fontsubto[k] != NULL) {
+    if (fontsubto[k] != NULL)
+    {
       free(fontsubto[k]);
       fontsubto[k] = NULL;
     }
-    if (fontsubvec[k] != NULL) {
+    if (fontsubvec[k] != NULL)
+    {
       free(fontsubvec[k]);
       fontsubvec[k] = NULL;
     }
   }
-  for (k = 0; k < MAXFONTS; k++) {
-    if (fontname[k] != NULL) {
+  for (k = 0; k < MAXFONTS; k++)
+  {
+    if (fontname[k] != NULL)
+    {
       free(fontname[k]);
       fontname[k] = NULL;
     }
-    if (subfontname[k] != NULL) {
+    if (subfontname[k] != NULL)
+    {
       free(subfontname[k]);
       subfontname[k] = NULL;
     }
-    if (fontvector[k] != NULL) {
+    if (fontvector[k] != NULL)
+    {
       free(fontvector[k]);
       fontvector[k] = NULL;
     }
-    if (fontchar[k] != NULL) {
+    if (fontchar[k] != NULL)
+    {
       free(fontchar[k]);
       fontchar[k] = NULL;
     }
@@ -4473,11 +4676,12 @@ void freememory (void) {  /*   check that heap was not corrupted */
 
 /* moved here to avoid compiler error ! */
 
-double roundtime (long numer, long denom) {
+double roundtime (long numer, long denom)
+{
   double x;
   x = ((double) numer) / ((double) denom);
   return ((double) ((long) (x * 1000.0 + 0.5))) / 1000.0; 
-} 
+}
 
 /* top level control separated out for jumpout */
 
@@ -4491,9 +4695,11 @@ int dvibody (int argc, char *argv[])
   int count=0;
 
 #ifdef USELOGFILE
-  if (logfileflag) {
+  if (logfileflag)
+  {
     logfile = fopen(logfilename, "w");
-    if (logfile == NULL) {
+    if (logfile == NULL)
+    {
       perrormod(logfilename);
       logfileflag=0;
     }
@@ -4521,12 +4727,14 @@ int dvibody (int argc, char *argv[])
 //  following assumes dvipsone and dviwindo are subdirectories of same thing
 
 #ifdef _WINDOWS
-  if ((s = grabenv("YANDYPATH")) != NULL) {
+  if ((s = grabenv("YANDYPATH")) != NULL)
+  {
     strcpy(line, s);
     strcat(line, "\\dvipsone");
     programpath = zstrdup(s);
   }
-  else {
+  else
+  {
     programpath = zstrdup(GetCommandLine());  // 99/Jun/25
     stripname(programpath);       // flush executable name
 //    this gets the path to DVIWindo ... not to DVIPSONE, so:
@@ -4537,44 +4745,46 @@ int dvibody (int argc, char *argv[])
   programpath = zstrdup(argv[0]);
   stripname(programpath);   // flush executable name
 #endif
-
+  strcpy(programpath, getenv("DVIPSONE")); // CM 20140401
 /*  if programpath doesn't exist - try and guess - not really likely ! */
   if (programpath == NULL || *programpath == '\0')
-    strcpy(programpath, "d:\\yandy\\dvipsone");
+  {
+    strcpy(programpath, "c:\\yandy\\dvipsone");
+  }
 
 /*  extract serial number first from start of newmagic */
-
 //  serialnumber = 0;     /* assumed high order first */
 //  for (k = 0; k < 4; k++) {
 //    serialnumber = serialnumber << 8;
 //    serialnumber = serialnumber | (newmagic[k+4] & 255);
-/*    printf("Serial: %ld\n", serialnumber);  */
+//    printf("Serial: %ld\n", serialnumber);
 //  }
 //  if (serialnumber == 1651208296) serialnumber = 0; /* temporary */
-/*  printf("Serial number %ld %ld\n",
-    (serialnumber / REEXEC), (serialnumber % REEXEC)); */
-/*  printf("Serial number %d %d\n",
-    (int) (serialnumber / REEXEC), (int) (serialnumber % REEXEC)); */
+//  printf("Serial number %ld %ld\n",
+//    (serialnumber / REEXEC), (serialnumber % REEXEC));
+//  printf("Serial number %d %d\n",
+//    (int) (serialnumber / REEXEC), (int) (serialnumber % REEXEC));
 
   task = "analyzing command line";
 
-  if ((s = getenv("USEDVIWINDOINI")) != NULL) 
-    sscanf (s, "%d", &usedviwindo); 
+  if ((s = getenv("USEDVIWINDOINI")) != NULL)
+    sscanf (s, "%d", &usedviwindo);
 
 #ifndef _WINDOWS
-  if (usedviwindo)  setupdviwindo();    // set up access to dviwindo.ini
+  if (usedviwindo) setupdviwindo(); // set up access to dviwindo.ini
 #endif
 
   checkenter(argc, argv);
 
 /*  Setup defaults for various paths in case not specified later */
-  if ((s = grabenv("YANDYPATH")) != NULL) {
+  if ((s = grabenv("YANDYPATH")) != NULL)
+  {
     BasePath = zstrdup(s);
     if (programpath != NULL) strcpy(line, programpath);
     else *line = '\0';
     strcat(line, "\\sub");
     fontsubpath = zstrdup(line);    /* c:\\yandy\\dvipsone\\sub */
-    procsetpath = programpath;      /* c:\\yandy\\dvipsone */
+    procsetpath = programpath;      /* c:\\yandy\\dvipsone      */
     strcpy(line, BasePath);
     strcat(line, "\\fonts\\encoding");  /* c:\\yandy\\fonts\\encoding */
     vecpath = zstrdup(line);
@@ -4582,7 +4792,8 @@ int dvibody (int argc, char *argv[])
     strcat(line, "\\fonts\\tfm");   /* ??? 96/Aug/29 */
     tfmpath = texfonts = zstrdup(line);
   }
-  else {                  /* release 1.2 (not NT) */
+  else                  /* release 1.2 (not NT) */
+  {
 /*    if programpath exists, use as default for fontsub, procset, and vec */
     fontsubpath = procsetpath = vecpath = programpath;
     if (programpath != NULL) strcpy(line, programpath);
@@ -4595,17 +4806,18 @@ int dvibody (int argc, char *argv[])
 
 /*  Now check other environment variables */
 
-  if ((s = grabenv("PSFONTS")) != NULL) fontpath = s;
-  if ((s = grabenv("PSPATH")) != NULL) epspath = s;
-  if ((s = grabenv("AFMPATH")) != NULL) afmpath = s;
-  if ((s = grabenv("TFMPATH")) != NULL) tfmpath = s;
-  if ((s = grabenv("PFMPATH")) != NULL) pfmpath = s;
-  if ((s = grabenv("VECPATH")) != NULL) vecpath = s;
-  if ((s = grabenv("SUBPATH")) != NULL) fontsubpath = s;
-  if ((s = grabenv("PREPATH")) != NULL) procsetpath = s;
+  if ((s = grabenv("PSFONTS"))  != NULL) fontpath = s;
+  if ((s = grabenv("PSPATH"))   != NULL) epspath = s;
+  if ((s = grabenv("AFMPATH"))  != NULL) afmpath = s;
+  if ((s = grabenv("TFMPATH"))  != NULL) tfmpath = s;
+  if ((s = grabenv("PFMPATH"))  != NULL) pfmpath = s;
+  if ((s = grabenv("VECPATH"))  != NULL) vecpath = s;
+  if ((s = grabenv("SUBPATH"))  != NULL) fontsubpath = s;
+  if ((s = grabenv("PREPATH"))  != NULL) procsetpath = s;
   if ((s = grabenv("TEXFONTS")) != NULL) texfonts = s;  /* 95/Mar/31 */
 
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(line, "procsetpath %s\n", procsetpath);   // debugging only
     showline(line, 0);
   }
@@ -4614,13 +4826,15 @@ int dvibody (int argc, char *argv[])
   if ((s = grabenv("TEXANSI")) != NULL)
     bWindowsFlag = atoi(s); /* in stdlib.h */
 /*  New 1994/Dec/17 force all text fonts to use specified encoding */
-  if ((s = grabenv("ENCODING")) != NULL) {
+  if ((s = grabenv("ENCODING")) != NULL)
+  {
     textencoding = s;
 /*    get rid of extension, if any, so can safely use name later 95/Feb/3 */
     if ((s = strrchr(textencoding, '.')) != NULL) *s = '\0';
     bWindowsFlag = 1;
 /*    environment specific TEXFONTS variables ? 97/May/10 */
-    if ((s = grabenv(textencoding)) != NULL) {
+    if ((s = grabenv(textencoding)) != NULL)
+    {
       texfonts = s;             /* set tfmpath also ? */
     }
   }                       /* override 94/Dec/27 */
@@ -4650,7 +4864,8 @@ int dvibody (int argc, char *argv[])
 
   if (quietflag == 3) return 0;
 
-  if (firstarg < 0 || firstarg >= argc) {
+  if (firstarg < 0 || firstarg >= argc)
+  {
     showusage(argv[0]);
     return -1;
   }
@@ -4668,10 +4883,6 @@ int dvibody (int argc, char *argv[])
 
 /* following must be *after* checkowner, and *before* stampit */
 
-#ifdef ALLOWDEMO
-  if (bDemoFlag) dtime = checkdemo(line); /* assumes owner in line */
-#endif
-
 //  stampit(stdout, 1, 1);
   stampit(line, 1, 1);
   strcat(line, "\n");
@@ -4684,14 +4895,16 @@ int dvibody (int argc, char *argv[])
   if (verboseflag) showline("\n", 0);
 
 /*  Code to make up random prefix to avoid Acrobat partial font problem */
-  if (bRandomPrefix) {
+  if (bRandomPrefix)
+  {
     starttime = (unsigned long) time(NULL);
     s = szRandomPrefix+5;
     while (s >= szRandomPrefix) {
       *s-- = (char) ('A' +  (int) (starttime % 26));
       starttime = (starttime / 26);
     }
-    if (verboseflag) {
+    if (verboseflag)
+    {
       sprintf(logline, "Random Prefix %s\n", szRandomPrefix);
       showline(logline, 0);
     }
@@ -4700,14 +4913,16 @@ int dvibody (int argc, char *argv[])
 
 /*  if (bDemoFlag) dtime = checkdemo(); */
 
-  if (evenpageflag != 0 && oddpageflag != 0) { /* this is silly ! */
+  if (evenpageflag != 0 && oddpageflag != 0) /* this is silly ! */
+  {
     evenpageflag = 0; oddpageflag = 0;
   }
 
 #ifdef _WINDOWS
   showcommand(NULL, argc, argv, 0);   /* show command line */
 #else
-  if (showcommandflag) {
+  if (showcommandflag)
+  {
     showcommand(stdout, argc, argv, 0); /* show command line 94/Mar/8 */
     if (logfileflag != 0)
       showcommand(logfile, argc, argv, 0); /* show command line 94/Mar/8 */
@@ -4718,19 +4933,22 @@ int dvibody (int argc, char *argv[])
   initialtables();
 
   initializeencoding(bANSITeX); /* textext and ansi encoding from SE */
-                  /* now used only in 16 bit version */
+                                /* now used only in 16 bit version */
 
-  if (traceflag) {
-    if (bWindowsFlag) {
+  if (traceflag)
+  {
+    if (bWindowsFlag)
+    {
       sprintf(logline, "Will use `%s' encoding for text fonts\n", textencoding);
       showline(logline, 0);
     }
-  } 
+  }
 
   task = "opening output file";
 
 //  deal with quoted file names now 2000 May 24
-  if (outputfile != NULL && *outputfile == '\"') {
+  if (outputfile != NULL && *outputfile == '\"')
+  {
     strcpy(outputfile, outputfile+1); // get rid of first quote
     s = outputfile + strlen(outputfile) - 1;
     if (*s == '\"') *s = '\0';
@@ -4739,14 +4957,18 @@ int dvibody (int argc, char *argv[])
 // debugging checks -- no longer significant
 #ifdef IGNORED
 #ifdef _WINDOWS
-  if (outputfile != NULL && strcmp(outputfile, "PASSBACK") != 0) {
-    if (usecallbackflag) {
+  if (outputfile != NULL && strcmp(outputfile, "PASSBACK") != 0)
+  {
+    if (usecallbackflag)
+    {
       sprintf(logline, "INCONSISTENT: -d=%s passback=%d\n", outputfile, usecallbackflag);
       showline(logline, 0);
     }
   }
-  else {
-    if (usecallbackflag == 0) {
+  else
+  {
+    if (usecallbackflag == 0)
+    {
       sprintf(logline, "INCONSISTENT: -d=%s passback=%d\n",
           (outputfile == NULL) ? "<absent>" : outputfile, usecallbackflag);
       showline(logline, 0);
@@ -4757,8 +4979,10 @@ int dvibody (int argc, char *argv[])
 
 #ifdef _WINDOWS
 //  May need to do something if -d=PASSBACK specified from  DVIWindo ???
-  if (outputfile != NULL && strcmp(outputfile, "PASSBACK") == 0) {
-    if (usecallbackflag == 0) {
+  if (outputfile != NULL && strcmp(outputfile, "PASSBACK") == 0)
+  {
+    if (usecallbackflag == 0)
+    {
       outputfile = NULL;    // 2000/Feb/14 ???
     }
   }
@@ -4769,12 +4993,12 @@ int dvibody (int argc, char *argv[])
 /*  also, try and figure out if going direct to a printer */
 
 #ifdef _WINDOWS
-  if (outputfile != NULL && usecallbackflag == 0) 
+  if (outputfile != NULL && usecallbackflag == 0)
 #else
-  if (outputfile != NULL) 
+  if (outputfile != NULL)
 #endif
   {
-    strcpy(fn_out, outputfile); 
+    strcpy(fn_out, outputfile);
 /*    lowercase(fn_out, outputfile); *//* dont' change case 97/June/15 */
     directprint = 0;
     m = strlen(fn_out);             /* LPT1: COM1: */
@@ -4787,15 +5011,16 @@ int dvibody (int argc, char *argv[])
 /*    if (_strcmpi(fn_out, "cas") == 0)
       fprintf(errout, " WARNING: Output to FaX board?\n"); */
 /*  Try and guess whether direct to printer */
-    if (_strcmpi(fn_out, "prn") == 0 || 
-      _strcmpi(fn_out, "aux") == 0 ||
-      _strcmpi(fn_out, "ept") == 0 ||
+    if (_strcmpi(fn_out, "prn") == 0 ||
+        _strcmpi(fn_out, "aux") == 0 ||
+        _strcmpi(fn_out, "ept") == 0 ||
         ((strlen(fn_out) == 4) &&
-         (_strnicmp(fn_out, "lpt", 3) == 0 || 
+         (_strnicmp(fn_out, "lpt", 3) == 0 ||
           _strnicmp(fn_out, "com", 3) == 0) &&
-           *(fn_out+3) >= '0' && *(fn_out+3) <= '9')) {/* 95/Dec/20*/
+         *(fn_out+3) >= '0' && *(fn_out+3) <= '9')) /* 95/Dec/20*/
+    {
       directprint = 1;
-/*      if (dontstrip != 0) stripcomment = 0; 
+/*      if (dontstrip != 0) stripcomment = 0;
       else stripcomment = 1; */
     }
 /*    Try and deal with Windows network printer, like:  \\ast\hp4mplus */
@@ -4885,22 +5110,23 @@ int dvibody (int argc, char *argv[])
 //    if (strcmp(outputfile, "") == 0)  /* output file specified ? */
 
 #ifdef _WINDOWS
-    if (outputfile == NULL && usecallbackflag == 0) 
+    if (outputfile == NULL && usecallbackflag == 0)
 #else
-    if (outputfile == NULL) 
+    if (outputfile == NULL)
 #endif
-      {
+    {
       if (currentdirect != 0)     /* write in current directory ? */
         strcpy(fn_out, filename);
       else strcpy(fn_out, fn_in);   /* write in same place as input */
-      forceexten(fn_out, OUTPUTEXT);  
+      forceexten(fn_out, OUTPUTEXT);
       directprint = 0;
       stripcomment = 0;
 
 /*      maybe open output in binary mode to avoid \r before \n ? */
       if (retplusnew == 0) mode = "wb"; else mode = "w";
       output = fopen(fn_out, mode);
-      if (output == NULL) {
+      if (output == NULL)
+      {
         sprintf(logline, "ERROR: Can't make output file `%s' (%s)\n",
             fn_out, mode);
         showline(logline, 1);
@@ -4914,7 +5140,7 @@ int dvibody (int argc, char *argv[])
     if (output != NULL) setbuf(output, NULL); /* serious stuff ! */
 #endif
 
-    strcpy(fn_in, argv[m]); 
+    strcpy(fn_in, argv[m]);
 //    strcpy(dvipath, fn_in);         /* possible use by dvispeci */
     dvipath = zstrdup(fn_in);
     stripname(dvipath);
@@ -4972,7 +5198,8 @@ int dvibody (int argc, char *argv[])
 
 /*    sets up headerfile also */ /* and picks off verbatim headers */
 /*    and extra command line args for DVIPSONE */
-    if (scanlogfile(input) != 0) {
+    if (scanlogfile(input) != 0)
+    {
       fclose(input);
       continue;           /* failed - not DVI file */
     }
@@ -4988,7 +5215,8 @@ int dvibody (int argc, char *argv[])
 
 /*    printf("NUMPAGES %ld\n", numpages); */  /* debugging 94/Oct/13 */
 
-    if (useatmreg) {
+    if (useatmreg)
+    {
       if (LoadATMREG() < 0) { // try and get info from ATMREG.ATM
         if (verboseflag) showline("Warning: no ATMREG.ATM ", 0);
 //        return -1;  
@@ -4997,8 +5225,8 @@ int dvibody (int argc, char *argv[])
 
     task = "checking for duplicate & substitutions";
 
-    if (substituteflag)       // this is done once per file now   
-      (void) GetSubstitutes();  // read font substitution table 
+    if (substituteflag)       // this is done once per file now
+      (void) GetSubstitutes();  // read font substitution table
 
     preextract();
 
@@ -5025,13 +5253,15 @@ int dvibody (int argc, char *argv[])
     if (stripcomment == 0) 
       showcommand(output, argc, argv, 1);   /* 92/Dec/.. */
 
-    if (commandspec != NULL) {
+    if (commandspec != NULL)
+    {
       free(commandspec);
       commandspeclen = 0;
       commandspec = NULL;
     }
 
-    if (stripcomment == 0 && comment != NULL) {
+    if (stripcomment == 0 && comment != NULL)
+    {
 //      fputs("% ", output);
       PSputs("% ", output);
 //      fputs(comment, output);
@@ -5045,18 +5275,22 @@ int dvibody (int argc, char *argv[])
     } */              /* free, not used later */
 
 /* Note: %%BeginProlog is highly optional ... */
-    if (bOptionalDSC) {
-      if (stripcomment == 0)  {
+    if (bOptionalDSC)
+    {
+      if (stripcomment == 0)
+      {
 //        fputs("%%BeginProlog\n", output);
         PSputs("%%BeginProlog\n", output);
       }
     }
-    if (writeheader(output) != 0) {
+    if (writeheader(output) != 0)
+    {
       showline("ERROR: Problem writing header files\n", 1);
       break;
     }
 
-    if (abortflag) {
+    if (abortflag)
+    {
       showline("PREMATURE ABORT!", 1);  // debugging only
       break;    // ???
     }
@@ -5066,7 +5300,8 @@ int dvibody (int argc, char *argv[])
 /*    textencwritten = 0; */          /* 1994/Dec/17 */
 
     if (dosetupearly) {           /* 1994/Mar/4 */
-      if (stripcomment == 0) {
+      if (stripcomment == 0)
+      {
 //        fputs("%%EndProlog\n", output);
         PSputs("%%EndProlog\n", output);
       }
@@ -5074,7 +5309,8 @@ int dvibody (int argc, char *argv[])
 
     writeencodingvecs(output);
 
-    if (abortflag) {
+    if (abortflag)
+    {
       showline("PREMATURE ABORT!", 1);  // debugging only
       break;    // ???
     }
@@ -5086,7 +5322,8 @@ int dvibody (int argc, char *argv[])
       }
     }
 
-    if (stripcomment == 0) {
+    if (stripcomment == 0)
+    {
 //      fputs("%%BeginSetup\n", output);
       PSputs("%%BeginSetup\n", output);
     }
@@ -5107,7 +5344,8 @@ int dvibody (int argc, char *argv[])
 /*    extract(output);  */      /* split up 1994/Mar/3 */
     extractfonts(output); 
 
-    if (abortflag) {
+    if (abortflag)
+    {
       showline("PREMATURE ABORT!", 1);  // debugging only
       break;    // ???
     }
@@ -5134,25 +5372,31 @@ int dvibody (int argc, char *argv[])
     fclock = clock();       /* get time at end of fonts */
   
     task = "translating DVI file";  /* translate DVI to PS */
-    if (collated != 0 && copies > 1) {
-      for (k = 1; k < copies; k++) { 
+
+    if (collated != 0 && copies > 1)
+    {
+      for (k = 1; k < copies; k++)
+      {
         scandvifile(output, input, 0);
         rewind(input);
         if (abortflag) break;
       }
     }
-    if (abortflag) {
+    if (abortflag)
+    {
       showline("PREMATURE ABORT!", 1);  // debugging only
       break;
     }
 
     scandvifile(output, input, 1);
-    if (abortflag) {
+    if (abortflag)
+    {
       showline("PREMATURE ABORT!", 1);  // debugging only
       break;
     }
 
     task = "writing trailer";
+
     writetrailer(output);
 
     task = "closing files";
@@ -5189,7 +5433,8 @@ int dvibody (int argc, char *argv[])
       showline(logline, 0);
     }
 
-    if (timingflag) {
+    if (timingflag)
+    {
       sprintf(logline, "Time: %lg sec ",
         roundtime(eclock - sclock, (long) CLOCKS_PER_SEC));
       showline(logline, 0);
@@ -5198,17 +5443,18 @@ int dvibody (int argc, char *argv[])
       if (collated != 0 && copies > 1) numpages = numpages * copies;
 
 /* following rewritten 1993 Aug 28 */
-      if (nfonts > 0 || numpages > 0) {
+      if (nfonts > 0 || numpages > 0)
+      {
         *logline = '\0';
         strcat(logline, "(");
         s = logline + strlen(logline);
-        if (nfonts > 0) sprintf(s, "%lg sec per font file", 
+        if (nfonts > 0) sprintf(s, "%lg sec per font file",
           roundtime(fclock - lclock,
             (long)  CLOCKS_PER_SEC * (long) nfonts));
         if (nfonts > 0 && numpages > 0) strcat(logline, " + ");
         s = logline + strlen(logline);
-        if (numpages > 0) sprintf(s, "%lg sec per page output", 
-          roundtime(eclock - fclock + lclock - sclock, 
+        if (numpages > 0) sprintf(s, "%lg sec per page output",
+          roundtime(eclock - fclock + lclock - sclock,
             (long) CLOCKS_PER_SEC * (long) numpages));
         strcat(logline, ")");
         showline(logline, 0);
@@ -5221,8 +5467,9 @@ int dvibody (int argc, char *argv[])
 //    if (bAllowColor && bColorUsed) freecolorsave(); /* 98/Jul/18 */
     if (bCarryColor && bColorUsed) freecolorsave(); // 2000 May 27
 
-//    if (strcmp(papersize, "") != 0) 
-    if (papersize != NULL) {
+//    if (strcmp(papersize, "") != 0)
+    if (papersize != NULL)
+    {
       free(papersize);
 //      papersize = "";
       papersize = NULL;
@@ -5245,17 +5492,21 @@ int dvibody (int argc, char *argv[])
 
 /*  if output file specified, close only ONCE (for all input files) */
 //  if (strcmp(outputfile, "") != 0)  /* output file specified ? */
-  if (outputfile != NULL) {
-//    if (ferror(output) != 0) 
-    if (output != NULL && ferror(output)) {
+  if (outputfile != NULL)
+  {
+//    if (ferror(output) != 0)
+    if (output != NULL && ferror(output))
+    {
       showline("\n", 0);
       sprintf(logline, " ERROR in output file %s\n", fn_out);
       showline(logline, 1);
       perrormod(fn_out);
       errcount(0);
     }
-    else {
-      if (output != NULL) {
+    else
+    {
+      if (output != NULL)
+      {
         fclose(output);
         output = NULL;
       }
@@ -5280,32 +5531,27 @@ int dvibody (int argc, char *argv[])
 
 /*  if (argc > firstarg + 1) 
     printf("Processed %d DVI files\n", argc - firstarg); */
-  if (count > 1) {
+  if (count > 1)
+  {
     sprintf(logline, "Processed %d DVI files\n", count);
     showline(logline, 0);
   }
 /* only need plural version in the above ... */
 
-  if (maxerror > 0) {
-
+  if (maxerror > 0)
+  {
     if (maxerror == 1) sprintf(logline, "One error encountered\n");
-    else if (maxerror > 1) sprintf(logline, "%d errors encountered\n", 
-                     maxerror); 
-    showline(logline, 1); 
+    else if (maxerror > 1) sprintf(logline, "%d errors encountered\n", maxerror);
+    showline(logline, 1);
     errlevel--;       // undo errlevel increment by showline
 /*    can't do the above just by tacking `s' on the end of `error' */
   }
 
-#ifdef ALLOWDEMO
-  if (bDemoFlag) 
-    if (dtime > (onemonth * 6))
-      for(;;);  /* SERIOUSLY EXPIRED ! */
-#endif
-
   checkpause(maxerror);   /* 97/Nov/28 */
 //  checkpause(1);        /* 2000 June 5 */
 #ifdef USELOGFILE
-  if (logfile != NULL) {
+  if (logfile != NULL)
+  {
     fclose(logfile);
     logfile = NULL;
   }
@@ -5319,11 +5565,13 @@ int jumpused=0;     // avoid misues of jump buffer
 
 jmp_buf jumpbuffer;   // for non-local jumps
 
-int uexit (int code) {
+int uexit (int code)
+{
 #ifndef _WINDOWS
   fflush(stdout);
 #endif
-  if (jumpused) {
+  if (jumpused)
+  {
     sprintf(logline, "ERROR: Jump Buffer used %d\n", jumpused);
     showline(logline, 1);
     exit(1);
@@ -5334,8 +5582,8 @@ int uexit (int code) {
 
 int main (int argc, char *argv[]) {   /* main program entry point */
   int flag=0, ret;
+  errout = stdout;
 //  now creates jump buffer for non-local goto's  99/Nov/7
-errout=stdout;
   jumpused = 0;
   ret = setjmp(jumpbuffer);
 
@@ -5356,7 +5604,8 @@ errout=stdout;
     freememory();     // already done after each file
   }
 #ifdef USELOGFILE
-  if (logfile != NULL) {
+  if (logfile != NULL)
+  {
     fclose(logfile);
     logfile = NULL;
   }
@@ -5366,7 +5615,7 @@ errout=stdout;
 #ifdef _WINDOWS
   return flag;
 #else
-  else exit (flag); 
+  else exit (flag);
 #endif
 }
 
@@ -5384,13 +5633,15 @@ char psbuffer[PSBUFLEN]="";     // for buffering up PS output
 
 // Modified to pass actual length (rather than null terminate) 2000/Feb/14
 
-void sendpsbuffer (FILE *output) {
+void sendpsbuffer (FILE *output)
+{
   unsigned int k;
 
 //  if (psbufpos == 0) return;
 //  if (output == NULL) return;
   psbuffer[psbufpos] = '\0';  // terminate - just in case
-  if (usecallbackflag) {
+  if (usecallbackflag)
+  {
 //    if (PScallback(psbuffer) != 0) 
     if (PScallback(psbuffer, psbufpos) != 0) {
       sprintf(logline, "PScallback failed %s %d", psbuffer, psbufpos);
@@ -5411,7 +5662,8 @@ void sendpsbuffer (FILE *output) {
 //  *psbuffer = '\0';
 }
 
-void psputs (char *str, FILE *output) {
+void psputs (char *str, FILE *output)
+{
   int nlen =  strlen(str);
 
 //  if (PScallback == NULL) return;     // sanity check
@@ -5500,12 +5752,14 @@ void ShowLine (char *line, int errflag) {     /* 99/June/11 */
   }
 }
 
-void winshow (char *line) {
+void winshow (char *line)
+{
   (void) MessageBox(NULL, line, "DVIPSONE",
             MB_ICONINFORMATION | MB_OK | MB_TASKMODAL);
 }
 
-void winerror (char *line) {
+void winerror (char *line)
+{
   int ret;
   ret = MessageBox(NULL, line, "DVIPSONE",
            MB_ICONSTOP | MB_OKCANCEL | MB_TASKMODAL);
@@ -5515,7 +5769,7 @@ void winerror (char *line) {
   }
 }
 
-// argument info constructed from command line 
+// argument info constructed from command line
 
 int argc;
 
@@ -5527,7 +5781,8 @@ char **argv=NULL;
 // and needs to have " stripped out
 
 // int makecommandargs (char *line) 
-int makecommandargs (unsigned char *line) {
+int makecommandargs (unsigned char *line)
+{
   int argc=0;
 //  char *s, *t;
   unsigned char *s, *t;       // fixed 2000 June 18
@@ -5605,7 +5860,8 @@ int makecommandargs (unsigned char *line) {
 //  returns -1 if it fails --- returns 0 if it succeeds
 
 // int dvipsone (HWND hConsole, char *line, int (* PScall) (const char *))
-int dvipsone (HWND hConsole, char *line, int (* PScall) (const char *, int)) {
+int dvipsone (HWND hConsole, char *line, int (* PScall) (const char *, int))
+{
   int firstarg=0;
   int flag;
 
@@ -5647,7 +5903,8 @@ int dvipsone (HWND hConsole, char *line, int (* PScall) (const char *, int)) {
 
   (void) main(argc, argv);      // now run DVIPSONE proper 
 
-  if (errlevel > 0 || abortflag > 0) {
+  if (errlevel > 0 || abortflag > 0)
+  {
     sprintf(logline, "ERRORS in Processing (err %d abort %d)\n",
         errlevel, abortflag);
     winerror(logline);        // debugging output ?
@@ -5656,7 +5913,8 @@ int dvipsone (HWND hConsole, char *line, int (* PScall) (const char *, int)) {
 //  if (psbufpos > 0) sendpsbuffer(output);   // empty out PS buffer
 //  if (psbufpos > 0) PSputs("", output);   // output already closed
   
-  if (hConsoleWnd != NULL) {
+  if (hConsoleWnd != NULL)
+  {
     if (errlevel > 0 || abortflag > 0) flag = 1;
     else flag = 0;              // pass along error indication
     SendMessage(hConsoleWnd, ICN_DONE, flag, 0);  // flush out console buffer
@@ -5669,9 +5927,10 @@ int dvipsone (HWND hConsole, char *line, int (* PScall) (const char *, int)) {
   else return 0;
 }
 
-BOOL WINAPI DllMain (HINSTANCE hInstDll, DWORD fdwReason, LPVOID fImpLoad) {
-
-  switch (fdwReason) {
+BOOL WINAPI DllMain (HINSTANCE hInstDll, DWORD fdwReason, LPVOID fImpLoad)
+{
+  switch (fdwReason)
+  {
     case DLL_PROCESS_ATTACH:
       // The DLL is being mapped into the process's address space
       // place to allocate memory ???

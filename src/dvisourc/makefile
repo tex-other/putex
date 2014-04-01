@@ -27,7 +27,7 @@ LINK = link
 # -Zd line number information for debugging ?
 # -Zi generate debugging information 98/March/5
 # Release version
-CFLAGS=/c /Ox /Ge /Gy /W4
+CFLAGS=/c /Ox /Gy /W4
 # Debugging version
 # CFLAGS=/c /YX /Ge /Gy /Gf /W4 /Od /Zi
 
