@@ -162,23 +162,23 @@ int bTextColor=0;
 
 double textred=0.0;     /* color of text */
 double textgreen=0.0;
-double textblue=0.0;  
+double textblue=0.0;
 
 int bRuleColor=0;
 
 double rulered=0.0;     /* color of rules */
 double rulegreen=0.0;
-double ruleblue=0.0;  
+double ruleblue=0.0;
 
 int bFigureColor=0;     /* figure color has been specified */
 
 double figurered=0.0;   /* foreground of figure */
 double figuregreen=0.0;
-double figureblue=0.0;  
+double figureblue=0.0;
 
 double backred=1.0;     /* background of figure */
 double backgreen=1.0;
-double backblue=1.0;  
+double backblue=1.0;
 
 int bReverseVideo=0;
 
@@ -193,7 +193,7 @@ unsigned int bLeastFirst=1;     /* least significant first */
 unsigned int IFDCount;        /* number of items image file directory */
 unsigned long IFDPosition;      /* position of image file directory */
 
-#pragma optimize ("lge", off)
+//#pragma optimize ("lge", off)
 
 /* static unsigned short int ureadtwo(FILE *input) {
   unsigned short int c, d;
@@ -394,7 +394,7 @@ int readfields (FILE *input, unsigned long ifdpos)
   int c;
 
 #ifdef DEBUGTIFF
-  if (traceflag) showline("Now reading TIFF images fields\n", 0); 
+  if (traceflag) showline("Now reading TIFF images fields\n", 0);
 #endif
 
   if (fseek(input, (long) ifdpos + TIFFOffset, SEEK_SET) != 0)
@@ -420,7 +420,8 @@ int readfields (FILE *input, unsigned long ifdpos)
   xresden = yresden = 1;
   ResolutionUnit = 2; 
 
-  for (k = 0; k < IFDCount; k++) {
+  for (k = 0; k < IFDCount; k++)
+  {
     tag = ureadtwo(input);    /* tag - key */
     type = ureadtwo(input);   /* value type */
     if (tag == 0 && type == 0) {  /* invalid */
@@ -445,7 +446,7 @@ int readfields (FILE *input, unsigned long ifdpos)
     if (length == 1) {
       if (type == TYPE_LONG) offset = ureadfour(input);
       else if (type  == TYPE_SHORT) {
-        offset = ureadtwo(input); 
+        offset = ureadtwo(input);
         (void) ureadtwo(input);   /* should be zero */
       }
       else if (type == TYPE_BYTE) {
@@ -572,7 +573,8 @@ void LZWput(int, FILE *);
 
 /* do we need to use unsigned short for NT ? */
 
-int ReadColorMap (FILE *input, long ColorMapPtr, int BitsPerSample) {
+int ReadColorMap (FILE *input, long ColorMapPtr, int BitsPerSample)
+{
   long present;
   int k, n, nint;
 
@@ -585,13 +587,13 @@ int ReadColorMap (FILE *input, long ColorMapPtr, int BitsPerSample) {
 
 #ifdef DEBUGTIFF
 #ifdef USESHORTINT
-  unsigned short int *PaletteRed; 
+  unsigned short int *PaletteRed;
   unsigned short int *PaletteGreen;
-  unsigned short int *PaletteBlue;  
+  unsigned short int *PaletteBlue;
 #else
-  unsigned int *PaletteRed;  
-  unsigned int *PaletteGreen; 
-  unsigned int *PaletteBlue; 
+  unsigned int *PaletteRed;
+  unsigned int *PaletteGreen;
+  unsigned int *PaletteBlue;
 #endif
 #endif
 
@@ -600,7 +602,8 @@ int ReadColorMap (FILE *input, long ColorMapPtr, int BitsPerSample) {
   PaletteSize = n;      /* remember for later */
   nint = n * 3;       /* total number of integers */
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "Reading Color Map of size %d\n", n);
     showline(logline, 1);
   }
@@ -611,22 +614,25 @@ int ReadColorMap (FILE *input, long ColorMapPtr, int BitsPerSample) {
         malloc(nint * sizeof(unsigned short int));
 #else
 /*  Palette = (unsigned int *) malloc(nint * 2); */ /* bytes */
-  Palette = (unsigned int *) malloc(nint * sizeof(unsigned int)); 
+  Palette = (unsigned int *) malloc(nint * sizeof(unsigned int));
 #endif
-  if (Palette == NULL) {
+  if (Palette == NULL)
+  {
     showline(" ERROR: Unable to allocate memory\n", 1);
     checkexit(1);
 //    or more serious exit(1) ???
   }
   present = ftell(input);
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "Going to ColorMap at %ld + %lu\n",
          ColorMapPtr, TIFFOffset);
     showline(logline, 1);
   }
 #endif
-  if (fseek (input, (long) ColorMapPtr + TIFFOffset, SEEK_SET) != 0) {
+  if (fseek (input, (long) ColorMapPtr + TIFFOffset, SEEK_SET) != 0)
+  {
     sprintf(logline, " Error in seek %s\n", " to ColorMap");
     showline(logline, 1);
   }
@@ -641,18 +647,21 @@ int ReadColorMap (FILE *input, long ColorMapPtr, int BitsPerSample) {
   PaletteBlue = PaletteGreen + PaletteSize;
 
   bGrayFlag = 1;    // non-zero if palette is all grays
-  for (k = 0; k < n; k++) {
+  for (k = 0; k < n; k++)
+  {
     if (PaletteRed[k] != PaletteGreen[k] ||
-      PaletteGreen[k] != PaletteBlue[k]) {
+        PaletteGreen[k] != PaletteBlue[k])
+    {
       bGrayFlag = 0;
       break;
     }
   }         // bGrayFlag presently not used
 
-  bLinearFlag = 0;  // non-zero if Palette is simply linear 
+  bLinearFlag = 0;  // non-zero if Palette is simply linear
   if (bGrayFlag) {
     bLinearFlag = 1;
-    for (k = 0; k < n; k++) {
+    for (k = 0; k < n; k++)
+    {
       if (PaletteRed[k] != (unsigned int) (k * 255 / (n-1))) {
         bLinearFlag = 0;
         break;
@@ -663,7 +672,8 @@ int ReadColorMap (FILE *input, long ColorMapPtr, int BitsPerSample) {
 //  bGrayFlag and bLinearFlag could be used to produce smaller output files
 
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     PaletteRed = Palette;
     PaletteGreen = PaletteRed + PaletteSize;
     PaletteBlue = PaletteGreen + PaletteSize;
@@ -685,7 +695,8 @@ int ReadColorMap (FILE *input, long ColorMapPtr, int BitsPerSample) {
 /* write out a row of image */
 
 int ProcessRow (FILE *output, unsigned char *lpBuffer, long InRowLengthX,
-  long BufferLength, long OutRowLength) {
+  long BufferLength, long OutRowLength)
+{
 /*  if (traceflag)
     printf("ProcessRow InRowLengthX %d\n", InRowLengthX); */ /* DEBUGGING */
 /*  if (traceflag)
@@ -699,7 +710,7 @@ int ProcessRow (FILE *output, unsigned char *lpBuffer, long InRowLengthX,
   if (bCompressColor) compresscolor(lpBuffer, BufferLength);
 #ifdef DEBUGTIFF
   if (traceflag) {      /* DEBUGGING */
-    sprintf(logline, "ProcessRow OutRowLength %d\n", OutRowLength); 
+    sprintf(logline, "ProcessRow OutRowLength %d\n", OutRowLength);
     showline(logline, 0);
   }
 #endif
@@ -710,13 +721,15 @@ int ProcessRow (FILE *output, unsigned char *lpBuffer, long InRowLengthX,
 /* Throw out ExtraSamples in SamplesPerPixel */
 /* IMPORTANT NOTE: assume for the moment samples are one byte */
 
-int RemoveExtraSamples (unsigned char *lpBuffer, int InRowLength) {
+int RemoveExtraSamples (unsigned char *lpBuffer, int InRowLength)
+{
   unsigned char *s = lpBuffer;
   unsigned char *t = lpBuffer;
   int i, k, n = InRowLength / SamplesPerPixel;
 
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "RemoveExtraSamples InRowLength %d\n", InRowLength);
     showline(logline, 1);
   }
@@ -733,7 +746,8 @@ int RemoveExtraSamples (unsigned char *lpBuffer, int InRowLength) {
 /* readflag != 0 when reading file only to get tag fields */
 
 int readTIFFfile (FILE *output, FILE *input,
-  long dwidth, long dheight, int nifd, int readflag) {
+  long dwidth, long dheight, int nifd, int readflag)
+{
 /*  int i, j, flag; */
   int i, flag;
 /*  long present; */
@@ -744,7 +758,8 @@ int readTIFFfile (FILE *output, FILE *input,
   int nLen;
 
   TIFFVersion = ureadtwo(input);
-  if (TIFFVersion != TIFF_VERSION) {
+  if (TIFFVersion != TIFF_VERSION)
+  {
     sprintf(logline, " Incorrect TIFF version code %d\n", TIFFVersion);
     showline(logline, 1);
     return -1;    /* bad version number for TIFF file */
@@ -754,7 +769,8 @@ int readTIFFfile (FILE *output, FILE *input,
 
   IFDPosition = ureadfour(input);   /* get first IFD offset in file */
   while (nifd-- > 1) {
-    if (skipthisimage(input, IFDPosition) < 0) {
+    if (skipthisimage(input, IFDPosition) < 0)
+    {
       sprintf(logline, " ERROR: Subimage %d not found", nifd);
       showline(logline, 1);
       return -1;
@@ -780,7 +796,8 @@ int readTIFFfile (FILE *output, FILE *input,
   }
 
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "Width %ld, Height %ld, BitsPerSample %d, SamplesPerPixel %d\n", 
        ImageWidth, ImageLength, BitsPerSample, SamplesPerPixel);
     showline(logline, 1);
@@ -788,7 +805,8 @@ int readTIFFfile (FILE *output, FILE *input,
 #endif
 
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "Compression %u PhotometricInterpretation %d\n",
      compression, PhotometricInterpretation);
     showline(logline, 1);
@@ -796,7 +814,8 @@ int readTIFFfile (FILE *output, FILE *input,
 #endif
 
 #ifdef DEBUGTIFF
-  if (traceflag && Predictor != 1) {
+  if (traceflag && Predictor != 1)
+  {
     sprintf(logline, "Predictor %d\n", Predictor);
     showline(logline, 1);
   }
@@ -825,7 +844,8 @@ int readTIFFfile (FILE *output, FILE *input,
 /*  if (bitsperpixel == 24 && bCompressFlag != 0 && forceice == 0) */
 /*  if (BitsPerPixel == 24 && bCompressFlag != 0) */
 /*  if ((BitsPerPixel == 24 || bExpandColor) && bAllowColor == 0)  */
-  if ((BitsPerPixelX == 24 || bExpandColor) && ! bAllowColor) {
+  if ((BitsPerPixelX == 24 || bExpandColor) && ! bAllowColor)
+  {
     sprintf(logline, " color image (bits %d expand %d): use `*c' flag?",
          BitsPerPixelX, bExpandColor);  /* 96/Aug/15 */
 //    showline(logline, 1);
@@ -834,9 +854,10 @@ int readTIFFfile (FILE *output, FILE *input,
     OutRowLength = BufferLength / 3;
   }
   else OutRowLength = BufferLength;
-    
+
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "InRowLength %ld BufferLength %ld OutRowLength %ld\n",
       InRowLength, BufferLength, OutRowLength);
     showline(logline, 1);
@@ -846,7 +867,8 @@ int readTIFFfile (FILE *output, FILE *input,
 /*  deal with GhostScript TIFF file format with gaps */   /* 94/Dec/16 */
 /*  shouldn't this only kick in if we are not using (LZW) compression ? */
   if (bGhostHackFlag) {       /*  made conditional 95/Nov/10 */
-    if (InRowLength + 1 == StripByteCount) {
+    if (InRowLength + 1 == StripByteCount)
+    {
       InRowLength++;        /* a hack */
     }
   }
@@ -863,7 +885,8 @@ int readTIFFfile (FILE *output, FILE *input,
 #ifdef LZWCOMPRESSION
     bLZWFlag = 0;
 /*    Use LZW if runlength encoding not chosen */
-    if (bRunLengthFlag == 0) {
+    if (bRunLengthFlag == 0)
+    {
 //      if (compression == LZW_COMPRESSION) bLZWFlag = 1;
 //      else; bLZWFlag = 1          /* otherwise use LZW */
       bLZWFlag = 1;
@@ -879,16 +902,18 @@ int readTIFFfile (FILE *output, FILE *input,
 /*  following should already be taken care of in `computeheader' */
 /*  if (compression > 1 && compression != PACK_BITS) */
   if (compression > TIFF_CCITT && compression != LZW_COMPRESSION &&
-    compression != PACK_BITS) { 
+    compression != PACK_BITS)
+  {
     sprintf(logline, " ERROR: Unknown compression scheme (%d)", compression);
     showline(logline, 1);
-    return -1; 
+    return -1;
   }
-  
+
 /*  ImageSize = (unsigned long) InRowLength * ImageLength; */
   ImageSize = (unsigned long) InRowLengthX * ImageLength;
-/*  check whether values reasonable */  
-  if (ImageSize == 0) {
+/*  check whether values reasonable */
+  if (ImageSize == 0)
+  {
     sprintf(logline, " ERROR: Zero image size, %d %d (%s)",
         InRowLengthX, ImageLength, "readTIFFfile");
     showline(logline, 1);
@@ -897,7 +922,7 @@ int readTIFFfile (FILE *output, FILE *input,
   if (ImageWidth > MAXIMAGE || ImageLength > MAXIMAGE ||  /* bad data ? */
     ImageSize > 67108864) { /* arbitrary limits (to catch bad files) */
     sprintf(logline,
-      " ERROR: image file too large\n(%ld x %ld (%d) => %ld bytes)", 
+      " ERROR: image file too large\n(%ld x %ld (%d) => %ld bytes)",
         ImageWidth, ImageLength, BitsPerPixel, ImageSize);
     showline(logline, 1);
     return -1;
@@ -906,9 +931,10 @@ int readTIFFfile (FILE *output, FILE *input,
         StripOffset < 0) {          /* missing fields */
     showline(" ERROR: TIFF file missing required tags", 1);
     return -1;
-  }   
+  }
 
-  if (fseek(input, (long) StripOffset + TIFFOffset, SEEK_SET) != 0)  {
+  if (fseek(input, (long) StripOffset + TIFFOffset, SEEK_SET) != 0)
+  {
     sprintf(logline, " Error in seek %s\n", " to StripOffset\n");
     showline(logline, 1);
     return -1;
@@ -921,8 +947,9 @@ int readTIFFfile (FILE *output, FILE *input,
 /*  Accomodate GhostScript gap bug work around ... just in case 95/Nov/10 */
 /*  nLen = BufferLength + 1; */
   nLen = (int) ((BufferLength + 3) / 4) * 4;
-  if ((lpBuffer = malloc(nLen)) == NULL) {  
-    sprintf(logline, " ERROR: Unable to allocate %d bytes\n", nLen);  
+  if ((lpBuffer = malloc(nLen)) == NULL)
+  {
+    sprintf(logline, " ERROR: Unable to allocate %d bytes\n", nLen);
     showline(logline, 1);
     checkexit(1);         /* 1995/July/15 ? */
 //    or more serious exit(1) ???
@@ -939,24 +966,27 @@ int readTIFFfile (FILE *output, FILE *input,
 /*  following should already be taken care of in `computeheader' */
 
   if (compression > TIFF_CCITT && compression != LZW_COMPRESSION &&
-    compression != PACK_BITS) {  
+    compression != PACK_BITS)
+  {
     sprintf(logline, " ERROR: Unknown compression scheme (%d)", compression);
     showline(logline, 1);
     return -1;
   }
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     if (compression == PACK_BITS) sprintf(logline, "Using PACK_BITS\n");
     else if (compression == TIFF_CCITT) sprintf(logline, "Using TIFF_CCITT\n");
     else if (compression == LZW_COMPRESSION) sprintf(logline, "Using LZW\n");
     showline(logline, 1);
-  } 
+  }
 #endif
 
   flag = 0;               /* flag gets set if EOF hit */
 
 #ifdef PSLEVEL2
-  if (bLevel2) {
+  if (bLevel2)
+  {
     ASCIIinitfilter(output);            /* 96/Dec/20 */
     if (bRunLengthFlag) RUNinitfilter(output);    /* 96/Dec/24 */
 #ifdef LZWCOMPRESSION
@@ -967,7 +997,7 @@ int readTIFFfile (FILE *output, FILE *input,
 
 /*  LZW needs to be done by strips, the others can be done by row */
 
-  if (compression == LZW_COMPRESSION) DecodeLZW(output, input, lpBuffer); 
+  if (compression == LZW_COMPRESSION) DecodeLZW(output, input, lpBuffer);
 
   else {    /* else not LZW compression */
 
@@ -994,16 +1024,18 @@ int readTIFFfile (FILE *output, FILE *input,
         } 
       }
 #ifdef DEBUGTIFF
-      if (traceflag) {
-        sprintf(logline, "readTIFFFile InRowLength %d\n", InRowLength); 
-        showline(logline, 1);       
+      if (traceflag)
+      {
+        sprintf(logline, "readTIFFFile InRowLength %d\n", InRowLength);
+        showline(logline, 1);
       }
 #endif
       if (ExtraSamples > 0)
         (void) RemoveExtraSamples(lpBuffer, InRowLength); /* 99/May/10 */
 
 #ifdef DEBUGTIFF
-      if (traceflag) {
+      if (traceflag)
+      {
         sprintf(logline, "readTIFFFile OutRowLength %d BufferLength %d\n",
              OutRowLength, BufferLength);
         showline(logline, 1);
@@ -1012,7 +1044,8 @@ int readTIFFfile (FILE *output, FILE *input,
 
 /*      if (ProcessRow (output, lpBuffer, InRowLength, BufferLength, */
       if (ProcessRow (output, lpBuffer, InRowLengthX, BufferLength,
-        OutRowLength) != 0) {
+        OutRowLength) != 0)
+      {
         showline("\n", 0);
         showline("ERROR: Output error ", 1);
         perrormod((outputfile != NULL) ? outputfile : "");
@@ -1025,7 +1058,8 @@ int readTIFFfile (FILE *output, FILE *input,
 
 //  Have to flush filters in reverse order
 #ifdef PSLEVEL2
-  if (bLevel2) {
+  if (bLevel2)
+  {
     if (bRunLengthFlag) RUNflushfilter(output); /* 96/Dec/24 */
 #ifdef LZWCOMPRESSION
     else if (bLZWFlag) LZWflushfilter(output);  /* 96/Dec/28 */
@@ -1078,7 +1112,7 @@ typedef struct tagBITMAPFILEHEADER {
 } BITMAPFILEHEADER, FAR *LPBITMAPFILEHEADER, *PBITMAPFILEHEADER;
 #include <poppack.h>
 
-typedef struct tagBITMAPINFOHEADER{
+typedef struct tagBITMAPINFOHEADER {
   DWORD      biSize;
   LONG       biWidth;
   LONG       biHeight;
@@ -1116,7 +1150,8 @@ BITMAPINFOHEADER bmih;
 
 /* RGBQUAD colortable[256]; */
 
-int dpifrom(int res) {
+int dpifrom(int res)
+{
   double dres = (double) res * 25.4 / 1000.0;
   dres = (double) ((int) (dres * 10.0 + 0.5)) / 10.0;
   return (int) (dres + 0.5);
@@ -1130,7 +1165,8 @@ long ImageSize;     /* ??? */
 
 /* readflag is non-zero in prescan */
 
-int readBMPfields (FILE *input, int readflag) { 
+int readBMPfields (FILE *input, int readflag)
+{
   long nLen;
   double dw, dh;
 
@@ -1161,7 +1197,8 @@ int readBMPfields (FILE *input, int readflag) {
   OffBits = bmfh.bfOffBits;
 /* "Offset to image %lu\n", bmih.bfOffBits */
 #ifdef DEBUGBMP
-  if (traceflag && sreadflag) {
+  if (traceflag && sreadflag)
+  {
     sprintf(logline, "\nnLen %ld bfSize %ld bfOffBits %ld ",
        nLen, bmfh.bfSize, bmfh.bfOffBits);
     showline(logline, 1);
@@ -1239,7 +1276,8 @@ int readBMPfields (FILE *input, int readflag) {
   if (bmih.biSizeImage > 0) ImageSize = bmih.biSizeImage;
   else ImageSize = nLen - OffBits;
 #ifdef DEBUGBMP
-  if (traceflag && readflag) {
+  if (traceflag && readflag)
+  {
     sprintf(logline, "\nImage at %ld size %ld bytes ", OffBits, ImageSize);
     showline(logline, 1);
   }
@@ -1247,20 +1285,21 @@ int readBMPfields (FILE *input, int readflag) {
   return 0;
 }
 
-int readBMPPalette (FILE *input, long ColorMapPtr, int BitsPerSample) {
+int readBMPPalette (FILE *input, long ColorMapPtr, int BitsPerSample)
+{
   long present;
   int k, n, nint;
   RGBQUAD rgb;
 /*  should make all these unsigned short int instead for NT */
 
 #ifdef USESHORTINT
-  unsigned short int *PaletteRed; 
+  unsigned short int *PaletteRed;
   unsigned short int *PaletteGreen;
-  unsigned short int *PaletteBlue;  
+  unsigned short int *PaletteBlue;
 #else
-  unsigned int *PaletteRed;  
-  unsigned int *PaletteGreen; 
-  unsigned int *PaletteBlue; 
+  unsigned int *PaletteRed;
+  unsigned int *PaletteGreen;
+  unsigned int *PaletteBlue;
 #endif
 
 /*  need three tables each of 2 ^ BitsPerSample integers */
@@ -1296,7 +1335,8 @@ int readBMPPalette (FILE *input, long ColorMapPtr, int BitsPerSample) {
     showline(logline, 1);
   }
 #endif
-  if (fseek (input, (long) ColorMapPtr, SEEK_SET) != 0) {
+  if (fseek (input, (long) ColorMapPtr, SEEK_SET) != 0)
+  {
     sprintf(logline, " Error in seek %s\n", " to ColorMap\n");
     showline(logline, 1);
   }
@@ -1351,7 +1391,8 @@ int readBMPPalette (FILE *input, long ColorMapPtr, int BitsPerSample) {
 /* readflag != 0 when prescanning to get fields */
 
 int readBMPfile (FILE *output, FILE *input,
-         long dwidth, long dheight, int readflag) {
+         long dwidth, long dheight, int readflag)
+{
   unsigned char *lpBuffer=NULL;
   int i, flag;
   int nLen;
@@ -1434,7 +1475,8 @@ int readBMPfile (FILE *output, FILE *input,
   else OutRowLength = BufferLength;
 
 #ifdef DEBUGBMP
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "InRowLength %ld BufferLength %ld OutRowLength %ld\n",
          InRowLength, BufferLength, OutRowLength);
     showline(logline, 1);
@@ -1484,19 +1526,22 @@ int readBMPfile (FILE *output, FILE *input,
   }
 
 #ifdef DEBUGBMP
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "Seeking to %ld\n", OffBits);
     showline(logline, 1);
   }
 #endif
-  if (fseek(input, (long) OffBits, SEEK_SET) != 0)  {
+  if (fseek(input, (long) OffBits, SEEK_SET) != 0)
+  {
     sprintf(logline, " Error in seek %s\n", " to OffBits\n");
     showline(logline, 1);
     return -1;
   }
   nLen = (int) ((BufferLength + 3) / 4) * 4;
   lpBuffer = malloc(nLen);
-  if (lpBuffer == NULL) { 
+  if (lpBuffer == NULL)
+  {
     sprintf(logline, " ERROR: Unable to allocate %d bytes\n", nLen);
     showline(logline, 1);
     checkexit(1);
@@ -1506,7 +1551,8 @@ int readBMPfile (FILE *output, FILE *input,
   flag = 0;               /* flag gets set if EOF hit */
 
 #ifdef PSLEVEL2
-  if (bLevel2) {
+  if (bLevel2)
+  {
     ASCIIinitfilter(output);            /* 96/Dec/20 */
     if (bRunLengthFlag) RUNinitfilter(output);    /* 96/Dec/24 */
 #ifdef LZWCOMPRESSION
@@ -1797,7 +1843,8 @@ int readBMPfile (FILE *output, FILE *input,
 /* fills in TIFFOffset and PSOffset and MetaOffset and lengths */
 /* returns zero if not an EPSF file */ /* file position is end of EPSF head */
 
-int readepsfhead (FILE *special) {
+int readepsfhead (FILE *special)
+{
   int c, d, e, f;
 
   PSOffset = 0;       /* redundant */
@@ -1824,7 +1871,8 @@ int readepsfhead (FILE *special) {
 int BMPflag=0;    /* non-zero while processing BMP image */
 
 int readimagefilesub (FILE *output, FILE *special,
-  long dwidth, long dheight, int nifd, int readflag) {
+  long dwidth, long dheight, int nifd, int readflag)
+{
 /*  long present; */
   int c, d; 
 
@@ -1842,14 +1890,15 @@ int readimagefilesub (FILE *output, FILE *special,
         showline(" ERROR: Zero TIFF offset or length\n", 1);
         return -1;
       }
-      if (fseek(special, TIFFOffset, SEEK_SET) != 0)  {
+      if (fseek(special, TIFFOffset, SEEK_SET) != 0)
+      {
         sprintf(logline, " Error in seek %s\n", "to TIFFOffset\n");
         showline(logline, 1);
         return -1;
       }
     }
     else {
-      showline(" ERROR: Not a valid EPSF or TIFF file\n", 1); 
+      showline(" ERROR: Not a valid EPSF or TIFF file\n", 1);
       return -1;
     }
   }             /* end of c > 128 (EPSF file) */
@@ -1865,14 +1914,14 @@ int readimagefilesub (FILE *output, FILE *special,
   else if (c == 'M' && d == 'M') bLeastFirst = 0; /* Mac style TIFF file */
   else if (c == 'B' && d == 'M') BMPflag = 1;   /* BMP 98/Jun/28 */
   else {
-    showline(" ERROR: Not a valid EPSF, TIFF or BMP file\n", 1); 
+    showline(" ERROR: Not a valid EPSF, TIFF or BMP file\n", 1);
     return -1;    /* not a TIFF subfile !!! */
   }
 
 /*  now have decided that this is a TIFF file (or TIFF preview) or BMP */
   if (BMPflag)
     (void) readBMPfile(output, special, dwidth, dheight, readflag);
-  else 
+  else
     (void) readTIFFfile(output, special, dwidth, dheight, nifd, readflag);
   return 0;
 }
@@ -1883,7 +1932,8 @@ int readimagefilesub (FILE *output, FILE *special,
 /*  Returns -1 if file not found */
 
 int readimagefile (FILE *output, char *filename,
-  long dwidth, long dheight, int nifd, int readflag) {
+  long dwidth, long dheight, int nifd, int readflag)
+{
 /*  char infilename[FILENAME_MAX]; */ /* make global */
   FILE *special;
 /*  long present;  */
@@ -1897,8 +1947,9 @@ int readimagefile (FILE *output, char *filename,
     return -1;          
 
 #ifdef DEBUGTIFF
-  if (traceflag) {
-    sprintf(logline, "\nManaged to open file %s\n", infilename); 
+  if (traceflag)
+  {
+    sprintf(logline, "\nManaged to open file %s\n", infilename);
     showline(logline, 0);
   }
 #endif
@@ -1917,7 +1968,8 @@ int column;
 /* Expand palette color image into full RGB color image */
 /* Presently only set up for 8 bit palettes ... !!! */
 
-void expandcolor (unsigned char *lpBuffer, long width) {
+void expandcolor (unsigned char *lpBuffer, long width)
+{
   int k, n, ns;
 #ifdef USESHORTINT
   unsigned short int *PaletteRed;
@@ -1938,7 +1990,8 @@ void expandcolor (unsigned char *lpBuffer, long width) {
 /*  if (traceflag) printf("Palette Color => Color "); */
 #endif
 
-  if (Palette == NULL) {
+  if (Palette == NULL)
+  {
     showline(" ERROR: missing palette information\n", 1);
     return;
   }
@@ -2015,7 +2068,8 @@ void expandcolor (unsigned char *lpBuffer, long width) {
 /* This is called for BMP image when palette is used, but it is gray */
 /* (i.e. R=G=B) and it is *not* linear (i.e. Palette[k] == k) */
 
-void expandgray (unsigned char *lpBuffer, long width) {
+void expandgray (unsigned char *lpBuffer, long width)
+{
   int k, n, ns;
 #ifdef USESHORTINT
   unsigned short int *PaletteRed;
@@ -2036,7 +2090,8 @@ void expandgray (unsigned char *lpBuffer, long width) {
 /*  if (traceflag) printf("Palette Gray => Gray ");  */
 #endif
 
-  if (Palette == NULL) {
+  if (Palette == NULL)
+  {
     showline(" ERROR: missing palette information\n", 1);
     return;
   }
@@ -2051,7 +2106,8 @@ void expandgray (unsigned char *lpBuffer, long width) {
   ns = (int) ImageWidth;        /* samples per row */
 
 /*  if (BufferLength <= InRowLength) */
-  if (BufferLength <= InRowLengthX) {
+  if (BufferLength <= InRowLengthX)
+  {
     showline(" ERROR: buffer overflow\n", 1);
     return;
   }
@@ -2104,7 +2160,8 @@ void expandgray (unsigned char *lpBuffer, long width) {
 
 /* gray = 0.3 * red + 0.59 * green + 0.11 * blue */
 
- void compresscolor (unsigned char *lpBuffer, long width) {
+void compresscolor (unsigned char *lpBuffer, long width)
+{
   int k, n;
   unsigned char *s;
   unsigned char *t;
@@ -2127,7 +2184,7 @@ void expandgray (unsigned char *lpBuffer, long width) {
 
 #ifdef PSLEVEL2
 
-#pragma optimize ("lge", on)    /* 2000 June 17 */
+//#pragma optimize ("lge", on)    /* 2000 June 17 */
 
 /* use ASCII85Encode if bLevel2 enabled */
 
@@ -2151,7 +2208,8 @@ int asciicount = 0;       /* how many bytes accumulated so far */
 /* nbytes is number of bytes accumulated, which is 4 until the last time */
 /* Move this inline for speed ? */
 
-void ASCIIlong (FILE *output, unsigned long n, int nbytes) {
+void ASCIIlong (FILE *output, unsigned long n, int nbytes)
+{
   unsigned int c[5];
   int k;
 
@@ -2193,7 +2251,8 @@ void ASCIIlong (FILE *output, unsigned long n, int nbytes) {
 /* Output single byte (accumulate until four seen, then call ASCIIlong) */
 /* Move this inline for speed ? */
 
-void ASCIIout (FILE *output, unsigned int x) {
+void ASCIIout (FILE *output, unsigned int x)
+{
 //  sprintf(logline, "ASCII %d ", x);
 //  showline(logline, 0);     // debugging only
   if (x > 255) x = x & 255;   // sanity check ???
@@ -2208,20 +2267,23 @@ void ASCIIout (FILE *output, unsigned int x) {
 
 /* initialize ASCII85 filter */
 
-void ASCIIinitfilter (FILE *output) {   /* 96/Dec/20 */
+void ASCIIinitfilter (FILE *output)   /* 96/Dec/20 */
+{
 //  showline("ASCIIinitfilter ", 0);  // debugging only
   asciinum = 0;
   asciicount = 0;
   column = 0;     /* ??? */
 }
 
-void RUNinitfilter (FILE *output) {     /* 95/Dec/24 */
+void RUNinitfilter (FILE *output)    /* 95/Dec/24 */
+{
 /*  apparently nothing special to do */
 }
 
 /* flush out anything left in ASCII85 filter */
 
-void ASCIIflushfilter (FILE *output) {  /* 96/Dec/20 */
+void ASCIIflushfilter (FILE *output)  /* 96/Dec/20 */
+{
   int k;
 //  showline("ASCIIflushfilter ", 0); // debugging only
   for (k = asciicount; k < 4; k++) {
@@ -2232,7 +2294,8 @@ void ASCIIflushfilter (FILE *output) {  /* 96/Dec/20 */
   asciicount = 0;
 }
 
-void RUNflushfilter (FILE *output) {
+void RUNflushfilter (FILE *output)
+{
   ASCIIout(output, 128);          /* EOD */
 }
 
@@ -2240,7 +2303,8 @@ void RUNflushfilter (FILE *output) {
 
 /* write a row in ASCII85 format */
 
-void writearowASCII (FILE *output, unsigned char *s, unsigned long width) {
+void writearowASCII (FILE *output, unsigned char *s, unsigned long width)
+{
   unsigned int c;
   int k, n, i;
   unsigned long num;
@@ -2277,7 +2341,8 @@ int debugflag=1;      /* debugging output */
 
 /* Do run encoding per row (rather than image) --- easier, if not optimal */
 
-void dumprun(FILE *output, int nlen, int previous) {
+void dumprun(FILE *output, int nlen, int previous)
+{
 #ifdef DEBUGRUNLENGTH
   int i;
   if (nlen <= 0) {
@@ -2302,7 +2367,8 @@ void dumprun(FILE *output, int nlen, int previous) {
   ASCIIout(output, previous);
 }
 
-void dumpnonrun(FILE *output, int nlen, unsigned char *buffer) {
+void dumpnonrun(FILE *output, int nlen, unsigned char *buffer)
+{
   int i;
   unsigned char *s;
 
@@ -2339,7 +2405,8 @@ void dumpnonrun(FILE *output, int nlen, unsigned char *buffer) {
 /* Here (1) is the starting state */
 /* Dumps out when (i) state changes (ii) 128 bytes seen (iii) end input */
 
-void writearowrun (FILE *output, unsigned char *s, unsigned long width) {
+void writearowrun (FILE *output, unsigned char *s, unsigned long width)
+{
   int runflag;      /* non-zero if in accumulating run state */
   int previous;     /* character that appears to be repeating */
   int repeat;       /* how many times we have seen previous */
@@ -2443,14 +2510,16 @@ int currentnode;  // code of node currently at
 int nextnode;   // code of next node to be used
 int codelength;   // how many bits needed for code at this stage 9, 10, 11, 12
 
-void DeAllocStringsOut (void) { // called from dvibody() in dvipsone.c
+void DeAllocStringsOut (void) // called from dvibody() in dvipsone.c
+{
   if (node != NULL) {
     free(node);
     node = NULL;
   }
 }
 
-void CleanOut (FILE *output, int n) {
+void CleanOut (FILE *output, int n)
+{
   int k;
 
 //  sprintf(logline, "CLEANOUT %d\n", n);
@@ -2468,7 +2537,8 @@ void CleanOut (FILE *output, int n) {
   codelength = 9;       // reset code length now
 }
 
-int SetupNodes (FILE *output) {
+int SetupNodes (FILE *output)
+{
   int nlen;
 
   if (node == NULL) {
@@ -2494,7 +2564,8 @@ int SetupNodes (FILE *output) {
 
 #ifdef IGNORED
 // We are at node n and adding a new branch for byte chr -- NOT USED
-void AddaNode (FILE *output, int n, int chr, int previous) {
+void AddaNode (FILE *output, int n, int chr, int previous)
+{
   int k, klast;
 //  if (nextnode < 0 || nextnode >= MAXCODES) showline("TABLE OVERFLOW", 1);
 //  Is there already a node at the next level ?
@@ -2591,7 +2662,8 @@ void DoNextByte (FILE *output, int chr) { // called from  writearowLZW
 }
 
 #ifdef IGNORED
-void DoCleanup (FILE *output) {   // not used - see LZWflushfilter
+void DoCleanup (FILE *output)  // not used - see LZWflushfilter
+{
   if (currentnode >= 0) LZWput(currentnode, output);
 //  LZWput(CLEAR, output);
 //  nextnode = FIRSTCODE;
@@ -2612,12 +2684,14 @@ int bitsused;   /* bits used so far */
 /* may produce one or two bytes ready to spit out */
 /* bitsused is always < 8 before and always < 8 after this */
 
-void LZWput (int code, FILE *output) {
+void LZWput (int code, FILE *output)
+{
   int c;
 
 //  if (bitsused < 0 || bitsused >= 8) showline("ERROR ", 1);
 #ifdef DEBUGLZWENCODE
-  if (debugflag) {
+  if (debugflag)
+  {
     if (code >= (1 << codelength))
     sprintf(logline, "code %d too long for code length %d\n",
         code, codelength);
@@ -2645,7 +2719,8 @@ void LZWputinit (FILE *output) {  /* called from LZWinitfilter */
   bitsused = 0;
 }
 
-void LZWputflush (FILE *output) {
+void LZWputflush (FILE *output)
+{
   int c;
 //  showline("LZWputflush ", 0);  // debugging only
   if (bitsused == 0) return;    /* nothing left to push out */
@@ -2656,7 +2731,8 @@ void LZWputflush (FILE *output) {
 /*  bitsused = 0; */
 }
 
-void LZWinitfilter (FILE *output) { /*  initialization  */
+void LZWinitfilter (FILE *output) /*  initialization  */
+{
 //  showline("LZWinitfilter ", 0);    // debugging only
   LZWputinit(output);
 //  LZWput(CLEAR, output);  /* write CLEAR */
@@ -2665,7 +2741,8 @@ void LZWinitfilter (FILE *output) { /*  initialization  */
 /*  codelength = 9; */
 }
 
-void LZWflushfilter (FILE *output) { /* termination */
+void LZWflushfilter (FILE *output) /* termination */
+{
 //  showline("LZWflushfilter ", 0);   // debugging only
   if (currentnode >= 0) {
     LZWput(currentnode, output);
@@ -2690,7 +2767,8 @@ void LZWflushfilter (FILE *output) { /* termination */
 /* int code; */ /* code of the string matched so far to input */
 /* int last; */ /* last character of input string */
 
-int writearowLZW (FILE *output, unsigned char *s, unsigned long width) {
+int writearowLZW (FILE *output, unsigned char *s, unsigned long width)
+{
   unsigned char *send = s + width;
 
 /*  This picks up unfinished business --- currentnode >= 0 */
@@ -2705,13 +2783,14 @@ int writearowLZW (FILE *output, unsigned char *s, unsigned long width) {
 
 /*************************************************************************/
 
-#pragma optimize ("lge", off)
+//#pragma optimize ("lge", off)
 
 #endif /* end of ifdef PSLEVEL2 */
 
 /* write row in hex format */
 
-void writearowhex (FILE *output, unsigned char *s, unsigned long width) {
+void writearowhex (FILE *output, unsigned char *s, unsigned long width)
+{
   unsigned int c, d;
   int k, n;
 
@@ -2752,7 +2831,8 @@ void writearowhex (FILE *output, unsigned char *s, unsigned long width) {
 
 /* returns -1 if output error */  /* write a row of data in hex */
 
-int writearow (FILE *output, unsigned char *s, unsigned long width) {
+int writearow (FILE *output, unsigned char *s, unsigned long width)
+{
 #ifdef PSLEVEL2
   if (bLevel2) {
     if (bRunLengthFlag) writearowrun(output, s, width);
@@ -2767,7 +2847,8 @@ int writearow (FILE *output, unsigned char *s, unsigned long width) {
 #endif
 
 //  if (ferror(output)) 
-  if (output != NULL && ferror(output)) {
+  if (output != NULL && ferror(output))
+  {
     showline(" ERROR: Output error\n", 1);
     perrormod((outputfile != NULL) ? outputfile : "");
     return -1;
@@ -2832,7 +2913,7 @@ int computeheader (void) {
     }
   }
 /*  if (verboseflag && PhotometricInterpretation > 3) {
-    printf("Photometricinterpretation %d\n", PhotometricInterpretation); 
+    printf("Photometricinterpretation %d\n", PhotometricInterpretation);
   }  */
 /*  0 => 0 will be white and 2^n-1 black */
 /*  1 => 0 will be black and 2^n-1 white (default) */
@@ -2846,13 +2927,16 @@ int computeheader (void) {
     showline(" ERROR: Palette Color Image must have Palette!\n", 1);
     return -1;
   }
-  if (PhotometricInterpretation == 2) {
+  if (PhotometricInterpretation == 2)
+  {
 /*    if (SamplesPerPixel == 1)  */
-    if (SamplesPerPixelX == 1) {
+    if (SamplesPerPixelX == 1)
+    {
       sprintf(logline, " %s, but not more than one sample per pixel?\n", "RGB");
       showline(logline, 1);
     }
-    if (! bAllowColor) {
+    if (! bAllowColor)
+    {
       sprintf(logline, " WARNING: %s color image (%d) use `*c' flag?", "RGB", SamplesPerPixel);
 //      showline(logline, 1);
       showline(logline, 0);
@@ -2862,11 +2946,13 @@ int computeheader (void) {
   }
   if (PhotometricInterpretation == 5) { // 2000 May 27
 /*    if (SamplesPerPixel == 1)  */
-    if (SamplesPerPixelX == 1) {
+    if (SamplesPerPixelX == 1)
+    {
       sprintf(logline, " %s, but not more than one sample per pixel?\n", "CMYK");
       showline(logline, 1);
     }
-    if (! bAllowColor) {
+    if (! bAllowColor)
+    {
       sprintf(logline, " WARNING: %s color image (%d) use `*c' flag?", "CMYK", SamplesPerPixel);
 //      showline(logline, 1);
       showline(logline, 0);
@@ -2877,7 +2963,8 @@ int computeheader (void) {
 /*  0 => 0 will be white and 2^n-1 black */
 /*  1 => 0 will be black and 2^n-1 white (default) */
 
-  if (PhotometricInterpretation == 0) {
+  if (PhotometricInterpretation == 0)
+  {
 #ifdef DEBUGTIFF
     if (traceflag) showline("Image grey levels will be inverted\n", 0); 
 #endif
@@ -2886,7 +2973,8 @@ int computeheader (void) {
   else bInvertImage = 0;
 
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "ExpandColor %d CompressColor %d InvertImage %d\n",
       bExpandColor, bCompressColor, bInvertImage);
     showline(logline, 0);
@@ -2901,7 +2989,7 @@ int computeheader (void) {
   bytes = (int) OutRowLength;     /* ever used ? */
 #ifdef DEBUGTIFF
   if (traceflag) {
-    sprintf(logline, "%d bytes per row\n", bytes);  
+    sprintf(logline, "%d bytes per row\n", bytes);
     showline(logline, 0);
   }
 #endif
@@ -2917,7 +3005,8 @@ int computeheader (void) {
 
 /* compress some of this code into DVIPREAM.PS ? */
 
-void writepsheader (FILE *output, long dwidth, long dheight) {
+void writepsheader (FILE *output, long dwidth, long dheight)
+{
   int bits=1;         /* bits per pixel in image */
   int samples=3;        /* samples per pixel 96/July/7 */
   int bMonoChrome=0;      /* if need to use image mask */
@@ -2926,7 +3015,7 @@ void writepsheader (FILE *output, long dwidth, long dheight) {
   long YOffset;
 
 #ifdef DEBUGTIFF
-  if (traceflag) showline("Now writing out header information\n", 0); 
+  if (traceflag) showline("Now writing out header information\n", 0);
 #endif
 /*  if (BitsPerSample == 1) bMonoChrome = 1; */ /* use image mask */
 
@@ -2939,7 +3028,7 @@ void writepsheader (FILE *output, long dwidth, long dheight) {
   if (bExpandColor) samples = 3;
   else if (bExpandGray) samples = 1;
 /*  else samples = SamplesPerPixel; */      /* 96/July/7 */
-  else samples = SamplesPerPixelX;  
+  else samples = SamplesPerPixelX;
 
 //  fprintf(output, "\nsave\n");
 //  putc('\n', output);
@@ -3124,11 +3213,12 @@ void writepsheader (FILE *output, long dwidth, long dheight) {
 /*  image data must follow right away */
 }
 
-void writepstrailer (FILE *output) {
+void writepstrailer (FILE *output)
+{
 #ifdef DEBUGTIFF
-  if (traceflag) showline("Now writing trailer\n", 0); 
+  if (traceflag) showline("Now writing trailer\n", 0);
 #endif
-/*  if (BitsPerSample == 1) { 
+/*  if (BitsPerSample == 1) {
     if (bTextColor) fprintf(output, "%lg %lg %lg rgb\n",
           Textred, Textgreen, Textblue);
     else if(bFigureColor) fputs("black\n");
@@ -3142,7 +3232,8 @@ void writepstrailer (FILE *output) {
 /* Read a row using PACK_BITS compression scheme */
 /* returns non-zero if problems encountered */
 
-int readpackbits (unsigned char *lpBuffer, FILE *input, int RowLength) {
+int readpackbits (unsigned char *lpBuffer, FILE *input, int RowLength)
+{
   unsigned char *u=lpBuffer;
   int c, k, n, total=0, flag=0;
   
@@ -3182,7 +3273,8 @@ int readpackbits (unsigned char *lpBuffer, FILE *input, int RowLength) {
 
 int bytex, bitsleft;        /* input buffering in splitting bits */
 
-int getbit (FILE *input) {
+int getbit (FILE *input)
+{
   if (bitsleft-- <= 0) {
     if ((bytex = getc(input)) == EOF) {
       sprintf(logline, " Unexpected EOF (%s)\n", "getbit TIFF");
@@ -3202,15 +3294,16 @@ int getbit (FILE *input) {
   else return 0;
 }
 
-#pragma optimize ("lge", on)
+//#pragma optimize ("lge", on)
 
 /* It's the Huffman code stuff that wants to be not optimized */
 
-#pragma optimize ("lge", off) 
+//#pragma optimize ("lge", off)
 
 /* Actually commonmake may be OK with compiler optimizations ON */
 
-int commonmake (FILE *input) { /* common black/white make up codes (7 zeros) */
+int commonmake (FILE *input) /* common black/white make up codes (7 zeros) */
+{
 #ifdef DEBUGTIFF
   if (traceflag) {
     showline("commonmake entry ", 0);
@@ -3298,9 +3391,11 @@ int commonmake (FILE *input) { /* common black/white make up codes (7 zeros) */
 
 /* Compiler screws up the following code if optimizations turned on */
 
-int whiterun (FILE *input) {
+int whiterun (FILE *input)
+{
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     showline("whiterun entry ", 0);
   }
 #endif
@@ -3766,9 +3861,10 @@ int whiterun (FILE *input) {
 
 /* Compiler screws up the following code if optimizations turned on */
 
-int blackzero (FILE *input) {   /* black run code starts with four zeros */
+int blackzero (FILE *input)   /* black run code starts with four zeros */
+{
 #ifdef DEBUGTIFF
-  if (traceflag) showline (" blackzero entry ", 0); 
+  if (traceflag) showline (" blackzero entry ", 0);
 #endif
   if (getbit(input)) { /* 00001 */
     if (getbit(input)) { /* 000011 */
@@ -4189,9 +4285,11 @@ int blackzero (FILE *input) {   /* black run code starts with four zeros */
 
 /* blackrun may actually be OK with compiler optimizations turned on */
 
-int blackrun (FILE *input) {
+int blackrun (FILE *input)
+{
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     showline ("blackrun entry ", 0);
   }
 #endif
@@ -4246,13 +4344,13 @@ int blackrun (FILE *input) {
   return -1;  /* error */
 }
 
-#pragma optimize ("lge", on) 
+//#pragma optimize ("lge", on)
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 /* FOLLOWING IS EXPERIMENT 97/OCT/21 */
 
-#pragma optimize ("lge", off) 
+//#pragma optimize ("lge", off)
 
 int index, bitinx;  /* index into row of bytes and bits within them */
 
@@ -4260,7 +4358,8 @@ int total;      /* maybe long ? */
 
 /* Following could be speeded up some ... */
 
-int writewhite (unsigned char *lpBuffer, int run, int width) {
+int writewhite (unsigned char *lpBuffer, int run, int width)
+{
   if (run == 0) return 0;     /* nothing to do */
   if (run < 0) return -1;     /* hit invalid run */
   total += run;
@@ -4304,7 +4403,8 @@ int writewhite (unsigned char *lpBuffer, int run, int width) {
   else return 0;
 }
 
-int writeblack (unsigned char *lpBuffer, int run, int width) {
+int writeblack (unsigned char *lpBuffer, int run, int width)
+{
   if (run == 0) return 0;     /* nothing to do */
   if (run < 0) return -1;     /* hit invalid run */
   total += run;
@@ -4349,7 +4449,8 @@ int writeblack (unsigned char *lpBuffer, int run, int width) {
 
 /* make width long ? */
 
-int huffmanrow (unsigned char *lpBuffer, FILE *input, int width) {  
+int huffmanrow (unsigned char *lpBuffer, FILE *input, int width)
+{
   int k, bytes;
   int run;
 /*  int total = 0; */             /* long total ? */
@@ -4436,7 +4537,7 @@ int huffmanrow (unsigned char *lpBuffer, FILE *input, int width) {
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-#pragma optimize ("lge", on)    /* experiment 2000 June 17 */
+//#pragma optimize ("lge", on)    /* experiment 2000 June 17 */
 
 /* Here is the code for LZW (compression scheme number 5) input side */
 
@@ -4464,7 +4565,8 @@ int CodeLength=9;           /* current code length INPUT */
 
 /* following is never called ? now called from dvipsone.c when exiting */
 
-void DeAllocStringsIn (void) {        /* remember to do this at end */
+void DeAllocStringsIn (void)   /* remember to do this at end */
+{
 /*  if (Memory != NULL) {
     free(Memory); Memory = NULL;
   } */
@@ -4484,10 +4586,11 @@ void DeAllocStringsIn (void) {        /* remember to do this at end */
 
 /* worry here about allocation in NT ? sizeof(int) */
 
-int AllocStringsIn (void) {       
-/*  if (Memory == NULL) {   
+int AllocStringsIn (void)
+{
+/*  if (Memory == NULL) {
     Memory = (char *) malloc(INIMEMORY);
-    MemorySize = INIMEMORY;   
+    MemorySize = INIMEMORY;
   } */ /* memory for strings in string table */
   if (StringByte == NULL) { /* allocate string table indeces */
     StringByte = (char *) malloc(MAXCODES * sizeof(char));
@@ -4523,7 +4626,8 @@ int AllocStringsIn (void) {
   return 0;
 }
 
-void InitializeStringTable (void) {   /* set up string table initially */
+void InitializeStringTable (void)  /* set up string table initially */
+{
   int k;
 
   AllocStringsIn();         /* grab memory for tables if needed */
@@ -4539,14 +4643,17 @@ void InitializeStringTable (void) {   /* set up string table initially */
   CodeLength = 9;         /* initial code length */
 }
 
-void ResetStringTable (int quietflag) {   /* clear string table */
+void ResetStringTable (int quietflag) /* clear string table */
+{
 /*  int k; */
 
 #ifdef DEBUGTIFF
-  if (!quietflag) {
+  if (!quietflag)
+  {
     if (traceflag) showline("CLEAR ", 0);
-    if (traceflag) showline("\n", 0); 
-    if (traceflag && TableIndex > FIRSTCODE) {
+    if (traceflag) showline("\n", 0);
+    if (traceflag && TableIndex > FIRSTCODE)
+    {
 /*      printf("TableIndex %d FreeIndex %u CodeLength %d\n",
         TableIndex, FreeIndex, CodeLength); */
       sprintf(logline, "TableIndex %d CodeLength %d\n", TableIndex, CodeLength);
@@ -4555,7 +4662,7 @@ void ResetStringTable (int quietflag) {   /* clear string table */
   } 
 #endif
 /*  following not really needed */
-/*  for (k = FIRSTCODE; k < TableIndex; k++) { 
+/*  for (k = FIRSTCODE; k < TableIndex; k++) {
     StringTable[k] = 0;
     StringLength[k] = 0;
   } */
@@ -4565,16 +4672,19 @@ void ResetStringTable (int quietflag) {   /* clear string table */
 }
 
 #ifdef USESHORTINT
-void AddNewEntry (short int OldCode, short int Code) {
+void AddNewEntry (short int OldCode, short int Code)
+{
 #else
-void AddNewEntry (int OldCode, int Code) {
+void AddNewEntry (int OldCode, int Code)
+{
 #endif
 /*  char *s; */
 /*  char *t; */
 /*  int k; */
 
 #ifdef DEBUGLZW
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "Add string TableIndex %4d (%d)\n",
          TableIndex, StringLength[OldCode] + 1);
     showline(logline, 0);
@@ -4589,7 +4699,7 @@ void AddNewEntry (int OldCode, int Code) {
   StringPrevious[TableIndex] = OldCode;
 #ifdef USESHORTINT
   StringLength[TableIndex] =
-        (unsigned short int) (StringLength[OldCode] + 1); 
+        (unsigned short int) (StringLength[OldCode] + 1);
 #else
   StringLength[TableIndex] = StringLength[OldCode] + 1;
 #endif
@@ -4601,31 +4711,36 @@ void AddNewEntry (int OldCode, int Code) {
 /*  *s = *t; */         /* last byte comes from next code string */
 /*  FreeIndex += len; */
 
-  if (TableIndex == 511 || TableIndex == 1023 || TableIndex == 2047) {
+  if (TableIndex == 511 || TableIndex == 1023 || TableIndex == 2047)
+  {
     CodeLength++;
 #ifdef DEBUGTIFF
-    if (traceflag) {
+    if (traceflag)
+    {
       sprintf(logline, "LENGTH %d (%d)\n", TableIndex, CodeLength);
       showline(logline, 0);
     }
 #endif
   }
 
-  if (TableIndex > MAXCODES) {
+  if (TableIndex > MAXCODES)
+  {
     showline(" ERROR: Table overflow\n", 1);
-    checkexit(1); 
+    checkexit(1);
   }
-} 
+}
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-int IsInTable (int Code) {      /* is code already in table ? */
+int IsInTable (int Code)  /* is code already in table ? */
+{
   return (Code >= 0 && Code < TableIndex);
 }
 
 /* copy string from table by code number */
 
-unsigned char *WriteString (unsigned char *buffer, int Code) { 
+unsigned char *WriteString (unsigned char *buffer, int Code)
+{
 /*  int k; */
   int n, len=0;
   unsigned char *s;
@@ -4634,7 +4749,7 @@ unsigned char *WriteString (unsigned char *buffer, int Code) {
 /*  s = buffer; */
 /*  t = Memory + StringTable[Code]; */
 //  if (Code < TableIndex)
-  len = StringLength[Code]; 
+  len = StringLength[Code];
   t = buffer + len;         /* byte after last one to copy */
   if (t > StripData + StripDataLen) {
 /*    special case kludge if terminates right after code length switch */
@@ -4678,7 +4793,7 @@ unsigned char *WriteString (unsigned char *buffer, int Code) {
     sprintf(logline, "Off by %d (len %d Code %d)\n", err, len, Code);
     showline(logline, 1);
   }
-/*  s = buffer;                 
+/*  s = buffer;
   while (s < t) {
     if (*s++ != 0) putc('1', stdout);
     else putc('0', stdout);
@@ -4694,9 +4809,11 @@ unsigned long OldByte=0;    /* cadaver being eaten */
 int OldBitsLeft=0;        /* how many bits left in OldByte */
 
 #ifdef USESHORTINT
-short int GetNextCode (FILE *input) { /* get next LZW code number from input  */
+short int GetNextCode (FILE *input) /* get next LZW code number from input  */
+{
 #else
-int GetNextCode (FILE *input) { /* get next LZW code number from input  */
+int GetNextCode (FILE *input) /* get next LZW code number from input  */
+{
 #endif
   int bits;
   int c;
@@ -4704,7 +4821,7 @@ int GetNextCode (FILE *input) { /* get next LZW code number from input  */
 
   bits = OldBitsLeft;         /*  how many bits do we have */
   k = OldByte;            /*  start with old bits */
-  
+
   while (bits < CodeLength) {     /* need more bits ? */
     if (InStripLen-- <= 0) {    /* treat as EOD 96/Nov/17 */
       if (traceflag) {
@@ -4713,7 +4830,8 @@ int GetNextCode (FILE *input) { /* get next LZW code number from input  */
       }
       return EOD;
     }
-    if ((c = getc(input)) == EOF) { 
+    if ((c = getc(input)) == EOF)
+    {
       sprintf(logline, " Unexpected EOF (%s)\n", "getnextcode");
       showline(logline, 1);
       checkexit(1);
@@ -4741,7 +4859,8 @@ int GetNextCode (FILE *input) { /* get next LZW code number from input  */
 #endif
 }
 
-void LZWdecompress (unsigned char *StripData, FILE *input) {
+void LZWdecompress (unsigned char *StripData, FILE *input)
+{
 #ifdef USESHORTINT
   short int Code, OldCode;
 #else
@@ -4834,7 +4953,8 @@ void LZWdecompress (unsigned char *StripData, FILE *input) {
 /*  reset table for next one */
   ResetStringTable(0);
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "Now at byte %ld in file\n", ftell(input));
     showline(logline, 0);
   }
@@ -4848,7 +4968,8 @@ void LZWdecompress (unsigned char *StripData, FILE *input) {
 /* First one was already set up - don't disturb in case not indirect */
 /* In practice, strips are usually contiguous, but no guarantee... */
 
-long SetupStrip (FILE *input, int k) {      /* 96/Nov/17 */
+long SetupStrip (FILE *input, int k)      /* 96/Nov/17 */
+{
   if (k > 0) {
     StripOffset = indirectvalue(StripOffsetsType, 1,
       StripOffsetsPtr + k * typesize[StripOffsetsType], input);
@@ -4862,7 +4983,8 @@ long SetupStrip (FILE *input, int k) {      /* 96/Nov/17 */
     showline(logline, 0);
   }
 #endif
-  if (fseek (input, StripOffset, SEEK_SET)) {
+  if (fseek (input, StripOffset, SEEK_SET))
+  {
     showline("Error in seek to StripOffset", 1);  /* ??? */
     finish = -1;
     return -1;
@@ -4875,7 +4997,8 @@ long SetupStrip (FILE *input, int k) {      /* 96/Nov/17 */
 /* Copy a row from far space used by LZW to near space used for output */
 
 void CopyRow (unsigned char *lpBuffer, unsigned char *StripData,
-    long InRowLength) { 
+    long InRowLength)
+{
   int k, n;
   unsigned char *s=lpBuffer;
   unsigned char *t=StripData;
@@ -4894,7 +5017,8 @@ void CopyRow (unsigned char *lpBuffer, unsigned char *StripData,
 /* A whole strip is treated as one unit for LZW encoding ... */
 /* So need to do once per strip and need memory for strip output */
 
-int DecodeLZW (FILE *output, FILE *input, unsigned char *lpBuffer) { 
+int DecodeLZW (FILE *output, FILE *input, unsigned char *lpBuffer)
+{
   int k, row = 0, i, j, n, m, flag = 0;
 /*  unsigned char *StripData; */
   long nlen;
@@ -5029,7 +5153,8 @@ BOOL bTIFFAllow=1;
 /* x * (numer / denom) 1995/Oct/12 */
 /* or use MulDiv ??? */
 
-long MulRatio (long x, unsigned long numer, unsigned long denom) {
+long MulRatio (long x, unsigned long numer, unsigned long denom)
+{
   long result;
   if (denom == 0 || numer == 0) return 0;
   if ((numer % denom) == 0) {
@@ -5063,7 +5188,8 @@ long MulRatio (long x, unsigned long numer, unsigned long denom) {
 /* if dheight == 0 => calculate dheight from dwidth based on aspect ratio */
 
 int showtiffhere (FILE *output, char *filename, long dwidth, long dheight,
-         double xscale, double yscale,  int nifd) {
+         double xscale, double yscale,  int nifd)
+{
   int flag;
   if (bTIFFAllow != 0) {
 /*    if (dheight == 0) { */  /* need aspect ratio from TIFF file */
@@ -5162,7 +5288,8 @@ int showtiffhere (FILE *output, char *filename, long dwidth, long dheight,
 
 /* made common to save string space */
 
-void dontunderline (void) {
+void dontunderline (void)
+{
 //  showline(" ERROR: don't understand ", 1);
 //  showline(line, 1);
   sprintf(logline, " ERROR: don't understand: %s", line);
@@ -5217,15 +5344,18 @@ void platformindependent (char *buffer, char *name) { /* 96/Mar/3 */
 /* char *badcharinname=" \t\n\r\f()<>[]{}/%"; */
 char *badcharinname=" \b\t\n\f\r()<>[]{}/%";
 
-void cleanupname (char *name) {
+void cleanupname (char *name)
+{
   char *s;
 #ifdef DEBUGCLEANUP
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, " CLEANUPNAME: %s", name);     /* debugging */
     showline(logline, 0);
   }
 #endif
-  if (*name == '\0') {
+  if (*name == '\0')
+  {
     showline(" ERROR: empty mark or button", 1);
   }
   s = name;
@@ -5233,7 +5363,8 @@ void cleanupname (char *name) {
     strcpy(s, s+1);
   if (strlen(name) > MAXPSNAME) *(name+MAXPSNAME) = '\0'; /* 96/Aug/12 */
 #ifdef DEBUGCLEANUP
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, " CLEANEXIT: %s", name);   /* debugging */
     showline(logline, 0);
   }
@@ -5243,7 +5374,8 @@ void cleanupname (char *name) {
 
 /* support for old textcolor / rulecolor specials */
 
-int oldcolor (FILE *output, FILE  *input) {
+int oldcolor (FILE *output, FILE  *input)
+{
   char *s;
   int n;
 /*  old text color support */
@@ -5398,7 +5530,8 @@ int oldcolor (FILE *output, FILE  *input) {
 
 /* new to allow quoted file names with spaces 98/Jul/9 */
 
-char *scaninsert(char *line, char *filename) {
+char *scaninsert(char *line, char *filename)
+{
   char *s = line;
   char *t = filename;
 
@@ -5430,7 +5563,8 @@ char *scaninsert(char *line, char *filename) {
 
 /* returns zero if *not* one of our DVIWindo \specials */
 
-int newspecials (FILE *output, FILE *input) {
+int newspecials (FILE *output, FILE *input)
+{
   int nifd=1;
   long dheight, dwidth;
   char filename[FILENAME_MAX];
@@ -5446,28 +5580,32 @@ int newspecials (FILE *output, FILE *input) {
   double xscale, yscale;
 
 #ifdef DEBUGTIFF
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, " %s:", line);
     showline(logline, 0);
   }
 #endif
 
 /*  insert TIFF or BMP image */
-  if (strcmp(line, "insertimage") == 0) {
+  if (strcmp(line, "insertimage") == 0)
+  {
 /*    (void) scanspecial (input, line, MAXLINE); */
     (void) scanspecialraw (input, line, MAXLINE);
 #ifdef DEBUGTIFF
-    if (traceflag) {
+    if (traceflag)
+    {
       sprintf(logline, " %s ", line);
       showline(logline, 0);
     }
 #endif
     nifd = 1;         /* n-th (sub-)image in TIFF file */
-    dwidth = dheight = 0;   /* NEW - use all info from file */  
+    dwidth = dheight = 0;   /* NEW - use all info from file */
     xscale = yscale = 0.0;    /* 99/July/2 */
 /*    if (sscanf(line, "%s %ld %ld %d", filename, &dwidth, &dheight, &nifd) */
     s = scaninsert(line, filename);
-    if ((t = strstr(s, "scaled")) == NULL) {
+    if ((t = strstr(s, "scaled")) == NULL)
+    {
       sscanf(s, "%ld %ld %d", &dwidth, &dheight, &nifd);  /* normal */
     }
     else {  /* new case 99/July/2 */
@@ -5754,7 +5892,7 @@ int newspecials (FILE *output, FILE *input) {
      return 1;    /* we recognize it, but ignore it */
   }
 #ifdef DEBUGTIFF
-  else if (traceflag) showline(line, 1); 
+  else if (traceflag) showline(line, 1);
 #endif
   return 0;       /* not a DVIWindo special */
 }
@@ -5768,13 +5906,14 @@ int newspecials (FILE *output, FILE *input) {
    rclip=0.000000 tclip=0.000000 nostrip */
 /* New stuff for HPTAG */ /* 95/Oct/12 */
 
-int dohptag (FILE *output, FILE *input) {
+int dohptag (FILE *output, FILE *input)
+{
 /*  double bclip=0, lclip=0, rclip=0, tclip=0; */
 /*  int hleft=1, hright=0, vhigh=1, vlow=0; */
 /*  double xmag=1, ymag=1; */
 /*  int nostrip=1; */
   char *s, *t;
-  char filename[FILENAME_MAX];  
+  char filename[FILENAME_MAX];
 
   (void) scanspecial (input, line, MAXLINE);
   if ((s = strchr(line, ' ')) != NULL) *s = '\0';

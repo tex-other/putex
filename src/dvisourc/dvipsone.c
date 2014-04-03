@@ -897,7 +897,7 @@ char *zstrdup (char *s)    /* new central location 1996/Aug/28 */
 //  exit(1);        // pretty serious !
 #endif
   uexit(1);
-  return new;       // keep compiler happy
+//  return new;       // keep compiler happy
 }
 
 /*****************************************************************************/
@@ -1799,7 +1799,7 @@ int abortjob (void)
 #ifdef _WINDOWS
   showline("ABORTJOB", 1);  // debugging only - can't happen
 #endif
-  cleanup();  
+  cleanup();
   checkexit(3);
   return -1;
 }
@@ -1809,7 +1809,8 @@ void errcount (int flag)
 {
   if (flag) errlevel++;
 /*  if (errlevel > MAXERRORS) { */
-  if (errlevel > nMaxErrors && nMaxErrors > 0) {      /* 95/Dec/28 */
+  if (errlevel > nMaxErrors && nMaxErrors > 0)  /* 95/Dec/28 */
+  {
     showline("\n", 0);
     sprintf(logline, "Too many errors (> %d) - giving up", nMaxErrors);
     showline(logline, 1);
@@ -4534,12 +4535,13 @@ int dodefaults (void)     /* moved out 1994/May/23 */
   if (yoffsete == UNKNOWNOFFSET) yoffsete = 0.0;
   if (yoffseto == UNKNOWNOFFSET) yoffseto = yoffsete;
 
-  if (quietflag == 3) {     /* dvipsone -qqq */
+  if (quietflag == 3)     /* dvipsone -qqq */
+  {
 //    showpedigree(stdout);
     showpedigree(line, sizeof(line)); /* MAXLINE */
     showline(line, 0);
     checkexit(0);       /* 96/Feb/25 */
-    return 0;
+//    return 0;
   }
   quietflag = (quietflag & 1);      /* only depend on even/odd */
 

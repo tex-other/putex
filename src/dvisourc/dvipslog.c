@@ -86,15 +86,16 @@ long pageno;  /* for convenience in error messages - may be logical page */
 
 /* now for the scan of the DVI file for PS output generation */
 
-void reset_stack(void) {
+void reset_stack(void)
+{
   stinx = 0;
 }
 
-void check_stack(int pageno) {
-  if (stinx != 0) {
-    sprintf(logline,
-      " ERROR: stack not empty at EOP: %d on page %d ",
-        stinx, pageno); /* pageno ? logical page */
+void check_stack(int pageno)
+{
+  if (stinx != 0)
+  {
+    sprintf(logline, " ERROR: stack not empty at EOP: %d on page %d ", stinx, pageno); /* pageno ? logical page */
     showline(logline, 1);
     tellwhere(input, 1);
 /*    errcount(0); */
@@ -110,18 +111,21 @@ void check_stack(int pageno) {
   return getc(infile);
 } */
 
-static unsigned int ureadtwo (FILE *infile) {
-  return (getc(infile) << 8) | getc(infile); 
+static unsigned int ureadtwo (FILE *infile)
+{
+  return (getc(infile) << 8) | getc(infile);
 }
 
-static unsigned long ureadthree (FILE *infile) {
+static unsigned long ureadthree (FILE *infile)
+{
   int c, d, e; 
 /*  unsigned int c, d, e; */
   c = getc(infile); d = getc(infile); e = getc(infile);
   return ((((unsigned long) c << 8) | d) << 8) | e;
 }
 
-static unsigned long ureadfour (FILE *infile) {
+static unsigned long ureadfour (FILE *infile)
+{
   int c, d, e, f;
   c = getc(infile); d = getc(infile);
   e = getc(infile); f = getc(infile);
@@ -139,7 +143,8 @@ static unsigned long ureadfour (FILE *infile) {
 
 #ifdef IGNORED
 /* static short int sreadtwo (FILE *infile) { */  /* ??? */
-static int sreadtwo (FILE *infile) {
+static int sreadtwo (FILE *infile)
+{
   short int result;
 /*  return (getc(infile) << 8) | getc(infile); */ /* 1995/Nov/15 */
 /*  result = (getc(infile) << 8) | getc(infile); */
@@ -150,10 +155,11 @@ static int sreadtwo (FILE *infile) {
 
 /* avoid possible compiler optimization error */
 
-static int sreadtwo (FILE *input) {     /* experiment 98/Feb/7 */
+static int sreadtwo (FILE *input)    /* experiment 98/Feb/7 */
+{
   int c, d;
   c = getc(input);  d = getc(input);
-  if (c > 127) c = c - 256; 
+  if (c > 127) c = c - 256;
   return  (c << 8) | d;
 }
 
@@ -164,7 +170,8 @@ static int sreadtwo (FILE *input) {     /* experiment 98/Feb/7 */
   return ((((long) c << 8) | d) << 8) | e;
  } */
 
-static long sreadfour (FILE *infile) {
+static long sreadfour (FILE *infile)
+{
   int c, d, e, f;
   c = getc(infile); d = getc(infile);
   e = getc(infile); f = getc(infile);
@@ -181,7 +188,8 @@ COLORSPEC **ColorStacks=NULL; /* array of saved color stacks, one per page */
 /*  restore at start of page what was current at end of page-1 */
 /*  called from dvianal.c */ /* page is physical DVI page from start of file */
 
-void RestoreColorStack (int page) {
+void RestoreColorStack (int page)
+{
   COLORSPEC *SavedStack;
   int k;
 /*  don't bother if color \special{...} was never used */
@@ -195,7 +203,8 @@ void RestoreColorStack (int page) {
   if (ColorStacks == NULL) return;    /* sanity check */
 /*  GrabColor(); */
   SavedStack = ColorStacks[page];
-  if (SavedStack == NULL) {
+  if (SavedStack == NULL)
+  {
     sprintf(logline, " Bad Color Restore page %d (%d)",
         page, MaxColor-1);
     showline(logline, 1);
@@ -204,7 +213,8 @@ void RestoreColorStack (int page) {
   }
   colorindex = (int) (SavedStack[0].D + 0.5); /* depth of saved stack */
 #ifdef DEBUGCOLORSTACK
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, " RestoreColorStack from page-1 %d colorindex %d\n",
               page, colorindex);
     showline(logline, 0);
@@ -223,7 +233,8 @@ void RestoreColorStack (int page) {
 /*  Save at end of page for start of page+1 */
 /*  called from logdo_eop dvipslog.c */ /* page is DVI page from start of file */
 
-void SaveColorStack (int page, int colorindex) {
+void SaveColorStack (int page, int colorindex)
+{
   COLORSPEC *SavedStack;
   int k;
 /*  if (bCarryColor == 0 || bColorUsed == 0) return; */
@@ -238,7 +249,8 @@ void SaveColorStack (int page, int colorindex) {
 /*    free(lpColor[page]); */
   }
 #ifdef DEBUGCOLORSTACK
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, " SaveColorStack page %d colorindex %d\n",
         page, colorindex);
     showline(logline, 0);
@@ -257,7 +269,8 @@ void SaveColorStack (int page, int colorindex) {
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-void logdo_push(void) {
+void logdo_push(void)
+{
   if (skipflag == 0) {
     stinx++;
     if (stinx > maxstinx) maxstinx = stinx;
@@ -268,10 +281,13 @@ void logdo_push(void) {
   }
 }
 
-void logdo_pop(void) {
-  if (skipflag == 0)  {
+void logdo_pop(void)
+{
+  if (skipflag == 0)
+  {
     stinx--;
-    if (stinx < 0) {
+    if (stinx < 0)
+    {
       sprintf(logline,
            " ERROR: The stack will underflow on page %d ",
            pageno); /* pagenumber ??? logical page */
@@ -284,7 +300,8 @@ void logdo_pop(void) {
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-void invalidset(int c) {
+void invalidset(int c)
+{
   sprintf(logline, " ERROR: Setting char %d without font on page %d ",
       c, pageno); /* pagenumber ??? logical page */
   showline(logline, 1);
@@ -294,7 +311,8 @@ void invalidset(int c) {
 
 /* common subroutine for set2 set3 set4 --- which should not occur */
 
-void logdo_setsub(unsigned long c) {
+void logdo_setsub(unsigned long c)
+{
   if (skipflag == 0) {
 /*    if (ff < 0) invalidset((int) c); */
     if (ff == BLANKFONT) invalidset((int) c);
@@ -322,7 +340,8 @@ void logdo_setsub(unsigned long c) {
 
 /* For speed we keep the set1 case separate since it occurs often */
 
-void logdo_set1(FILE *infile) {
+void logdo_set1(FILE *infile)
+{
   unsigned int c;
 /*  c = ureadone(infile); */
   c = getc(infile);
@@ -352,12 +371,14 @@ void logdo_set1(FILE *infile) {
 
 /* simplified 95/Oct/17 by using logo_setsub for logdo_set2 */
 
-void logdo_set2(FILE *infile) {
+void logdo_set2(FILE *infile)
+{
   logdo_setsub(ureadtwo(infile));
 }
 
 #ifdef IGNORED
-void logdo_set2(FILE *infile) {
+void logdo_set2(FILE *infile)
+{
   unsigned int c;
   c = ureadtwo(infile);
   if (skipflag == 0) {
@@ -385,11 +406,13 @@ void logdo_set2(FILE *infile) {
 }
 #endif
 
-void logdo_set3(FILE *infile) {
+void logdo_set3(FILE *infile)
+{
   logdo_setsub(ureadthree(infile));
 }
 
-void logdo_set4(FILE *infile) {
+void logdo_set4(FILE *infile)
+{
   logdo_setsub(ureadfour(infile));
 }
 
@@ -397,8 +420,10 @@ void logdo_set4(FILE *infile) {
 
 /* common subroutine for put2, put3, pu4 --- which should not occur */
 
-void logdo_putsub(unsigned long c) {
-  if (skipflag == 0) {
+void logdo_putsub(unsigned long c)
+{
+  if (skipflag == 0)
+  {
 /*    if (ff < 0) invalidset((int) c); */
     if (ff == BLANKFONT) invalidset((int) c);
     else if (c < 256) {
@@ -424,7 +449,8 @@ void logdo_putsub(unsigned long c) {
 
 /* For speed we keep the set1 case separate since it occurs sometimes */
 
-void logdo_put1(FILE *infile) {
+void logdo_put1(FILE *infile)
+{
   unsigned int c;
 /*  c = ureadone(infile); */
   c = getc(infile);
@@ -454,12 +480,14 @@ void logdo_put1(FILE *infile) {
 
 /* simplified 95/Oct/17 by using logo_putsub for logdo_put2 */
 
-void logdo_put2(FILE *infile) {
+void logdo_put2(FILE *infile)
+{
   logdo_putsub(ureadtwo(infile));
 }
 
 #ifdef IGNORED
-void logdo_put2(FILE *infile) {
+void logdo_put2(FILE *infile)
+{
   unsigned int c;
   c = ureadtwo(infile);
   if (skipflag == 0) {
@@ -487,20 +515,24 @@ void logdo_put2(FILE *infile) {
 }
 #endif
 
-void logdo_put3(FILE *infile) {
+void logdo_put3(FILE *infile)
+{
   logdo_putsub(ureadthree(infile));
 }
 
-void logdo_put4(FILE *infile) {
+void logdo_put4(FILE *infile)
+{
   logdo_putsub(ureadfour(infile));
 }
 
-void logdo_set_rule(FILE *infile) {
+void logdo_set_rule(FILE *infile)
+{
   int k;
   for (k=0; k < 8; k++) (void) getc(infile);
 }
 
-void logdo_put_rule(FILE *infile) {
+void logdo_put_rule(FILE *infile)
+{
   int k;
   for (k=0; k < 8; k++) (void) getc(infile);
 }
@@ -514,7 +546,8 @@ int pagesequence;   /* count of ascending page sequence */
 
 /* returns zero if page is to be printed */ /* non-zero if to be skipped */
 
-int skipthispage(long pageno) {
+int skipthispage(long pageno)
+{
   int k;
 /*  int hitrange=0; */
 /*  int wantpage=0; */
@@ -554,7 +587,8 @@ int skipthispage(long pageno) {
   return 1;             /* not inside any specified range */
 }
 
-void logdo_bop(FILE *infile) { /* beginning of page */
+void logdo_bop(FILE *infile) /* beginning of page */
+{
   int k;
   long current;       /* ??? */
 
@@ -622,121 +656,150 @@ void logdo_eop(FILE *infile) { /* end of page */
   skipflag = 0;
 }
 
-void logdo_right1(FILE *infile) { /* rare */
+void logdo_right1(FILE *infile) /* rare */
+{
   (void) getc(infile);
 }
 
-void logdo_right2(FILE *infile) {
+void logdo_right2(FILE *infile)
+{
   (void) getc(infile); (void) getc(infile);
 } 
 
-void logdo_right3(FILE *infile) {
+void logdo_right3(FILE *infile)
+{
   (void) getc(infile); (void) getc(infile); (void) getc(infile);
 } 
 
-void logdo_right4(FILE *infile) {
-  (void) getc(infile); (void) getc(infile); 
+void logdo_right4(FILE *infile)
+{
+  (void) getc(infile); (void) getc(infile);
   (void) getc(infile); (void) getc(infile);
 } 
 
-void logdo_w0(void) {
+void logdo_w0(void)
+{
 }
 
-void logdo_w1(FILE *infile) { /* rare */
-  (void) getc(infile); 
-}
-
-void logdo_w2(FILE *infile) {
-  (void) getc(infile); (void) getc(infile);
-} 
-
-void logdo_w3(FILE *infile) {
-  (void) getc(infile); (void) getc(infile); (void) getc(infile);
-} 
-
-void logdo_w4(FILE *infile) {
-  (void) getc(infile); (void) getc(infile); 
-  (void) getc(infile); (void) getc(infile);
-} 
-
-void logdo_x0(void) {
-}
-
-void logdo_x1(FILE *infile) { /* rare */
+void logdo_w1(FILE *infile) /* rare */
+{
   (void) getc(infile);
 }
 
-void logdo_x2(FILE *infile) {
+void logdo_w2(FILE *infile)
+{
   (void) getc(infile); (void) getc(infile);
 } 
 
-void logdo_x3(FILE *infile) {
+void logdo_w3(FILE *infile)
+{
   (void) getc(infile); (void) getc(infile); (void) getc(infile);
-}
+} 
 
-void logdo_x4(FILE *infile) {
-  (void) getc(infile); (void) getc(infile); 
+void logdo_w4(FILE *infile)
+{
+  (void) getc(infile); (void) getc(infile);
   (void) getc(infile); (void) getc(infile);
 }
 
-void logdo_down1(FILE *infile) { /* rare */
+void logdo_x0(void)
+{
+}
+
+void logdo_x1(FILE *infile) /* rare */
+{
   (void) getc(infile);
 }
 
-void logdo_down2(FILE *infile) { /* rare */
+void logdo_x2(FILE *infile)
+{
   (void) getc(infile); (void) getc(infile);
 } 
 
-void logdo_down3(FILE *infile) {
+void logdo_x3(FILE *infile)
+{
   (void) getc(infile); (void) getc(infile); (void) getc(infile);
 }
 
-void logdo_down4(FILE *infile) {
-  (void) getc(infile); (void) getc(infile); 
+void logdo_x4(FILE *infile)
+{
   (void) getc(infile); (void) getc(infile);
-} 
-
-void logdo_y0(void) {
+  (void) getc(infile); (void) getc(infile);
 }
 
-void logdo_y1(FILE *infile) { /* rare */
+void logdo_down1(FILE *infile) /* rare */
+{
   (void) getc(infile);
 }
 
-void logdo_y2(FILE *infile) {
+void logdo_down2(FILE *infile) /* rare */
+{
   (void) getc(infile); (void) getc(infile);
-} 
-
-void logdo_y3(FILE *infile) {
-  (void) getc(infile); (void) getc(infile); (void) getc(infile);
-} 
-
-void logdo_y4(FILE *infile) { /* not used */
-  (void) getc(infile); (void) getc(infile); 
-  (void) getc(infile); (void) getc(infile);
-} 
-
-void logdo_z0(void) {
 }
 
-void logdo_z1(FILE *infile) {  /* rare */
+void logdo_down3(FILE *infile)
+{
+  (void) getc(infile); (void) getc(infile); (void) getc(infile);
+}
+
+void logdo_down4(FILE *infile)
+{
+  (void) getc(infile); (void) getc(infile);
+  (void) getc(infile); (void) getc(infile);
+}
+
+void logdo_y0(void)
+{
+}
+
+void logdo_y1(FILE *infile) /* rare */
+{
   (void) getc(infile);
 }
 
-void logdo_z2(FILE *infile) {
+void logdo_y2(FILE *infile)
+{
   (void) getc(infile); (void) getc(infile);
-} 
+}
 
-void logdo_z3(FILE *infile) {
+void logdo_y3(FILE *infile)
+{
   (void) getc(infile); (void) getc(infile); (void) getc(infile);
 } 
 
-void logdo_z4(FILE *infile) {
-  (void) getc(infile); (void) getc(infile); 
+void logdo_y4(FILE *infile) /* not used */
+{
+  (void) getc(infile); (void) getc(infile);
+  (void) getc(infile); (void) getc(infile);
+}
+
+void logdo_z0(void)
+{
+}
+
+void logdo_z1(FILE *infile)  /* rare */
+{
+  (void) getc(infile);
+}
+
+void logdo_z2(FILE *infile)
+{
   (void) getc(infile); (void) getc(infile);
 } 
 
-void logswitchfont(int fn, FILE *infile) { /* switching to other font */
+void logdo_z3(FILE *infile)
+{
+  (void) getc(infile); (void) getc(infile); (void) getc(infile);
+} 
+
+void logdo_z4(FILE *infile)
+{
+  (void) getc(infile); (void) getc(infile);
+  (void) getc(infile); (void) getc(infile);
+}
+
+void logswitchfont(int fn, FILE *infile) /* switching to other font */
+{
   int c;
   ff = fn;      /* set state */
   fnt = finx[fn];
@@ -745,8 +808,7 @@ void logswitchfont(int fn, FILE *infile) { /* switching to other font */
     if (fn == 52) {
       c = getc(infile); (void) ungetc(c, infile);
       if (c == 171 + 52) {
-        sprintf(logline, 
-  " ERROR: Unexpected encounter of DVI trailer on page %d ", pagenumber);
+        sprintf(logline, " ERROR: Unexpected encounter of DVI trailer on page %d ", pagenumber);
         showline(logline, 1);
 /*        errcount(0); */
 /*        finish = -1; */
@@ -767,7 +829,8 @@ void logswitchfont(int fn, FILE *infile) { /* switching to other font */
   fonthit[fnt] = 1;   /* even if skipflag != 0 ? */
 }
 
-void logdo_fnt1(FILE *infile) { /* switch fonts */
+void logdo_fnt1(FILE *infile) /* switch fonts */
+{
   int fn;
 /*  fn = ureadone(infile); */
   fn = getc(infile);
@@ -775,7 +838,8 @@ void logdo_fnt1(FILE *infile) { /* switch fonts */
   logswitchfont(fn, infile);
 }
 
-void logdo_fnt2(FILE *infile) { /* switch fonts */
+void logdo_fnt2(FILE *infile) /* switch fonts */
+{
   unsigned int fn;
   fn = ureadtwo(infile);
 /*  if (skipflag == 0) */
@@ -783,19 +847,22 @@ void logdo_fnt2(FILE *infile) { /* switch fonts */
   logswitchfont((int) fn, infile);
 }
 
-void logdo_fntsub(unsigned long fn, FILE *infile) { /* switch fonts */
+void logdo_fntsub(unsigned long fn, FILE *infile) /* switch fonts */
+{
 /*  if (skipflag == 0) */
   if (fn >= MAXFONTNUMBERS) fn = MAXFONTNUMBERS-1;
   logswitchfont((int) fn, infile);
 }
 
-void logdo_fnt3(FILE *infile) { /* switch fonts */
+void logdo_fnt3(FILE *infile) /* switch fonts */
+{
 /*  unsigned long fn;
   fn = ureadthree(infile); */
   logdo_fntsub(ureadthree(infile), infile);
 }
 
-void logdo_fnt4(FILE *infile) { /* switch fonts */
+void logdo_fnt4(FILE *infile) /* switch fonts */
+{
   long fn;
   fn = sreadfour(infile);
 /*  if (skipflag == 0) */
@@ -805,7 +872,8 @@ void logdo_fnt4(FILE *infile) { /* switch fonts */
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-void getheadername (FILE *infile) { /* new version 95/Aug/30 */
+void getheadername (FILE *infile) /* new version 95/Aug/30 */
+{
   char fname[FNAMELEN];     /* buffer to get token into */
   char *s;
 
@@ -863,7 +931,8 @@ void getheadername (FILE *infile) { /* new version 95/Aug/30 */
 
 /* get name of file with DSC header comments */ /* only one allowed */
 
-void getcustomname (FILE *infile) {
+void getcustomname (FILE *infile)
+{
 /*  int n=0; */
 
   if (dscfile != NULL) {
@@ -883,7 +952,8 @@ void getcustomname (FILE *infile) {
 
 /* accumulate verbatim PS header text for prolog */
 
- void getheadertext (FILE *infile) {    /* new 1993/Dec/29 */
+void getheadertext (FILE *infile)   /* new 1993/Dec/29 */
+{
   char *headernew;
   char *u;
   int n;
@@ -899,7 +969,7 @@ void getcustomname (FILE *infile) {
 /*    errcount(0); */
 /*    return; */
     checkexit(1);             /* 1995/July/15 */
-//    more serious exit(1) ??? 
+//    more serious exit(1) ???
   }
   headertext = headernew;
   u = headernew + headertextlen;
@@ -910,7 +980,8 @@ void getcustomname (FILE *infile) {
 
 /* accumulate command line args for DVIPSONE - passed through DVI file */
 
-void getcommandspec (FILE *infile) {    // 99/Sept/6
+void getcommandspec (FILE *infile)    // 99/Sept/6
+{
   char *commandnew;
   char *u;
   int n;
@@ -931,7 +1002,8 @@ void getcommandspec (FILE *infile) {    // 99/Sept/6
 
 /* accumulate verbatim PS header text for prolog */
 
-void getcustomtext (FILE *infile) {     /* new 1995/July/15 */
+void getcustomtext (FILE *infile)     /* new 1995/July/15 */
+{
   int c, n, needpercent=0;
   char *customnew;
   char *u;
@@ -963,7 +1035,8 @@ void getcustomtext (FILE *infile) {     /* new 1995/July/15 */
   *u++ = '\n'; *u++ = '\0';       /* terminating linefeed and \0 */
 }
 
-void getbbox (FILE *infile) {   /* Use for CropBox pdfmark not tested */
+void getbbox (FILE *infile) /* Use for CropBox pdfmark not tested */
+{
 /*  Right now this is in PS coordinates, should be in TeX coordinates */
   if (gettoken(infile, line, sizeof(line)) != 0) { /* MAXLINE */
     sscanf(line, "%d", &BBxll);
@@ -981,7 +1054,8 @@ void getbbox (FILE *infile) {   /* Use for CropBox pdfmark not tested */
 
 /* accumulate Keywords for DOCINFO pdfmark */
 
-void getkeywords (FILE *infile) {     /* 1996/May/10 */
+void getkeywords (FILE *infile)     /* 1996/May/10 */
+{
   char *keywordsnew;
   char *u;
   int n, c;
@@ -1019,7 +1093,8 @@ void getkeywords (FILE *infile) {     /* 1996/May/10 */
 }
 
 // void getcommonstring (FILE *infile, char *newstring) 
-char *getcommonstring (FILE *infile) {
+char *getcommonstring (FILE *infile)
+{
   char *u;
   char *newstring = malloc ((size_t) (nspecial+1));
   if (newstring == NULL) {
@@ -1035,42 +1110,48 @@ char *getcommonstring (FILE *infile) {
 
 // unadvertized ability to change Creator fieldin DocInfo
 
-void getcreator (FILE *infile) {
+void getcreator (FILE *infile)
+{
   if (creatorstring != NULL) return;  /* ignore all but first */
 //  creatorstring = malloc ((size_t) (nspecial+1));
 //  getcommonstring(infile, creatorstring);
   creatorstring = getcommonstring(infile);
 }
 
-void gettitle (FILE *infile) {
+void gettitle (FILE *infile)
+{
   if (titlestring != NULL) return;  /* ignore all but first */
 //  titlestring = malloc ((size_t) (nspecial+1));
 //  getcommonstring(infile, titlestring);
   titlestring = getcommonstring(infile);
 }
 
-void getsubject (FILE *infile) {
+void getsubject (FILE *infile)
+{
   if (subjectstring != NULL) return;  /* ignore all but first */
 //  subjectstring = malloc ((size_t) (nspecial+1));
 //  getcommonstring(infile, subjectstring);
   subjectstring = getcommonstring(infile);
 }
 
-void getauthor (FILE *infile) {
+void getauthor (FILE *infile)
+{
   if (authorstring != NULL) return; /* ignore all but first */
 //  authorstring = malloc ((size_t) (nspecial+1));
 //  getcommonstring(infile, authorstring);
   authorstring = getcommonstring(infile);
 }
 
-void getbase (FILE *infile) {
+void getbase (FILE *infile)
+{
   if (basestring != NULL) return; /* ignore all but first */
 //  basestring = malloc ((size_t) (nspecial+1));
 //  getcommonstring(infile, basestring);
   basestring = getcommonstring(infile);
 }
 
-void getpagemode (FILE *infile) {
+void getpagemode (FILE *infile)
+{
   if (pagemode != NULL) return; /* ignore all but first */
 //  pagemode = malloc ((size_t) (nspecial+1));
 //  getcommonstring(infile, pagemode);
@@ -1079,7 +1160,8 @@ void getpagemode (FILE *infile) {
 
 /* example \special{papersize=5.04in,3.751in} */
 
-void getpapersize (FILE *infile) {
+void getpapersize (FILE *infile)
+{
 //  if (strcmp(papersize,"") != 0) return;  /* ignore all but first */
   if (papersize != NULL) return;
 //  papersize = malloc ((size_t) (nspecial+1));
@@ -1093,13 +1175,15 @@ int bComplainSpecial=1;
 
 /* Attempt at \special{background rgb 0 0 1} support 98 June 30 */
 
-void DoBackGround (FILE *infile, int c) {
+void DoBackGround (FILE *infile, int c)
+{
   char *s;
   int n, m;
   int setcolor=0;
   COLORSPEC SavedColor;
 
-  if (bBackGroundFlag == 0) {
+  if (bBackGroundFlag == 0)
+  {
     flushspecial(infile);
     return;
   }
@@ -1109,7 +1193,8 @@ void DoBackGround (FILE *infile, int c) {
   *s = '\0';                /* just in case */
   (void) scanspecial(input, line, MAXLINE);
 
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "\n%s %c (%d) ", line, c, c);
     showline(logline, 0);
   }
@@ -1120,15 +1205,18 @@ void DoBackGround (FILE *infile, int c) {
   if (bKeepBlack) return;         /* 96/Nov/3 */
 
   SavedColor = CurrColor;         /* 99/Apr/06 */
-  if (strncmp(s, "rgb", 3) == 0) {
+  if (strncmp(s, "rgb", 3) == 0)
+  {
     s += 3;
     m = sscanf(s, "%g %g %g%n\n", &CurrColor.A, &CurrColor.B, &CurrColor.C, &n);
-    if (m == 3) {
+    if (m == 3)
+    {
       CurrColor.D = -1.0F;
       setcolor=1;
       s += n;
     }
-    else {
+    else
+    {
       complainspecial(input);
       return;
     }
@@ -1181,7 +1269,8 @@ void DoBackGround (FILE *infile, int c) {
     return;
   }
 
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, " PAGENUMBER %d (%d %d) ", pagenumber, dvi_t, MaxColor);
     showline(logline, 0);
   }
@@ -1193,7 +1282,8 @@ void DoBackGround (FILE *infile, int c) {
     return;
   }
 
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "\npage %d %g %g %g %g\n",
          pagenumber, CurrColor.A, CurrColor.B, CurrColor.C,
          CurrColor.D);
@@ -1226,11 +1316,13 @@ char *tpiccommands = "pa fp ip da dt sp pn ar ia sh wh bk tx";
 /* also check for \special{color ...} */
 /* also check for \special{background ...} 98/Jun/30 */
 
-void logdo_com (FILE *infile) {
+void logdo_com (FILE *infile)
+{
   int c;
 /*  int k=0; */
 
-  if (bIgnoreSpecials) {
+  if (bIgnoreSpecials)
+  {
     flushspecial(infile);
     return;
   }
@@ -1321,43 +1413,50 @@ void logdo_com (FILE *infile) {
   flushspecial(infile);
 }
 
-void logdo_xxxi(FILE *infile, unsigned int n) {
+void logdo_xxxi(FILE *infile, unsigned int n)
+{
 /*  unsigned int k; */
   nspecial = (long) n;
   logdo_com(infile);
 /*  for(k = 0; k < n; k++)  getc(infile); */
 }
 
-void logdo_xxx1(FILE *infile) { /* for /special */
+void logdo_xxx1(FILE *infile) /* for /special */
+{
   unsigned int k;
   k = getc(infile);
   logdo_xxxi(infile, k);
 }
 
-void logdo_xxx2(FILE *infile) { /* for /special */
-  unsigned int k; 
+void logdo_xxx2(FILE *infile) /* for /special */
+{
+  unsigned int k;
   k = ureadtwo(infile);
   logdo_xxxi(infile, k);
 }
 
-void logdo_xxxl(FILE *infile, unsigned long n) {
+void logdo_xxxl(FILE *infile, unsigned long n)
+{
 /*  unsigned long k; */
   nspecial=(long) n;
   logdo_com(infile);
 /*  for(k = 0; k < n; k++)  getc(infile); */
 }
 
-void logdo_xxx3(FILE *infile) { 
+void logdo_xxx3(FILE *infile)
+{
   logdo_xxxl(infile, ureadthree(infile));
 }
 
-void logdo_xxx4(FILE *infile) { 
+void logdo_xxx4(FILE *infile)
+{
   logdo_xxxl(infile, ureadfour(infile));
 }
 
 /* need to do this even if skipping pages */
 
-void logfnt_def(FILE *infile, unsigned int k) {
+void logfnt_def(FILE *infile, unsigned int k)
+{
   int fn;
   unsigned int na, nl, i;
   int newfont=1;    /* if this is a new one (not defined before) */
@@ -1445,32 +1544,37 @@ void logfnt_def(FILE *infile, unsigned int k) {
   memset(fontchar[fn], 0, MAXCHRS);
 }
 
-void logdo_fnt_def1(FILE *infile) { /* define font */
+void logdo_fnt_def1(FILE *infile) /* define font */
+{
   unsigned int k;
 /*  k = ureadone(infile); */
   k = getc(infile);
   logfnt_def(infile, k);
 }
 
-void logdo_fnt_def2(FILE *infile) { /* define font */
+void logdo_fnt_def2(FILE *infile) /* define font */
+{
   unsigned int k;
   k = ureadtwo(infile);
   if (k >= MAXFONTNUMBERS) k = MAXFONTNUMBERS-1;
   logfnt_def(infile, k);
 }
 
-void logdo_fnt_defsub(FILE *infile, unsigned long k) {
+void logdo_fnt_defsub(FILE *infile, unsigned long k)
+{
   if (k >= MAXFONTNUMBERS) k = MAXFONTNUMBERS-1;
   logfnt_def(infile, (unsigned int) k);
 }
 
-void logdo_fnt_def3(FILE *infile) { /* define font */
+void logdo_fnt_def3(FILE *infile) /* define font */
+{
 /*  unsigned long k;
   k = ureadthree(infile); */
   logdo_fnt_defsub(infile, ureadthree(infile));
 }
 
-void logdo_fnt_def4(FILE *infile) { /* define font */
+void logdo_fnt_def4(FILE *infile) /* define font */
+{
   long k;
   k = sreadfour(infile);
   if (k < 0) k = 0;
@@ -1479,19 +1583,22 @@ void logdo_fnt_def4(FILE *infile) { /* define font */
 
 /* need to do this even if skipping pages */
 
-void logdo_pre(FILE *infile) {
+void logdo_pre(FILE *infile)
+{
   unsigned int i, k, j;
   int c;
   char *s;
   
 /*  i = ureadone(infile); */
   i = getc(infile);
-  if (i < 1 || i > 3) {
+  if (i < 1 || i > 3)
+  {
     showline("Not a valid DVI file ", 1);
     giveup(3); 
     return;
   }
-  else if (i != ID_BYTE) {
+  else if (i != ID_BYTE)
+  {
     sprintf(logline, "File is DVI version %d - *not* %d\n",
       i, ID_BYTE);
     showline(logline, 1);
@@ -1510,18 +1617,20 @@ void logdo_pre(FILE *infile) {
     comment = NULL;
   }
   comment = malloc(k+1);
-  if (comment == NULL) {
+  if (comment == NULL)
+  {
     showline(" Unable to allocate memory\n", 1);
     checkexit(1);
 //    more serious exit(1) ???
   }
-  s = comment; 
+  s = comment;
 /*  if (traceflag) fprintf(stdout, "Comment:"); */
   c = getc(infile);         /* try and discard initial space */
-  if (c == ' ') k--;          
+  if (c == ' ') k--;
   else (void) ungetc(c, infile);
-  for (j=0; j < k; j++) { 
-    c = getc(infile); 
+  for (j=0; j < k; j++)
+  {
+    c = getc(infile);
     if (j < MAXCOMMENT) *s++ = (char) c;
 /*    if (verboseflag) putc(c, stdout); */
   }
@@ -1536,14 +1645,16 @@ void logdo_pre(FILE *infile) {
 
 /* need to do this even if skipping pages */
 
-void logdo_post(FILE *infile) {
+void logdo_post(FILE *infile)
+{
 /*  int k; */
   previous = sreadfour(infile); /* was ureadfour ... */
   num = ureadfour(infile);
   den = ureadfour(infile);
   mag = ureadfour(infile);
 
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, " POST: previous %ld num %ld den %ld mag %ld\n",
               previous, num, den, mag);
     showline(logline, 0);
@@ -1566,7 +1677,8 @@ void logdo_post(FILE *infile) {
 
 /* could do this even in forward mode to check on number of pages ? */
 
-void logdo_post_post(FILE *infile) { /* only in reverse ? */
+void logdo_post_post(FILE *infile) /* only in reverse ? */
+{
 /*  unsigned long q;   */
 /*  unsigned int i;    */
 
@@ -1588,7 +1700,8 @@ void logdo_post_post(FILE *infile) { /* only in reverse ? */
 /* Search for 3 or more zeros in a row, followed by dont-care (length) */
 /* - followed by pre and ID_BYTE */
 
-int readovertext(FILE *infile) {
+int readovertext(FILE *infile)
+{
   int c, n;
 
   c = getc(infile);
@@ -1615,7 +1728,8 @@ int readovertext(FILE *infile) {
   } 
 }
 
-void resetpagerangehit (int flag) {
+void resetpagerangehit (int flag)
+{
 /*  int k; */
 /*  for (k = 0; k < rangeindex; k++) pagerangehit[k] = 0; */  /* 1994/Jan/16 */
 /*  currentrange = -1; */
@@ -1628,15 +1742,18 @@ void resetpagerangehit (int flag) {
 
 /***************************************************************************/
 
-void alloccolorsave (int npages) {
+void alloccolorsave (int npages)
+{
   int k;
 
-  if (ColorStacks != NULL) {
+  if (ColorStacks != NULL)
+  {
     showline(" ERROR: color save stacks allocation\n", 1);
     freecolorsave();
   }
 #ifdef DEBUGCOLORSTACK
-  if (traceflag) {
+  if (traceflag)
+  {
     sprintf(logline, "Allocating color save stack for %d pages\n", npages);
     showline(logline, 0);
   }
@@ -1652,7 +1769,8 @@ void alloccolorsave (int npages) {
   MaxColor = npages+1;      /* make note of size of allocation */
 }
 
-void freecolorsave (void) {
+void freecolorsave (void)
+{
   int k, npages = MaxColor;
   
   if (ColorStacks == NULL) return;
@@ -1672,11 +1790,13 @@ void freecolorsave (void) {
 }
 
 #ifdef DEBUGCOLORSTACK
-void dumpcolorsave (void) {     /* debugging only */
+void dumpcolorsave (void)    /* debugging only */
+{
   int k, m, i, npages = MaxColor-1;
   COLORSPEC *ColorSaved;
 
-  if (ColorStacks == NULL) {
+  if (ColorStacks == NULL)
+  {
     showline(" No saved color stacks to show\n", 1);
     return;
   }
@@ -1704,7 +1824,8 @@ void dumpcolorsave (void) {     /* debugging only */
 }
 #endif
 
-void allocbackground (int npages) {
+void allocbackground (int npages)
+{
   int k;
   if (BackColors != NULL) {
     showline(" ERROR: background allocation\n", 1);
@@ -1732,7 +1853,8 @@ void freebackground (void) {
 
 /***************************************************************************/
 
-int scanlogfileaux(FILE *fp_in) {
+int scanlogfileaux(FILE *fp_in)
+{
   int c, k, fn;
 /*  long filptr; */
 
@@ -1758,7 +1880,8 @@ int scanlogfileaux(FILE *fp_in) {
   bBackUsed=0;      /* non-zero of \special{background ...} used */
   bColorUsed = 0;     /* assume no color \special until ... 98/Feb/15 */
 
-  if (bCarryColor || bBackGroundFlag) {
+  if (bCarryColor || bBackGroundFlag)
+  {
     postposition = gotopost(input); /* in dvianal.c */
     (void) getc(input);       /* absorb the post byte */
     logdo_post(input);
@@ -1925,7 +2048,8 @@ int scanlogfileaux(FILE *fp_in) {
 
 /* main entry point, prescan DVI file font usage, \specials */
 
-int scanlogfile (FILE *fp_in) {
+int scanlogfile (FILE *fp_in)
+{
   int c, d;
   input = fp_in;      /* remember file handle */
 
@@ -1935,7 +2059,8 @@ int scanlogfile (FILE *fp_in) {
   d = getc(fp_in);
   rewind(fp_in);
 //  we now forget about Textures files 99/July/14
-  if (c != pre || d != ID_BYTE) {
+  if (c != pre || d != ID_BYTE)
+  {
     sprintf(logline, " Not a proper DVI file `%s'\n",
         (filenamex != NULL) ? filenamex : "");
     showline(logline, 1);
@@ -1970,23 +2095,26 @@ typedef struct map_element_struct {   /* list element key . value pair */
   struct map_element_struct *next;
 } map_element_type;
 
-typedef map_element_type **map_type; 
+typedef map_element_type **map_type;
 
 /* **************************** auxiliary functions *********************** */
 
-static void complain_mem (unsigned int size) {  /* out of memory */
+static void complain_mem (unsigned int size)  /* out of memory */
+{
   sprintf(logline, "Unable to honor request for %u bytes.\n", size);
   showline(logline, 1);
   checkexit(1);
 }
 
-static void *xmalloc (unsigned int size) {
+static void *xmalloc (unsigned int size)
+{
   void *new_mem = (void *) malloc (size);
   if (new_mem == NULL) complain_mem(size);
   return new_mem;
 }
 
-static void *xrealloc (void *old_ptr, unsigned int size) {
+static void *xrealloc (void *old_ptr, unsigned int size)
+{
   void *new_mem;
   if (old_ptr == NULL)
 /*    new_mem = xmalloc (size); *//* could just let realloc do this case? */
@@ -1999,7 +2127,8 @@ static void *xrealloc (void *old_ptr, unsigned int size) {
   return new_mem;
 }
 
-static char *xstrdup (char *s) {
+static char *xstrdup (char *s)
+{
   char *new_string = (char *) xmalloc (strlen (s) + 1);
   return strcpy (new_string, s);
 }
@@ -2013,7 +2142,8 @@ static char *xstrdup (char *s) {
   return answer;
 } */  /* used by extend_filename only */
 
-static void *xcalloc (unsigned int nelem, unsigned int elsize) {
+static void *xcalloc (unsigned int nelem, unsigned int elsize)
+{
   void *new_mem = (void *) calloc (nelem, elsize);
   if (new_mem == NULL) complain_mem (nelem * elsize);
   return new_mem;
@@ -2059,7 +2189,8 @@ static void *xcalloc (unsigned int nelem, unsigned int elsize) {
 
 #define BLOCK_SIZE 40
 
-static char *read_line (FILE *f) {
+static char *read_line (FILE *f)
+{
   int c;
   unsigned int limit = BLOCK_SIZE;
   unsigned int loc = 0;
@@ -2093,7 +2224,8 @@ static char *read_line (FILE *f) {
 
 /* The hash function.  We go for simplicity here.  */
 
-static unsigned int map_hash (char *key) {
+static unsigned int map_hash (char *key)
+{
   unsigned int n = 0;
   char *s = key;
 /*  There are very few font names which are anagrams of each other
@@ -2111,7 +2243,8 @@ static unsigned int map_hash (char *key) {
 
 /* Look up STR in MAP.  Return the corresponding `value' or NULL.  */
 
-static char *map_lookup_str (map_type map, char *key) {
+static char *map_lookup_str (map_type map, char *key)
+{
   unsigned int n = map_hash (key);
   map_element_type *p;
   
@@ -2140,7 +2273,8 @@ static char *map_lookup_str (map_type map, char *key) {
 }
 
 #ifdef DEBUGALIAS
-static void map_show (map_type map) { /* debugging tool */
+static void map_show (map_type map) /* debugging tool */
+{
   map_element_type *p;
   unsigned int n;
   
@@ -2163,7 +2297,8 @@ static void map_show (map_type map) { /* debugging tool */
 /* Append the same suffix we took off, if necessary.  */
 /*  if (ret) ret = extend_filename (ret, suffix); */
 
-char *map_lookup (map_type map, char *key) {
+char *map_lookup (map_type map, char *key)
+{
   char *ret = map_lookup_str(map, key);
 /*  char *suffix; */
   
@@ -2184,12 +2319,13 @@ char *map_lookup (map_type map, char *key) {
 /* If KEY is not already in MAP, insert it and VALUE.  */
 /* This was a total mess! Fixed 1994/March/18 */
 
-static void map_insert (map_type map, char *key, char *value) {
+static void map_insert (map_type map, char *key, char *value)
+{
   unsigned int n = map_hash (key);
-  map_element_type **ptr = &map[n]; 
+  map_element_type **ptr = &map[n];
 
-  while (*ptr != NULL && !(strcmp(key, (*ptr)->key) == 0))  
-    ptr = &((*ptr)->next); 
+  while (*ptr != NULL && !(strcmp(key, (*ptr)->key) == 0))
+    ptr = &((*ptr)->next);
 
   if (*ptr == NULL) {
     *ptr = (map_element_type *) xmalloc (sizeof(map_element_type));
@@ -2210,7 +2346,8 @@ static void map_insert (map_type map, char *key, char *value) {
    `r', because of the virtual fonts Dvips uses.  
    And what a load of bull! And who cares about DVIPS and VF files !*/
 
-static void map_file_parse (map_type map, char *map_filename) {
+static void map_file_parse (map_type map, char *map_filename)
+{
   char *l;
   unsigned int map_lineno = 0;
   unsigned int entries = 0;
@@ -2290,7 +2427,8 @@ static void map_file_parse (map_type map, char *map_filename) {
    TEXFONTS.  Entries in earlier files override later files.  */
 
 /* void oursearchenv (char *mapname, char *envvar, char *pathname) { */
-void oursearchenv (char *mapname, char *searchpath, char *pathname) {
+void oursearchenv (char *mapname, char *searchpath, char *pathname)
+{
 /*  char *searchpath; */          /* 97/May/10 */
   int foundfile=0;            /* set, but not used ? */
 #ifndef SUBDIRSEARCH
@@ -2329,7 +2467,8 @@ void oursearchenv (char *mapname, char *searchpath, char *pathname) {
 /* Returns NULL if it failed for some reason */
 
 /* map_type map_create (char *envvar) { */    /* 94/May/23 */
-map_type map_create (char *texfonts) {      /* 97/May/10 */
+map_type map_create (char *texfonts)      /* 97/May/10 */
+{
   char pathname[_MAX_PATH];
   map_type map;
       
@@ -2364,7 +2503,8 @@ map_type fontmap = NULL;      /* static - keep around once set */
 
 /*  returns NULL if failed to find an alias */
 
-char *alias (char *name) {  
+char *alias (char *name)
+{
 /*  static map_type fontmap = NULL; */  /* static - keep around once set */
   char *mapped_name;
       
@@ -2402,7 +2542,8 @@ char *alias (char *name) {
 /* used for pfb search path and eps search path */
 /* this version also allows space as separator */
 
-char *nextpathname(char *pathname, char *searchpath) {
+char *nextpathname(char *pathname, char *searchpath)
+{
   int n;
   char *s;
 
@@ -2478,7 +2619,8 @@ char *nextpathname(char *pathname, char *searchpath) {
 /*  so save on stack space, by having one copy, not one per expand_subdir */
 /*  possibly allocate this in the caller of findsubpath ? not static ? */
 
-int findsubpath (char *filename, char *pathname, int recurse) {
+int findsubpath (char *filename, char *pathname, int recurse)
+{
   char *s;
   int code;
   int ret;
@@ -2622,8 +2764,9 @@ int findsubpath (char *filename, char *pathname, int recurse) {
 /* If a path in `pathlist' ends in \\, then this works recursively */
 /* (which may be slow and cause stack overflows ...) */
 
-int searchalongpath (char *filename, char *pathlist, char *pathname, int current) {
-/*  struct _find_t c_file; *      /* need to preserve across calls to DOS */
+int searchalongpath (char *filename, char *pathlist, char *pathname, int current)
+{
+/*  struct _find_t c_file; */      /* need to preserve across calls to DOS */
   char *s, *t, *u, *send;
   int c, n;
   int recurse;
@@ -2734,8 +2877,8 @@ int searchalongpath (char *filename, char *pathlist, char *pathname, int current
 /*  if current < 0, look in PFM sub directories also */
 //  only place we use _alloca ...
 
-FILE *findandopen (char *filename, char *pathlist, char *pathname,
-    char *mode, int current) {
+FILE *findandopen (char *filename, char *pathlist, char *pathname, char *mode, int current)
+{
   FILE *file;
 
   if (pathname == NULL) {
@@ -2759,14 +2902,15 @@ FILE *findandopen (char *filename, char *pathlist, char *pathname,
 
 /* stuff for reading .afm files */
 
-int readafm(char *font, FILE *fp_afm, long widths[]) {
+int readafm(char *font, FILE *fp_afm, long widths[])
+{
   double fwidth;
   int chr, k=0;
 
 /*  if (fp_afm == NULL) checkexit(5);  */
   (void) getrealline(fp_afm, line);
 
-  while (strstr(line, "StartCharMetrics") == NULL)  {
+  while (strstr(line, "StartCharMetrics") == NULL) {
     if(getrealline(fp_afm, line) == 0) {
       sprintf(logline, 
         " Can't find CharMetrics in AFM file for %s\n", font);
@@ -2803,7 +2947,8 @@ int readafm(char *font, FILE *fp_afm, long widths[]) {
 
 /* lf, lh, nw, nh, nd, ni, nl, nk, ne are numbers of words */
 
-int readtfm(char *font, FILE *fp_tfm, long widths[]) {
+int readtfm(char *font, FILE *fp_tfm, long widths[])
+{
   static long qwidths[MAXCHRS];  /* 256 */
   int lf, lh, bc, ec, nw, nh, nd, ni, nl, nk, ne, np;
   int k;
@@ -2839,7 +2984,7 @@ int readtfm(char *font, FILE *fp_tfm, long widths[]) {
   (void) sreadtwo(fp_tfm);  /* design size */
 /* discard rest of header */
   for (k = 2; k < lh; k++) {  
-    (void) getc(fp_tfm); (void) getc(fp_tfm); 
+    (void) getc(fp_tfm); (void) getc(fp_tfm);
   }
 /* now read the actual widths */
   fseek(fp_tfm, (long) ((6 + lh + (ec - bc + 1)) << 2), SEEK_SET);
@@ -2879,7 +3024,8 @@ int readtfm(char *font, FILE *fp_tfm, long widths[]) {
 
 /* stuff for reading widths from .pfm files */
 
-int readpfm(char *font, FILE *fp_pfm, long widths[]) {
+int readpfm(char *font, FILE *fp_pfm, long widths[])
+{
   unsigned long length, offset;
 /*  double fwidth; */
   long lwidth;
@@ -2887,7 +3033,8 @@ int readpfm(char *font, FILE *fp_pfm, long widths[]) {
 
 /*  if (fp_pfm == NULL) checkexit(5);   */
 /* first check that this is a PFM file - start with version number */
-  if ((c = getc(fp_pfm)) != 0 || (c = getc(fp_pfm)) != 1) {
+  if ((c = getc(fp_pfm)) != 0 || (c = getc(fp_pfm)) != 1)
+  {
     sprintf(logline, " Not a proper PFM file %s\n", font);
     showline(logline, 1);
     errcount(0);
@@ -2945,7 +3092,8 @@ int readpfm(char *font, FILE *fp_pfm, long widths[]) {
 
 /* int pfminstance (FILE *input, char *FontName, int nlen) { */
 int NamesFromPFM (FILE *input, char *FaceName, int nface,
-          char *FontName, int nfont, char *FileName) {
+          char *FontName, int nfont, char *FileName)
+{
   short version;
   long length, offset;
   int n, ndrive;
@@ -3115,7 +3263,8 @@ int NamesFromPFM (FILE *input, char *FaceName, int nface,
 
 /* stuff for reading ATMREG.ATM imported from winpslog.c 98/Jan/9 */
 
-unsigned int xreadtwo (FILE *input) {
+unsigned int xreadtwo (FILE *input)
+{
   unsigned int c, d, n;
   c = getc(input);
   d = getc(input);
@@ -3123,7 +3272,8 @@ unsigned int xreadtwo (FILE *input) {
   return n;
 }
 
-unsigned long xreadfour (FILE *input) {
+unsigned long xreadfour (FILE *input)
+{
   unsigned int a, b, c, d;
   unsigned long n;
   a = getc(input);
@@ -3142,7 +3292,8 @@ int bATM41=0;     // needs to be set based on ATMREG.ATM header
 /* read string from ATMREG.ATM up to null, string may be empty */
 /* returns -1 if hit EOF or name too long */
 
-int ReadString (FILE *input, char *name, int nlen) {
+int ReadString (FILE *input, char *name, int nlen)
+{
   int c;
   int n=0;
   char *s=name;
@@ -3205,7 +3356,8 @@ char **DirPaths=NULL;
 
 int dirindex=0;
 
-void FreeDirs (void) {
+void FreeDirs (void)
+{
   int k;
   if (DirPaths == NULL) return;
   for (k = 0; k <= nDirs; k++) {
@@ -3217,7 +3369,8 @@ void FreeDirs (void) {
   DirPaths = NULL;
 }
 
-int AllocDirs (int nDirs) {
+int AllocDirs (int nDirs)
+{
   int k, nlen;
   if (DirPaths != NULL) FreeDirs();
   nlen = (nDirs + 1) * sizeof(char *);
@@ -3234,7 +3387,8 @@ int AllocDirs (int nDirs) {
   return 0;
 }
 
-void FreeFonts (void) {
+void FreeFonts (void)
+{
   int k;
   if (ATMFonts == NULL) return;
   for (k = 0; k < ATMfontindex; k++) {
@@ -3247,7 +3401,8 @@ void FreeFonts (void) {
   ATMFonts = NULL;
 }
 
-int AllocFonts (int nFonts) {
+int AllocFonts (int nFonts)
+{
   int nlen;
   if (ATMFonts != NULL) FreeFonts();
   nlen = nFonts * sizeof(struct ATMRegRec);
@@ -3265,7 +3420,8 @@ int AllocFonts (int nFonts) {
   return 0;
 }
 
-void ShowATMREG (void) {
+void ShowATMREG (void)
+{
   int k;
   char *szType;
   sprintf(logline, "ATMREG has %d T1 font entries (out of %d total):\n", ATMfontindex, nFonts);
@@ -3289,7 +3445,8 @@ void ShowATMREG (void) {
 
 /**********************************************************************************/
 
-int SetupDirs (FILE *input, unsigned long startdirlist, unsigned long enddirlist) {
+int SetupDirs (FILE *input, unsigned long startdirlist, unsigned long enddirlist)
+{
   int c, k, noff, nlen;
   int npath=0;
   unsigned long noffset;
@@ -3375,7 +3532,8 @@ int SetupDirs (FILE *input, unsigned long startdirlist, unsigned long enddirlist
 
 #ifdef IGNORED
 int SearchATMReg (FILE *input, unsigned long endfontlist,
-          char *szPSFontName, char *szPFBFileName) {
+          char *szPSFontName, char *szPFBFileName)
+{
   int c, k;
   unsigned int stroffset, nlen;
   unsigned long next;
@@ -3502,7 +3660,8 @@ donext:     /* 1999/Mar/1 */
 /* WRITES BACK INTO SECOND ARGUMENT */
 /* returns 0 if found, -1 if not found */
 
-int SearchATMReg (char *szPSFontName, char *szPFBFileName) {
+int SearchATMReg (char *szPSFontName, char *szPFBFileName)
+{
   int k;
   for (k = 0; k < ATMfontindex; k++) {
     if (strcmp(szPSFontName, ATMFonts[k].FontName) == 0) {
@@ -3517,7 +3676,8 @@ int SearchATMReg (char *szPSFontName, char *szPFBFileName) {
 
 /* Create new ATMFonts data structure 2000 July */
 
-int ScanATMReg (FILE *input, unsigned long endfontlist) {
+int ScanATMReg (FILE *input, unsigned long endfontlist)
+{
   int c, k;
   unsigned int stroffset, nlen;
   unsigned long next;
@@ -3645,7 +3805,8 @@ donext:     /* 1999/Mar/1 */
 /* also determines whether wide strings are used (ATM 4.1) */
 /* also reads in directory path table */
 
-unsigned long ReadPointers (FILE *input) {
+unsigned long ReadPointers (FILE *input)
+{
   (void) fseek(input, 6, SEEK_SET);
   nDirs = xreadtwo(input);      /* 6 number of directory paths */
   nFonts = xreadtwo(input);     /* 8 number of font entries */
@@ -3673,7 +3834,8 @@ unsigned long ReadPointers (FILE *input) {
   return endfontlist;
 }
 
-int SetupATMReg (void) {
+int SetupATMReg (void)
+{
   char szFullFileName[FNAMELEN]="";
 
   if (useatmreg == 0) return -1;    /* tried already and failed */
@@ -3694,7 +3856,8 @@ int SetupATMReg (void) {
 
 // LOAD information from ATMREG.ATM in convenient form 2000 July 6 
 
-int LoadATMREG (void) {
+int LoadATMREG (void)
+{
   FILE *input;
   int count;
 
@@ -3736,7 +3899,8 @@ int LoadATMREG (void) {
 /*  WRITES BACK INTO SECOND ARGUMENT */
 
 #ifdef IGNORED
-int LookupATMReg (char *szPSFontName, char *szPSFileName) {
+int LookupATMReg (char *szPSFontName, char *szPSFileName)
+{
   FILE *input;
   int n=0;
 
@@ -3764,7 +3928,8 @@ int LookupATMReg (char *szPSFontName, char *szPSFileName) {
 
 /* First arg is PS FontName */ /* WRITES BACK INTO SECOND ARG */
 
-int LookupATMReg (char *szPSFontName, char *szPSFileName) {
+int LookupATMReg (char *szPSFontName, char *szPSFileName)
+{
   int n;
   if (! useatmreg) return -1;   // tried before and failed
   if (szATMRegAtm == NULL) {    // create ATMFonts structure
