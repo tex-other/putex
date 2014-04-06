@@ -42,17 +42,17 @@
 #include <setjmp.h>
 
 #ifdef _WINDOWS
-// We must define MYLIBAPI as __declspec(dllexport) before including
-// dvipsone.h, then dvipsone.h will see that we have already
-// defined MYLIBAPI and will not (re)define it as __declspec(dllimport)
-#define MYLIBAPI __declspec(dllexport)
-// #include "dvipsone.h"
+  // We must define MYLIBAPI as __declspec(dllexport) before including
+  // dvipsone.h, then dvipsone.h will see that we have already
+  // defined MYLIBAPI and will not (re)define it as __declspec(dllimport)
+  #define MYLIBAPI __declspec(dllexport)
+  // #include "dvipsone.h"
 #endif
 
 #include "dvipsone.h"
 
 #ifdef _WINDOWS
-#pragma warning(disable:4100) // unreferenced formal variable
+  #pragma warning(disable:4100) // unreferenced formal variable
 #endif
 
 #pragma warning(disable:4996)
@@ -98,7 +98,6 @@ static unsigned int ureadtwo (FILE *input)
 static unsigned long ureadthree (FILE *input)
 {
   int c, d, e;
-/*  unsigned int c, d, e; */
   c = getc(input);
   d = getc(input);
   e = getc(input);
@@ -176,27 +175,25 @@ void do_push(FILE *output, FILE *input)
   int c;
   if (skipflag == 0)
   {
-/*    push (h, v, w, x, y, z) on stack */
-/*    fprintf(output, " %% %d\n", stinx); */
     stinx++;
+
     if (stinx % 64 == 0)    /* see if stack is getting full */
     {
-//      fputs(" pushstack\n", output);
       PSputs(" pushstack\n", output);
-      showcount = 0; 
+      showcount = 0;
       return;
     }
+
     c = getc(input);
+
     if (c == (int) push && ((stinx + 1) % 64 != 0))
     {
       stinx++;
-//      fputs(" U", output);  /* u u */
       PSputs(" U", output); /* u u */
     }
     else
     {
       (void) ungetc(c, input);
-//      fputs(" u", output);  /* statepush */
       PSputs(" u", output);   /* statepush */
     }
     showcount = 0;
@@ -208,41 +205,38 @@ void do_push(FILE *output, FILE *input)
 void do_pop(FILE *output, FILE *input)
 {
   int c;
+
   if (skipflag == 0)
   {
-/*    fprintf(output, " %% %d\n", stinx); */
     if (stinx % 64 == 0)    /* time to retrieve saved stack ? */
     {
       stinx--;
-//      fputs(" popstack\n", output);
       PSputs(" popstack\n", output);
       showcount = 0; 
       return;
     }
     stinx--;
     c = getc(input);
+
     if (c == (int) pop && (stinx % 64 != 0))
     {
       stinx--;
-//      fputs(" O", output);  /* o o */
       PSputs(" O", output);   /* o o */
     }
-/*    following is WRONG in some rare cases!  Removed 1993/Aug/2 */
     else
+    {
       if (c == (int) push)
       {
         stinx++;
-//      fputs(" M", output);
         PSputs(" M", output);
       }   /* o u - OK if M defined as `o u' */
       else
       {
         (void) ungetc(c, input);
-//      fputs(" o", output);  /* statepop */
         PSputs(" o", output); /* statepop */
       }
+    }
     showcount = 0;
-/*    pop (h, v, w, x, y, z) off stack */
   }
 }
 
@@ -260,6 +254,7 @@ void complaincharcode(unsigned long c)    /* 1993/Dec/11 */
 void normalchar (FILE *output, FILE *input, int c)
 {
   int d;
+
   if (skipflag == 0)
   {
     if (showcount > MAXSHOWONLINE)    /* too much on one line ? */
@@ -269,21 +264,27 @@ void normalchar (FILE *output, FILE *input, int c)
     } 
     PSputc('(', output);
   }
+
   while (c < 128 || c == (int) set1) {    /* changed ! */
-    if (c == (int) set1) c = getc(input); /* new ! read next byte */
+    if (c == (int) set1)
+      c = getc(input); /* new ! read next byte */
+
     if (skipflag == 0)
     {
-/*      if (bRemapControl && c < MAXREMAP) c = remaptable[c]; */
       if (bRemapControl || bRemapFont)
       {
-        if (c < MAXREMAP) c = remaptable[c];
+        if (c < MAXREMAP)
+          c = remaptable[c];
 #if MAXREMAP < 128
-        else if (c == 32) c = 195;
-        else if (c == 127) c = 196;
+        else if (c == 32)
+          c = 195;
+        else if (c == 127)
+          c = 196;
 #endif
       }
 /* NOTE: this must match corresponding code in DVIPSLOG.C */
-      else if (bRemapSpace && c <= 32) {      /* 1995/Oct/17 */
+      else if (bRemapSpace && c <= 32)  /* 1995/Oct/17 */
+      {
         if (c == 32) c = 195;   /* not 160 */
         else if (c == 13) c = 176;  /* 1996/June/4 */
         else if (c == 10) c = 173;  /* 1996/June/4 */
