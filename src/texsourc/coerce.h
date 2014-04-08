@@ -203,6 +203,8 @@ void show_eqtb_(halfword);
 #define show_eqtb(n) show_eqtb_((halfword) (n))
 halfword id_lookup_(integer, integer);
 #define id_lookup(j, l) id_lookup_((integer) (j), (integer) (l))
+str_number make_string_pool (char *s);
+void primitive_s (char * s, quarterword c, halfword o);
 void primitive_(str_number, quarterword, halfword);
 #define primitive(s, c, o) primitive_((str_number) (s), (quarterword) (c), (halfword) (o))
 void new_save_level_(group_code);

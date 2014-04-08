@@ -81,6 +81,7 @@ char *xconcat (char *buffer, char *s1, char *s2)
 {
   int n1 = strlen(s1);
   int n2 = strlen(s2);
+
   if (buffer == s2)
   {     /* treat special case of overlap */
     memmove (buffer + n1, buffer, n2 + 1); /* trailing null ! */
@@ -91,6 +92,7 @@ char *xconcat (char *buffer, char *s1, char *s2)
     strcpy(buffer, s1);
     strcat(buffer + n1, s2);
   }
+
   return buffer;
 }
 /* similar to concat3, but avoids using malloc, pass in place to put result */
@@ -435,6 +437,12 @@ static bool make_tex_file (string program)
   int ret;
   unsigned i = 1; /* For copying from `name_of_file'.  */
 
+  /* debugging by Clerk Ma, 20140331 */
+  if (trace_flag)
+  {
+    sprintf(log_line, "Doing %s", program);
+    show_line(log_line, 0);
+  }
   /* Wrap another sh around the invocation of the MakeTeX program, so we
      can avoid `sh: MakeTeXTFM: not found' errors confusing the user.
      We don't use fork/exec ourselves, since we'd have to call sh anyway
@@ -488,14 +496,6 @@ bool maketextfm (void)          /* called in tex3.c */
 /*  return make_tex_file ("MakeTeXTFM"); */
   return make_tex_file ("TFM");
 }
-
-#ifndef TEXONLY
-bool maketexmf (void)
-{
-/*  return make_tex_file ("MakeTeXMF"); */
-  return make_tex_file ("MF");
-}
-#endif /* ifndef TEXONLY */
 
 char *get_env_shroud (char *);    /* defined in texmf.c */
 

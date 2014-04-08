@@ -27,23 +27,27 @@ void align_peek (void)
 {
 lab20:
   align_state = 1000000L;
+
   do
-  {
-    get_x_token();
-  }
-  while (!(cur_cmd != 10));
-  if (cur_cmd == 34)
+    {
+      get_x_token();
+    }
+  while (!(cur_cmd != spacer));
+
+  if (cur_cmd == no_align)
   {
     scan_left_brace();
-    new_save_level(7);
+
+    new_save_level(no_align_group);
+
     if (mode == -1)
       normal_paragraph();
   }
-  else if (cur_cmd == 2)
+  else if (cur_cmd == right_brace)
   {
     fin_align();
   }
-  else if ((cur_cmd == 5) && (cur_chr == 258))
+  else if ((cur_cmd == car_ret) && (cur_chr == cr_cr_code))
     goto lab20;
   else
   {
@@ -55,7 +59,6 @@ lab20:
 /* sec 0826 */
 halfword finite_shrink_(halfword p)
 {
-  register halfword Result;
   halfword q;
 
   if (noshrinkerroryet)
@@ -69,11 +72,11 @@ halfword finite_shrink_(halfword p)
         "since the offensive shrinkability has been made finite.");
     error();
   }
+
   q = new_spec(p);
-  mem[q].hh.b1 = 0;
+  shrink_order(q) = normal;
   delete_glue_ref(p);
-  Result = q;
-  return Result;
+  return q;
 }
 /* sec 0829 */
 void try_break_ (integer pi, small_number breaktype)

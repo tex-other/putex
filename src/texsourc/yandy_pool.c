@@ -26,7 +26,7 @@ static const char *pool_file_arr[] =
 /* 0256 */  "buffer size",
 /* 0257 */  "pool size",
 /* 0258 */  "number of strings",
-  "" "?" "?" "?",
+/* 0259 */  "" "?" "?" "?",
   "m2d5c2l5x2v5i",
   "End of file on the terminal!",
   "! ",

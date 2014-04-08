@@ -2185,8 +2185,8 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
   g = 0;
   fileopened = false;
   pack_file_name(nom, aire, 805); /* .tfm */
-  if (!b_open_in(tfm_file))
-  {   /* new in C version d */
+  if (!b_open_in(tfm_file)) /* new in C version d */
+  {
     if (maketextfm ())
     {
       if (!b_open_in(tfm_file))

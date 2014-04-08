@@ -202,11 +202,20 @@ void scivilize (char * date)
 {
   int k;
   char pyear[6];
+
   strcpy (pyear, date + 7);
-  for (k = 5; k >= 0; k--) date[k + 5] = date[k];
-  for (k = 0; k < 4; k++) date[k] = pyear[k];
+
+  for (k = 5; k >= 0; k--)
+    date[k + 5] = date[k];
+
+  for (k = 0; k < 4; k++)
+    date[k] = pyear[k];
+
   date[4] = ' ';
-  if (date[9] == ' ') date[9] = '0'; /* replace space by '0' */
+
+  if (date[9] == ' ')
+    date[9] = '0'; /* replace space by '0' */
+
   return;
 }
 
@@ -218,12 +227,17 @@ void lcivilize (char * date)
   char pyear[6];
 
   strcpy (pyear, date + 20);
-  for (k = 18; k >= 0; k--) date[k+1] = date[k];
-/*  date[20] = '\n'; */
-/*  date[21] = '\0'; */
-  date[20] = '\0'; 
-  for (k = 0; k < 4; k++) date[k] = pyear[k];
+
+  for (k = 18; k >= 0; k--)
+    date[k+1] = date[k];
+
+  date[20] = '\0';
+
+  for (k = 0; k < 4; k++)
+    date[k] = pyear[k];
+
   date[4] = ' ';
+
   return;
 }
 
@@ -263,57 +277,78 @@ void read_xchr_sub (FILE * xchr_input)
 #ifdef USEMEMSET
   memset (xchr, NOTDEF, MAXCHRS);           /* mark unused */
 #else
-  for (k = 0; k < MAXCHRS; k++) xchr[k]= -1; /* mark unused */
+  for (k = 0; k < MAXCHRS; k++)
+    xchr[k]= -1; /* mark unused */
 #endif
+
 #ifdef USEMEMSET
   memset (xord, NOTDEF, MAXCHRS);           /* mark unused */
 #else
-  for (k = 0; k < MAXCHRS; k++) xord[k]= -1;  /* mark unused */
+  for (k = 0; k < MAXCHRS; k++)
+    xord[k]= -1;  /* mark unused */
 #endif
 
 #ifdef ALLOCATEBUFFER
-  while (fgets(buffer, current_buf_size, xchr_input) != NULL) 
+  while (fgets(buffer, current_buf_size, xchr_input) != NULL)
 #else
   while (fgets(buffer, sizeof(buffer), xchr_input) != NULL)
 #endif
   {
-    if (*buffer == '%' || *buffer == ';' || *buffer == '\n') continue;
-/*    if (sscanf (buffer, "%d %d", &from, &to) < 2)
-      sprintf(log_line, "Do not understand: %s", buffer); */
+    if (*buffer == '%' || *buffer == ';' || *buffer == '\n')
+      continue;
+
     from = (int) strtol (buffer, &s, 0);
     to = (int) strtol (s, NULL, 0);
-/*    what if line is bad ? do we just get from = 0 and to = 0 ? */
-    if (from >= 0 && from < MAXCHRS && to >= 0 && to < MAXCHRS) {
+
+    if (from >= 0 && from < MAXCHRS && to >= 0 && to < MAXCHRS)
+    {
       if (xchr[from]== (unsigned char) NOTDEF)
+      {
         xchr[from]= (unsigned char) to;
-      else {
+      }
+      else
+      {
         sprintf(log_line, "NOTE: %s collision: %d => %d, %d\n", "xchr", from, xchr[from], to);
         show_line(log_line, 0);
       }
+
       if (xord[to]== NOTDEF)
+      {
         xord[to]= (unsigned char) from;
-      else {
+      }
+      else
+      {
         sprintf(log_line, "NOTE: %s collision: %d => %d, %d\n", "xord", to, xord[to], from);
         show_line(log_line, 0);
       }
       count++;
     }
   }
+
 /*  now fill in the gaps */ /* not clear this is a good idea ... */
-  for (k = 0; k < MAXCHRS; k++) {
-    if (xchr[k]== NOTDEF) {   /* if it has not been filled */
-      if (xord[k]== NOTDEF) { /* see whether used already */
+  for (k = 0; k < MAXCHRS; k++)
+  {
+    if (xchr[k]== NOTDEF)   /* if it has not been filled */
+    {
+      if (xord[k]== NOTDEF) /* see whether used already */
+      {
         xchr[k]= (unsigned char) k; /* no, so make identity */
         xord[k]= (unsigned char) k; /* no, so make identity */
       }
     }
   }
+
   xchr[NOTDEF]= NOTDEF;         /* fixed point of mapping */
-  if (trace_flag) {
+
+  if (trace_flag)
+  {
     sprintf(log_line, "Read %d xchr[] pairs:\n", count);
     show_line(log_line, 0);
-    for (k = 0; k < MAXCHRS; k++) {
-      if (xchr[k]!= NOTDEF) {
+
+    for (k = 0; k < MAXCHRS; k++)
+    {
+      if (xchr[k]!= NOTDEF)
+      {
         sprintf(log_line, "%d => %d\n", k, xchr[k]);
         show_line(log_line, 0);
       }
@@ -334,13 +369,16 @@ void read_repl_sub (FILE * repl_input)
 #ifdef USEMEMSET
   memset(replacement, 0, MAXCHRS * sizeof(replacement[ 0]));
 #else
-  for (k = 0; k < MAXCHRS; k++) replacement[k] = NULL; 
+  for (k = 0; k < MAXCHRS; k++)
+    replacement[k] = NULL;
 #endif
 
   while (fgets(buffer, PATH_MAX, repl_input) != NULL) {
-    if (*buffer == '%' || *buffer == ';' || *buffer == '\n') continue;
+    if (*buffer == '%' || *buffer == ';' || *buffer == '\n')
+      continue;
+
     if ((m = sscanf (buffer, "%d%n %s", &chrs, &n, &charname)) == 0)
-      continue; 
+      continue;
     else if (m == 2) {
       if (*charname == '"') {   /* deal with quoted string "..." */
         s = buffer + n;
@@ -395,87 +433,142 @@ int read_xchr_file (char *filename, int flag, char *argv[])
   char infile[PATH_MAX];
   char *s;
 
-  if (filename == NULL) return -1;
-  if (trace_flag) {
+  if (filename == NULL)
+    return -1;
+
+  if (trace_flag)
+  {
     sprintf(log_line, "Reading xchr/repl %s\n", filename);
     show_line(log_line, 0);
   }
 
 /*  first try using file as specified */
   strcpy(infile, filename);
-  if (trace_flag) {
+
+  if (trace_flag)
+  {
     sprintf(log_line, "Trying %s\n", infile);
     show_line(log_line, 0);
   }
-  if (share_flag == 0) pinput = fopen (infile, "r");
-  else pinput = _fsopen (infile, "r", share_flag);    /* 94/July/12 */
-  if (pinput == NULL) {
-    if (strrchr(infile, '.') == NULL) {
-      if (flag == 0) strcat(infile, ".map");
-      else strcat(infile, ".key");
-      if (trace_flag) {
+
+  if (share_flag == 0)
+    pinput = fopen (infile, "r");
+  else
+    pinput = _fsopen (infile, "r", share_flag);    /* 94/July/12 */
+
+  if (pinput == NULL)
+  {
+    if (strrchr(infile, '.') == NULL)
+    {
+      if (flag == 0)
+        strcat(infile, ".map");
+      else
+        strcat(infile, ".key");
+
+      if (trace_flag)
+      {
         sprintf(log_line, "Trying %s\n", infile);
         show_line(log_line, 0);
       }
-      if (share_flag == 0) pinput = fopen (infile, "r");
-      else pinput = _fsopen (infile, "r", share_flag);  /* 94/July/12 */
+
+      if (share_flag == 0)
+        pinput = fopen (infile, "r");
+      else
+        pinput = _fsopen (infile, "r", share_flag);  /* 94/July/12 */
     }
   }
-  if (pinput == NULL) {
-/*    strcpy (infile, gargv[0]); */   /* try TeX program path */
+
+  if (pinput == NULL)
+  {
     strcpy (infile, argv[0]);     /* try TeX program path */
+
     if ((s = strrchr (infile, '\\')) != NULL) *(s+1) = '\0';
     else if ((s = strrchr (infile, '/')) != NULL) *(s+1) = '\0';
     else if ((s = strrchr (infile, ':')) != NULL) *(s+1) = '\0';
+
     strcat (infile, filename);
-    if (trace_flag) {
+
+    if (trace_flag)
+    {
       sprintf(log_line, "Trying %s\n", infile);
       show_line(log_line, 0);
     }
-    if (share_flag == 0) pinput = fopen (infile, "r");
-    else pinput = _fsopen (infile, "r", share_flag);    /* 94/July/12 */
-    if (pinput == NULL) {
-      if (strchr(infile, '.') == NULL) {
-        if (flag == 0) strcat(infile, ".map");
-        else strcat(infile, ".key");
-        if (trace_flag) {
+
+    if (share_flag == 0)
+      pinput = fopen (infile, "r");
+    else
+      pinput = _fsopen (infile, "r", share_flag);    /* 94/July/12 */
+
+    if (pinput == NULL)
+    {
+      if (strchr(infile, '.') == NULL)
+      {
+        if (flag == 0)
+          strcat(infile, ".map");
+        else
+          strcat(infile, ".key");
+
+        if (trace_flag)
+        {
           sprintf(log_line, "Trying %s\n", infile);
           show_line(log_line, 0);
         }
-        if (share_flag == 0) pinput = fopen (infile, "r");
-        else pinput = _fsopen (infile, "r", share_flag); /* 94/July/12 */
+
+        if (share_flag == 0)
+          pinput = fopen (infile, "r");
+        else
+          pinput = _fsopen (infile, "r", share_flag); /* 94/July/12 */
       }
     }
   }
-  if (pinput == NULL) {          /* 97/July/31 */
-/*    strcpy (infile, gargv[0]); */   /* try TeX program path\keyboard */
+
+  if (pinput == NULL)   /* 97/July/31 */
+  {
     strcpy (infile, argv[0]);     /* try TeX program path */
+
     if ((s = strrchr (infile, '\\')) != NULL) *(s+1) = '\0';
     else if ((s = strrchr (infile, '/')) != NULL) *(s+1) = '\0';
     else if ((s = strrchr (infile, ':')) != NULL) *(s+1) = '\0';
+
     strcat (infile, "keyboard\\");
     strcat (infile, filename);
-    if (trace_flag) {
+
+    if (trace_flag)
+    {
       sprintf(log_line, "Trying %s\n", infile);
       show_line(log_line, 0);
     }
-    if (share_flag == 0) pinput = fopen (infile, "r");
-    else pinput = _fsopen (infile, "r", share_flag);
-    if (pinput == NULL) {
-      if (strchr(infile, '.') == NULL) {
-        if (flag == 0) strcat(infile, ".map");
-        else strcat(infile, ".key");
-        if (trace_flag) {
+
+    if (share_flag == 0)
+      pinput = fopen (infile, "r");
+    else
+      pinput = _fsopen (infile, "r", share_flag);
+
+    if (pinput == NULL)
+    {
+      if (strchr(infile, '.') == NULL)
+      {
+        if (flag == 0)
+          strcat(infile, ".map");
+        else
+          strcat(infile, ".key");
+
+        if (trace_flag)
+        {
           sprintf(log_line, "Trying %s\n", infile);
           show_line(log_line, 0);
         }
-        if (share_flag == 0) pinput = fopen (infile, "r");
-        else pinput = _fsopen (infile, "r", share_flag);
+
+        if (share_flag == 0)
+          pinput = fopen (infile, "r");
+        else
+          pinput = _fsopen (infile, "r", share_flag);
       }
     }
   }
 /*  Note: can't look in TeX source file dir, since that is not known yet */
-  if (pinput == NULL) {
+  if (pinput == NULL)
+  {
     sprintf(log_line, "ERROR: Sorry, cannot find %s file %s",
         flag ? " xchr[]" : "key mapping", filename);
     show_line(log_line, 1);
@@ -503,12 +596,10 @@ int read_xchr_file (char *filename, int flag, char *argv[])
 #ifdef DEBUG
 void testfloating (void)
 {
-/*  double x = 1.0; */
-/*  double dx = DBL_EPSILON; */
   double dx = 1.0;
   double dxold = 0.0;
   int k = 0;
-/*  while (x + dx != 1.0) { */
+
   while (1.0 + dx != 1.0)
   {
     dxold = dx;
@@ -533,10 +624,11 @@ char *debugfile;      /* NULL or name of file to try and open */
 
 /* Attempt to get at problem with eqtb ... temporarily abandoned */
 #ifdef CHECKEQTB
-void check_eqtb (char *act) 
+void check_eqtb (char *act)
 {
   int k, count=0;
   memory_word *eqtb = zeqtb;
+
 /*  for (k = 10280 + hash_extra; k < 10280 + eqtb_extra; k++) { */
   for (k = hash_size + 780 + hash_extra; k < hash_size + 780 + eqtb_extra; k++)
   {
@@ -547,11 +639,15 @@ void check_eqtb (char *act)
         show_char('\n');
         show_line("EQTB ", 0);
       }
+
       sprintf(log_line, "%d ", k);
       show_line(log_line, 0);
-      if (count++ > 256) break;
+
+      if (count++ > 256)
+        break;
     }
   }
+
   if (count != 0)
     show_char('\n');
 }
@@ -584,7 +680,8 @@ unsigned int heap_dump (FILE *output, int verbose)
   int end_block=0;
   int n;
 
-  if (verbose) fprintf(output, "HEAP DUMP:\n");
+  if (verbose)
+    fprintf(output, "HEAP DUMP:\n");
 
 /*  if ((n = _heapchk ()) != _HEAPOK) { */
   n = _HEAPOK;
@@ -599,6 +696,7 @@ unsigned int heap_dump (FILE *output, int verbose)
 #endif
   }
   hinfo._pentry = NULL;
+
   while ((heapstatus = _heapwalk(&hinfo)) == _HEAPOK)
   {
     if (end_block > 0 && (int) hinfo._pentry > end_block + 1024)
@@ -613,6 +711,7 @@ unsigned int heap_dump (FILE *output, int verbose)
           hinfo._pentry, hinfo._pentry, hinfo._size, hinfo._size,
           end_block);
   }
+
   switch (heapstatus)
   {
     case _HEAPEMPTY:
@@ -629,7 +728,7 @@ unsigned int heap_dump (FILE *output, int verbose)
       break;
     case _HEAPBADNODE:
       fprintf(output, "ERROR - %s\n", "bad node in heap");
-      break;  
+      break;
   }
   return total;
 }
@@ -639,10 +738,10 @@ unsigned int heap_dump (FILE *output, int verbose)
 void show_maximums (FILE *output)
 {
 #ifdef HEAPWALK
-  unsigned heaptotal=0;           /* no longer used */
+  unsigned heaptotal = 0;           /* no longer used */
   heaptotal = heap_dump(stdout, 0);      /* 94/Apr/3 */
 #endif
-  sprintf(log_line, "Max allocated %d --- max address %d\n", total_allocated, max_address); 
+  sprintf(log_line, "Max allocated %d --- max address %d\n", total_allocated, max_address);
 //  if (output != NULL) fputs(log_line, output); // log file
 //  else if (flag == 0) show_line(log_line, 0); // informative
 //  else if (flag == 1) show_line(log_line, 1); // error
@@ -671,6 +770,7 @@ void *ourrealloc (void *old, size_t new_size)
     return malloc (new_size);  /* no old block - use malloc */
 
   old_size = _msize (old);
+
   if (old_size >= new_size && old_size < new_size + 4)
     return old;
 /*  _heapmin(); */  /* release unused heap space to the system - no op ? */
@@ -684,6 +784,7 @@ void *ourrealloc (void *old, size_t new_size)
   }
 #endif
   mnew = _expand (old, new_size);      /* first try and expand in place */
+
   if (mnew != NULL)
   {
     if (trace_flag)
@@ -711,12 +812,15 @@ void *ourrealloc (void *old, size_t new_size)
 /*  we are screwed typically if we ever drop through here - no more space */
 /*  *********************************************************************** */
   mnew = malloc (new_size);          /* otherwise find new space */
+
   if (mnew == NULL)
     return mnew;        /* if unable to allocate */
+
   if (old_size < new_size)
     overlap = old_size;
   else
     overlap = new_size;
+
   memcpy (mnew, old, overlap);         /* copy old data to new area */
   free(old);                  /* free the old area */
   return mnew;
@@ -729,14 +833,17 @@ void memory_error (char *s, int n)
   {
     fprintf(log_file, "\n! Unable to allocate %d bytes for %s\n", n, s);
     show_maximums(log_file);
+
 #ifdef HEAPWALK
     if (heap_flag)
       (void) heap_dump(log_file, 1);
 #endif
   }
+
   sprintf(log_line, "\n! Unable to allocate %d bytes for %s\n", n, s);
   show_line(log_line, 1);
   show_maximums(stderr);
+
 #ifdef HEAPWALK
   if (heap_flag)
     (void) heap_dump(stderr, 1);
@@ -756,12 +863,14 @@ void update_statistics (int address, int size, int oldsize)
 {
   if (address + size > max_address)
     max_address = address + size;
+
   total_allocated =  total_allocated + size - oldsize;
 }
 
 void probe_memory (void)
 {
   char *s;
+
   s = (char *) malloc (4); /* get current top address */
   free(s);
   update_statistics ((int) s, 0, 0); /* show where we are */
@@ -771,6 +880,7 @@ void probe_show (void)
 {
   probe_memory();
   show_maximums(stdout);
+
 #ifdef HEAPWALK
   if (heap_flag)
     (void) heap_dump(stdout, 1);
@@ -811,15 +921,20 @@ int allocate_tries (int trie_max)
   no = (trie_max + 1) * sizeof(halfword);    /* trie_tro[trie_size + 1] */
   nc = (trie_max + 1) * sizeof(quarterword); /* trie_trc[trie_size + 1] */
   n = nl + no + nc;
-  if (trace_flag) trace_memory("hyphen trie", n);
+
+  if (trace_flag)
+    trace_memory("hyphen trie", n);
+
   trie_trl = (halfword *) malloc (roundup(nl));
   trie_tro = (halfword *) malloc (roundup(no));
   trie_trc = (quarterword *) malloc (roundup(nc));
+
   if (trie_trl == NULL || trie_tro == NULL || trie_trc == NULL)
   {
     memory_error("hyphen trie", n);
     return -1;
   }
+
   if (trace_flag)
   {
     sprintf(log_line, "Addresses trie_trl %d trie_tro %d trie_trc %d\n", trie_trl, trie_tro, trie_trc);
@@ -830,6 +945,7 @@ int allocate_tries (int trie_max)
   update_statistics ((int) trie_trc, nc, 0);
 /*  sprintf(log_line, "trie_size %d trie_max %d\n", trie_size, trie_max); */ /* debug */
   trie_size = trie_max;           /* BUG FIX 98/Jan/5 */
+
   if (trace_flag)
     probe_show();     /* 94/Mar/25 */
   return 0;               // success
@@ -863,8 +979,10 @@ int realloc_hyphen (int hyphen_prime)
   nw = (hyphen_prime + 1) * sizeof(str_number);
   nl = (hyphen_prime + 1) * sizeof(halfword);
   n = nw + nl;
+
   if (trace_flag)
     trace_memory("hyphen exception", n);
+
 /*  initially hyph_word will be NULL so this acts like malloc */
 /*  hyph_word = (str_number *) malloc (nw); */
   hyph_word = (str_number *) REALLOC (hyph_word, nw);  /* 94/Mar/24 */
@@ -877,6 +995,7 @@ int realloc_hyphen (int hyphen_prime)
     memory_error("hyphen exception", n);
     return -1;
   }
+
   if (trace_flag)
   {
     sprintf(log_line, "Addresses hyph_word %d hyph_list %d\n", hyph_word, hyph_list);
@@ -886,14 +1005,17 @@ int realloc_hyphen (int hyphen_prime)
 #ifdef USEMEMSET
   memset(hyph_word, 0, (hyphen_prime + 1) * sizeof (hyph_word[0]));
 #else
-  for (k = 0; k <= hyphen_prime; k++) hyph_word[k]= 0; 
+  for (k = 0; k <= hyphen_prime; k++) hyph_word[k]= 0;
 #endif
+
 #ifdef USEMEMSET
   memset(hyph_list, 0, (hyphen_prime + 1) * sizeof (hyph_list[0]));
 #else
-  for (k = 0; k <= hyphen_prime; k++) hyph_list[k]= 0; 
+  for (k = 0; k <= hyphen_prime; k++) hyph_list[k]= 0;
 #endif
+
   hyph_count = 0;   /* or use reset_hyphen() in itex.c */
+
   if (current_prime != 0)
   {
     update_statistics ((int) hyph_word, nw, (current_prime + 1) * sizeof(str_number));
@@ -905,7 +1027,10 @@ int realloc_hyphen (int hyphen_prime)
     update_statistics ((int) hyph_list, nl, 0);
   }
   current_prime = hyphen_prime;
-  if (trace_flag) probe_show();     /* 94/Mar/25 */
+
+  if (trace_flag)
+    probe_show();     /* 94/Mar/25 */
+
   return 0;               // success
 }
 #endif
@@ -931,50 +1056,67 @@ memory_word *allocate_main_memory (int size)
 /*  don't bother if current_mem_size == mem_max - mem_start ? */
   if (mainmemory != NULL)
   {
-/*    free(mainmemory); */
-/*    mainmemory = NULL; */
-    if (trace_flag) show_line("Reallocating initial memory allocation\n", 1);
-/*    if (mem_spec_flag)
-  show_line("Cannot change initial main memory size when format is read\n", 1);*/
-  } 
+    if (trace_flag)
+      show_line("Reallocating initial memory allocation\n", 1);
+  }
 
   mem_top = mem_bot + size;
+
 #ifdef ALLOCATEHIGH         /* NOT USED ANYMORE */
-  if (mem_extra_high != 0 && !is_initex) mem_max = mem_top + mem_extra_high;  
+  if (mem_extra_high != 0 && !is_initex)
+    mem_max = mem_top + mem_extra_high;
 #endif
+
   mem_max = mem_top;
+
 #ifdef ALLOCATELOW          /* NOT USED ANYMORE */
   if (mem_extra_low != 0 && !is_initex)
     mem_start = mem_bot - mem_extra_low;  /* increase main memory */
 #endif
+
   mem_start = 0;     /* bottom of memory allocated by system */
 /*  mem_min = mem_start; */ /* bottom of area made available to TeX */
   mem_min = 0;       /* bottom of area made available to TeX */
   n = (mem_max - mem_start + 1) * sizeof (memory_word); /* 256k * 8 = 2000 k */
-  if (trace_flag) trace_memory("main memory", n);
+
+  if (trace_flag)
+    trace_memory("main memory", n);
+
 /*  mainmemory = (memory_word *) malloc (n); */  /* 94/March/24 */
 /*  normally mainmemory == NULL here so acts like malloc ... */
   mainmemory = (memory_word *) REALLOC (mainmemory, n);
-  if (mainmemory == NULL) {
+
+  if (mainmemory == NULL)
+  {
     memory_error("initial main memory", n);
 //    exit (1);             /* serious error */
     return NULL;
   }
-  if (trace_flag) {
+
+  if (trace_flag)
+  {
     sprintf(log_line, "Address main memory == %d\n", mainmemory);
     show_line(log_line, 0);
   }
+
   zzzaa = mainmemory;
-  if (mem_start != 0 && !is_initex) zzzaa = mainmemory - mem_start; 
-  if (trace_flag) {
+
+  if (mem_start != 0 && !is_initex)
+    zzzaa = mainmemory - mem_start;
+
+  if (trace_flag)
+  {
     sprintf(log_line, "Offset address main memory == %d\n", zzzaa);
     show_line(log_line, 0);
   }
+
   update_statistics ((int) mainmemory, n,
     (current_mem_size + 1) * sizeof (memory_word));
 /*  current_mem_size = (mem_max - mem_start + 1); */
   current_mem_size = mem_max - mem_start;   /* total number of words - 1 */
-  if (trace_flag)  probe_show();     /* 94/Mar/25 */
+
+  if (trace_flag)
+    probe_show();     /* 94/Mar/25 */
   return zzzaa;             /* same as zmem, mem 94/Jan/24 */
 }
 #endif  /* end of ALLOCATEMAIN */
@@ -993,94 +1135,144 @@ memory_word *realloc_main (int losize, int hisize)
   int n = 0;          /* to quieten compiler */
   memory_word * newmemory = NULL; /* to quieten compiler */
 
-/*  if (losize == 0 && hisize > 0) runawayflag = 1;     
+/*  if (losize == 0 && hisize > 0) runawayflag = 1;
   else runawayflag = 0; */ /* 94/Jan/22 */
 
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "WARNING: Entering realloc_main lo %d hi %d\n", losize, hisize);
     show_line(log_line, 0);
   }
-  if (is_initex) {
+
+  if (is_initex)
+  {
     show_line("ERROR: Cannot extent main memory in iniTeX\n", 1);
-    if (! knuth_flag) 
+    if (! knuth_flag)
       show_line("Please use `-m=...' on command line\n", 0);
 //    abort_flag++;  // ???
     return NULL;
   }
-  if (trace_flag) {
+
+  if (trace_flag)
+  {
     sprintf(log_line, "Old Address %s == %d\n", "main memory", mainmemory);
     show_line(log_line, 0);
   }
-  if (current_mem_size + 1 == max_mem_size) {/* if we REALLY run up to limit ! */
+
+  if (current_mem_size + 1 == max_mem_size) /* if we REALLY run up to limit ! */
+  {
     memory_error("main memory", (max_mem_size + 1) * sizeof(memory_word));
 //    abort_flag++;  // ???
     return NULL;
   }
 /*  first allocation should expand *both* lo and hi */
-  if (hisize == 0 && mem_end == mem_max) hisize = losize;
-  if (losize == 0 && mem_start == mem_min) losize = hisize;
+  if (hisize == 0 && mem_end == mem_max)
+    hisize = losize;
+
+  if (losize == 0 && mem_start == mem_min)
+    losize = hisize;
+
 /*  try and prevent excessive frequent reallocations */
 /*  while avoiding over allocation by too much */
   minsize = current_mem_size / 100 * percent_grow;
-  if (losize + hisize < minsize) {
-    if (losize > 0 && hisize > 0) {
+
+  if (losize + hisize < minsize)
+  {
+    if (losize > 0 && hisize > 0)
+    {
       losize = minsize / 2;
       hisize = minsize / 2;
     }
-    else if (losize > 0) losize = minsize;
-    else if (hisize > 0) hisize = minsize;
+    else if (losize > 0)
+      losize = minsize;
+    else if (hisize > 0)
+      hisize = minsize;
   }
-  if (losize > 0 && losize < mem_top / 2) losize = mem_top / 2;
-  if (hisize > 0 && hisize < mem_top / 2) hisize = mem_top / 2;
 
-  for (k = 0; k < MAXSPLITS; k++) {
+  if (losize > 0 && losize < mem_top / 2)
+    losize = mem_top / 2;
+
+  if (hisize > 0 && hisize < mem_top / 2)
+    hisize = mem_top / 2;
+
+  for (k = 0; k < MAXSPLITS; k++)
+  {
     newsize = current_mem_size + losize + hisize;
-    if (newsize >= max_mem_size) {    /* bump against limit - ha ha ha */
+
+    if (newsize >= max_mem_size) /* bump against limit - ha ha ha */
+    {
       while (newsize >= max_mem_size) {
         losize = losize / 2; hisize = hisize / 2;
         newsize = current_mem_size + losize + hisize;
       }
     }
+
     n = (newsize + 1) * sizeof (memory_word);
-    if (trace_flag) trace_memory("main memory", n);
+
+    if (trace_flag)
+      trace_memory("main memory", n);
+
     newmemory = (memory_word *) REALLOC (mainmemory, n);
-    if (newmemory != NULL) break; /* did we get it ? */
-    if (current_mem_size == 0) break; /* in case we ever use for initial */
+
+    if (newmemory != NULL)
+      break; /* did we get it ? */
+
+    if (current_mem_size == 0)
+      break; /* in case we ever use for initial */
+
     losize = losize / 2; hisize = hisize / 2;
   }
 
-  if (newmemory == NULL) {
+  if (newmemory == NULL)
+  {
     memory_error("main memory", n);
     return zzzaa;           /* try and continue with TeX !!! */
   }
-  if (trace_flag) {
+
+  if (trace_flag)
+  {
     sprintf(log_line, "New Address %s == %d\n", "main memory", newmemory);
     show_line(log_line, 0);
   }
-  if (losize > 0) {
+
+  if (losize > 0)
+  {
 /*  shift everything upward to make space for new low area */
-    if (trace_flag) {
+    if (trace_flag)
+    {
       sprintf(log_line, "memmove %d %d %d \n", newmemory + losize,
           newmemory, (current_mem_size + 1) * sizeof(memory_word));
       show_line(log_line, 0);
     }
-    memmove (newmemory + losize, newmemory, 
-/*      current_mem_size * sizeof(memory_word));  */
+    memmove (newmemory + losize, newmemory,
       (current_mem_size + 1) * sizeof(memory_word));
 /*  could reduce words moved by (mem_max - mem_end) */
   }
   mainmemory = newmemory;       /* remember for free later */
-  if (losize > 0) mem_start = mem_start - losize; /* update lower limit */
-  if (hisize > 0) mem_max = mem_max + hisize;   /* update upper limit */
+
+  if (losize > 0)
+    mem_start = mem_start - losize; /* update lower limit */
+
+  if (hisize > 0)
+    mem_max = mem_max + hisize;   /* update upper limit */
+
   update_statistics ((int) mainmemory, n,
     (current_mem_size + 1) * sizeof (memory_word));
   current_mem_size = newsize;
-  if (current_mem_size != mem_max - mem_start) {
+
+  if (current_mem_size != mem_max - mem_start)
+  {
     show_line("ERROR: Impossible Memory Error\n", 1);
   }
-  if (mem_start != 0) zzzaa = mainmemory - mem_start; /* ??? sign ??? */
-  else zzzaa = mainmemory;
-  if (trace_flag)  probe_show();     /* 94/Mar/25 */
+
+  if (mem_start != 0)
+    zzzaa = mainmemory - mem_start; /* ??? sign ??? */
+  else
+    zzzaa = mainmemory;
+
+  if (trace_flag)
+    probe_show();     /* 94/Mar/25 */
+
   return zzzaa;
 }
 #endif
@@ -1092,19 +1284,21 @@ int current_font_mem_size=0;
 
 /* fmemoryword can be either halfword or memory_word */
 fmemoryword *realloc_font_info (int size)
-{ /* number of memorywords */
-  fmemoryword *newfontinfo=NULL;
+{
+  fmemoryword *newfontinfo = NULL;
   int k, minsize;
-  int newsize=0;        /* to quieten compiler */
-  int n=0;          /* to quieten compiler */
+  int newsize = 0;  /* to quieten compiler */
+  int n = 0;        /* to quieten compiler */
 
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "Old Address %s == %d\n",  "font_info", font_info);
     show_line(log_line, 0);
   }
 /*  during initial allocation, font_info == NULL - realloc acts like malloc */
 /*  during initial allocation current_font_mem_size == 0 */
-  if (current_font_mem_size == font_mem_size) { /* if we REALLY run up to limit */
+  if (current_font_mem_size == font_mem_size)  /* if we REALLY run up to limit */
+  {
 /*    memory_error("font", (font_mem_size + 1) * sizeof(memory_word)); */
     return font_info;    /* pass it back to TeX 99/Fabe/4 */
   }
@@ -1112,33 +1306,56 @@ fmemoryword *realloc_font_info (int size)
 /*  while avoiding over allocation by too much */
 /*  minsize = current_font_mem_size / 2; */
   minsize = current_font_mem_size / 100 * percent_grow;
-  if (size < minsize) size = minsize;
-  if (size < initial_font_mem_size) size = initial_font_mem_size;
 
-  for (k=0; k < MAXSPLITS; k++) {
+  if (size < minsize)
+    size = minsize;
+
+  if (size < initial_font_mem_size)
+    size = initial_font_mem_size;
+
+  for (k=0; k < MAXSPLITS; k++)
+  {
     newsize = current_font_mem_size + size;
-    if (newsize > font_mem_size) newsize = font_mem_size; /* bump against limit */
+
+    if (newsize > font_mem_size)
+      newsize = font_mem_size; /* bump against limit */
+
 /*    important + 1 since fmemoryword font_info[font_mem_size + 1]  original */
     n = (newsize + 1) * sizeof (fmemoryword);
-    if (trace_flag) trace_memory("font_info", n);
+
+    if (trace_flag)
+      trace_memory("font_info", n);
+
     newfontinfo = (fmemoryword *) REALLOC (font_info, n);
-    if (newfontinfo != NULL) break;   /* did we get it ? */
-    if (current_font_mem_size == 0) break; /* initial allocation must work */
+
+    if (newfontinfo != NULL)
+      break;   /* did we get it ? */
+
+    if (current_font_mem_size == 0)
+      break; /* initial allocation must work */
+
     size = size / 2;
   }
 
-  if (newfontinfo == NULL) {
+  if (newfontinfo == NULL)
+  {
     memory_error("font", n);
     return font_info;        /* try and continue !!! */
   }
+
   font_info = newfontinfo;
-  if (trace_flag) {
+
+  if (trace_flag)
+  {
     sprintf(log_line, "New Address %s == %d\n", "font_info", font_info);
     show_line(log_line, 0);
   }
+
   update_statistics ((int) font_info, n, current_font_mem_size * sizeof(fmemoryword));
   current_font_mem_size = newsize;
-  if (trace_flag)  probe_show();     /* 94/Mar/25 */
+
+  if (trace_flag)
+    probe_show();     /* 94/Mar/25 */
   return font_info;
 }
 #endif
@@ -1153,11 +1370,14 @@ packed_ASCII_code *realloc_str_pool (int size)
   int n=0;
   packed_ASCII_code *newstrpool=NULL;
 
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "Old Address %s == %d\n", "string pool", str_pool);
     show_line(log_line, 0);
   }
-  if (current_pool_size == pool_size) {
+
+  if (current_pool_size == pool_size)
+  {
 /*    memory_error ("string pool", (pool_size + 1) * sizeof(packed_ASCII_code)); */
 /*    exit (1); */
     return str_pool;   /* pass it back to TeX 99/Fabe/4 */
@@ -1205,11 +1425,14 @@ pool_pointer *realloc_str_start (int size)
   int newsize=0;
   pool_pointer *newstrstart=NULL;
 
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "Old Address %s == %d\n", "string start", str_start);
     show_line(log_line, 0);
   }
-  if (current_max_strings == max_strings) {
+
+  if (current_max_strings == max_strings)
+  {
 /*    memory_error ("string pointer", (max_strings + 1) * sizeof(pool_pointer)); */
 /*    exit (1); */
     return str_start;    /* pass it back to TeX 99/Fabe/4 */
@@ -1219,11 +1442,12 @@ pool_pointer *realloc_str_start (int size)
   if (size < minsize) size = minsize;
   if (size < initial_max_strings) size = initial_max_strings;
 
-  for (k = 0; k < MAXSPLITS; k++) {
+  for (k = 0; k < MAXSPLITS; k++)
+  {
     newsize = current_max_strings + size;
     if (newsize > max_strings) newsize = max_strings;
 /*    important + 1 since str_start[maxstring + 1] originally */
-    n = (newsize + 1) * sizeof (pool_pointer); 
+    n = (newsize + 1) * sizeof (pool_pointer);
     if (trace_flag) trace_memory("str_start", n);
     newstrstart = (pool_pointer *) REALLOC (str_start, n);
     if (newstrstart != NULL) break;   /* did we get it ? */
@@ -3360,17 +3584,20 @@ int init (int ac, char **av)
   int k;
   
   debugfile = getenv("TEXDEBUG");     /* 94/March/28 */
+
   if (debugfile)
     debug_flag = 1;
   else
     debug_flag = 0;
 
-  if (debug_flag) {
+  if (debug_flag)
+  {
     show_line("TEXDEBUG\n", 0);
     trace_flag = 1;            /* 94/April/14 */
   }
 
-  if (sizeof(memory_word) != 8) {  /* compile time test */
+  if (sizeof(memory_word) != 8) /* compile time test */
+  {
     sprintf(log_line, "ERROR: Bad word size %d!\n", sizeof(memory_word));
     show_line(log_line, 1);
   }
@@ -3448,15 +3675,18 @@ int init (int ac, char **av)
 
   closed_already=0;        // so can only do once
 
-  if (trace_flag) show_line("Entering init (local)\n", 0);
+  if (trace_flag)
+    show_line("Entering init (local)\n", 0);
 
 /*   Print version *after* banner ? */ /* does this get in log file ? */
 
   probe_memory();             /* show top address */
   ini_max_address = max_address;       /* initial max address */
-  if (trace_flag) show_maximums(stdout);
+  if (trace_flag)
+    show_maximums(stdout);
 #ifdef HEAPWALK
-  if (heap_flag) (void) heap_dump(stdout, 1);
+  if (heap_flag)
+    (void) heap_dump(stdout, 1);
 #endif
 
   initial_memory();
@@ -3467,7 +3697,8 @@ int init (int ac, char **av)
 
   no_interrupts = 0;
 
-  if (format_spec && mem_spec_flag) {
+  if (format_spec && mem_spec_flag)
+  {
     show_line("WARNING: Cannot change initial main memory size when format specified", 1);
   }
 
@@ -3484,8 +3715,9 @@ int init (int ac, char **av)
 /*   if (heap_flag) heap_dump(stdout, 1); */  /* redundant ? */
 #endif
 
-    if (trace_flag) show_line("Leaving init (local)\n", 0);
-    return 0;         // success
+   if (trace_flag)
+     show_line("Leaving init (local)\n", 0);
+   return 0;         // success
 }
 
 /* #define CLOCKS_PER_SEC 1000 */ /* #define CLK_TCK  CLOCKS_PER_SEC */
@@ -3499,28 +3731,34 @@ void show_inter_val (clock_t interval)
   int seconds, tenths, hundredth, thousands;
 /*  interval = end - start; */
 /*  sanity check whether positive ? */
-  if (interval >= CLK_TCK * 10) {
+  if (interval >= CLK_TCK * 10)
+  {
     tenths = (interval * 10 + CLK_TCK / 2) / CLK_TCK; 
     seconds = tenths / 10; 
     tenths = tenths % 10;
     sprintf(log_line, "%d.%d", seconds, tenths);
     show_line(log_line, 0);
   }
-  else if (interval >= CLK_TCK) {       /* 94/Feb/25 */
-    hundredth = (interval * 100 + CLK_TCK / 2) / CLK_TCK; 
-    seconds = hundredth / 100;
-    hundredth = hundredth % 100;
-    sprintf(log_line, "%d.%02d", seconds, hundredth);
-    show_line(log_line, 0);
-  }
-  else if (interval > 0) {          /* 94/Oct/4 */
-    thousands = (interval * 1000 + CLK_TCK / 2) / CLK_TCK;  
-    seconds = thousands / 1000;
-    thousands = thousands % 1000;
-    sprintf(log_line, "%d.%03d", seconds, thousands);
-    show_line(log_line, 0);
-  }
-  else show_line("0", 0);          /* 95/Mar/1 */
+  else
+    if (interval >= CLK_TCK)     /* 94/Feb/25 */
+    {
+      hundredth = (interval * 100 + CLK_TCK / 2) / CLK_TCK;
+      seconds = hundredth / 100;
+      hundredth = hundredth % 100;
+      sprintf(log_line, "%d.%02d", seconds, hundredth);
+      show_line(log_line, 0);
+    }
+    else
+      if (interval > 0)         /* 94/Oct/4 */
+      {
+        thousands = (interval * 1000 + CLK_TCK / 2) / CLK_TCK;
+        seconds = thousands / 1000;
+        thousands = thousands % 1000;
+        sprintf(log_line, "%d.%03d", seconds, thousands);
+        show_line(log_line, 0);
+      }
+      else
+        show_line("0", 0);          /* 95/Mar/1 */
 }
 
 /* final cleanup opportunity */ /* flag is non-zero if error exit */
@@ -3530,10 +3768,13 @@ int endit (int flag)
 {
 /*  int msec; */
   finish_time = clock();
-  if (missing_characters != 0) flag = 1;
-  if (missing_characters) {
-    sprintf(log_line,
-		"! There %s %d missing character%s --- see log file\n",
+
+  if (missing_characters != 0)
+    flag = 1;
+
+  if (missing_characters)
+  {
+    sprintf(log_line, "! There %s %d missing character%s --- see log file\n",
 		(missing_characters == 1) ? "was" : "were",  missing_characters,
 		(missing_characters == 1) ? "" : "s");
     show_line(log_line, 0);
@@ -3541,7 +3782,8 @@ int endit (int flag)
   if (free_memory() != 0) flag++;
 /*  dumpaccess(); */
 /*  show per page time also ? */
-  if (verbose_flag) {
+  if (verbose_flag)
+  {
 /*    sprintf(log_line, "start %ld main %ld finish %ld\n",
       start_time, main_time, finish_time); */
     show_line("Total ", 0);
@@ -3554,7 +3796,8 @@ int endit (int flag)
 /*    show_inter_val(main_time, finish_time); */
     show_inter_val(finish_time - main_time);
     show_line(" processing) ", 0);
-    if (total_pages > 0) {
+    if (total_pages > 0)
+    {
 /*      msec = (finish_time - main_time) * 1000 / (CLK_TCK * total_pages); */
 /*      sprintf(log_line, " %d.%d sec per page", msec / 1000, msec % 1000); */
 /*      sprintf(log_line, " %d.%03d sec per page", msec / 1000, msec % 1000); */
@@ -3583,28 +3826,46 @@ void print_cs_name (FILE *output, int h)
   char *s;
   
   textof = hash[h].v.RH;
-  if (textof == 0) return;  /* ignore if text() == 0 */
+
+  if (textof == 0)
+    return;  /* ignore if text() == 0 */
+
   n = length(textof);
-  if (textcolumn != 0) {
+
+  if (textcolumn != 0)
+  {
     sprintf(log_line, ", ");
-    if (output != NULL) fprintf(output, log_line);
-    else show_line(log_line, 0);
+    if (output != NULL)
+      fprintf(output, log_line);
+    else
+      show_line(log_line, 0);
     textcolumn += 2;
   }
-  if (textcolumn + n + 2 >= MAXCOLUMN) {
+
+  if (textcolumn + n + 2 >= MAXCOLUMN)
+  {
     sprintf(log_line, "\n");
-    if (output == stderr) show_line(log_line, 1);
-    else if (output == stdout) show_line(log_line, 0);
-    else fputs(log_line, output);
+    if (output == stderr)
+      show_line(log_line, 1);
+    else
+      if (output == stdout)
+        show_line(log_line, 0);
+      else
+        fputs(log_line, output);
     textcolumn=0;
   }
   s = log_line;
-  for (c = str_start[textof]; c < str_start[textof+1]; c++) {
+  for (c = str_start[textof]; c < str_start[textof+1]; c++)
+  {
     *s++ = str_pool[c];
   }
-  if (output == stderr) show_line(log_line, 1);
-  else if (output == stdout) show_line(log_line, 0);
-  else fprintf(output, log_line);
+  if (output == stderr)
+    show_line(log_line, 1);
+  else
+    if (output == stdout)
+      show_line(log_line, 0);
+    else
+      fprintf(output, log_line);
   textcolumn += n;
 }
 
@@ -3639,59 +3900,85 @@ void print_cs_names (FILE *output, int pass)
   int *cnumtable;
   int nfcs = hash_base + hash_size + hash_extra;  /* frozen_control_sequence */
 
-  if (pass == 0 && csused == NULL) {
+  if (pass == 0 && csused == NULL)
+  {
     csused = (char *) malloc (nfcs);
-    if (csused == NULL) return; 
+
+    if (csused == NULL)
+      return; 
 #ifdef USEMEMSET
     memset(csused, 0, nfcs); 
 #else
-    for (h = 0; h < (hash_size+780); h++) csused[h] = 0;
+    for (h = 0; h < (hash_size + 780); h++)
+      csused[h] = 0;
 #endif
   }
 
   ccount=0;
-  for (h = hash_base + 1; h < nfcs; h++) {
-    if (pass == 1 && csused[h]) continue;
-    if (hash[h].v.RH != 0) {
-      if (pass == 0) csused[h] = 1;
+
+  for (h = hash_base + 1; h < nfcs; h++)
+  {
+    if (pass == 1 && csused[h])
+      continue;
+    if (hash[h].v.RH != 0)
+    {
+      if (pass == 0)
+        csused[h] = 1;
       ccount++;
     }
   }
 
   sprintf(log_line, "\n%d %s multiletter control sequences:\n\n",
       ccount, (pass == 1) ? "new" : "");
-  if (output == stderr) show_line(log_line, 1); 
-  else if (output == stdout) show_line(log_line, 0);  
-  else fprintf(output, log_line);
+  if (output == stderr)
+    show_line(log_line, 1);
+  else
+    if (output == stdout)
+      show_line(log_line, 0);
+    else
+      fprintf(output, log_line);
 
-  if (ccount > 0) { /* don't bother to get into trouble */
+  if (ccount > 0) /* don't bother to get into trouble */
+  {
     textcolumn=0;
     cnumtable = (int *) malloc (ccount * sizeof(int));
-    if (cnumtable == NULL) return;
+
+    if (cnumtable == NULL)
+      return;
 
     ccount=0;
 /*    for (h = 515; h < (hash_size + 780); h++) { */
-    for (h = hash_base+1; h < nfcs; h++) {
-      if (pass == 1 && csused[ h]) continue; 
-      if (hash[h].v.RH != 0) cnumtable[ccount++] = h;
+    for (h = hash_base + 1; h < nfcs; h++)
+    {
+      if (pass == 1 && csused[h])
+        continue;
+      if (hash[h].v.RH != 0)
+        cnumtable[ccount++] = h;
     }
 
     qsort ((void *)cnumtable, ccount, sizeof (int), &compare_cs);
 
     repeatflag = 0;
-    for (k = 0; k < ccount; k++) {
-      h = cnumtable[ k];
-      if (pass == 1 && csused[ h]) continue; 
+    for (k = 0; k < ccount; k++)
+    {
+      h = cnumtable[k];
+      if (pass == 1 && csused[h])
+        continue;
       print_cs_name(output, h);
     }
     sprintf(log_line, "\n");
-    if (output == stderr) show_line(log_line, 1);
-    else if (output == stdout) show_line(log_line, 0);
-    else fprintf(output, log_line);
+    if (output == stderr)
+      show_line(log_line, 1);
+    else
+      if (output == stdout)
+        show_line(log_line, 0);
+      else
+        fprintf(output, log_line);
     free((void *)cnumtable);
   }
 
-  if (pass == 1 && csused != NULL) {
+  if (pass == 1 && csused != NULL)
+  {
     free(csused);
     csused = NULL;
   }
@@ -3777,31 +4064,34 @@ int decode_fourty (unsigned long checksum, char *codingvector)
   int k;
 /*  char codingvector[6+1]; */
 
-/*  if (checksum == checkdefault) { */
-  if (checksum == 0) {
-/*    strcpy(codingvector, "unknown"); */
+  if (checksum == 0)
+  {
     strcpy(codingvector, "unknwn");
     return 1;
   }
-  else if ((checksum >> 8) == (checkdefault >> 8)) {  /* last byte random */
+  else
+    if ((checksum >> 8) == (checkdefault >> 8))  /* last byte random */
+    {
 /*    strcpy (codingvector,  "native"); */  /* if not specified ... */
-    strcpy (codingvector,  "fixed ");   /* if not specified ... */
-    return 1;               /* no info available */
-  }
-  else {
-    for (k = 0; k < 6; k++) {
-      c = (int) (checksum % 40);
-      checksum = checksum / 40;
-      if (c <= 'z' - 'a')c = c + 'a';
-      else if (c < 36) c = (c + '0') - ('z' - 'a') - 1;
-      else if (c == 36) c = '-';
-      else if (c == 37) c = '&';
-      else if (c == 38) c = '_';
-      else c = '.';       /* unknown */
-      codingvector[5-k] = (char) c;
+      strcpy (codingvector,  "fixed ");   /* if not specified ... */
+      return 1;               /* no info available */
     }
-    codingvector[6] = '\0';
-  }
+    else
+    {
+      for (k = 0; k < 6; k++)
+      {
+        c = (int) (checksum % 40);
+        checksum = checksum / 40;
+        if (c <= 'z' - 'a') c = c + 'a';
+        else if (c < 36) c = (c + '0') - ('z' - 'a') - 1;
+        else if (c == 36) c = '-';
+        else if (c == 37) c = '&';
+        else if (c == 38) c = '_';
+        else c = '.';       /* unknown */
+        codingvector[5-k] = (char) c;
+      }
+      codingvector[6] = '\0';
+    }
 /*  sprintf(log_line, "Reconstructed vector %s\n", codingvector); */
   return 0;         /* encoding info returned in codingvector */
 }
@@ -3827,16 +4117,17 @@ void dvi_font_show(internal_font_number f, int suppressname)
 /*  fprintf (log_file, "%d ", suppressname); */
 /*  suppressname = 0; */
   putc(' ', log_file);
-  if (suppressname == 0) {
+  if (suppressname == 0)
+  {
     a = length(font_area[f]); 
     l = length(font_name[f]); 
     k = str_start[font_area[f]];
-    for_end = str_start[font_area[f]+ 1]- 1;
+    for_end = str_start[font_area[f] + 1]- 1;
     if (k <= for_end) do {
       putc(str_pool[k], log_file);
     } while(k++ < for_end, stdout); 
     k = str_start[font_name[f]];
-    for_end = str_start[font_name[f]+ 1]- 1;
+    for_end = str_start[font_name[f] + 1]- 1;
     if (k <= for_end) do {
       putc(str_pool[k], log_file);
     } while(k++ < for_end);
@@ -3850,8 +4141,7 @@ void dvi_font_show(internal_font_number f, int suppressname)
     n = strlen(buffer);
 //    n = strlen(log_file);
     for (k = n; k < 16; k++) putc(' ', log_file);
-    checksum = (((font_check[f].b0) << 8 | font_check[f].b1) << 8 |
-          font_check[f].b2) << 8 | font_check[f].b3;
+    checksum = (((font_check[f].b0) << 8 | font_check[f].b1) << 8 | font_check[f].b2) << 8 | font_check[f].b3;
     decode_fourty(checksum, checksumvector);
     fprintf(log_file, "encoding: %s..", checksumvector);
   }

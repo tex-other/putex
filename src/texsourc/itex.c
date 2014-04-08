@@ -3044,11 +3044,11 @@ void sort_avail (void)
 
 #ifdef INITEX
 /*****************APTEX********************/
-/*
 str_number make_string_pool (char *s)
 {
   while (*s != '\0') {
-    append_char(*s); incr(s);
+    append_char(*s);
+    incr(s);
   }
   return (make_string());
 }
@@ -3057,19 +3057,25 @@ void primitive_s (char * s, quarterword c, halfword o)
   pool_pointer k, l;
   small_number j;
   str_number prim_str;
+
   if (s[1] = '\0')
     cur_val = s[0] + single_base;
-  else {
+  else
+  {
     prim_str = make_string_pool(s);
-    k = str_start[prim_str]; l = str_start[prim_str] - k;
-    for (j = 0; j < l; incr(j)) buffer[j] = str_pool[k + j];
+    k = str_start[prim_str];
+    l = str_start[prim_str + 1] - k;
+    printf("*************************: %d---%d", str_start[prim_str], str_start[prim_str+1]);
+    for (j = 0; j < l; incr(j))
+      buffer[j] = str_pool[k + j];
     cur_val = id_lookup(0, l);
     flush_string();
     hash[cur_val].v.RH = prim_str;
   }
-  eq_level(cur_val) = level_one; eq_type(cur_val) = c; equiv(cur_val) = o;
+  eq_level(cur_val) = level_one;
+  eq_type(cur_val) = c;
+  equiv(cur_val) = o;
 }
-*/
 /*****************APTEX********************/
 void primitive_ (str_number s, quarterword c, halfword o)
 { 
@@ -3077,8 +3083,9 @@ void primitive_ (str_number s, quarterword c, halfword o)
   small_number j;
 /*  small_number l;  */
   int l; /* 95/Jan/7 */
+
   if (s < 256)
-    cur_val = s + 257; /* cur_val <- s + single_base; p.264 */
+    cur_val = s + single_base;
   else
   {
     k = str_start[s];

@@ -36,12 +36,14 @@ void show_box_(halfword p)
 #ifdef ALLOCATESTRING
   if (pool_ptr + depth_threshold >= current_pool_size)
     str_pool = realloc_str_pool(increment_pool_size);
+
   if (pool_ptr + depth_threshold >= current_pool_size)
     depth_threshold = current_pool_size - pool_ptr - 1;
 #else
   if (pool_ptr + depth_threshold >= pool_size)
     depth_threshold = pool_size - pool_ptr - 1;
 #endif
+
   show_node_list(p);
   print_ln();
 }
@@ -64,7 +66,8 @@ void delete_glue_ref_(halfword p)
 /* sec 0202 */
 void flush_node_list_(halfword p)
 {
-  halfword q; 
+  halfword q;
+
   while (p != 0) {      /* while p<>null */
     q = link(p);
 
@@ -186,17 +189,22 @@ void flush_node_list_(halfword p)
           {
             if (math_type(nucleus(p)) >= sub_box)
               flush_node_list(info(nucleus(p)));
+
             if (math_type(supscr(p)) >= sub_box)
               flush_node_list(info(supscr(p)));
+
             if (math_type(subscr(p)) >= sub_box)
               flush_node_list(info(subscr(p)));
+
             if (type(p) == radical_noad)
               free_node(p, radical_noad_size);
             else
+            {
               if (type(p) == accent_noad)
                 free_node(p, accent_noad_size);
               else
                 free_node(p, noad_size);
+            }
             goto lab30;
           }
           break;
@@ -353,6 +361,7 @@ halfword copy_node_list_(halfword p)
         }
         break;
     }
+
     while (words > 0) {
       decr(words);
       mem[r + words] = mem[p + words]; /* r may be used without having ... */
@@ -362,15 +371,8 @@ halfword copy_node_list_(halfword p)
     p = mem[p].hh.v.RH;
   }
   mem[q].hh.v.RH = 0;
-  q = mem[h].hh.v.RH;
-  {
-    mem[h].hh.v.RH = avail;
-    avail = h;
-    ;
-#ifdef STAT
-    decr(dyn_used); 
-#endif /* STAT */
-  }
+  q = link(h);
+  free_avail(h);
   Result = q;
   return Result;
 }
@@ -379,7 +381,7 @@ void print_mode_(integer m)
 { 
   if (m > 0)
   {
-    switch (m /(101))
+    switch (m / (101))
     {
       case 0:
         print_string("vertical");
@@ -395,10 +397,12 @@ void print_mode_(integer m)
   else
   {
     if (m == 0)
+    {
       print_string("no");
+    }
     else
     {
-      switch ((- (integer) m)/(101))
+      switch ((- (integer) m) / (101))
       {
         case 0:
           print_string("internal vertical");
@@ -420,9 +424,11 @@ void push_nest (void)
   if (nest_ptr > max_nest_stack)
   {
     max_nest_stack = nest_ptr;
+
 #ifdef ALLOCATEINPUTSTACK
     if (nest_ptr == current_nest_size)
       nest = realloc_nest_stack(increment_nest_size);
+
     if (nest_ptr == current_nest_size) /* check again after allocation */
     {
       overflow("semantic nest size", current_nest_size);
@@ -461,131 +467,144 @@ void show_activities (void)
 
   nest[nest_ptr]= cur_list;
   print_nl("  ");
-  print_ln(); 
+  print_ln();
+
+  for (p = nest_ptr; p >= 0; p--)
   {
-    register integer for_end; 
-    p = nest_ptr; 
-    for_end = 0; 
-    if (p >= for_end) do
+    m = nest[p].mode_field;
+    a = nest[p].aux_field;
+    print_nl("### ");
+    print_mode(m);
+    print_string(" entered at line ");
+    print_int(abs(nest[p].ml_field));
+
+    if (m == 102)
     {
-      m = nest[p].mode_field;
-      a = nest[p].aux_field;
-      print_nl("### ");
-      print_mode(m);
-      print_string(" entered at line ");
-      print_int(abs(nest[p].ml_field));
-      if (m == 102)
-/* ************************************************************************ */
-/* major change from 3.141 -> 3.14159 in following */
-/*.pg_field instead of .lhmfield and .rhmfield */
-/* WAS if ((nest[p].lhmfield != 2)||(nest[p].rhmfield != 3)) */
-        if (nest[p].pg_field != 8585216L)  /* 830000 hex ??? */
-        {
-          print_string(" (language");
-          print_int(nest[p].pg_field % 65536L);   /* last 16 bits */
-/*  print_int(nest[p].pg_field & 65535L);  */
-          print_string(":hyphenmin");
-          print_int(nest[p].pg_field / 4194304L);   /* 400000 hex ??? */
-/*  print_int(nest[p].pg_field >> 22); */ /* top 10 bits */
-          print_char(',');
-          print_int((nest[p].pg_field / 65536L)% 64); 
-/*  print_int((nest[p].pg_field >> 16)& 63); */ /* next 8 bits */
-/*  this used to refer to .lhmfield and .rhmfield ... */
-/* ********************************************************************* */
-          print_char(')');
-        } 
-      if (nest[p].ml_field < 0)
-        print_string(" (\\output routine)");
-      if (p == 0)
+      if (nest[p].pg_field != 8585216L)  /* 830000 hex ??? */
       {
-        if (page_head != page_tail)
+        print_string(" (language");
+        print_int(nest[p].pg_field % 65536L);
+        print_string(":hyphenmin");
+        print_int(nest[p].pg_field / 4194304L);
+        print_char(',');
+        print_int((nest[p].pg_field / 65536L)% 64);
+        print_char(')');
+      }
+    }
+
+    if (nest[p].ml_field < 0)
+    {
+      print_string(" (\\output routine)");
+    }
+
+    if (p == 0)
+    {
+      if (page_head != page_tail)
+      {
+        print_nl("### current page:");
+        
+        if (output_active)
         {
-          print_nl("### current page:");
-          if (output_active)
-            print_string(" (held over for next output)");
-          show_box(mem[page_head].hh.v.RH);
-          if (page_contents > 0)
-          {
-            print_nl("total height ");
-            print_totals();
-            print_nl("goal height ");
-            print_scaled(page_so_far[0]);
-            r = mem[mem_top].hh.v.RH; 
-            while (r != mem_top) {
-              print_ln();
-              print_esc("insert");
-              t = mem[r].hh.b1;
-              print_int(t);
-              print_string(" adds ");
-/* 427. Tell more precisely the effective size of 1:1 insertions (DEK, 27 Feb 08) */
-              if (eqtb[(hash_size + 3218) + t].cint == 1000)
-                t = mem[r + 3].cint;
-              else
-                t = x_over_n(mem[r + 3].cint, 1000) * eqtb[(hash_size + 3218) + t].cint;
-              print_scaled(t);
-              if (mem[r].hh.b0 == 1)
-              {
-                q = page_head;
-                t = 0;
-                do {
-                  q = mem[q].hh.v.RH;
-                  if ((mem[q].hh.b0 == 3) && (mem[q].hh.b1 == mem[r].hh.b1))
+          print_string(" (held over for next output)");
+        }
+
+        show_box(link(page_head));
+
+        if (page_contents > 0)
+        {
+          print_nl("total height ");
+          print_totals();
+          print_nl(" goal height ");
+          print_scaled(page_so_far[0]);
+          r = link(page_ins_head);
+          
+          while (r != mem_top) {
+            print_ln();
+            print_esc("insert");
+            t = subtype(r);
+            print_int(t);
+            print_string(" adds ");
+
+            if (count(t) == 1000)
+              t = height(r);
+            else
+              t = x_over_n(height(r), 1000) * count(t);
+
+            print_scaled(t);
+
+            if (type(r) == 1)
+            {
+              q = page_head;
+              t = 0;
+
+              do
+                {
+                  q = link(q);
+                  if ((type(q) == ins_node) && (subtype(q) == subtype(r)))
                     incr(t);
-                } while (!(q == mem[r + 1].hh.v.LH)); 
-                print_string(", #");
-                print_int(t);
-                print_string(" might split");
-              }
-              r = mem[r].hh.v.RH;
+                }
+              while (!(q == mem[r + 1].hh.v.LH));
+              print_string(", #");
+              print_int(t);
+              print_string(" might split");
+            }
+            r = link(r);
+          }
+        }
+      }
+
+      if (link(contrib_head) != 0)
+        print_nl(" (\\output routine)");
+    }
+
+    show_box(link(nest[p].head_field));
+
+    switch (abs(m) / (101))
+    {
+      case 0:
+        {
+          print_nl("### recent contributions:");
+
+          if  (a.cint <= ignore_depth)
+            print_string("ignored");
+          else
+            print_scaled(a.cint);
+
+          if (nest[p].pg_field != 0)
+          {
+            print_string(", prevgraf ");
+            print_int(nest[p].pg_field);
+            print_string(" line");
+
+            if (nest[p].pg_field != 1)
+              print_char('s');
+          }
+        }
+        break;
+      case 1:
+        {
+          print_nl("spacefactor ");
+          print_int(a.hh.v.LH);
+
+          if (m > 0)
+          {
+            if (a.hh.v.RH > 0)
+            {
+              print_string(", current language ");
+              print_int(a.hh.v.RH);
             }
           }
         }
-/*  if link(contrib_head)<>null then l.4393 */
-        if (mem[contrib_head].hh.v.RH != 0)
-          print_nl(" (\\output routine)");
-      }
-      show_box(mem[nest[p].head_field].hh.v.RH);
-      switch (abs(m)/(101))
-      {
-        case 0:
-          {
-            print_nl("### recent contributions:");
-            if  (a.cint <= ignore_depth)
-              print_string("ignored");
-            else
-              print_scaled(a.cint);
-            if (nest[p].pg_field != 0)
-            {
-              print_string(", prevgraf ");
-              print_int(nest[p].pg_field);
-              print_string(" line");
-              if (nest[p].pg_field != 1)
-                print_char('s');
-            }
-          }
-          break;
-        case 1:
-          {
-            print_nl("spacefactor ");
-            print_int(a.hh.v.LH); 
-            if (m > 0)
-              if (a.hh.v.RH > 0)
-              {
-                print_string(", current language ");
-                print_int(a.hh.v.RH);
-              }
-          }
-          break;
-        case 2:
-          if (a.cint != 0)
-          {
-            print_string("this will be denominator of:");
-            show_box(a.cint);
-          }
-          break;
-      }
-    } while(p-- > for_end);
- }
+        break;
+      case 2:
+        if (a.cint != 0)
+        {
+          print_string("this will be denominator of:");
+          show_box(a.cint);
+        }
+        break;
+    }
+  }
 }
 /* sec 0237 */
 void print_param_(integer n)
@@ -766,19 +785,26 @@ void print_param_(integer n)
 void begin_diagnostic (void)
 {
   old_setting = selector;
+
   if ((tracing_online <= 0) && (selector == term_and_log))
   {
     decr(selector);
     if (history == spotless)
+    {
       history = warning_issued;
+    }
   }
 }
 /* sec 0245 */
 void end_diagnostic_(bool blankline)
 {
   print_nl("");
+
   if (blankline)
+  {
     print_ln();
+  }
+
   selector = old_setting;
 }
 /* sec 0247 */
@@ -901,8 +927,11 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
     case assign_glue:
     case assign_mu_glue:
       if (chrcode < skip_base)
+      {
         print_skip_param(chrcode - glue_base);
+      }
       else
+      {
         if (chrcode < mu_skip_base)
         {
           print_esc("skip");
@@ -913,6 +942,7 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
           print_esc("muskip");
           print_int(chrcode - mu_skip_base);
         }
+      }
       break;
     case assign_toks:
       if (chrcode >= toks_base)
@@ -920,40 +950,45 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
         print_esc("toks");
         print_int(chrcode - toks_base);
       }
-      else switch (chrcode)
+      else
       {
-        case output_routine_loc:
-          print_esc("output");
-          break;
-        case every_par_loc:
-          print_esc("everypar");
-          break;
-        case every_math_loc:
-          print_esc("everymath");
-          break;
-        case every_display_loc:
-          print_esc("everydisplay");
-          break;
-        case every_hbox_loc:
-          print_esc("everyhbox");
-          break;
-        case every_vbox_loc:
-          print_esc("everyvbox");
-          break;
-        case every_job_loc:
-          print_esc("everyjob");
-          break;
-        case every_cr_loc:
-          print_esc("everycr");
-          break;
-        default:
-          print_esc("errhelp");
-          break;
+        switch (chrcode)
+        {
+          case output_routine_loc:
+            print_esc("output");
+            break;
+          case every_par_loc:
+            print_esc("everypar");
+            break;
+          case every_math_loc:
+            print_esc("everymath");
+            break;
+          case every_display_loc:
+            print_esc("everydisplay");
+            break;
+          case every_hbox_loc:
+            print_esc("everyhbox");
+            break;
+          case every_vbox_loc:
+            print_esc("everyvbox");
+            break;
+          case every_job_loc:
+            print_esc("everyjob");
+            break;
+          case every_cr_loc:
+            print_esc("everycr");
+            break;
+          default:
+            print_esc("errhelp");
+            break;
+        }
       }
       break;
     case assign_int:
       if (chrcode < count_base)
+      {
         print_param(chrcode - int_base);
+      }
       else
       {
         print_esc("count");
@@ -962,7 +997,9 @@ void print_cmd_chr_ (quarterword cmd, halfword chrcode)
       break;
     case assign_dimen:
       if (chrcode < scaled_base)
+      {
         print_length_param(chrcode - dimen_base);
+      }
       else
       {
         print_esc("dimen");
@@ -1924,16 +1961,21 @@ halfword id_lookup_(integer j, integer l)
     while (h >= hash_prime)
       h = h - hash_prime;
   }
+
   p = h + hash_base;
+
   while (true) {
     if (text(p) > 0)
       if (length(text(p)) == l)
         if (str_eq_buf(text(p), j))
           goto lab40;
+
     if (hash[p].v.LH == 0)
     {
       if (no_new_control_sequence)
+      {
         p = undefined_control_sequence;
+      }
       else
       {
         if (text(p) > 0)

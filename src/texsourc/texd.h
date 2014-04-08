@@ -1588,7 +1588,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define head            cur_list.head_field
 #define tail            cur_list.tail_field
 #define aux             cur_list.aux_field
-#define prev_depth      aux.sc
+#define prev_depth      aux.cint
 #define space_factor    aux.hh.v.LH
 #define clang           aux.hh.v.RH
 #define incompleat_noad aux.cint
@@ -2013,6 +2013,30 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define fi_code          2
 #define else_code        3
 #define or_code          4
+/* sec 0547 */
+#define slant_code         1
+#define space_code         2
+#define space_stretch_code 3
+#define space_shrink_code  4
+#define x_height_code      5
+#define quad_code          6
+#define extra_space_code   7
+/* sec 0554 */
+#define char_info(a, b)   font_info[char_base[a] + b].qqqq
+#define char_width(a, b)  font_info[width_base[a] + b.b0].cint
+#define char_italic(a, b) font_info[italic_base[a] + (b.b2) / 4].cint
+#define height_depth(a)   (a.b1)
+#define char_height(a, b) font_info[height_base[a] + (b) / 16].cint
+#define char_depth(a, b)  font_info[depth_base[a] + (b) % 16].cint
+/* sec 0558 */
+#define param(a, b)      font_info[a + param_base[b]].cint
+#define slant(f)         param(slant_code, f)
+#define space(f)         param(space_code, f)
+#define space_stretch(f) param(space_stretch_code, f)
+#define space_shrink(f)  param(space_shrink_code, f)
+#define x_height(f)      param(x_height_code, f)
+#define quad(f)          param(quad_code, f)
+#define extra_space(f)   param(extra_space_code, f)
 /* sec 0564 */
 /* sec 0608 */
 #define y_here  1
