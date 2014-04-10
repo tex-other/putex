@@ -1711,6 +1711,9 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define uc_code(a)                    equiv(uc_code_base +a)
 #define sf_code(a)                    equiv(sf_code_bas + a)
 #define math_code(a)                  equiv(math_code_base + a)
+/* sec 0232 */
+#define null_font font_base
+#define var_code 070000
 /* sec 0236 */
 #define pretolerance_code             0  // 3163
 #define tolerance_code                1  // 3164
@@ -1769,7 +1772,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define error_context_lines_code      54 // 3217
 #define int_pars                      55
 #define count_base                    int_base + int_pars // 3218
-#define del_code_base                 count_base + 256    // 3473
+#define del_code_base                 count_base + 256    // 3474
 #define dimen_base                    del_code_base + 256 // 3730
 // #
 #define del_code(a)                   eqtb[del_code_base + a].cint
@@ -2086,7 +2089,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define small_char(a)      mem[(a)].qqqq.b1
 #define large_fam(a)       mem[(a)].qqqq.b2
 #define large_char(a)      mem[(a)].qqqq.b3
-#define trickness          width
+#define thickness          width
 #define default_code       010000000000L
 #define numerator          supscr
 #define denominator        subscr

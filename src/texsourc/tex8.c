@@ -30,16 +30,20 @@
 void math_fraction (void)
 {
   small_number c;
+
   c = cur_chr;
-  if (cur_list.aux_field.cint != 0)
+
+  if (incompleat_noad != 0)
   {
-    if (c >= 3)
+    if (c >= delimited_code)
     {
-      scan_delimiter(lig_trick, false);
-      scan_delimiter(lig_trick, false);
+      scan_delimiter(garbage, false);
+      scan_delimiter(garbage, false);
     }
-    if (c % 3 == 0)
+
+    if (c % delimited_code == 0)
       scan_dimen(false, false, false);
+
     print_err("Ambiguous; you need another { and }");
     help3("I'm ignoring this fraction specification, since I don't",
       "know whether a construction like `x \\over y \\over z'",
@@ -48,32 +52,34 @@ void math_fraction (void)
   }
   else
   {
-    cur_list.aux_field.cint = get_node(6);
-    mem[cur_list.aux_field.cint].hh.b0 = 25;
-    mem[cur_list.aux_field.cint].hh.b1 = 0;
-    mem[cur_list.aux_field.cint + 2].hh.v.RH = 3;
-    mem[cur_list.aux_field.cint + 2].hh.v.LH = mem[head].hh.v.RH;
-    mem[cur_list.aux_field.cint + 3].hh = empty_field;
-    mem[cur_list.aux_field.cint + 4].qqqq = null_delimiter;
-    mem[cur_list.aux_field.cint + 5].qqqq = null_delimiter;
-    mem[head].hh.v.RH = 0;
+    incompleat_noad = get_node(fraction_noad_size);
+    type(incompleat_noad) = fraction_noad;
+    subtype(incompleat_noad) = normal;
+    math_type(numerator(incompleat_noad)) = sub_mlist;
+    info(numerator(incompleat_noad)) = link(head);
+    mem[denominator(incompleat_noad)].hh = empty_field;
+    mem[left_delimiter(incompleat_noad)].qqqq = null_delimiter;
+    mem[right_delimiter(incompleat_noad)].qqqq = null_delimiter;
+    link(head) = 0;
     tail = head;
-    if (c >= 3)
+
+    if (c >= delimited_code)
     {
-      scan_delimiter(cur_list.aux_field.cint + 4, false);
-      scan_delimiter(cur_list.aux_field.cint + 5, false);
+      scan_delimiter(left_delimiter(incompleat_noad), false);
+      scan_delimiter(right_delimiter(incompleat_noad), false);
     }
-    switch(c % 3)
+
+    switch(c % delimited_code)
     {
-      case 0:
+      case above_code:
         scan_dimen(false, false, false);
-        mem[cur_list.aux_field.cint + 1].cint = cur_val;
+        thickness(incompleat_noad) = cur_val;
         break;
-      case 1:
-        mem[cur_list.aux_field.cint + 1].cint = 1073741824L;  /* 2^30 */
+      case over_code:
+        thickness(incompleat_noad) = default_code;
         break;
-      case 2:
-        mem[cur_list.aux_field.cint + 1].cint = 0;
+      case atop_code:
+        thickness(incompleat_noad) = 0;
         break;
     }
   }
@@ -83,13 +89,14 @@ void math_left_right (void)
 {
   small_number t;
   halfword p;
+
   t = cur_chr;
 
-  if ((t == 31) && (cur_group != 16))
+  if ((t == right_noad) && (cur_group != math_left_group))
   {
-    if (cur_group == 15)
+    if (cur_group == math_shift_group)
     {
-      scan_delimiter(lig_trick, false);
+      scan_delimiter(garbage, false);
       print_err("Extra ");
       print_esc("right");
       help1("I'm ignoring a \\right that had no matching \\left.");
@@ -103,8 +110,9 @@ void math_left_right (void)
   else
   {
     p = new_noad();
-    mem[p].hh.b0 = t;
-    scan_delimiter(p + 1, false);
+    type(p) = t;
+    scan_delimiter(delimiter(p), false);
+
     if (t == 30)
     {
       push_math(16);

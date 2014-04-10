@@ -1556,36 +1556,40 @@ void start_eq_no (void)
   save_stack[save_ptr + 0].cint = cur_chr;
   incr(save_ptr);
   {
-    push_math(15);
-    eq_word_define((hash_size + 3207), -1);
+    push_math(math_shift_group);
+    eq_word_define(int_base + cur_fam_code, -1);
 
-    if (every_math != 0)/* everymath */
-      begin_token_list(every_math, 8);
+    if (every_math != 0)
+      begin_token_list(every_math, every_math_text);
   }
 }
 /* sec 1151 */
 void scan_math_(halfword p)
 {
   integer c;
+
 lab20:
   do
-  {
-    get_x_token();
-  } while(!((cur_cmd != 10) && (cur_cmd != 0)));
+    {
+      get_x_token();
+    }
+  while(!((cur_cmd != spacer) && (cur_cmd != relax)));
+
 lab21:
   switch (cur_cmd)
   {
-    case 11:
-    case 12:
-    case 68:
+    case letter:
+    case other_char:
+    case char_given:
       {
-        c = eqtb[(hash_size + 2907) + cur_chr].hh.v.RH;
+        c = math_code(cur_chr);
+
         if (c == 32768L)
         {
           {
-            cur_cs = cur_chr + 1;
-            cur_cmd = eqtb[cur_cs].hh.b0;
-            cur_chr = eqtb[cur_cs].hh.v.RH;
+            cur_cs = cur_chr + active_base;
+            cur_cmd = eq_type(cur_cs);
+            cur_chr = equiv(cur_cs);
             x_token();
             back_input();
           }
@@ -1593,28 +1597,27 @@ lab21:
         }
       }
       break;
-    case 16:
+    case char_num:
       {
         scan_char_num();
         cur_chr = cur_val;
-        cur_cmd = 68;
+        cur_cmd = char_given;
         goto lab21;
       }
       break;
-    case 17:
+    case math_char_num:
       {
         scan_fifteen_bit_int();
         c = cur_val;
       }
       break;
-    case 69:
+    case math_given:
       c = cur_chr;
       break;
-    case 15:
+    case delim_num:
       {
         scan_twenty_seven_bit_int();
         c = cur_val / 4096;
-/* c = cur_val >> 12; */
       }
       break;
     default:
@@ -1623,53 +1626,50 @@ lab21:
         scan_left_brace();
         save_stack[save_ptr + 0].cint = p;
         incr(save_ptr);
-        push_math(9);
+        push_math(math_group);
         return;
       }
       break;
   }
-  mem[p].hh.v.RH = 1;
-  mem[p].hh.b1 = c % 256;
-/* mem[p].hh.b1 = c & 255; */ /* last 8 bits */
-  if ((c >= 28672) && /* 32768 - 4096 ??? if (c>=var_code) and ... */
-    ((cur_fam >= 0) && (cur_fam < 16)))
-    mem[p].hh.b0 = cur_fam;
+  math_type(p) = math_char;
+  character(p) = c % 256;
+
+  if ((c >= var_code) && ((cur_fam >= 0) && (cur_fam < 16)))
+    fam(p) = cur_fam;
   else
-    mem[p].hh.b0 =(c / 256)% 16;
-/*  else mem[p].hh.b0 =(c >> 8)& 15; */ /* 4 bits to left */
+    fam(p) = (c / 256) % 16;
 }
 /* sec 1155 */
 void set_math_char_(integer c)
 {
   halfword p;
+
   if (c >= 32768L)
   {
-    cur_cs = cur_chr + 1;          /* ??? */
-/*    cur_cmd = eqtb[eqtbextra + cur_cs].hh.b0;  */ /* was wrong ??? */
-    cur_cmd = eqtb[cur_cs].hh.b0;
-/*    cur_chr = eqtb[cur_cs].hh.v.RH; */ /* should have been eqtbextra ? */
-    cur_chr = eqtb[cur_cs].hh.v.RH;
+    cur_cs = cur_chr + active_base;
+    cur_cmd = eq_type(cur_cs);
+    cur_chr = equiv(cur_cs);
     x_token();
     back_input();
   }
   else
   {
     p = new_noad();
-    mem[p + 1].hh.v.RH = 1;
-    mem[p + 1].hh.b1 = c % 256;
-/*    mem[p + 1].hh.b1 = c & 255;  */ /* last 8 bits */
-    mem[p + 1].hh.b0 =(c / 256)% 16;
-/*    mem[p + 1].hh.b0 =(c >> 8)& 15;  */ /* 4 bits to left */
-    if (c >= 28672)  /* 32768 - 4096 ? */
+    math_type(nucleus(p)) = math_char;
+    character(nucleus(p)) = c % 256;
+    fam(nucleus(p)) = (c / 256) % 16;
+
+    if (c >= var_code)
     {
       if (((cur_fam >= 0) && (cur_fam < 16)))
-        mem[p + 1].hh.b0 = cur_fam;
-      mem[p].hh.b0 = 16;
+        fam(nucleus(p)) = cur_fam;
+
+      type(p) = ord_noad;
     }
     else
-      mem[p].hh.b0 = 16 +(c / 4096);
-/*    else mem[p].hh.b0 = 16 +(c >> 12);  */
-    mem[tail].hh.v.RH = p;
+      type(p) = ord_noad + (c / 4096);
+
+    link(tail) = p;
     tail = p;
   }
 }
@@ -1677,11 +1677,12 @@ void set_math_char_(integer c)
 void math_limit_switch (void)
 {
   if (head != tail)
-    if (mem[tail].hh.b0 == 17)
+    if (mem[tail].hh.b0 == op_noad)
     {
-      mem[tail].hh.b1 = cur_chr;
+      subtype(tail) = cur_chr;
       return;
     }
+
   print_err("Limit controls must follow a math operator");
   help1("I'm ignoring this misplaced \\limits or \\nolimits command.");
   error();
@@ -1696,17 +1697,18 @@ void scan_delimiter_(halfword p, bool r)
    else
    {
      do
-     {
-       get_x_token();
-     } while (!((cur_cmd != 10) && (cur_cmd != 0)));
+      {
+        get_x_token();
+      }
+     while (!((cur_cmd != spacer) && (cur_cmd != relax)));
 
      switch (cur_cmd)
      {
-       case 11:
-       case 12:
-         cur_val = eqtb[(hash_size + 3474) + cur_chr].cint;
+       case letter:
+       case other_char:
+         cur_val = del_code(cur_chr);
          break;
-       case 15:
+       case delim_num:
          scan_twenty_seven_bit_int();
          break;
        default:
@@ -1714,6 +1716,7 @@ void scan_delimiter_(halfword p, bool r)
          break;
      }
    }
+
    if (cur_val < 0)
    {
      print_err("Missing delimiter (. inserted)");
@@ -1726,35 +1729,31 @@ void scan_delimiter_(halfword p, bool r)
      back_error();
      cur_val = 0;
    }
-/* attempt to speed up - bkph */  /* is compiler smart enough already ? */
-   mem[p].qqqq.b0 =(cur_val / 1048576L) % 16;   /* 2^20 */
-/*  mem[p].qqqq.b0 =(cur_val >> 20)& 15;  */
-   mem[p].qqqq.b1 =(cur_val / 4096) % 256;
-/*  mem[p].qqqq.b1 =(cur_val >> 12)& 255; */
-   mem[p].qqqq.b2 =(cur_val / 256) % 16;
-/*  mem[p].qqqq.b2 =(cur_val >> 8)& 15; */
-   mem[p].qqqq.b3 = cur_val % 256;
-/*  mem[p].qqqq.b3 = cur_val & 255;  */
+
+   small_fam(p) = (cur_val / 1048576L) % 16;
+   small_char(p) = (cur_val / 4096) % 256;
+   large_fam(p) = (cur_val / 256) % 16;
+   large_char(p) = cur_val % 256;
 }
 /* sec 1163 */
 void math_radical (void)
 {
   {
-    mem[tail].hh.v.RH = get_node(5);
+    mem[tail].hh.v.RH = get_node(radical_noad_size);
     tail = mem[tail].hh.v.RH;
   }
-  mem[tail].hh.b0 = 24;
-  mem[tail].hh.b1 = 0;
-  mem[tail + 1].hh = empty_field;
-  mem[tail + 3].hh = empty_field;
-  mem[tail + 2].hh = empty_field;
-  scan_delimiter(tail + 4, true);
-  scan_math(tail + 1);
+  type(tail) = radical_noad;
+  subtype(tail) = normal;
+  mem[nucleus(tail)].hh = empty_field;
+  mem[subscr(tail)].hh = empty_field;
+  mem[supscr(tail)].hh = empty_field;
+  scan_delimiter(left_delimiter(tail), true);
+  scan_math(nucleus(tail));
 }
 /* sec 1165 */
 void math_ac (void)
 {
-  if (cur_cmd == 45)
+  if (cur_cmd == accent)
   {
     print_err("Please use ");
     print_esc("mathaccent");
@@ -1763,26 +1762,26 @@ void math_ac (void)
       "(Accents are not the same in formulas as they are in text.)");
     error();
   }
+
   {
     mem[tail].hh.v.RH = get_node(5);
     tail = mem[tail].hh.v.RH;
   }
-  mem[tail].hh.b0 = 28;
-  mem[tail].hh.b1 = 0;
-  mem[tail + 1].hh = empty_field;
-  mem[tail + 3].hh = empty_field;
-  mem[tail + 2].hh = empty_field;
-  mem[tail + 4].hh.v.RH = 1;
+  type(tail) = accent_noad;
+  subtype(tail) = normal;
+  mem[nucleus(tail)].hh = empty_field;
+  mem[subscr(tail)].hh = empty_field;
+  mem[supscr(tail)].hh = empty_field;
+  math_type(accent_chr(tail)) = math_char;
   scan_fifteen_bit_int();
-  mem[tail + 4].hh.b1 = cur_val % 256;
-/*  mem[tail + 4].hh.b1 = cur_val & 255; */
-  if ((cur_val >= 28672) && /* 32768 - 4096 ? */
-      ((cur_fam >= 0) && (cur_fam < 16)))
-    mem[tail + 4].hh.b0 = cur_fam;
+  character(accent_chr(tail)) = cur_val % 256;
+
+  if ((cur_val >= var_code) && ((cur_fam >= 0) && (cur_fam < 16)))
+    fam(accent_chr(tail)) = cur_fam;
   else
-    mem[tail + 4].hh.b0 =(cur_val / 256) % 16;
-/*  else mem[tail + 4].hh.b0 =(cur_val >> 8)& 15; */
-  scan_math(tail + 1);
+    fam(accent_chr(tail)) = (cur_val / 256) % 16;
+
+  scan_math(nucleus(tail));
 }
 /* sec 1172 */
 void append_choices (void)
@@ -1793,7 +1792,7 @@ void append_choices (void)
   }
   incr(save_ptr);
   save_stack[save_ptr - 1].cint = 0;
-  push_math(13);
+  push_math(math_choice_group);
   scan_left_brace();
 }
 /* sec 1184 */
@@ -1802,29 +1801,32 @@ halfword fin_mlist_(halfword p)
   register halfword Result;
   halfword q;
 
-  if (cur_list.aux_field.cint != 0)
+  if (incompleat_noad != 0)
   {
-    mem[cur_list.aux_field.cint + 3].hh.v.RH = 3;
-    mem[cur_list.aux_field.cint + 3].hh.v.LH = mem[head].hh.v.RH;
+    math_type(denominator(incompleat_noad)) = sub_mlist;
+    info(denominator(incompleat_noad)) = link(head);
+
     if (p == 0)
-      q = cur_list.aux_field.cint;
+      q = incompleat_noad;
     else
     {
-      q = mem[cur_list.aux_field.cint + 2].hh.v.LH;
-      if (mem[q].hh.b0 != 30)
+      q = info(numerator(incompleat_noad));
+
+      if (type(q) != left_noad)
       {
         confusion("right");
         return 0;       // abort_flag set
       }
-      mem[cur_list.aux_field.cint + 2].hh.v.LH = mem[q].hh.v.RH;
-      mem[q].hh.v.RH = cur_list.aux_field.cint;
-      mem[cur_list.aux_field.cint].hh.v.RH = p;
+
+      info(numerator(incompleat_noad)) = link(q);
+      link(q) = incompleat_noad;
+      link(incompleat_noad) = p;
     }
   }
   else
   {
-    mem[tail].hh.v.RH = p;
-    q = mem[head].hh.v.RH;
+    link(tail) = p;
+    q = link(head);
   }
   pop_nest();
   Result = q;
@@ -1837,27 +1839,28 @@ void build_choices (void)
 
   unsave();
   p = fin_mlist(0);
+
   switch (save_stack[save_ptr - 1].cint)
   {
     case 0:
-      mem[tail + 1].hh.v.LH = p;
+      display_mlist(tail) = p;
       break;
     case 1:
-      mem[tail + 1].hh.v.RH = p;
+      text_mlist(tail) = p;
       break;
     case 2:
-      mem[tail + 2].hh.v.LH = p;
+      script_mlist(tail) = p;
       break;
     case 3:
       {
-        mem[tail + 2].hh.v.RH = p;
+        script_script_mlist(tail) = p;
         decr(save_ptr);
         return;
       }
       break;
   }
   incr(save_stack[save_ptr - 1].cint);
-  push_math(13);
+  push_math(math_choice_group);
   scan_left_brace();
 }
 /* sec 1176 */
@@ -1866,25 +1869,28 @@ void sub_sup (void)
 /*  small_number t; */
   int t;              /* 95/Jan/7 */
   halfword p;
+
   t = 0;
   p = 0;
 
   if (tail != head)
     if ((mem[tail].hh.b0 >= 16) && (mem[tail].hh.b0 < 30))
     {
-      p = tail + 2 + cur_cmd - 7;
-      t = mem[p].hh.v.RH;
+      p = supscr(tail) + cur_cmd - sup_mark;
+      t = math_type(p);
     }
-  if ((p == 0)||(t != 0))
+
+  if ((p == 0) || (t != 0))
   {
     {
       mem[tail].hh.v.RH = new_noad();
       tail = mem[tail].hh.v.RH;
     }
-    p = tail + 2 + cur_cmd - 7;
+    p = supscr(tail) + cur_cmd - sup_mark;
+
     if (t != 0)
     {
-      if (cur_cmd == 7)
+      if (cur_cmd == sup_mark)
       {
         print_err("Double superscript");
         help1("I treat `x^1^2' essentially like `x^1{}^2'.");
@@ -1908,27 +1914,31 @@ void package_(small_number c)
   scaled h;
   halfword p;
   scaled d;
+
   d = box_max_depth;
   unsave();
   save_ptr = save_ptr - 3;
+
   if (mode == -102)
-    cur_box = hpack(mem[head].hh.v.RH, save_stack[save_ptr + 2].cint, save_stack[save_ptr + 1].cint);
+    cur_box = hpack(link(head), save_stack[save_ptr + 2].cint, save_stack[save_ptr + 1].cint);
   else
   {
-    cur_box = vpackage(mem[head].hh.v.RH, save_stack[save_ptr + 2].cint, save_stack[save_ptr + 1].cint, d);
-    if (c == 4)
+    cur_box = vpackage(link(head), save_stack[save_ptr + 2].cint, save_stack[save_ptr + 1].cint, d);
+
+    if (c == vtop_code)
     {
       h = 0;
-      p = mem[cur_box + 5].hh.v.RH;
+      p = list_ptr(cur_box);
+
       if (p != 0)
-        if (mem[p].hh.b0 <= 2)
-          h = mem[p + 3].cint;
-      mem[cur_box + 2].cint = mem[cur_box + 2].cint - h + mem[cur_box + 3].cint;
-      mem[cur_box + 3].cint = h;
+        if (type(p) <= rule_node)
+          h = height(p);
+
+      depth(cur_box) = depth(cur_box) - h + height(cur_box);
+      height(cur_box) = h;
     }
   }
   pop_nest();
   box_end(save_stack[save_ptr + 0].cint);
 }
 #pragma optimize ("", on)           /* 96/Sep/12 */
-/****************************************************************************/
