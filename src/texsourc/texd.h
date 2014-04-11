@@ -191,9 +191,9 @@ EXTERN integer max_buf_stack;
 #endif
 
 /* our real font_mem_size is 268435456 --- ridiculously large, of course */
-
-/* #define non_address font_mem_size */   /* 3.141 */
-#define non_address 0           /* 3.14159 96/Jan/16 */
+/* sec 0549 */
+#define non_char    256
+#define non_address 0
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
@@ -1269,6 +1269,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #include "coerce.h"
 
 /****************************************************************************/
+#define font_base 0
 /* sec 0040 */
 #define length(s) (str_start[(s) + 1] - str_start[(s)])
 /* sec 0041 */
@@ -1293,7 +1294,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define fatal_error_stop     3
 /* sec 0105 */
 #define nx_plux_y(...)   mult_and_add(..., 07777777777L)
-#define mult_integers(a) mult_and_add(a,0,07777777777L)
+#define mult_integers(a) mult_and_add(a,0,017777777777L)
 /* sec 0108 */
 #define inf_bad 10000L
 /* sec 0109 */
@@ -1380,7 +1381,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define non_discardable(a) (type(a) < math_node)
 /* sec 0149 */
 #define glue_node      10
-#define cond_math_node 98
+#define cond_math_glue 98
 #define mu_glue        99
 #define a_leaders      100
 #define c_leaders      101
@@ -1709,7 +1710,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define cat_code(a)                   equiv(cat_code_base + a)
 #define lc_code(a)                    equiv(lc_code_base + a)
 #define uc_code(a)                    equiv(uc_code_base +a)
-#define sf_code(a)                    equiv(sf_code_bas + a)
+#define sf_code(a)                    equiv(sf_code_base + a)
 #define math_code(a)                  equiv(math_code_base + a)
 /* sec 0232 */
 #define null_font font_base
@@ -1991,6 +1992,9 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define meaning_code       3
 #define font_name_code     4
 #define job_name_code      5
+/* sec 0480 */
+#define closed    2
+#define just_open 1
 /* sec 0487 */
 #define if_char_code   0
 #define if_cat_code    1
@@ -2119,10 +2123,29 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define script_mlist(a)        info(a + 2)
 #define script_script_mlist(a) link(a + 2)
 /* sec 0699 */
-#define text_size         0
-#define script_size       16
-#define script_sript_size 32
+#define text_size          0
+#define script_size        16
+#define script_script_size 32
 /* sec 0700 */
+#define mathsy(a, b)        font_info[a + param_base[fam_fnt(2 + b)]].cint
+#define math_x_height(a)    mathsy(5, a)
+#define math_quad(a)        mathsy(6, a)
+#define num1(a)             mathsy(8, a)
+#define num2(a)             mathsy(9, a)
+#define num3(a)             mathsy(10, a)
+#define denom1(a)           mathsy(11, a)
+#define denom2(a)           mathsy(12, a)
+#define sup1(a)             mathsy(13, a)
+#define sup2(a)             mathsy(14, a)
+#define sup3(a)             mathsy(15, a)
+#define sub1(a)             mathsy(16, a)
+#define sub2(a)             mathsy(17, a)
+#define sup_drop(a)         mathsy(18, a)
+#define sub_drop(a)         mathsy(19, a)
+#define delim1(a)           mathsy(20, a)
+#define delim2(a)           mathsy(21, a)
+#define axis_height(a)      mathsy(22, a)
+#define total_mathsy_params 22
 /* sec 0702 */
 #define cramped_style(a) 2 * ((a) / 2) + cramped
 #define sub_style(a)     2 * ((a) / 4) + script_style + cramped
@@ -2151,6 +2174,27 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define broken_ins(a)      info(a + 1)
 #define last_ins_ptr(a)    link(a + 2)
 #define best_ins_ptr(a)    info(a + 2)
+/* sec 1034 */
+#define adjust_space_factor()   \
+{                               \
+  main_s = sf_code(cur_chr);    \
+  if (main_s == 1000)           \
+    space_factor = 1000;        \
+  else if (main_s < 1000)       \
+  {                             \
+    if (main_s > 0)             \
+      space_factor = main_s;    \
+  }                             \
+  else if (space_factor < 1000) \
+    space_factor = 1000;        \
+  else                          \
+    space_factor = main_s;      \
+}
+/* sec 1035 */
+/* sec 1045 */
+#define any_mode(a) vmode + a: case hmode + a: case mmode + a
+/* sec 1046 */
+#define non_math(a) vmode + a: case hmode + a
 /* sec 1058 */
 #define fil_code     0
 #define fill_code    1
@@ -2186,21 +2230,21 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define show_the_code 2
 #define show_lists    3
 /* sec 1342 */
-#define write_node_size  2
-#define open_node_size   3
-#define open_node        0
-#define write_node       1
-#define close_node       2
-#define special_node     3
-#define language_node    4
-#define what_lang(s)     link(s+1)
-#define what_lhm(s)      type(s+1)
-#define what_rhm(s)      subtype(s+1)
-#define write_tokens(s)  link(s+1)
-#define write_streams(s) info(s+1)
-#define open_name(s)     link(s+1)
-#define open_area(s)     info(s+2)
-#define open_ext(s)      link(s+2)
+#define write_node_size 2
+#define open_node_size  3
+#define open_node       0
+#define write_node      1
+#define close_node      2
+#define special_node    3
+#define language_node   4
+#define what_lang(s)    link(s+1)
+#define what_lhm(s)     type(s+1)
+#define what_rhm(s)     subtype(s+1)
+#define write_tokens(s) link(s+1)
+#define write_stream(s) info(s+1)
+#define open_name(s)    link(s+1)
+#define open_area(s)    info(s+2)
+#define open_ext(s)     link(s+2)
 /* sec 1344 */
 #define immediate_code    4
 #define set_language_code 5
