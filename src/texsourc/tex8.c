@@ -1721,7 +1721,7 @@ lab21:
     case non_math(limit_switch):
     case non_math(mskip):
     case non_math(math_accent):
-    case mmode +  endv:
+    case mmode + endv:
     case mmode + par_end:
     case mmode + stop:
     case mmode + vskip:
@@ -2121,47 +2121,8 @@ lab70:
   cur_l = non_char;
   goto lab111;
 
-/* main_loop_wrapup:@<Make a ligature node, if |ligature_present|;
-  insert a null discretionary, if appropriate@>; */
-/* @d wrapup(#)==if cur_l<non_char then */
-/*  main_loop_wrapup */
 lab80: 
-  if (cur_l < non_char)
-  {
-    if (mem[tail].hh.b1 == hyphen_char[main_f])
-      if (link(cur_q) != 0) /* BUG FIX l.20107 */
-        ins_disc = true;
-
-    if (ligature_present)
-    {
-      main_p = new_ligature(main_f, cur_l, mem[cur_q].hh.v.RH);
-      if (lft_hit)
-      {
-        mem[main_p].hh.b1 = 2;
-        lft_hit = false;
-      }
-      if (rt_hit)
-        if (lig_stack == 0)
-        {
-          incr(mem[main_p].hh.b1);
-          rt_hit = false;
-        }
-      mem[cur_q].hh.v.RH = main_p;
-      tail = main_p;
-      ligature_present = false;
-    }
-
-    if (ins_disc)
-    {
-      ins_disc = false;
-
-      if (mode > 0)
-      {
-        mem[tail].hh.v.RH = new_disc();
-        tail = mem[tail].hh.v.RH;
-      }
-    }
-  }
+  wrapup(rt_hit);
 
 /*  main_loop_move */
 lab90:
@@ -2256,184 +2217,113 @@ lab101:
 // main_lig_loop:@<If there's a ligature/kern command relevant to |cur_l| and
 //  |cur_r|, adjust the text appropriately; exit to |main_loop_wrapup|@>;
 lab110:
-/*  if char_tag(main_i)<>lig_tag then goto main_loop_wrapup; */
-  if (((main_i.b2) % 4) != 1)
+
+  if (char_tag(main_i) != lig_tag)
     goto lab80;
 
   if (cur_r == non_char)
     goto lab80;
-/*  main_k:=lig_kern_start(main_f)(main_i); */
-  main_k = lig_kern_base[main_f] + main_i.b3;
-/*  main_j:=font_info[main_k].qqqq; */
+
+  main_k = lig_kern_start(main_f, main_i);
   main_j = font_info[main_k].qqqq;
-/* if skip_byte(main_j)<=stop_flag then goto main_lig_loop+2; */
-  if (main_j.b0 <= 128)goto lab112;
-/* main_k:=lig_kern_restart(main_f)(main_j); */
-  main_k = lig_kern_base[main_f]+ 256 * main_j.b2 + main_j.b3 + 32768L - 256 * (128);
+
+  if (skip_byte(main_j) <= stop_flag)
+    goto lab112;
+
+  main_k = lig_kern_restart(main_f, main_j);
 
 /* main_lig_loop+1:main_j:=font_info[main_k].qqqq; */
 lab111:
   main_j = font_info[main_k].qqqq;
 
-/* main_lig_loop+2:if next_char(main_j)=cur_r then l.20184 */
 lab112:
-/*  provide for suppression of f-ligatures 99/Jan/5 */
+/* provide for suppression of f-ligatures 99/Jan/5 */
   bSuppress = 0;
-  if (suppress_f_ligs && main_j.b1 == cur_r && main_j.b2 == 0)
+
+  if (suppress_f_ligs && next_char(main_j) == cur_r && op_byte(main_j) == no_tag)
   {
     if (cur_l == 'f')
       bSuppress = 1;
   }
 
-/*  if (main_j.b1 == cur_r)*/
-  if (main_j.b1 == cur_r && bSuppress == 0)  /* 99/Jan/5 */
-/*  if skip_byte(main_j)<=stop_flag then l.20185 */
-//   @<Do ligature or kern command, returning to |main_lig_loop|
-//    or |main_loop_wrapup| or |main_loop_move|@>;
-    if (main_j.b0 <= 128)
+  if (next_char(main_j) == cur_r && bSuppress == 0)  /* 99/Jan/5 */
+    if (skip_byte(main_j) <= stop_flag)
     {
-/* begin if op_byte(main_j)>=kern_flag then l.20225 */
-      if (main_j.b2 >= 128)
+      if (op_byte(main_j) >= kern_flag)
       {
-/* @d wrapup(#)==if cur_l<non_char then */
-        if (cur_l < 256)
+        wrapup(rt_hit);
         {
-/* if character(tail)=qi(hyphen_char[main_f]) then if link(cur_q)>null */
-          if (mem[tail].hh.b1 == hyphen_char[main_f])
-/*  if (mem[cur_q].hh.v.RH > 0) */ /* 94/Mar/22 ?????????????? */
-            if (mem[cur_q].hh.v.RH != 0) /* BUG FIX l.20107l.20186  */
-              ins_disc = true;
-/*   if ligature_present then pack_lig(#); */
-          if (ligature_present)
-          {
-            main_p = new_ligature(main_f, cur_l, mem[cur_q].hh.v.RH);
-            if (lft_hit)
-            {
-              mem[main_p].hh.b1 = 2;
-              lft_hit = false;
-            }
-            if (rt_hit)
-              if (lig_stack == 0)
-              {
-                incr(mem[main_p].hh.b1);
-                rt_hit = false;
-              }
-            mem[cur_q].hh.v.RH = main_p;
-            tail = main_p;
-            ligature_present = false;
-          }
-          if (ins_disc)
-          {
-            ins_disc = false;
-            if (mode > 0)
-            {
-              mem[tail].hh.v.RH = new_disc();
-              tail = mem[tail].hh.v.RH;
-            }
-          }
-        }
-        {
-          mem[tail].hh.v.RH = new_kern(font_info[kern_base[main_f] + 256 * main_j.b2 + main_j.b3].cint);
+          mem[tail].hh.v.RH = new_kern(char_kern(main_f, main_j));
           tail = mem[tail].hh.v.RH;
         }
         goto lab90;
       }
-/* begin if cur_l=non_char then lft_hit:=true; */
-      if (cur_l == 256)
+
+      if (cur_l == non_char)
         lft_hit = true;
       else if (lig_stack == 0)
         rt_hit = true;
+
       {
         if (interrupt != 0)
         {
           pause_for_instructions();
         }
       }
-      switch(main_j.b2)
+
+      switch (op_byte(main_j))
       {
         case 1:
         case 5:
           {
-            cur_l = main_j.b3;
-            main_i = font_info[char_base[main_f]+ cur_l].qqqq;
+            cur_l = rem_byte(main_j);
+            main_i = char_info(main_f, cur_l);
             ligature_present = true;
           }
           break;
         case 2:
         case 6:
           {
-            cur_r = main_j.b3;
+            cur_r = rem_byte(main_j);
+
             if (lig_stack == 0)
             {
               lig_stack = new_lig_item(cur_r);
-              bchar = 256;
+              bchar = non_char;
             }
             else if ((lig_stack >= hi_mem_min))
             {
               main_p = lig_stack;
               lig_stack = new_lig_item(cur_r);
-              mem[lig_stack + 1].hh.v.RH = main_p;
+              lig_ptr(lig_stack) = main_p;
             }
             else
-              mem[lig_stack].hh.b1 = cur_r;
+              character(lig_stack) = cur_r;
           }
           break;
         case 3:
           {
-            cur_r = main_j.b3;
+            cur_r = rem_byte(main_j);
             main_p = lig_stack;
             lig_stack = new_lig_item(cur_r);
-            mem[lig_stack].hh.v.RH = main_p;
+            link(lig_stack) = main_p;
           }
           break;
         case 7:
         case 11:
           {
-            if (cur_l < 256) /* if cur_l<non_char then  */
-/*  begin if character(tail)=qi(hyphen_char[main_f]) then if link(cur_q)>null
-then */
-            {
-              if (mem[tail].hh.b1 == hyphen_char[main_f])
-/*    if (mem[cur_q].hh.v.RH > 0) */  /* 94/Mar/22 */
-                if (mem[cur_q].hh.v.RH != 0) /* BUG FIX ???????????? */
-                  ins_disc = true;
-              if (ligature_present)
-              {
-                main_p = new_ligature(main_f, cur_l, mem[cur_q].hh.v.RH);
-                if (lft_hit)
-                {
-                  mem[main_p].hh.b1 = 2;
-                  lft_hit = false;
-                }
-/*      if (false)
-      if (lig_stack == 0){
-        incr(mem[main_p].hh.b1); 
-        rt_hit = false; 
-      } */              /* removed 99/Jan/6 */
-                mem[cur_q].hh.v.RH = main_p;
-                tail = main_p;
-                ligature_present = false;
-              }
-              if (ins_disc)
-              {
-                ins_disc = false;
-                if (mode > 0)
-                {
-                  mem[tail].hh.v.RH = new_disc();
-                  tail = mem[tail].hh.v.RH;
-                }
-              }
-            }
+            wrapup(false);
             cur_q = tail;
-            cur_l = main_j.b3;
-            main_i = font_info[char_base[main_f]+ cur_l].qqqq;
+            cur_l = rem_byte(main_j);
+            main_i = char_info(main_f, cur_l);
             ligature_present = true;
           }
           break;
         default:
           {
-            cur_l = main_j.b3;
+            cur_l = rem_byte(main_j);
             ligature_present = true;
+ 
             if (lig_stack == 0)
               goto lab80;
             else
@@ -2441,72 +2331,80 @@ then */
           }
           break;
       }
-      if (main_j.b2 > 4)
-        if (main_j.b2 != 7)
+
+      if (op_byte(main_j) > 4)
+        if (op_byte(main_j) != 7)
           goto lab80;
-      if (cur_l < 256)
+
+      if (cur_l < non_char)
         goto lab110;
+
       main_k = bchar_label[main_f];
       goto lab111;
     }
-  if (main_j.b0 == 0)
-    incr(main_k);
-  else
-  {
-    if (main_j.b0 >= 128)
-      goto lab80;
-    main_k = main_k + main_j.b0 + 1;
-  }
-  goto lab111;
+
+    if (skip_byte(main_j) == 0)
+      incr(main_k);
+    else
+    {
+      if (skip_byte(main_j) >= stop_flag)
+        goto lab80;
+
+      main_k = main_k + skip_byte(main_j) + 1;
+    }
+
+    goto lab111;
 
 /*  main_move_log */
 lab95:
-  main_p = mem[lig_stack + 1].hh.v.RH;
-/* if main_p>null then tail_append(main_p); l.20137 */
-/*  if (main_p > 0) */ /* 92/Mar/22 */
+  main_p = lig_ptr(lig_stack);
+
   if (main_p != 0)     /* BUG FIX */
   {
     mem[tail].hh.v.RH = main_p;
     tail = mem[tail].hh.v.RH;
   }
+
   temp_ptr = lig_stack;
-  lig_stack = mem[temp_ptr].hh.v.RH;
-  free_node(temp_ptr, 2);
-  main_i = font_info[char_base[main_f]+ cur_l].qqqq;
+  lig_stack = link(temp_ptr);
+  free_node(temp_ptr, small_node_size);
+  main_i = char_info(main_f, cur_l);
   ligature_present = true;
+
   if (lig_stack == 0)
-/*   if main_p>null then goto main_loop_lookahead l.20142 */
-/*  if (main_p > 0) */ /* 94/Mar/2 */
     if (main_p != 0)   /* BUG FIX */
       goto lab100;
     else
       cur_r = bchar;
   else
-    cur_r = mem[lig_stack].hh.b1;
+    cur_r = character(lig_stack);
+
   goto lab110;
 
 /*  append_normal_space */
 lab120:
-  if (eqtb[(hash_size + 794)].hh.v.RH == 0)
+  if (space_skip == 0)
   {
     {
-      main_p = font_glue[eqtb[(hash_size + 1834)].hh.v.RH];
+      main_p = font_glue[cur_font];
+
       if (main_p == 0)
       {
-        main_p = new_spec(0);
-        main_k = param_base[eqtb[(hash_size + 1834)].hh.v.RH]+ 2;
-        mem[main_p + 1].cint = font_info[main_k].cint;
-        mem[main_p + 2].cint = font_info[main_k + 1].cint;
-        mem[main_p + 3].cint = font_info[main_k + 2].cint;
-        font_glue[eqtb[(hash_size + 1834)].hh.v.RH]= main_p;
+        main_p = new_spec(zero_glue);
+        main_k = param_base[cur_font] + space_code;
+        width(main_p) = font_info[main_k].cint;
+        stretch(main_p) = font_info[main_k + 1].cint;
+        shrink(main_p) = font_info[main_k + 2].cint;
+        font_glue[cur_font] = main_p;
       }
     }
     temp_ptr = new_glue(main_p);
   }
   else
-    temp_ptr = new_param_glue(12);
-  mem[tail].hh.v.RH = temp_ptr;
+    temp_ptr = new_param_glue(space_skip_code);
+
+  link(tail) = temp_ptr;
   tail = temp_ptr;
   goto lab60;
-} /* end of main_control */
+}
 /* give_err_help etc followed here in the old tex8.c */

@@ -2020,6 +2020,23 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define fi_code          2
 #define else_code        3
 #define or_code          4
+/* sec 0544 */
+#define no_tag   0
+#define lig_tag  1
+#define list_tag 2
+#define ext_tag  3
+/* sec 0545 */
+#define stop_flag    128
+#define kern_flag    128
+#define skip_byte(a) a.b0
+#define next_char(a) a.b1
+#define op_byte(a)   a.b2
+#define rem_byte(a)  a.b3
+/* sec 0546 */
+#define ext_top(a) a.b0
+#define ext_mid(a) a.b1
+#define ext_bot(a) a.b2
+#define ext_rep(a) a.b3
 /* sec 0547 */
 #define slant_code         1
 #define space_code         2
@@ -2035,6 +2052,12 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define height_depth(a)   (a.b1)
 #define char_height(a, b) font_info[height_base[a] + (b) / 16].cint
 #define char_depth(a, b)  font_info[depth_base[a] + (b) % 16].cint
+#define char_tag(a)       (a.b2 % 4)
+/* sec 0557 */
+#define char_kern(a, b)        font_info[kern_base[a] + 256 * op_byte(b) + rem_byte(b)].cint
+#define kern_base_offset       256 * (128 + min_quarterword)
+#define lig_kern_start(a, b)   lig_kern_base[a] + rem_byte(b)
+#define lig_kern_restart(a, b) lig_kern_base[a] + 256 * op_byte(b) + rem_byte(b) + 32768 - kern_base_offset
 /* sec 0558 */
 #define param(a, b)      font_info[a + param_base[b]].cint
 #define slant(f)         param(slant_code, f)
@@ -2191,6 +2214,49 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
     space_factor = main_s;      \
 }
 /* sec 1035 */
+/* -> false */
+#define wrapup(a)                                         \
+{                                                         \
+  if (cur_l < non_char)                                   \
+  {                                                       \
+    if (link(cur_q) != 0)                                 \
+      if (character(tail) == hyphen_char[main_f])         \
+        ins_disc = true;                                  \
+                                                          \
+    if (ligature_present)                                 \
+    {                                                     \
+      main_p = new_ligature(main_f, cur_l, link(cur_q));  \
+                                                          \
+      if (lft_hit)                                        \
+      {                                                   \
+        subtype(main_p) = 2;                              \
+        lft_hit = false;                                  \
+      }                                                   \
+                                                          \
+      if (a)                                              \
+        if (lig_stack == 0)                               \
+        {                                                 \
+          incr(subtype(main_p));                          \
+          rt_hit = false;                                 \
+        }                                                 \
+                                                          \
+      link(cur_q) = main_p;                               \
+      tail = main_p;                                      \
+      ligature_present = false;                           \
+    }                                                     \
+                                                          \
+    if (ins_disc)                                         \
+    {                                                     \
+      ins_disc = false;                                   \
+                                                          \
+      if (mode > 0)                                       \
+      {                                                   \
+        mem[tail].hh.v.RH = new_disc();                   \
+        tail = mem[tail].hh.v.RH;                         \
+      }                                                   \
+    }                                                     \
+  }                                                       \
+}
 /* sec 1045 */
 #define any_mode(a) vmode + a: case hmode + a: case mmode + a
 /* sec 1046 */

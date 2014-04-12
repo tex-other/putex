@@ -106,6 +106,7 @@ void try_break_ (integer pi, small_number breaktype)
       goto lab10;
     else
       pi = -10000;
+
   nobreakyet = true;
   prevr = active;
   oldl = 0;
