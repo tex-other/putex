@@ -1606,26 +1606,26 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define level_one         level_zero + 1
 /* sec 0222 */
 #define active_base                   1                      // 1
-#define single_base                   active_base + 256      // 257
-#define null_cs                       single_base + 256      // 513
-#define hash_base                     null_cs + 1            // 514
-#define frozen_control_sequence       hash_base + hash_size + hash_extra // (hash_size + hash_extra + 514)
-#define frozen_protection             frozen_control_sequence        // (hash_size + hash_extra + 514)
-#define frozen_cr                     frozen_control_sequence + 1    // (hash_size + hash_extra + 515)
-#define frozen_end_group              frozen_control_sequence + 2    // (hash_size + hash_extra + 516)
-#define frozen_right                  frozen_control_sequence + 3    // (hash_size + hash_extra + 517)
-#define frozen_fi                     frozen_control_sequence + 4    // (hash_size + hash_extra + 518)
-#define frozen_end_template           frozen_control_sequence + 5    // (hash_size + hash_extra + 519)
-#define frozen_endv                   frozen_control_sequence + 6    // (hash_size + hash_extra + 520)
-#define frozen_relax                  frozen_control_sequence + 7    // (hash_size + hash_extra + 521)
-#define end_write                     frozen_control_sequence + 8    // (hash_size + hash_extra + 522)
-#define frozen_dont_expand            frozen_control_sequence + 9    // (hash_size + hash_extra + 523)
-#define frozen_null_font              frozen_control_sequence + 10   // (hash_size + hash_extra + 524)
-#define font_id_base                  frozen_null_font - font_base   // (hash_size + hash_extra + 524)
-#define undefined_control_sequence    frozen_null_font + 1025        // (hash_size + hash_extra + 781) = font_max + 2
-                                                                     // (hash_size + (255 - 1024) + 1025 + 524)
-                                                                     // (hash_size + 780)
-#define glue_base                     undefined_control_sequence + 1 // (hash_size + hash_extra + 782)
+#define single_base                   (active_base + 256)    // 257
+#define null_cs                       (single_base + 256)      // 513
+#define hash_base                     (null_cs + 1)            // 514
+#define frozen_control_sequence       (hash_base + hash_size + hash_extra) // (hash_size + hash_extra + 514)
+#define frozen_protection             frozen_control_sequence          // (hash_size + hash_extra + 514)
+#define frozen_cr                     (frozen_control_sequence + 1)    // (hash_size + hash_extra + 515)
+#define frozen_end_group              (frozen_control_sequence + 2)    // (hash_size + hash_extra + 516)
+#define frozen_right                  (frozen_control_sequence + 3)    // (hash_size + hash_extra + 517)
+#define frozen_fi                     (frozen_control_sequence + 4)    // (hash_size + hash_extra + 518)
+#define frozen_end_template           (frozen_control_sequence + 5)    // (hash_size + hash_extra + 519)
+#define frozen_endv                   (frozen_control_sequence + 6)    // (hash_size + hash_extra + 520)
+#define frozen_relax                  (frozen_control_sequence + 7)    // (hash_size + hash_extra + 521)
+#define end_write                     (frozen_control_sequence + 8)    // (hash_size + hash_extra + 522)
+#define frozen_dont_expand            (frozen_control_sequence + 9)    // (hash_size + hash_extra + 523)
+#define frozen_null_font              (frozen_control_sequence + 10)   // (hash_size + hash_extra + 524)
+#define font_id_base                  (frozen_null_font - font_base)   // (hash_size + hash_extra + 524)
+#define undefined_control_sequence    (frozen_null_font + 1025)        // (hash_size + hash_extra + 781) = font_max + 2
+                                                                       // (hash_size + (255 - 1024) + 1025 + 524)
+                                                                       // (hash_size + 780)
+#define glue_base                     (undefined_control_sequence + 1) // (hash_size + hash_extra + 782)
 /* sec 0224 */
 #define line_skip_code                0  // 782
 #define baseline_skip_code            1  // 783
@@ -1646,9 +1646,9 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define med_mu_skip_code              16 // 798
 #define thick_mu_skip_code            17 // 799
 #define glue_pars                     18 // 800
-#define skip_base                     glue_base + glue_pars // 800
-#define mu_skip_base                  skip_base + 256 // 1056
-#define local_base                    mu_skip_base + 256 // 1312
+#define skip_base                     (glue_base + glue_pars) // 800
+#define mu_skip_base                  (skip_base + 256) // 1056
+#define local_base                    (mu_skip_base + 256) // 1312
 // #
 #define skip(a)                       equiv(skip_base + a)
 #define mu_skip(a)                    equiv(mu_skip_base + a)
@@ -1672,26 +1672,26 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define med_mu_skip                   glue_par(med_mu_skip_code)
 #define thick_mu_skip                 glue_par(thick_mu_skip_code)
 /* sec 0230 */
-#define par_shape_loc                 local_base     // 1312
-#define output_routine_loc            local_base + 1 // 1313
-#define every_par_loc                 local_base + 2 // 1314
-#define every_math_loc                local_base + 3 // 1315
-#define every_display_loc             local_base + 4 // 1316
-#define every_hbox_loc                local_base + 5 // 1317
-#define every_vbox_loc                local_base + 6 // 1318
-#define every_job_loc                 local_base + 7 // 1319
-#define every_cr_loc                  local_base + 8 // 1320
-#define err_help_loc                  local_base + 9 // 1321
-#define toks_base                     local_base + 10 // 1322
-#define box_base                      toks_base + 256 // 1578
-#define cur_font_loc                  box_base + 256 // 1834
-#define math_font_base                cur_font_loc + 1 // 1835
-#define cat_code_base                 math_font_base + 48 // 1883
-#define lc_code_base                  cat_code_base + 256 // 2139
-#define uc_code_base                  lc_code_base + 256 // 2395
-#define sf_code_base                  uc_code_base + 256 // 2651
-#define math_code_base                sf_code_base + 256 // 2907
-#define int_base                      math_code_base + 256 // 3163
+#define par_shape_loc                 local_base             // 1312
+#define output_routine_loc            (local_base + 1)       // 1313
+#define every_par_loc                 (local_base + 2)       // 1314
+#define every_math_loc                (local_base + 3)       // 1315
+#define every_display_loc             (local_base + 4)       // 1316
+#define every_hbox_loc                (local_base + 5)       // 1317
+#define every_vbox_loc                (local_base + 6)       // 1318
+#define every_job_loc                 (local_base + 7)       // 1319
+#define every_cr_loc                  (local_base + 8)       // 1320
+#define err_help_loc                  (local_base + 9)       // 1321
+#define toks_base                     (local_base + 10)      // 1322
+#define box_base                      (toks_base + 256)      // 1578
+#define cur_font_loc                  (box_base + 256)       // 1834
+#define math_font_base                (cur_font_loc + 1)     // 1835
+#define cat_code_base                 (math_font_base + 48)  // 1883
+#define lc_code_base                  (cat_code_base + 256)  // 2139
+#define uc_code_base                  (lc_code_base + 256)   // 2395
+#define sf_code_base                  (uc_code_base + 256)   // 2651
+#define math_code_base                (sf_code_base + 256)   // 2907
+#define int_base                      (math_code_base + 256) // 3163
 // #
 #define par_shape_ptr                 equiv(par_shape_loc)
 #define output_routine                equiv(output_routine_loc)
@@ -1772,9 +1772,9 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define holding_inserts_code          53 // 3216
 #define error_context_lines_code      54 // 3217
 #define int_pars                      55
-#define count_base                    int_base + int_pars // 3218
-#define del_code_base                 count_base + 256    // 3474
-#define dimen_base                    del_code_base + 256 // 3730
+#define count_base                    (int_base + int_pars) // 3218
+#define del_code_base                 (count_base + 256)    // 3474
+#define dimen_base                    (del_code_base + 256) // 3730
 // #
 #define del_code(a)                   eqtb[del_code_base + a].cint
 #define count(a)                      eqtb[count_base + a].cint
@@ -1857,8 +1857,8 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define v_offset_code                 19 // 3749
 #define emergency_stretch_code        20 // 3750
 #define dimen_pars                    21
-#define scaled_base                   dimen_base + dimen_pars // 3751
-#define eqtb_size                     scaled_base + 255 // 4006
+#define scaled_base                   (dimen_base + dimen_pars) // 3751
+#define eqtb_size                     (scaled_base + 255) // 4006
 // #
 #define dimen(a)                      eqtb[scaled_base + a].cint
 #define dimen_par(a)                  eqtb[dimen_base + a].cint
@@ -1985,6 +1985,13 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 /* sec 0416 */
 #define input_line_no_code glue_val + 1
 #define badness_code       glue_val + 2
+/* sec 0438 */
+#define octal_token             other_token + '\'' // 3111
+#define hex_token               other_token + '"'  // 3106
+#define alpha_token             other_token + '`'  // 3168
+#define point_token             other_token + '.'  // 3118
+#define continental_point_token other_token + ','  // 3116
+/* sec 0445 */
 /* sec 0468 */
 #define number_code        0
 #define roman_numeral_code 1
@@ -2251,8 +2258,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
                                                           \
       if (mode > 0)                                       \
       {                                                   \
-        mem[tail].hh.v.RH = new_disc();                   \
-        tail = mem[tail].hh.v.RH;                         \
+        tail_append(new_disc());                          \
       }                                                   \
     }                                                     \
   }                                                       \
@@ -2316,6 +2322,10 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define set_language_code 5
 /* sec 79 */
 
+extern INLINE void str_room_ (int val);
+#define str_room(a) str_room_((int) a)
+extern INLINE void tail_append_ (pointer val);
+#define tail_append(a) tail_append_((pointer) a)
 extern INLINE void tex_help (unsigned int n, ...);
 extern INLINE void append_char(ASCII_code c);
 extern INLINE void append_lc_hex(ASCII_code c);

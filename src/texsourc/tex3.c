@@ -31,39 +31,44 @@ void scan_int (void)
   small_number d;
   bool vacuous;
   bool OKsofar;
+
   radix = 0;
   OKsofar = true;
   negative = false;
-  do {
-    do {
-      get_x_token();
-    } while (!(cur_cmd != spacer));
 
-    if (cur_tok == 3117)
+  do {
+    do 
+      {
+        get_x_token();
+      }
+    while (!(cur_cmd != spacer));
+
+    if (cur_tok == other_token + '-')
     {
       negative = !negative;
-      cur_tok = 3115;
+      cur_tok = other_token + '+';
     }
-  } while (!(cur_tok != 3115));
+  } while (!(cur_tok != other_token + '+'));
 
-  if (cur_tok == 3168)
+  if (cur_tok == alpha_token)
   {
     get_token();
-    if (cur_tok < 4095)
+
+    if (cur_tok < cs_token_flag)
     {
       cur_val = cur_chr;
+
       if (cur_cmd <= right_brace)
         if (cur_cmd == right_brace)
           incr(align_state);
         else
           decr(align_state);
     }
-/* else if cur_tok<cs_token_flag+single_base then ... */
-    else if (cur_tok < 4352) /* 4095 + 257 */
-/*   cur_val:=cur_tok-cs_token_flag-active_base */
-      cur_val = cur_tok - 4096; /* 4095 + 1 */
-/* else cur_val:=cur_tok-cs_token_flag-single_base; */
-    else cur_val = cur_tok - 4352;  /* 4095 + 257 */
+    else if (cur_tok < cs_token_flag + single_base)
+      cur_val = cur_tok - cs_token_flag - active_base;
+    else
+      cur_val = cur_tok - cs_token_flag - single_base;
+
     if (cur_val > 255)
     {
       print_err("Improper alphabetic constant");
@@ -75,10 +80,12 @@ void scan_int (void)
     else
     {
       get_x_token();
+
       if (cur_cmd != spacer)
         back_input();
     }
-  } else if ((cur_cmd >= min_internal) && (cur_cmd <= max_internal))
+  }
+  else if ((cur_cmd >= min_internal) && (cur_cmd <= max_internal))
   {
     scan_something_internal(0, false);
   }
@@ -86,13 +93,13 @@ void scan_int (void)
   {
     radix = 10;
     m = 214748364L;   /* 7FFFFFFF hex */
-    if (cur_tok == 3111)
+    if (cur_tok == octal_token)
     {
       radix = 8;
       m = 268435456L;   /* 2^28 */
       get_x_token();
     }
-    else if (cur_tok == 3106)
+    else if (cur_tok == hex_token)
     {
       radix = 16;
       m = 134217728L;   /* 2^27 8000000 hex */
@@ -138,7 +145,7 @@ lab30:;
         "(If you can't figure out why I needed to see a number,",
         "look up `weird error' in the index to The TeXbook.)");
       back_error();
-    }
+    } 
     else if (cur_cmd != spacer)
       back_input();
   }
@@ -299,13 +306,14 @@ lab31:
   if (mu)
     goto lab45;
   if (scan_keyword("em"))
-    v = (font_info[6 + param_base[eqtb[(hash_size + 1834)].hh.v.RH]].cint);
+    v = quad(cur_font);
   else if (scan_keyword("ex"))
-    v = (font_info[5 + param_base[eqtb[(hash_size + 1834)].hh.v.RH]].cint);
+    v = x_height(cur_font);
   else
     goto lab45;
   {
     get_x_token();
+
     if (cur_cmd != spacer)
       back_input();
   }
@@ -534,26 +542,12 @@ halfword str_toks_(pool_pointer b)
   halfword q;
   halfword t;
   pool_pointer k;
-  {
-#ifdef ALLOCATESTRING
-    if (pool_ptr + 1 > current_pool_size)
-      str_pool = realloc_str_pool(increment_pool_size);
-    if (pool_ptr + 1 > current_pool_size)
-    { /* in case it failed 94/Jan/22 */
-      overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
-      return 0;     // abort_flag set
-    }
-#else
-    if (pool_ptr + 1 > pool_size)
-    {
-      overflow("pool size", pool_size - init_pool_ptr); /* pool size */
-      return;     // abort_flag set
-    }
-#endif
-  } 
+
+  str_room(1);
   p = temp_head;
   link(p) = 0;
-  k = b; 
+  k = b;
+
   while (k < pool_ptr) {
     t = str_pool[k];
     if (t == ' ')
@@ -1359,9 +1353,8 @@ void begin_name (void)
 bool more_name_(ASCII_code c)
 {
   register bool Result;
-   
-/*  if (c == 32)*/   /* white space delimits file name ... */
-  if (quoted_file_name == 0 && c == 32)
+
+  if (quoted_file_name == 0 && c == ' ')
     Result = false;
   else if (quoted_file_name != 0 && c == '"')
   {
@@ -1376,25 +1369,7 @@ bool more_name_(ASCII_code c)
 /*  convert pseudo space back to ' ' 97/June/5 */ /* moved here 97/June/5 */
 /*  if (pseudo_space != 0 && c == pseudo_space) c = ' '; */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */      
-    {
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-#ifdef ALLOCATESTRING
-      if (pool_ptr + 1 > current_pool_size)
-        str_pool = realloc_str_pool(increment_pool_size);
-      if (pool_ptr + 1 > current_pool_size)
-      {  /* in case it failed 94/Jan/24 */
-        overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
-        return 0;     // abort_flag set
-      }
-#else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-      if (pool_ptr + 1 > pool_size)
-      {
-        overflow("pool size", pool_size - init_pool_ptr); /* pool size */
-        return 0;     // abort_flag set
-      }
-#endif
-    }
+    str_room(1);
     append_char(c);
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 //  if ((c == 47))   /* / */
@@ -1424,7 +1399,7 @@ bool more_name_(ASCII_code c)
 
 int find_string (int start, int end)
 {
-  int k, nlen = end-start;
+  int k, nlen = end - start;
   char *s;
 
 //  int trace_flag = 1;     // debugging only
@@ -1433,7 +1408,7 @@ int find_string (int start, int end)
   {
     sprintf(log_line, "\nLOOKING for string (str_ptr %d nlen %d) ", str_ptr, end-start);
     s = log_line + strlen(log_line);
-    strncpy(s, str_pool + start, nlen);
+    strncpy(s, (const char *) str_pool + start, nlen);
     strcpy(s+nlen, "");
     show_line(log_line, 0);
   }
@@ -1441,7 +1416,7 @@ int find_string (int start, int end)
 //  avoid problems with(cur_name == flushablestring)by going only up to str_ptr-1
 //  code in new_font (tex8.c) will take care of reuse of font name already
 //  for (k = 0; k < str_ptr; k++) {
-  for (k = 0; k < str_ptr-1; k++)
+  for (k = 0; k < str_ptr - 1; k++)
   {
     if (length(k) != nlen) continue;
     if (strncmp((const char *) str_pool + start, (const char *) str_pool + str_start[k], nlen) == 0) {
@@ -1687,8 +1662,10 @@ str_number make_name_string (void)
 #ifdef ALLOCATESTRING
   if (pool_ptr + name_length > current_pool_size)
     str_pool = realloc_str_pool(increment_pool_size + name_length);
+
   if (str_ptr == current_max_strings)
     str_start = realloc_str_start(increment_max_strings);
+
   if ((pool_ptr + name_length > current_pool_size) ||
     (str_ptr == current_max_strings) || (cur_length > 0))
 #else

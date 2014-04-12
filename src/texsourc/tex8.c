@@ -123,10 +123,7 @@ void math_left_right (void)
     {
       p = fin_mlist(p);
       unsave();
-      {
-        mem[tail].hh.v.RH = new_noad();
-        tail = mem[tail].hh.v.RH;
-      }
+      tail_append(new_noad());
       type(tail) = inner_noad;
       math_type(nucleus(tail)) = sub_mlist;
       info(nucleus(tail)) = p;
@@ -242,10 +239,7 @@ void after_math (void)
 
   if (m < 0)
   {
-    {
-      mem[tail].hh.v.RH = new_math(math_surround, 0);
-      tail = mem[tail].hh.v.RH;
-    }
+    tail_append(new_math(math_surround, 0));
     cur_mlist = p;
     cur_style = text_style;
     mlist_penalties = (mode > 0);
@@ -255,10 +249,7 @@ void after_math (void)
     while(link(tail) != 0)
       tail = link(tail);
 
-    {
-      mem[tail].hh.v.RH = new_math(math_surround, 1);
-      tail = mem[tail].hh.v.RH;
-    }
+    tail_append(new_math(math_surround, 1));
     space_factor = 1000;
     unsave();
   }
@@ -333,10 +324,7 @@ void after_math (void)
             d = 0;
     }
 
-    {
-      mem[tail].hh.v.RH = new_penalty(pre_display_penalty);
-      tail = mem[tail].hh.v.RH;
-    }
+    tail_append(new_penalty(pre_display_penalty));
 
     if ((d + s <= pre_display_size) || l)
     {
@@ -352,15 +340,11 @@ void after_math (void)
     {
       shift_amount(a) = s;
       append_to_vlist(a);
-      {
-        mem[tail].hh.v.RH = new_penalty(10000);
-        tail = mem[tail].hh.v.RH;
-      }
+      tail_append(new_penalty(10000));
     }
     else
     {
-      mem[tail].hh.v.RH = new_param_glue(g1);
-      tail = mem[tail].hh.v.RH;
+      tail_append(new_param_glue(g1));
     }
 
     if (e != 0)
@@ -387,10 +371,7 @@ void after_math (void)
 
     if ((a != 0) && (e == 0) && !l)
     {
-      {
-        mem[tail].hh.v.RH = new_penalty(10000);
-        tail = mem[tail].hh.v.RH;
-      }
+      tail_append(new_penalty(10000));
       shift_amount(a) = s + z - width(a);
       append_to_vlist(a);
       g2 = 0;
@@ -402,15 +383,11 @@ void after_math (void)
       tail = t;
     }
 
-    {
-      mem[tail].hh.v.RH = new_penalty(post_display_penalty);
-      tail = mem[tail].hh.v.RH;
-    }
+    tail_append(new_penalty(post_display_penalty));
 
     if (g2 > 0)
     {
-      mem[tail].hh.v.RH = new_param_glue(g2);
-      tail = mem[tail].hh.v.RH;
+      tail_append(new_param_glue(g2));
     }
 
     resume_after_display();
@@ -790,27 +767,7 @@ void new_font_(small_number a)
     print_string("FONT");
     print(u - active_base);
     selector = old_setting;
-
-    {
-#ifdef ALLOCATESTRING
-      if (pool_ptr + 1 > current_pool_size)
-        str_pool = realloc_str_pool (increment_pool_size);
-
-      if (pool_ptr + 1 > current_pool_size) /* 94/Jan/24 */
-      {
-        overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/9 */
-        return;     // abort_flag set
-      }
-#else
-      if (pool_ptr + 1 > pool_size)
-      {
-        overflow("pool size", pool_size - init_pool_ptr); /* pool size */
-        return;     // abort_flag set
-      }
-#endif
-
-    }
-
+    str_room(1);
     t = make_string();
   }
 
@@ -1054,26 +1011,7 @@ void issue_message (void)
   token_show(def_ref);
   selector = old_setting;
   flush_list(def_ref);
-
-  {
-#ifdef ALLOCATESTRING
-    if (pool_ptr + 1 > current_pool_size)
-      str_pool = realloc_str_pool (increment_pool_size);
-
-    if (pool_ptr + 1 > current_pool_size)
-    {
-      overflow("pool size", current_pool_size - init_pool_ptr);
-      return;     // abort_flag set
-    }
-#else
-    if (pool_ptr + 1 > pool_size)
-    {
-      overflow("pool size", pool_size - init_pool_ptr); /* pool size */
-      return;     // abort_flag set
-    }
-#endif
-  }
-
+  str_room(1);
   s = make_string();
 
   if (c == 0)
@@ -1442,10 +1380,7 @@ void handle_right_brace (void)
 
         if (save_stack[save_ptr + 0].cint < 255)
         {
-          {
-            mem[tail].hh.v.RH = get_node(5);
-            tail = mem[tail].hh.v.RH;
-          }
+          tail_append(get_node(5));
           type(tail) = ins_node;
           subtype(tail) = save_stack[save_ptr + 0].cint;
           height(tail) = height(p) + depth(p);
@@ -1456,10 +1391,7 @@ void handle_right_brace (void)
         }
         else
         {
-          {
-            mem[tail].hh.v.RH = get_node(2);
-            tail = mem[tail].hh.v.RH;
-          }
+          tail_append(get_node(2));
           type(tail) = adjust_node;
           subtype(tail) = 0;
           adjust_ptr(tail) = list_ptr(p);
@@ -1552,10 +1484,7 @@ void handle_right_brace (void)
         save_ptr = save_ptr - 2;
         p = vpackage(link(head), save_stack[save_ptr + 1].cint, save_stack[save_ptr + 0].cint, 1073741823L);   /* 2^30 - 1 */
         pop_nest();
-        {
-          mem[tail].hh.v.RH = new_noad();
-          tail = mem[tail].hh.v.RH;
-        }
+        tail_append(new_noad());
         type(tail) = vcenter_noad;
         math_type(nucleus(tail)) = sub_box;
         info(nucleus(tail)) = p;
@@ -1734,10 +1663,7 @@ lab21:
     case hmode + vrule:
     case mmode + vrule:
       {
-        {
-          mem[tail].hh.v.RH = scan_rule_spec();
-          tail = mem[tail].hh.v.RH;
-        }
+        tail_append(scan_rule_spec());
 
         if (abs(mode) == vmode)
           prev_depth = ignore_depth;
@@ -1863,10 +1789,7 @@ lab21:
       append_italic_correction();
       break;
     case mmode + ital_corr:
-      {
-        mem[tail].hh.v.RH = new_kern(0);
-        tail = mem[tail].hh.v.RH;
-      }
+      tail_append(new_kern(0));
       break;
     case hmode + discretionary:
     case mmode + discretionary:
@@ -1915,10 +1838,7 @@ lab21:
       break;
     case mmode + left_brace:
       {
-        {
-          mem[tail].hh.v.RH = new_noad();
-          tail = mem[tail].hh.v.RH;
-        }
+        tail_append(new_noad());
         back_input();
         scan_math(nucleus(tail));
       }
@@ -1952,10 +1872,7 @@ lab21:
       break;
     case mmode + math_comp:
       {
-        {
-          mem[tail].hh.v.RH = new_noad();
-          tail = mem[tail].hh.v.RH;
-        }
+        tail_append(new_noad());
         type(tail) = cur_chr;
         scan_math(nucleus(tail));
       }
@@ -1983,17 +1900,11 @@ lab21:
       }
       break;
     case mmode + math_style:
-      {
-        mem[tail].hh.v.RH = new_style(cur_chr);
-        tail = mem[tail].hh.v.RH;
-      }
+      tail_append(new_style(cur_chr));
       break;
     case mmode + non_script:
       {
-        {
-          mem[tail].hh.v.RH = new_glue(0);
-          tail = mem[tail].hh.v.RH;
-        }
+        tail_append(new_glue(0));
         subtype(tail) = cond_math_glue;
       }
       break;
@@ -2252,10 +2163,7 @@ lab112:
       if (op_byte(main_j) >= kern_flag)
       {
         wrapup(rt_hit);
-        {
-          mem[tail].hh.v.RH = new_kern(char_kern(main_f, main_j));
-          tail = mem[tail].hh.v.RH;
-        }
+        tail_append(new_kern(char_kern(main_f, main_j)));
         goto lab90;
       }
 
@@ -2360,10 +2268,7 @@ lab95:
   main_p = lig_ptr(lig_stack);
 
   if (main_p != 0)     /* BUG FIX */
-  {
-    mem[tail].hh.v.RH = main_p;
-    tail = mem[tail].hh.v.RH;
-  }
+    tail_append(main_p);
 
   temp_ptr = lig_stack;
   lig_stack = link(temp_ptr);

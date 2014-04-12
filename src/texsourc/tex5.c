@@ -1274,10 +1274,8 @@ void init_row (void)
     space_factor = 0;
   else
     cur_list.aux_field.cint = 0;
-  {
-    mem[tail].hh.v.RH = new_glue(mem[mem[align_head].hh.v.RH + 1].hh.v.LH);
-    tail = mem[tail].hh.v.RH;
-  }
+
+  tail_append(new_glue(mem[mem[align_head].hh.v.RH + 1].hh.v.LH));
   mem[tail].hh.b1 = 12;
   cur_align = mem[mem[align_head].hh.v.RH].hh.v.RH;
   cur_tail = cur_head;
@@ -1627,25 +1625,13 @@ void fin_align (void)
       }
     }
     pop_nest();
-    {
-      mem[tail].hh.v.RH = new_penalty(pre_display_penalty);
-      tail = mem[tail].hh.v.RH;
-    }
-    {
-      mem[tail].hh.v.RH = new_param_glue(3);
-      tail = mem[tail].hh.v.RH;
-    }
+    tail_append(new_penalty(pre_display_penalty));
+    tail_append(new_param_glue(3));
     mem[tail].hh.v.RH = p;
     if (p != 0)
       tail = q;
-    {
-      mem[tail].hh.v.RH = new_penalty(post_display_penalty);
-      tail = mem[tail].hh.v.RH;
-    }
-    {
-      mem[tail].hh.v.RH = new_param_glue(4);
-      tail = mem[tail].hh.v.RH;
-    }
+    tail_append(new_penalty(post_display_penalty));
+    tail_append(new_param_glue(4));
     cur_list.aux_field.cint = auxsave.cint;
     resume_after_display();
   }
@@ -1686,16 +1672,19 @@ bool fin_col (void)
     return 0;       // abort_flag set
   }
   q = mem[cur_align].hh.v.RH;
+
   if (q == 0)
   {
     confusion("endv");
     return 0;       // abort_flag set
   }
+
   if (align_state < 500000L)
   {     /* ??? */
     fatal_error("(interwoven alignment preambles are not allowed)"); /*  */
     return 0;     // abort_flag set
   }
+
   p = mem[q].hh.v.RH;         /* p <- link(q) p.791 */
 /* if (p = null) ^ (extra_info(cur_align) < cr_code) then p.792 */
   if ((p == 0) && (mem[cur_align + 5].hh.v.LH < 257))
@@ -1821,10 +1810,8 @@ bool fin_col (void)
       mem[tail].hh.v.RH = u;
       tail = u;
     }
-    {
-      mem[tail].hh.v.RH = new_glue(mem[mem[cur_align].hh.v.RH + 1].hh.v.LH);
-      tail = mem[tail].hh.v.RH;
-    }
+
+    tail_append(new_glue(mem[mem[cur_align].hh.v.RH + 1].hh.v.LH));
     mem[tail].hh.b1 = 12;
 /* if (extra_info(cur_align) >= cr_code) then p.792 */
     if (mem[cur_align + 5].hh.v.LH >= 257)

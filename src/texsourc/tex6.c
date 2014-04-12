@@ -1491,24 +1491,7 @@ lab21:
           {
             incr(n);
             hc[n]= cur_lang;
-            {
-#ifdef ALLOCATESTRING
-              if (pool_ptr + n > current_pool_size)
-/*      str_pool = realloc_str_pool (increment_pool_size); */
-                str_pool = realloc_str_pool (increment_pool_size + n);
-              if (pool_ptr + n > current_pool_size)
-              { /* in case it failed 94/Jan/24 */
-                overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
-                return;     // abort_flag set
-              }
-#else
-              if (pool_ptr + n > pool_size)
-              {
-                overflow("pool size", pool_size - init_pool_ptr); /* pool size */
-                return;     // abort_flag set
-              }
-#endif
-            }
+            str_room(n);
             h = 0;
             for (j = 1; j <= n; j++)
             {

@@ -94,6 +94,28 @@ INLINE void tex_help (unsigned int n, ...)
     help_line[i] = va_arg(help_arg, char *);
   va_end(help_arg);
 }
+INLINE void str_room_ (int val)
+{
+#ifdef ALLOCATESTRING
+  if (pool_ptr + val > current_pool_size)
+    str_pool = realloc_str_pool(increment_pool_size);
+
+  if (pool_ptr + val > current_pool_size)
+  {
+    overflow("pool size", current_pool_size - init_pool_ptr);
+  }
+#else
+  if (pool_ptr + val > pool_size)
+  {
+    overflow("pool size", pool_size - init_pool_ptr); /* pool size */
+  }
+#endif
+}
+INLINE void tail_append_ (pointer val)
+{
+  link(tail) = val;
+  tail = link(tail);
+}
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */

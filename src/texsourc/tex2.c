@@ -1729,11 +1729,13 @@ void scan_something_internal_(small_number level, bool negative)
   case set_box_dimen:
     {
       scan_eight_bit_int();
-      if (eqtb[box_base + cur_val].hh.v.RH == 0)
+
+      if (box(cur_val) == 0)
         cur_val = 0;
       else
-        cur_val = mem[eqtb[(hash_size + 1578) + cur_val].hh.v.RH + m].cint;
-      cur_val_level = 1;
+        cur_val = mem[box(cur_val) + m].cint;
+
+      cur_val_level = dimen_val;
     }
     break;
   case char_given:
@@ -1771,21 +1773,23 @@ void scan_something_internal_(small_number level, bool negative)
   case tex_register:
     {
       scan_eight_bit_int();
+
       switch(m)
       {
-        case 0:
-          cur_val = eqtb[(hash_size + 3218) + cur_val].cint;
+        case int_val:
+          cur_val = count(cur_val);
           break;
-        case 1:
-          cur_val = eqtb[(hash_size + 3751) + cur_val].cint;
+        case dimen_val:
+          cur_val = dimen(cur_val);
           break;
-        case 2:
-          cur_val = eqtb[(hash_size + 800) + cur_val].hh.v.RH;
+        case glue_val:
+          cur_val = skip(cur_val);
           break;
-        case 3:
-          cur_val = eqtb[(hash_size + 1056) + cur_val].hh.v.RH;
+        case mu_val:
+          cur_val = mu_skip(cur_val);
           break;
       }
+
       cur_val_level = m;
     }
     break;

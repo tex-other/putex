@@ -420,32 +420,16 @@ void special_out_(halfword p)
   show_token_list(mem[mem[p + 1].hh.v.RH].hh.v.RH, 0, pool_size - pool_ptr);
 #endif
   selector = old_setting;
-  {
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/* str_room(1) - is there space for one more character in string pool ? */
-#ifdef ALLOCATESTRING
-    if (pool_ptr + 1 > current_pool_size)
-      str_pool = realloc_str_pool (increment_pool_size);
-    if (pool_ptr + 1 > current_pool_size)
-    { /* in case it failed 94/Jan/24 */
-      overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
-      return;     // abort_flag set
-    }
-#else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-    if (pool_ptr + 1 > pool_size)
-    {
-      overflow("pool size", pool_size - init_pool_ptr); /* pool size */
-      return;     // abort_flag set
-    }
-#endif
-  }
+  str_room(1);
+
   if (cur_length < 256)  /* can use xxx1 ? */
   {
     dvi_out(239);
 /* long to unsigned char ... */
     dvi_out(cur_length);
-  } else { /* use xxx4 instead */
+  }
+  else
+  { /* use xxx4 instead */
     dvi_out(242);
     dvi_four(cur_length); 
   } 

@@ -2004,25 +2004,12 @@ halfword id_lookup_(integer j, integer l)
         if (checkpool(NULL))
           show_line("after hash_used\n", 0); 
 #endif
-        {
-#ifdef ALLOCATESTRING
-          if (pool_ptr + l > current_pool_size)
-            str_pool = realloc_str_pool(increment_pool_size + 1);
-          if (pool_ptr + l > current_pool_size) /* in case it failed 97/Mar/7 */
-          {
-            overflow("pool size", current_pool_size - init_pool_ptr); /* pool size */
-            return 0;     // abort_flag set
-          }
-#else
-          if (pool_ptr + l > pool_size)
-          {
-            overflow("pool size", pool_size - init_pool_ptr); /* pool size - not dynamic */
-            return;     // abort_flag set
-          }
-#endif
-        }
+
+        str_room(l);
         d = cur_length;
-        while (pool_ptr > str_start[str_ptr]) {
+
+        while (pool_ptr > str_start[str_ptr])
+        {
           decr(pool_ptr);
           str_pool[pool_ptr + l] = str_pool[pool_ptr];
         }

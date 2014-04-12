@@ -144,6 +144,7 @@ void initialize (void)
     if (flag)
     {
       show_line("Inverted mapping xord[] pairs:\n", 0);
+
       for (k = 0; k < 256; k++)
       {
 /*  entries in xord / xchr */
@@ -158,7 +159,7 @@ void initialize (void)
 /* may now set in local.c bkph */
   if (interaction < 0)
     interaction = error_stop_mode;
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
   deletions_allowed = true;
   set_box_allowed = true;
   error_count = 0;
@@ -196,8 +197,10 @@ void initialize (void)
   last_kern = 0;
   page_so_far[7] = 0;
   page_max_depth = 0;
+
   for (k = int_base; k <= eqtb_size; k++)
     xeq_level[k] = 1;
+
   no_new_control_sequence = true;
   hash[hash_base].v.LH = 0; /* next(hash_base):= 0 */
   hash[hash_base].v.RH = 0; /* text(hash_base):= 0 */
@@ -205,6 +208,7 @@ void initialize (void)
 /* for k <- hashbase+1 to undefined_control_sequence - 1 do ... p.257 */
   for (k = hash_base + 1; k <= undefined_control_sequence - 1; k++)
     hash[k] = hash[hash_base];
+
   save_ptr = 0;
   cur_level = 1;
   cur_group = 0;
@@ -220,14 +224,18 @@ void initialize (void)
   cur_val_level = 0;
   radix = 0;
   cur_order = 0;
+
   for (k = 0; k <= 16; k++)
     read_open[k] = 2;
+
   cond_ptr = 0;
   if_limit = 0;
   cur_if = 0;
   if_line = 0;
+
   for (k = 0; k <= font_max; k++)
     font_used[k] = false;
+
   null_character.b0 = 0;
   null_character.b1 = 0;
   null_character.b2 = 0;
@@ -282,8 +290,10 @@ void initialize (void)
   after_token = 0;
   long_help_seen = false;
   format_ident = 0;
+
   for (k = 0; k <= 17; k++)
     write_open[k] = false;
+
   edit_name_start = 0;
 #ifdef INITEX
 /* initex stuff split off for convenience of optimization adjustments */
@@ -329,7 +339,7 @@ void initialize_aux (void)
   link(page_head) = 0;
 }
 #endif  // end of ifdef ALLOCATEMAIN
-
+/* sec 0815 */
 void line_break_ (integer finalwidowpenalty)
 {
   bool autobreaking;
@@ -345,13 +355,11 @@ void line_break_ (integer finalwidowpenalty)
   mem[temp_head].hh.v.RH = link(head);
   if ((tail >= hi_mem_min))
   {
-    link(tail) = new_penalty(10000);
-    tail = link(tail);
+    tail_append(new_penalty(10000));
   } 
   else if (mem[tail].hh.b0 != 10)
   {
-    link(tail) = new_penalty(10000);
-    tail = link(tail);
+    tail_append(new_penalty(10000));
   }
   else
   {
@@ -1005,11 +1013,13 @@ void prefixed_command (void)
   {
     if (!odd(a / cur_chr))
       a = a + cur_chr;      /*   small_number a;  */
+
     do
-    {
-      get_x_token();
-    }
+      {
+        get_x_token();
+      }
     while(!((cur_cmd != spacer) && (cur_cmd != relax)));
+
     if (cur_cmd <= max_non_prefixed_command)
     {
       print_err("You can't use a prefix with `");
@@ -1020,6 +1030,7 @@ void prefixed_command (void)
       return;
     }
   }
+
   if ((cur_cmd != 97) && (a % 4 != 0))
   {
     print_err("You can't use `");
@@ -1032,6 +1043,7 @@ void prefixed_command (void)
     help1("I'll pretend you didn't say \\long or \\outer here.");
     error();
   }
+
   if (global_defs != 0)
     if (global_defs < 0)
     {
@@ -1043,6 +1055,7 @@ void prefixed_command (void)
       if (!(a >= 4))
         a = a + 4;
     }
+
   switch (cur_cmd)
   {
     case 87:
@@ -1516,6 +1529,7 @@ void bad_formator_pool (char *name, char *defaultname, char *envvar)
 {
   if (name == NULL)
     name = defaultname;
+
   sprintf(log_line, "(Perhaps %s is for an older version of TeX)\n", name);
   show_line(log_line, 0);
   name_of_file[name_length + 1] = '\0';
@@ -1526,6 +1540,7 @@ void bad_formator_pool (char *name, char *defaultname, char *envvar)
   show_line(log_line, 0);
   {
     char *s;            /* extra info 99/April/28 */
+
     if ((s = grabenv(envvar)) != NULL)
     {
       sprintf(log_line, "(%s=%s)\n", envvar, s);
@@ -1550,10 +1565,12 @@ bool load_fmt_file (void)
   integer x;
 
   undump_int(x);
+
   if (x != BEGINFMTCHECKSUM) /* magic FMT file start 4C 20 E6 15 hex */
     goto lab6666;
 
   undump_int(x); /* mem_bot */
+
   if (x != mem_bot)
     goto lab6666;
 
@@ -1566,9 +1583,12 @@ bool load_fmt_file (void)
     sprintf(log_line, "Read from fmt file mem_top = %d TeX words\n", x);
     show_line(log_line, 0);
   }
+
   mem = allocate_main_memory(x); /* allocate main memory at this point */
+
   if (mem == NULL)
     exit(1);                     /* redundant sanity test ! */
+
   initialize_aux();              /* do `mem' part of initialize */
 /*  mem = zmem; */               /* update pointer to main memory */
 #endif
@@ -1577,11 +1597,15 @@ bool load_fmt_file (void)
     goto lab6666;
 
   undump_int(x); /* eqtbsize */
+
   if (x != (eqtb_size))
     goto lab6666;
+
   undump_int(x); /* hash_prime */
+
   if (x != hash_prime)
     goto lab6666;
+
   undump_int(x); /* hyphen_prime */
 
 #ifdef ALLOCATEHYPHEN
@@ -1592,8 +1616,10 @@ bool load_fmt_file (void)
 
   if (x != hyphen_prime)
     goto lab6666;
+
   {
     undump_int(x); /* pool_size */
+
     if (x < 0)
       goto lab6666; 
 
@@ -1674,19 +1700,24 @@ bool load_fmt_file (void)
   do {
     if (undumpthings(mem[p], q + 2 - p))
       return -1;
+
     p = q + node_size(q);
+
     if ((p > lo_mem_max) || ((q >= rlink(q)) && (rlink(q) != rover)))
       goto lab6666;
+
     q = rlink(q);
   } while (!(q == rover));
+
   if (undumpthings(mem[p], lo_mem_max + 1 - p))
     return -1;
-/*  if (mem_min < -2) */
+
   if (mem_min < mem_bot - 2)          /*  ? splice in block below */
   {
 /*  or call add_variable_space(mem_bot - (mem_min + 1)) */
     if (trace_flag)
       show_line("Splicing in mem_min space in undump!\n", 0);
+
     p = llink(rover);
     q = mem_min + 1;
     link(mem_min) = 0;       /* null */
@@ -1707,15 +1738,17 @@ bool load_fmt_file (void)
   }
   {
     undump_int(x);
-/*    if ((x < 0)||(x > mem_top))  */
+
     if ((x < mem_bot) || (x > mem_top))
       goto lab6666;
     else
       avail = x;
   }
   mem_end = mem_top;
+
   if (undumpthings(mem[hi_mem_min], mem_end + 1 - hi_mem_min))
     return -1;
+
   undump_int(var_used);
   undump_int(dyn_used);
 
@@ -1724,12 +1757,16 @@ bool load_fmt_file (void)
     undump_int(x);
     if ((x < 1) || (k + x > (eqtb_size + 1)))
       goto lab6666;
+
     if (undumpthings(eqtb[k], x))
       return -1;
+
     k = k + x;
     undump_int(x);
+
     if ((x < 0) || (k + x > (eqtb_size + 1)))
       goto lab6666;
+
     for (j = k; j <= k + x - 1; j++)
     {
       eqtb[j] = eqtb[k - 1];
@@ -2275,23 +2312,26 @@ int checkpool (char *task)
 void show_frozen (void)
 {
   int i, j, n;
+
   fprintf(log_file, "\n");
   fprintf(log_file, "(%d fonts frozen in format file:\n", font_ptr);
-/*  ignore font 0 which is nullfont */
-/*  for (i = 1; i < font_ptr+1; i++) */
+
   for (i = 1; i <= font_ptr; i++)
   {
     if (i > 1)
       fprintf(log_file, ", ");
+
     if ((i % 8) == 0)
       fprintf(log_file, "\n");
+
     n = str_start[font_name[i] + 1] - str_start[font_name[i]];
+
     for (j = 0; j < n; j++)
     {
       putc(str_pool[str_start[font_name[i]] + j], log_file);
-/*         str_pool[str_start[font_name[i]]+j] = '?'; */
     }
   }
+
   fprintf(log_file, ") ");
 }
 
@@ -3569,8 +3609,10 @@ void store_fmt_file (void)
   if (!is_initex)   /* redundant check 94/Feb/14 */
   {
     show_line("! \\dump is performed only by INITEX\n", 1);
+
     if (! knuth_flag)
       show_line("  (Use -i on the command line)\n", 0);
+
     abort_flag++;
     return;
   }
@@ -3598,42 +3640,26 @@ void store_fmt_file (void)
   else
     selector = term_and_log;
 
-  {
-#ifdef ALLOCATESTRING
-    if (pool_ptr + 1 > current_pool_size)
-      str_pool = realloc_str_pool (increment_pool_size);
-    if (pool_ptr + 1 > current_pool_size) /* in case it failed 94/Jan/24 */
-    {
-      overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/9 */
-      return;     // abort_flag set
-    }
-#else
-    if (pool_ptr + 1 > pool_size)
-    {
-      overflow("pool size", pool_size - init_pool_ptr); /* pool size */
-      return;     // abort_flag set
-    }
-#endif
-  }
+  str_room(1);
   format_ident = make_string();
   pack_job_name(780);   /* .fmt */
 
-  while(! w_open_out(fmt_file)) {
+  while(! w_open_out(fmt_file))
+  {
     prompt_file_name(1267, 780); /* format file name  .fmt */
   }
 
-  print_nl(" Beginning to dump on file ");
+  print_nl("Beginning to dump on file ");
   slow_print(w_make_name_string(fmt_file));
   flush_string();
   print_nl("");
   slow_print(format_ident);
   dump_int(BEGINFMTCHECKSUM); /* magic FMT file start 4C 20 E6 15 hex */
-/*  dump_int(0); */
+
   dump_int(mem_bot);
   dump_int(mem_top);
   dump_int(eqtb_size);
-  dump_int(hash_prime); 
-/*  dump_int(607);  */
+  dump_int(hash_prime);
   dump_int(hyphen_prime);   /* bkph */
 
   dump_int(pool_ptr);

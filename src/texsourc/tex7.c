@@ -440,19 +440,10 @@ bool its_all_over (void)
       return(Result);
     }
     back_input();
-    {
-      mem[tail].hh.v.RH = new_null_box();
-      tail = mem[tail].hh.v.RH;
-    }
+    tail_append(new_null_box());
     width(tail) = hsize;
-    {
-      mem[tail].hh.v.RH = new_glue(8);
-      tail = mem[tail].hh.v.RH;
-    }
-    {
-      mem[tail].hh.v.RH = new_penalty(-1073741824L); /* - 2^30  */
-      tail = mem[tail].hh.v.RH;
-    }
+    tail_append(new_glue(8));
+    tail_append(new_penalty(-1073741824L));
     build_page();
   }
   Result = false;
@@ -486,10 +477,9 @@ void append_glue (void)
       scan_glue(3);
       break;
   }
-  {
-    mem[tail].hh.v.RH = new_glue(cur_val);
-    tail = mem[tail].hh.v.RH;
-  }
+
+  tail_append(new_glue(cur_val));
+
   if (s >= 4)
   {
     decr(mem[cur_val].hh.v.RH);
@@ -505,10 +495,7 @@ void append_kern (void)
   s = cur_chr;
 
   scan_dimen(s == mu_glue, false, false);
-  {
-    mem[tail].hh.v.RH = new_kern(cur_val);
-    tail = mem[tail].hh.v.RH;
-  }
+  tail_append(new_kern(cur_val));
   subtype(tail) = s;
 }
 /* sec 1054 */
@@ -867,10 +854,8 @@ void new_graf_(bool indented)
   prev_graf = 0;
 
   if ((mode == vmode) || (head != tail))
-  {
-    mem[tail].hh.v.RH = new_param_glue(2);
-    tail = mem[tail].hh.v.RH;
-  }
+    tail_append(new_param_glue(par_skip_code));
+
   push_nest();
   mode = hmode;
   space_factor = 1000;
@@ -918,10 +903,7 @@ void indent_in_hmode (void)
       info(nucleus(q)) = p;
       p = q;
     }
-    {
-      mem[tail].hh.v.RH = p;
-      tail = mem[tail].hh.v.RH;
-    }
+    tail_append(p);
   }
 }
 /* only called from tex8.c */
@@ -1007,12 +989,9 @@ void make_mark (void)
 void append_penalty (void)
 {
   scan_int();
-  {
-    mem[tail].hh.v.RH = new_penalty(cur_val);
-    tail = mem[tail].hh.v.RH;
-  }
+  tail_append(new_penalty(cur_val));
 
-  if (mode == 1)
+  if (mode == vmode)
     build_page();
 }
 /* only called from tex8.c */
@@ -1118,10 +1097,7 @@ void append_italic_correction (void)
     else
       return;
     f = font(p);
-    {
-      mem[tail].hh.v.RH = new_kern(font_info[italic_base[f] + (font_info[char_base[f] + mem[p].hh.b1].qqqq.b2) / 4].cint);
-      tail = mem[tail].hh.v.RH;
-    }
+    tail_append(new_kern(font_info[italic_base[f] + (font_info[char_base[f] + mem[p].hh.b1].qqqq.b2) / 4].cint));
     subtype(tail) = explicit;
   }
 }
@@ -1130,10 +1106,7 @@ void append_discretionary (void)
 {
   integer c;
 
-  {
-    mem[tail].hh.v.RH = new_disc();
-    tail = mem[tail].hh.v.RH;
-  }
+  tail_append(new_disc());
 
   if (cur_chr == 1)
   {
@@ -1738,10 +1711,7 @@ void scan_delimiter_(halfword p, bool r)
 /* sec 1163 */
 void math_radical (void)
 {
-  {
-    mem[tail].hh.v.RH = get_node(radical_noad_size);
-    tail = mem[tail].hh.v.RH;
-  }
+  tail_append(get_node(radical_noad_size));
   type(tail) = radical_noad;
   subtype(tail) = normal;
   mem[nucleus(tail)].hh = empty_field;
@@ -1763,10 +1733,7 @@ void math_ac (void)
     error();
   }
 
-  {
-    mem[tail].hh.v.RH = get_node(5);
-    tail = mem[tail].hh.v.RH;
-  }
+  tail_append(get_node(5));
   type(tail) = accent_noad;
   subtype(tail) = normal;
   mem[nucleus(tail)].hh = empty_field;
@@ -1786,10 +1753,7 @@ void math_ac (void)
 /* sec 1172 */
 void append_choices (void)
 {
-  {
-    mem[tail].hh.v.RH = new_choice();
-    tail = mem[tail].hh.v.RH;
-  }
+  tail_append(new_choice());
   incr(save_ptr);
   save_stack[save_ptr - 1].cint = 0;
   push_math(math_choice_group);
@@ -1882,10 +1846,7 @@ void sub_sup (void)
 
   if ((p == 0) || (t != 0))
   {
-    {
-      mem[tail].hh.v.RH = new_noad();
-      tail = mem[tail].hh.v.RH;
-    }
+    tail_append(new_noad());
     p = supscr(tail) + cur_cmd - sup_mark;
 
     if (t != 0)
