@@ -288,7 +288,7 @@ void t_open_in (void)
 static RETSIGTYPE
 /* catch_interrupt () */
 catch_interrupt (int err)
-{     /* NOTE: err is unreferenced - bkph */
+{
   (void) signal (SIGINT, SIG_IGN);  /* turn off interrupts for now */
 /*  interrupt = 1; */       /* make sure interrupt declared volatile */
 //  if (interrupt++ >= 3) uexit(1); /* emergency exit -- bkph */

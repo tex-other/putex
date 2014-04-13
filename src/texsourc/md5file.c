@@ -1,4 +1,4 @@
-/* Copyright 2014 Clerk Ma & Jie Su.
+/* Copyright 2014 Clerk Ma
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,29 +15,43 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
    02110-1301 USA.  */
 
-#include <windows.h>
+#pragma warning(disable:4996)
 
-VS_VERSION_INFO VERSIONINFO
-  FILEVERSION    0,3,0,0
-  PRODUCTVERSION 2,3,0,0
-  FILEOS         VOS__WINDOWS32
-  FILETYPE       VFT_APP
+#include <stdio.h>
+#include "md5.h"
+
+char * md5_file(const char * file_name)
 {
-  BLOCK "StringFileInfo"
-  {
-    BLOCK "040904b0"
-    {
-      VALUE "CompanyName",        "Project Fandol.\0"
-      VALUE "FileDescription",    "Y&Y TeX 2.2.3 (WIN32)\0"
-      VALUE "FileVersion",        "0.3.0.0\0"
-      VALUE "LegalCopyright",     "(C) 2014 Clerk Ma.\0"
-      VALUE "OriginalFilename",   "yandytex.exe\0"
-      VALUE "ProductName",        "Y&Y TeX\0"
-      VALUE "ProductVersion",     "2.2.3.0\0"
-    }
-  }
-  BLOCK "VarFileInfo"
-  {
-    VALUE "Translation", 0x409, 1252
-  }
+  md5_state_t md5_ship;
+  md5_byte_t  md5_data[1024];
+  md5_byte_t  md5_digest[16];
+  static char md5_hex[33];
+  int         md5_len;
+  FILE * ship_file;
+  int i;
+
+  ship_file = fopen(file_name, "rb");
+
+  md5_init(&md5_ship);
+
+  while ((md5_len = fread(md5_data, 1, 1024, ship_file)) != 0)
+    md5_append(&md5_ship, md5_data, md5_len);
+
+  md5_finish(&md5_ship, md5_digest);
+
+  fclose(ship_file);
+
+  for (i = 0; i < 16; ++i)
+    sprintf(md5_hex + i * 2, "%02x", md5_digest[i]);
+
+  return md5_hex;
 }
+
+#ifdef MD5TEST
+int main(void)
+{
+  printf("%s", md5_file("md5.c"));
+
+  return 0;
+}
+#endif

@@ -87,12 +87,13 @@ void scan_int (void)
   }
   else if ((cur_cmd >= min_internal) && (cur_cmd <= max_internal))
   {
-    scan_something_internal(0, false);
+    scan_something_internal(int_val, false);
   }
   else
   {
     radix = 10;
     m = 214748364L;   /* 7FFFFFFF hex */
+
     if (cur_tok == octal_token)
     {
       radix = 8;
@@ -105,29 +106,33 @@ void scan_int (void)
       m = 134217728L;   /* 2^27 8000000 hex */
       get_x_token();
     }
+
     vacuous = true;
     cur_val = 0;
 
-    while (true) {
-      if ((cur_tok < 3120 + radix) && (cur_tok >= 3120) && (cur_tok <= 3129))
-        d = cur_tok - 3120;
+    while (true)
+    {
+      if ((cur_tok < zero_token + radix) && (cur_tok >= zero_token) && (cur_tok <= zero_token + 9))
+        d = cur_tok - zero_token;
       else if (radix == 16)
-        if ((cur_tok <= 2886) && (cur_tok >= 2881))
-          d = cur_tok - 2871;
-        else if ((cur_tok <= 3142) && (cur_tok >= 3137))
-          d = cur_tok - 3127;
+        if ((cur_tok <= A_token + 5) && (cur_tok >= A_token))
+          d = cur_tok - A_token + 10;
+        else if ((cur_tok <= other_A_token + 5) && (cur_tok >= other_A_token))
+          d = cur_tok - other_A_token;
         else
           goto lab30;
       else
         goto lab30;
+
       vacuous = false;
+
       if ((cur_val >= m) && ((cur_val > m) || (d > 7) || (radix != 10)))
       {
         if (OKsofar)
         {
           print_err("Number too big");
           help2("I can only go up to 2147483647='17777777777=\"7FFFFFFF,",
-              "so I'm using that number instead of yours.");
+            "so I'm using that number instead of yours.");
           error();
           cur_val = 2147483647L;    /* 7FFFFFFF hex */
           OKsofar = false;
@@ -138,6 +143,7 @@ void scan_int (void)
       get_x_token();
     }
 lab30:;
+
     if (vacuous)
     {
       print_err("Missing number, treated as zero");
@@ -149,6 +155,7 @@ lab30:;
     else if (cur_cmd != spacer)
       back_input();
   }
+
   if (negative)
     cur_val = - (integer) cur_val;
 }
@@ -162,54 +169,64 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
   halfword p, q;
   scaled v;
   integer savecurval;
+
   f = 0;
   arith_error = false;
   cur_order = 0;
   negative = false;
+
   if (!shortcut)
   {
     negative = false;
     do {
-      do {
-        get_x_token();
-      } while (!(cur_cmd != spacer));
+      do
+        {
+          get_x_token();
+        }
+      while (!(cur_cmd != spacer));
 
-      if (cur_tok == 3117)
+      if (cur_tok == other_token + '-')
       {
         negative = ! negative;
-        cur_tok = 3115;
+        cur_tok = other_token + '+';
       }
-    } while (!(cur_tok != 3115));
+    } while (!(cur_tok != other_token + '+'));
 
     if ((cur_cmd >= min_internal) && (cur_cmd <= max_internal))
+    {
       if (mu)
       {
         scan_something_internal(mu_val, false);
+
         if (cur_val_level >= glue_val)
         {
           v = width(cur_val);
           delete_glue_ref(cur_val);
           cur_val = v;
         }
+
         if (cur_val_level == mu_val)
           goto lab89;
+
         if (cur_val_level != int_val)
-        {
           mu_error();
-        }
       }
       else
       {
         scan_something_internal(dimen_val, false);
+
         if (cur_val_level == dimen_val)
           goto lab89;
       }
+    }
     else
     {
       back_input();
-      if (cur_tok == 3116)
-        cur_tok = 3118;
-      if (cur_tok != 3118)
+
+      if (cur_tok == continental_point_token)
+        cur_tok = point_token;
+
+      if (cur_tok != point_token)
       {
         scan_int();
       }
@@ -218,22 +235,28 @@ void scan_dimen_(bool mu, bool inf, bool shortcut)
         radix = 10;
         cur_val = 0;
       }
-      if (cur_tok == 3116)
-        cur_tok = 3118;
-      if ((radix == 10) && (cur_tok == 3118))
+
+      if (cur_tok == continental_point_token)
+        cur_tok = point_token;
+
+      if ((radix == 10) && (cur_tok == point_token))
       {
         k = 0;
         p = 0;      /* p:=null l.8883 */
         get_token();
 
-        while (true) {
+        while (true)
+        {
           get_x_token();
-          if ((cur_tok > 3129) || (cur_tok < 3120))
+
+          if ((cur_tok > zero_token + 9) || (cur_tok < zero_token))
             goto lab31;
-          if (k < 17) {
+
+          if (k < 17)
+          {
             q = get_avail();
             link(q) = p;
-            info(q) = cur_tok - 3120;
+            info(q) = cur_tok - zero_token;
             p = q;
             incr(k);
           }
@@ -246,21 +269,29 @@ lab31:
           p = link(p);
           free_avail(q);
         }
+
         f = round_decimals(k);
+
         if (cur_cmd != spacer)
           back_input();
         }
       }
   }
+
   if (cur_val < 0)
   {
     negative = !negative;
     cur_val = - (integer) cur_val;
   }
+
   if (inf)
-    if (scan_keyword("fil")) {
+  {
+    if (scan_keyword("fil"))
+    {
       cur_order = fil;
-      while (scan_keyword("l")) {
+
+      while (scan_keyword("l"))
+      {
         if (cur_order == filll)
         {
           print_err("Illegal unit of measure(");
@@ -273,10 +304,15 @@ lab31:
       }
       goto lab88;
     }
+  }
+
   savecurval = cur_val;
-  do {
-    get_x_token();
-  } while (!(cur_cmd != spacer));
+
+  do
+    {
+      get_x_token();
+    }
+  while (!(cur_cmd != spacer));
 
   if ((cur_cmd < min_internal) || (cur_cmd > max_internal))
     back_input();
@@ -285,12 +321,14 @@ lab31:
     if (mu)
     {
       scan_something_internal(mu_val, false);
+
       if (cur_val_level >= glue_val)
       {
         v = width(cur_val);
         delete_glue_ref(cur_val);
         cur_val = v;
       }
+
       if (cur_val_level != mu_val)
       {
         mu_error();
@@ -303,14 +341,17 @@ lab31:
     v = cur_val;
     goto lab40;
   }
+
   if (mu)
     goto lab45;
+
   if (scan_keyword("em"))
     v = quad(cur_font);
   else if (scan_keyword("ex"))
     v = x_height(cur_font);
   else
     goto lab45;
+
   {
     get_x_token();
 
@@ -321,8 +362,8 @@ lab40:
   cur_val = mult_and_add(savecurval, v, xn_over_d(v, f, 65536L), 1073741823L);   /* 2^30 - 1 */
   goto lab89;
 lab45:
-  ;
   if (mu)
+  {
     if (scan_keyword("mu"))
       goto lab88;
     else
@@ -336,9 +377,12 @@ lab45:
       error();
       goto lab88;
     }
+  }
+
   if (scan_keyword("true"))
   {
     prepare_mag();
+
     if (mag != 1000)
     {
       cur_val = xn_over_d(cur_val, 1000, mag);
@@ -347,8 +391,10 @@ lab45:
       f = f % 65536L;
     }
   }
+
   if (scan_keyword("pt"))
     goto lab88;
+
   if (scan_keyword("in"))
   {
     num = 7227;
@@ -409,6 +455,7 @@ lab45:
     error();
     goto lab32;
   }
+
   cur_val = xn_over_d(cur_val, num, denom);
   f = (num * f + 65536L * tex_remainder) / denom;
   cur_val = cur_val +(f / 65536L);
@@ -422,11 +469,12 @@ lab88:
 lab30:;
   {
     get_x_token();
+
     if (cur_cmd != spacer)
       back_input();
   }
 lab89:
-  if (arith_error || (abs(cur_val)>= 1073741824L)) /* 2^30 */
+  if (arith_error || (abs(cur_val) >= 1073741824L)) /* 2^30 */
   {
     print_err("Dimension too large");
     help2("I can't work with sizes bigger than about 19 feet.",
@@ -435,6 +483,7 @@ lab89:
     cur_val = 1073741823L;  /* 2^30 - 1 */
     arith_error = false;
   }
+
   if (negative)
     cur_val = - (integer) cur_val;
 }
@@ -447,21 +496,26 @@ void scan_glue_(small_number level)
 
   mu = (level == mu_val);
   negative = false;
-  do {
-    do {
-      get_x_token();
-    } while (!(cur_cmd != spacer));
 
-    if (cur_tok == 3117)
+  do
     {
-      negative = !negative;
-      cur_tok = 3115;
+      do {
+          get_x_token();
+      }
+      while (!(cur_cmd != spacer));
+
+      if (cur_tok == other_token + '-')
+      {
+        negative = !negative;
+        cur_tok = other_token + '+';
+      }
     }
-  } while (!(cur_tok != 3115));
+  while (!(cur_tok != other_token + '+'));
 
   if ((cur_cmd >= min_internal) && (cur_cmd <= max_internal))
   {
     scan_something_internal(level, negative);
+
     if (cur_val_level >= glue_val)
     {
       if (cur_val_level != level)
@@ -470,6 +524,7 @@ void scan_glue_(small_number level)
       }
       return;
     }
+
     if (cur_val_level == int_val)
     {
       scan_dimen(mu, false, true);
@@ -483,29 +538,34 @@ void scan_glue_(small_number level)
   {
     back_input();
     scan_dimen(mu, false, false);
+
     if (negative)
       cur_val = - (integer) cur_val;
   }
-  q = new_spec(0);
+  q = new_spec(zero_glue);
   width(q) = cur_val;
+
   if (scan_keyword("plus"))
   {
     scan_dimen(mu, true, false);
     stretch(q) = cur_val;
     stretch_order(q) = cur_order;
   }
+
   if (scan_keyword("minus"))
   {
     scan_dimen(mu, true, false);
     shrink(q) = cur_val;
     shrink_order(q) = cur_order;
   }
+
   cur_val = q;
 }
 /* sec 0463 */
 halfword scan_rule_spec (void)
 {
   halfword q;
+
   q = new_rule();
   if (cur_cmd == vrule)
     width(q) = default_rule;
@@ -514,25 +574,30 @@ halfword scan_rule_spec (void)
     height(q) = default_rule;
     depth(q) = 0;
   }
+
 lab21:
+
   if (scan_keyword("width"))
   {
     scan_dimen(false, false, false);
     width(q) = cur_val;
     goto lab21;
   }
+
   if (scan_keyword("height"))
   {
     scan_dimen(false, false, false);
     height(q) = cur_val;
     goto lab21;
   }
+
   if (scan_keyword("depth"))
   {
     scan_dimen(false, false, false);
     depth(q) = cur_val;
     goto lab21;
   }
+
   return q;
 }
 /* sec 0464 */
@@ -548,12 +613,14 @@ halfword str_toks_(pool_pointer b)
   link(p) = 0;
   k = b;
 
-  while (k < pool_ptr) {
+  while (k < pool_ptr)
+  {
     t = str_pool[k];
+
     if (t == ' ')
-      t = 2592;
+      t = space_token;
     else
-      t = 3072 + t;
+      t = other_token + t;
     {
       {
         q = avail;
@@ -574,6 +641,7 @@ halfword str_toks_(pool_pointer b)
     incr(k);
   }
   pool_ptr = b;
+
   return p;
 }
 /* sec 0465 */
@@ -590,17 +658,19 @@ halfword the_toks (void)
   if (cur_val_level >= ident_val)
   {
     p = temp_head; 
-    link(p) = 0; 
+    link(p) = 0;
+
     if (cur_val_level == ident_val)
     {
       q = get_avail();
       mem[p].hh.v.RH = q;
-      mem[q].hh.v.LH = 4095 + cur_val;
+      mem[q].hh.v.LH = cs_token_flag + cur_val;
       p = q;
     }
     else if (cur_val != 0)
     {
       r = link(cur_val);
+
       while (r != 0) { /*   while r<>null do l.9178 */
         {
           {
@@ -630,6 +700,7 @@ halfword the_toks (void)
     old_setting = selector;
     selector = new_string;
     b = pool_ptr;
+
     switch (cur_val_level)
     {
       case int_val:
@@ -657,6 +728,7 @@ halfword the_toks (void)
     selector = old_setting;
     Result = str_toks(b);
   }
+
   return Result;
 }
 /* sec 0467 */
@@ -698,6 +770,7 @@ void conv_toks (void)
   old_setting = selector;
   selector = new_string;
   b = pool_ptr;
+
   switch (c)
   {
     case number_code:
@@ -717,6 +790,7 @@ void conv_toks (void)
       break;
     case font_name_code:
       print(font_name[cur_val]);
+
       if (font_size[cur_val] != font_dsize[cur_val])
       {
         print_string(" at ");
@@ -728,7 +802,7 @@ void conv_toks (void)
       print(job_name);
       break;
   }
-  selector = old_setting; 
+  selector = old_setting;
   link(garbage) = str_toks(b);
   begin_token_list(link(temp_head), 4);
 }
@@ -747,23 +821,28 @@ halfword scan_toks_(bool macrodef, bool xpand)
     scanner_status = defining;
   else
     scanner_status = absorbing;
+
   warning_index = cur_cs;
   def_ref = get_avail();
   token_ref_count(def_ref) = 0;
   p = def_ref;
   hashbrace = 0;
-  t = 3120;
+  t = zero_token;
 
   if (macrodef)
   {
-    while (true) {
+    while (true)
+    {
       get_token();
-      if (cur_tok < 768)
+
+      if (cur_tok < right_brace_limit)
         goto lab31;
+
       if (cur_cmd == mac_param)
       {
-        s = 3328 + cur_chr;
+        s = match_token + cur_chr;
         get_token();
+
         if (cur_cmd == left_brace)
         {
           hashbrace = cur_tok;
@@ -776,12 +855,13 @@ halfword scan_toks_(bool macrodef, bool xpand)
           {
             q = get_avail();
             mem[p].hh.v.RH = q;
-            mem[q].hh.v.LH = 3584;
+            mem[q].hh.v.LH = end_match_token;
             p = q;
           }
           goto lab30;
         }
-        if (t == 3129)
+
+        if (t == zero_token + 9)
         {
           print_err("You already have nine parameters");
           help1("I'm going to ignore the # sign you just used.");
@@ -790,6 +870,7 @@ halfword scan_toks_(bool macrodef, bool xpand)
         else
         {
           incr(t);
+
           if (cur_tok != t)
           {
             print_err("Parameters must be numbered consecutively");
@@ -830,14 +911,20 @@ lab30:;
   {
     scan_left_brace();
   }
+
   unbalance = 1;
-  while (true) {
+
+  while (true)
+  {
     if (xpand)
     {
-      while (true) {
+      while (true)
+      {
         get_next();
+
         if (cur_cmd <= max_command)
           goto lab32;
+
         if (cur_cmd != the)
         {
           expand();
@@ -845,6 +932,7 @@ lab30:;
         else
         {
           q = the_toks();
+
           if (link(temp_head) != 0)
           {
             link(p) = link(temp_head);
@@ -858,12 +946,13 @@ lab32:
     else
       get_token();
 
-    if (cur_tok < 768)
+    if (cur_tok < right_brace_limit)
       if (cur_cmd < right_brace)
         incr(unbalance);
       else
       {
         decr(unbalance);
+
         if (unbalance == 0)
           goto lab40;
       }
@@ -871,12 +960,14 @@ lab32:
       if (macrodef)
       {
         s = cur_tok;
+
         if (xpand)
           get_x_token();
         else
           get_token();
+
         if (cur_cmd != mac_param)
-          if ((cur_tok <= 3120) || (cur_tok > t))
+          if ((cur_tok <= zero_token) || (cur_tok > t))
           {
             print_err("Illegal parameter number in definition of");
             sprint_cs(warning_index);
@@ -887,7 +978,7 @@ lab32:
             cur_tok = s;
           }
           else
-            cur_tok = 1232 + cur_chr;
+            cur_tok = out_param_token - '0' + cur_chr;
       }
     {
       q = get_avail();
@@ -897,7 +988,8 @@ lab32:
     }
   }
 lab40:
-  scanner_status = 0; 
+  scanner_status = 0;
+
   if (hashbrace != 0)
   {
     q = get_avail();
@@ -916,7 +1008,7 @@ void read_toks_(integer n, halfword r)
   halfword q;
   integer s;
 /*  small_number m;  */
-  int m;            /* 95/Jan/7 */
+  int m; /* 95/Jan/7 */
 
   scanner_status = defining;
   warning_index = r;

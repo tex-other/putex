@@ -1983,15 +1983,18 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define ident_val 4
 #define tok_val   5
 /* sec 0416 */
-#define input_line_no_code glue_val + 1
-#define badness_code       glue_val + 2
+#define input_line_no_code (glue_val + 1)
+#define badness_code       (glue_val + 2)
 /* sec 0438 */
-#define octal_token             other_token + '\'' // 3111
-#define hex_token               other_token + '"'  // 3106
-#define alpha_token             other_token + '`'  // 3168
-#define point_token             other_token + '.'  // 3118
-#define continental_point_token other_token + ','  // 3116
+#define octal_token             (other_token + '\'') // 3111
+#define hex_token               (other_token + '"' ) // 3106
+#define alpha_token             (other_token + '`' ) // 3168
+#define point_token             (other_token + '.' ) // 3118
+#define continental_point_token (other_token + ',' ) // 3116
 /* sec 0445 */
+#define zero_token    (other_token + '0')  // 3120
+#define A_token       (letter_token + 'A') // 2881
+#define other_A_token (other_token + 'A')  // 3137
 /* sec 0468 */
 #define number_code        0
 #define roman_numeral_code 1
@@ -2102,14 +2105,14 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define sub_mlist      3
 #define math_text_char 4
 /* sec 0682 */
-#define ord_noad   unset_node + 3 // 16
-#define op_noad    ord_noad + 1   // 17
-#define bin_noad   ord_noad + 2   // 18
-#define rel_noad   ord_noad + 3   // 19
-#define open_noad  ord_noad + 4   // 20
-#define close_noad ord_noad + 5   // 21
-#define punct_noad ord_noad + 6   // 22
-#define inner_noad ord_noad + 7   // 23
+#define ord_noad   (unset_node + 3) // 16
+#define op_noad    (ord_noad + 1  ) // 17
+#define bin_noad   (ord_noad + 2  ) // 18
+#define rel_noad   (ord_noad + 3  ) // 19
+#define open_noad  (ord_noad + 4  ) // 20
+#define close_noad (ord_noad + 5  ) // 21
+#define punct_noad (ord_noad + 6  ) // 22
+#define inner_noad (ord_noad + 7  ) // 23
 #define limits    1
 #define no_limits 2
 /* sec 0683 */
@@ -2322,6 +2325,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define set_language_code 5
 /* sec 79 */
 
+extern char * md5_file(const char * file_name);
 extern INLINE void str_room_ (int val);
 #define str_room(a) str_room_((int) a)
 extern INLINE void tail_append_ (pointer val);

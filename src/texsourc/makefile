@@ -41,7 +41,8 @@ LFLAGS=/MAP /MACHINE:X86
 
 objs = texmf.obj itex.obj openinou.obj subroute.obj local.obj \
 	tex0.obj tex1.obj tex2.obj tex3.obj tex4.obj \
-	tex5.obj tex6.obj tex7.obj tex8.obj tex9.obj yandy_pool.obj yandytex.res
+	tex5.obj tex6.obj tex7.obj tex8.obj tex9.obj \
+	yandy_pool.obj yandytex.res md5.obj md5file.obj
 
 # ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
 # # LIBHARU
@@ -49,11 +50,18 @@ objs = texmf.obj itex.obj openinou.obj subroute.obj local.obj \
 
 texmf.exe: $(objs) 
 	$(LINK) $(LFLAGS) texmf itex openinou subroute local \
-	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9 yandy_pool yandytex.res
+	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9 \
+	yandy_pool yandytex.res md5 md5file
 	copy texmf.exe yandytex.exe
 	del ..\yandy\bin\texmf.exe
 	copy texmf.exe ..\yandy\bin\texmf.exe
 # ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+md5.obj: libmd5\md5.c
+	$(CC) -Ilibmd5 $(CFLAGS) libmd5\md5.c
+
+md5file.obj: md5file.c
+	$(CC) -Ilibmd5 $(CFLAGS) md5file.c
+
 yandytex.res: yandytex.rc
 	rc yandytex.rc
 
