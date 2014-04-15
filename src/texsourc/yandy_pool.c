@@ -16,6 +16,7 @@
 #pragma warning(disable:4127) // conditional expression is constant
 
 #include <setjmp.h>
+#include <time.h>
 
 #define EXTERN extern
 
@@ -1066,20 +1067,41 @@ static const char *pool_file_arr[] =
 
 int load_pool_strings (integer spare_size)
 {
-  const char *s;
+  //const char *s;
   str_number g = 0;
   int i = 0;
-  int j = 0;
+  //int j = 0;
+  int k = 0;
   int l;
+
+  for (k = 0; k < sizeof(pool_file_arr) / sizeof(char *) - 1; ++k)
+  {
+    l = strlen(pool_file_arr[k]);
+    i += l;
+
+    if (i >= spare_size)
+      return 0;
+
+    memcpy(str_pool + pool_ptr, pool_file_arr[k], l);
+
+    pool_ptr += l;
+
+    g = make_string();
+  }
+/*
   while ((s = pool_file_arr[j++]))
   {
     l = strlen (s);
     i += l;
+
     if (i >= spare_size)
       return 0;
+
     while (l-- > 0)
       str_pool[pool_ptr++] = *s++;
+
     g = make_string();
   }
+  */
   return g;
 }

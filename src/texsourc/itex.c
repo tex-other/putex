@@ -2535,9 +2535,10 @@ lab1:     /* get here directly if ready_already already set ... */
       selector = no_print;
     else
       selector = term_only;
-     if ((cur_input.loc_field < cur_input.limit_field) &&
-       (eqtb[(hash_size + 1883) + buffer[cur_input.loc_field]].hh.v.RH != 0))
-       start_input();
+
+    if ((cur_input.loc_field < cur_input.limit_field) &&
+      (eqtb[(hash_size + 1883) + buffer[cur_input.loc_field]].hh.v.RH != 0))
+      start_input();
   }
 
 /*  show font TFMs frozen into format file */
@@ -3033,12 +3034,14 @@ lab30:
   }
 #endif
   g = load_pool_strings(pool_size - stringvacancies);
+
   if (g == 0)
   {
     fprintf(stdout , "%s\n",  "! You have to increase POOLSIZE." );
     Result = false;
     return Result;
   }
+
   Result = true;
   return Result;
 }
@@ -3086,31 +3089,30 @@ void sort_avail (void)
 /*****************APTEX********************/
 str_number make_string_pool (char *s)
 {
-  while (*s != '\0') {
-    append_char(*s);
-    incr(s);
-  }
+  int slen = strlen(s);
+  memcpy(str_pool + pool_ptr, s, slen);
+  pool_ptr += slen;
   return (make_string());
 }
-void primitive_s (char * s, quarterword c, halfword o)
+void primitive_s (char * str, quarterword c, halfword o)
 {
   pool_pointer k, l;
   small_number j;
-  str_number prim_str;
+  str_number s;
 
-  if (s[1] = '\0')
-    cur_val = s[0] + single_base;
+  s = make_string_pool(str);
+
+  if (s < 256)
+    cur_val = str[0] + single_base;
   else
   {
-    prim_str = make_string_pool(s);
-    k = str_start[prim_str];
-    l = str_start[prim_str + 1] - k;
-    printf("*************************: %d---%d", str_start[prim_str], str_start[prim_str+1]);
+    k = str_start[s];
+    l = str_start[s + 1] - k;
     for (j = 0; j < l; incr(j))
       buffer[j] = str_pool[k + j];
     cur_val = id_lookup(0, l);
     flush_string();
-    hash[cur_val].v.RH = prim_str;
+    hash[cur_val].v.RH = s;
   }
   eq_level(cur_val) = level_one;
   eq_type(cur_val) = c;
@@ -3947,7 +3949,7 @@ lab32:
 void init_prim (void)
 {
   no_new_control_sequence = false;
-  //primitive_s("lineskip", assign_glue, glue_base + line_skip_code);
+  //primitive(make_string_pool("lineskip"), assign_glue, glue_base + line_skip_code);
   primitive(373, assign_glue, glue_base + line_skip_code);          /* lineskip */
   primitive(374, assign_glue, glue_base + baseline_skip_code);      /* baselineskip */
   primitive(375, assign_glue, glue_base + par_skip_code);           /* parskip */

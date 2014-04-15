@@ -472,6 +472,7 @@ void special_out_(halfword p)
 #endif
   for (k = str_start[str_ptr]; k <= pool_ptr - 1; k++)
     dvi_out(str_pool[k]);
+
   pool_ptr = str_start[str_ptr];
 }
 /* noew returns -1 if it fails */

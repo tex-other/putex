@@ -1018,19 +1018,23 @@ void read_toks_(integer n, halfword r)
   {
     q = get_avail();
     mem[p].hh.v.RH = q;
-    mem[q].hh.v.LH = 3584;
+    mem[q].hh.v.LH = end_match_token;
     p = q;
   }
+
   if ((n < 0) || (n > 15))
     m = 16;
   else
     m = n;
+
   s = align_state;
   align_state = 1000000L;
+
   do {
     begin_file_reading();
     cur_input.name_field = m + 1;
-    if (read_open[m] == 2)
+
+    if (read_open[m] == closed)
       if (interaction > nonstop_mode)
         if (n < 0)
         {
@@ -1806,22 +1810,29 @@ void scan_file_name (void)
 {
   name_in_progress = true;
   begin_name();
-  do {
-    get_x_token(); 
-  } while (!(cur_cmd != spacer));
+
+  do
+    {
+      get_x_token(); 
+    }
+  while (!(cur_cmd != spacer));
+
   quoted_file_name = 0;         /* 98/March/15 */
-  if (allow_quoted_names)
-  {       /* check whether quoted name */
+
+  if (allow_quoted_names) /* check whether quoted name */
+  {
     if (cur_chr == '"')
     {
       quoted_file_name = 1;
       get_x_token();
     }
   }
-  while (true) {
-    if ((cur_cmd > other_char)||(cur_chr > 255)) 
+
+  while (true)
+  {
+    if ((cur_cmd > other_char) || (cur_chr > 255)) 
     {
-      back_input();  /* not a character put it back and leave */
+      back_input(); /* not a character put it back and leave */
       goto lab30; 
     } 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -1832,6 +1843,7 @@ void scan_file_name (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     if (!more_name(cur_chr))    /* up to next white space */
       goto lab30;
+
     get_x_token();
   }
 lab30:
@@ -1852,10 +1864,13 @@ void pack_job_name_(str_number s)
 /* show TEXINPUTS=... or format specific  */
 /* only show this if name was not fully qualified ? */
 void show_tex_inputs (void)
-{     /* 98/Jan/28 */
+{
   char *s, *t, *v;
+
   s = "TEXINPUTS";        /* default */
-  if (format_specific) {
+
+  if (format_specific)
+  {
     s = format_name;                /* try specific */
     if (grabenv(s) == NULL) s = "TEXINPUTS";  /* no format specific */
   }
@@ -1864,14 +1879,20 @@ void show_tex_inputs (void)
 
   print_nl("  ");
   print_char(' ');
-  print_char(40);   /*(*/
+  print_char('(');
   t = s;
-  while (*t > '\0') print_char(*t++);
+
+  while (*t > '\0')
+    print_char(*t++);
+
   print_char('=');
   v = grabenv(s);
-  if (v != NULL) {
+
+  if (v != NULL)
+  {
     t = v;
-    while (*t > '\0') print_char(*t++);
+    while (*t > '\0')
+      print_char(*t++);
   }
   print_char(')');
 }
@@ -1881,30 +1902,38 @@ void show_tex_inputs (void)
 void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e - default */ 
 {
   integer k;
+
   if (interaction == scroll_mode);
+
   if (s == 781)
     print_err("I can't find file `");
   else
     print_err("I can't write on file `");
+
   print_file_name(cur_name, cur_area, cur_ext);
   print_string("'.");
-  if (s == 781)
-  {   /* input file name */
-    if (cur_area == 335)
-    {    /* "" only if path not specified */
+
+  if (s == 781) /* input file name */
+  {
+    if (cur_area == 335) /* "" only if path not specified */
+    {
       if (show_texinput_flag)
         show_tex_inputs();
     }
   }
+
   if (e == 785)    /* .tex */
     show_context();
+
   print_nl("Please type another ");
   print(s);
+
   if (interaction < 2)
   {
     fatal_error("*** (job aborted, file error in nonstop mode)");
     return;     // abort_flag set
   }
+
   if (!knuth_flag)
 #ifdef _WINDOWS
     show_line(" (or ^z to exit)", 0);
@@ -1924,14 +1953,16 @@ void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e
       incr(k);
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     quoted_file_name = 0;         /* 98/March/15 */
-    if (allow_quoted_names && k < last)
-    { /* check whether quoted name */
+
+    if (allow_quoted_names && k < last) /* check whether quoted name */
+    {
       if (buffer[k]== '"')
       {
         quoted_file_name = 1;
         incr(k);
       }
     }
+
     while (true) {
       if (k == last)
         goto lab30;
@@ -1966,8 +1997,11 @@ void open_log_file (void)
 
   if (job_name == 0)
     job_name = 790;   /* default:  texput */
+
   pack_job_name(791); /* .log */
-  while (!a_open_out(log_file)) {
+
+  while (!a_open_out(log_file))
+  {
     selector = term_only;
     prompt_file_name(793, 791); /* transcript file name  texput */
   }

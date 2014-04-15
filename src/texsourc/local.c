@@ -3682,8 +3682,10 @@ int init (int ac, char **av)
 
   probe_memory();             /* show top address */
   ini_max_address = max_address;       /* initial max address */
+
   if (trace_flag)
     show_maximums(stdout);
+
 #ifdef HEAPWALK
   if (heap_flag)
     (void) heap_dump(stdout, 1);
@@ -3707,6 +3709,7 @@ int init (int ac, char **av)
 
 /*   following is more or less useless since most all things not yet alloc */
    check_alloc_align(trace_flag);    /* sanity check 1994/Jan/8 */
+
 #ifdef HEAPSHOW
    if (trace_flag) showaddresses();  /* debugging only 1996/Jan/20 */
 #endif
@@ -3796,11 +3799,9 @@ int endit (int flag)
 /*    show_inter_val(main_time, finish_time); */
     show_inter_val(finish_time - main_time);
     show_line(" processing) ", 0);
+
     if (total_pages > 0)
     {
-/*      msec = (finish_time - main_time) * 1000 / (CLK_TCK * total_pages); */
-/*      sprintf(log_line, " %d.%d sec per page", msec / 1000, msec % 1000); */
-/*      sprintf(log_line, " %d.%03d sec per page", msec / 1000, msec % 1000); */
       show_inter_val ((finish_time - main_time) / total_pages);
       show_line(" sec per page", 0);
     }
@@ -3816,57 +3817,37 @@ int endit (int flag)
 
 /* addition 98/Mar/31 print_csnames Frank Mittelbach */
 
-int textcolumn;
-
 #define MAXCOLUMN 78
 
 void print_cs_name (FILE *output, int h)
 {
   int c, textof, n;
-  char *s;
-  
+
+  memset(log_line, 0, sizeof(log_line));
+
   textof = hash[h].v.RH;
 
   if (textof == 0)
-    return;  /* ignore if text() == 0 */
+    return;
 
+  c = sprintf(log_line, "(%d), ", h);
   n = length(textof);
 
-  if (textcolumn != 0)
-  {
-    sprintf(log_line, ", ");
-    if (output != NULL)
-      fprintf(output, log_line);
-    else
-      show_line(log_line, 0);
-    textcolumn += 2;
-  }
+  memmove(log_line + c, str_pool + str_start[textof], n);
+  memmove(log_line + c + n, "\n", 2);
 
-  if (textcolumn + n + 2 >= MAXCOLUMN)
-  {
-    sprintf(log_line, "\n");
-    if (output == stderr)
-      show_line(log_line, 1);
-    else
-      if (output == stdout)
-        show_line(log_line, 0);
-      else
-        fputs(log_line, output);
-    textcolumn=0;
-  }
-  s = log_line;
-  for (c = str_start[textof]; c < str_start[textof+1]; c++)
-  {
-    *s++ = str_pool[c];
-  }
   if (output == stderr)
+  {
     show_line(log_line, 1);
+  }
   else
+  {
     if (output == stdout)
       show_line(log_line, 0);
     else
       fprintf(output, log_line);
-  textcolumn += n;
+  }
+
 }
 
 int compare_strn (int, int, int, int); /* in tex9.c */
@@ -3893,87 +3874,106 @@ char *csused=NULL;
 
 /* Allocate table of indeces to allow sorting on csname */
 /* Allocate flags to remember which ones already listed at start */
-
+/* pass = 0 --> fmt */
+/* pass = 1 --> after */
 void print_cs_names (FILE *output, int pass)
 {
   int h, k, ccount, repeatflag;
   int *cnumtable;
-  int nfcs = hash_base + hash_size + hash_extra;  /* frozen_control_sequence */
+  int nfcs = frozen_control_sequence;
 
   if (pass == 0 && csused == NULL)
   {
     csused = (char *) malloc (nfcs);
 
     if (csused == NULL)
-      return; 
+      return;
+
 #ifdef USEMEMSET
-    memset(csused, 0, nfcs); 
+    memset(csused, 0, nfcs);
 #else
     for (h = 0; h < (hash_size + 780); h++)
       csused[h] = 0;
 #endif
   }
 
-  ccount=0;
+  ccount = 0;
 
   for (h = hash_base + 1; h < nfcs; h++)
   {
     if (pass == 1 && csused[h])
       continue;
+
     if (hash[h].v.RH != 0)
     {
       if (pass == 0)
         csused[h] = 1;
+
       ccount++;
     }
   }
 
-  sprintf(log_line, "\n%d %s multiletter control sequences:\n\n",
+  sprintf(log_line, "\n%d %s multiletter control sequences:\n",
       ccount, (pass == 1) ? "new" : "");
+
   if (output == stderr)
+  {
     show_line(log_line, 1);
+  }
   else
+  {
     if (output == stdout)
       show_line(log_line, 0);
     else
       fprintf(output, log_line);
+  }
 
   if (ccount > 0) /* don't bother to get into trouble */
   {
-    textcolumn=0;
     cnumtable = (int *) malloc (ccount * sizeof(int));
 
     if (cnumtable == NULL)
       return;
 
-    ccount=0;
+    ccount = 0;
 /*    for (h = 515; h < (hash_size + 780); h++) { */
     for (h = hash_base + 1; h < nfcs; h++)
     {
       if (pass == 1 && csused[h])
         continue;
+
       if (hash[h].v.RH != 0)
         cnumtable[ccount++] = h;
     }
 
-    qsort ((void *)cnumtable, ccount, sizeof (int), &compare_cs);
+    //qsort ((void *)cnumtable, ccount, sizeof (int), &compare_cs);
 
     repeatflag = 0;
+
     for (k = 0; k < ccount; k++)
     {
       h = cnumtable[k];
+
       if (pass == 1 && csused[h])
         continue;
+
       print_cs_name(output, h);
     }
+
     sprintf(log_line, "\n");
+
     if (output == stderr)
+    {
       show_line(log_line, 1);
+    }
     else
+    {
       if (output == stdout)
         show_line(log_line, 0);
       else
         fprintf(output, log_line);
+    }
+
     free((void *)cnumtable);
   }
 
@@ -4003,7 +4003,8 @@ int compare_strn (int k1, int l1, int k2, int l2)
 {
   int c1, c2;
 /*  while (l1-- > 0 && l2-- > 0) { */
-  while (l1 > 0 && l2 > 0) {
+  while (l1 > 0 && l2 > 0)
+  {
     c1 = str_pool[k1];
     c2 = str_pool[k2];
 /*    sprintf(log_line, "%c%d%c%d ", c1, l1, c2, l2); */
