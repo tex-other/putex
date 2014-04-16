@@ -425,7 +425,7 @@ halfword finite_shrink_(halfword);
 void try_break_(integer, small_number);
 #define try_break(pi, breaktype) try_break_((integer) (pi), (small_number) (breaktype))
 void post_line_break_(integer);
-#define post_line_break(finalwidowpenalty) post_line_break_((integer) (finalwidowpenalty))
+#define post_line_break(final_widow_penalty) post_line_break_((integer) (final_widow_penalty))
 small_number reconstitute_(small_number, small_number, halfword, halfword); 
 #define reconstitute(j, n, bchar, hchar) reconstitute_((small_number) (j), (small_number) (n), (halfword) (bchar), (halfword) (hchar))
 void hyphenate(void);
@@ -444,7 +444,7 @@ void trie_fix_(trie_pointer);
 void new_patterns(void);
 void init_trie(void);
 void line_break_(integer);
-#define line_break(finalwidowpenalty) line_break_((integer) (finalwidowpenalty))
+#define line_break(final_widow_penalty) line_break_((integer) (final_widow_penalty))
 void new_hyph_exceptions(void);
 halfword prune_page_top_(halfword);
 #define prune_page_top(p) prune_page_top_((halfword) (p))

@@ -61,9 +61,9 @@ halfword finite_shrink_(halfword p)
 {
   halfword q;
 
-  if (noshrinkerroryet)
+  if (no_shrink_error_yet)
   {
-    noshrinkerroryet = false;
+    no_shrink_error_yet = false;
     print_err("Infinite glue shrinkage found in a paragraph");
     help5("The paragraph just ended includes some glue that has",
         "infinite shrinkability, e.g., `\\hskip 0pt minus 1fil'.",
@@ -605,7 +605,7 @@ lab10:
 }
 /* end of the old tex5.c here */
 /* sec 0877 */
-void post_line_break_(integer finalwidowpenalty)
+void post_line_break_(integer final_widow_penalty)
 {
   halfword q, r, s;
   bool discbreak;
@@ -741,7 +741,7 @@ lab30:
       if (curline == prev_graf + 1)
         pen = pen + club_penalty;
       if (curline + 2 == best_line)
-        pen = pen + finalwidowpenalty;
+        pen = pen + final_widow_penalty;
       if (discbreak)
         pen = pen + broken_penalty;
       if (pen != 0)

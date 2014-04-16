@@ -515,12 +515,9 @@ EXTERN memory_word zeqtb[(hash_size + 4007)];
   zzzad[844]; */
 
 #ifdef INCREASEFONTS
-/* #define xeq_level (zzzad - (12663 + eqtb_extra))  */
-#define xeq_level (zzzad - ((hash_size + 3163) + eqtb_extra))  
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+  #define xeq_level (zzzad - (int_base + eqtb_extra))
 #else
-/* #define xeq_level (zzzad -12663) */
-#define xeq_level (zzzad - (hash_size + 3163)) 
+  #define xeq_level (zzzad - (int_base))
 #endif
 /* zzzad[844]; */
 EXTERN quarterword zzzad[844]; /* ??? attempt to fix 99/Jan/5 */
@@ -866,7 +863,7 @@ EXTERN scaled cur_active_width[8];
 EXTERN scaled background[8];
 /* EXTERN scaled break_width[7]; */
 EXTERN scaled break_width[8];
-EXTERN bool noshrinkerroryet;
+EXTERN bool no_shrink_error_yet;
 EXTERN halfword cur_p;
 EXTERN bool second_pass;
 EXTERN bool final_pass;
@@ -1605,27 +1602,27 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define level_zero        min_quarterword
 #define level_one         level_zero + 1
 /* sec 0222 */
-#define active_base                   1                      // 1
-#define single_base                   (active_base + 256)    // 257
-#define null_cs                       (single_base + 256)      // 513
-#define hash_base                     (null_cs + 1)            // 514
+#define active_base                   1                                    // 1
+#define single_base                   (active_base + 256)                  // 257
+#define null_cs                       (single_base + 256)                  // 513
+#define hash_base                     (null_cs + 1)                        // 514
 #define frozen_control_sequence       (hash_base + hash_size + hash_extra) // (hash_size + hash_extra + 514)
-#define frozen_protection             frozen_control_sequence          // (hash_size + hash_extra + 514)
-#define frozen_cr                     (frozen_control_sequence + 1)    // (hash_size + hash_extra + 515)
-#define frozen_end_group              (frozen_control_sequence + 2)    // (hash_size + hash_extra + 516)
-#define frozen_right                  (frozen_control_sequence + 3)    // (hash_size + hash_extra + 517)
-#define frozen_fi                     (frozen_control_sequence + 4)    // (hash_size + hash_extra + 518)
-#define frozen_end_template           (frozen_control_sequence + 5)    // (hash_size + hash_extra + 519)
-#define frozen_endv                   (frozen_control_sequence + 6)    // (hash_size + hash_extra + 520)
-#define frozen_relax                  (frozen_control_sequence + 7)    // (hash_size + hash_extra + 521)
-#define end_write                     (frozen_control_sequence + 8)    // (hash_size + hash_extra + 522)
-#define frozen_dont_expand            (frozen_control_sequence + 9)    // (hash_size + hash_extra + 523)
-#define frozen_null_font              (frozen_control_sequence + 10)   // (hash_size + hash_extra + 524)
-#define font_id_base                  (frozen_null_font - font_base)   // (hash_size + hash_extra + 524)
-#define undefined_control_sequence    (frozen_null_font + 1025)        // (hash_size + hash_extra + 781) = font_max + 2
-                                                                       // (hash_size + (255 - 1024) + 1025 + 524)
-                                                                       // (hash_size + 780)
-#define glue_base                     (undefined_control_sequence + 1) // (hash_size + hash_extra + 782)
+#define frozen_protection             frozen_control_sequence              // (hash_size + hash_extra + 514)
+#define frozen_cr                     (frozen_control_sequence + 1)        // (hash_size + hash_extra + 515)
+#define frozen_end_group              (frozen_control_sequence + 2)        // (hash_size + hash_extra + 516)
+#define frozen_right                  (frozen_control_sequence + 3)        // (hash_size + hash_extra + 517)
+#define frozen_fi                     (frozen_control_sequence + 4)        // (hash_size + hash_extra + 518)
+#define frozen_end_template           (frozen_control_sequence + 5)        // (hash_size + hash_extra + 519)
+#define frozen_endv                   (frozen_control_sequence + 6)        // (hash_size + hash_extra + 520)
+#define frozen_relax                  (frozen_control_sequence + 7)        // (hash_size + hash_extra + 521)
+#define end_write                     (frozen_control_sequence + 8)        // (hash_size + hash_extra + 522)
+#define frozen_dont_expand            (frozen_control_sequence + 9)        // (hash_size + hash_extra + 523)
+#define frozen_null_font              (frozen_control_sequence + 10)       // (hash_size + hash_extra + 524)
+#define font_id_base                  (frozen_null_font - font_base)       // (hash_size + hash_extra + 524)
+#define undefined_control_sequence    (frozen_null_font + 1025)            // (hash_size + hash_extra + 781) = font_max + 2
+                                                                           // (hash_size + (255 - 1024) + 1025 + 524)
+                                                                           // (hash_size + 780)
+#define glue_base                     (undefined_control_sequence + 1)     // (hash_size + hash_extra + 782)
 /* sec 0224 */
 #define line_skip_code                0  // 782
 #define baseline_skip_code            1  // 783
@@ -2190,6 +2187,11 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define cr_code            257
 #define cr_cr_code         cr_code + 1
 #define end_template_token cs_token_flag + frozen_end_template
+/* sec 0817 */
+#define tight_fit      3
+#define loose_fit      1
+#define very_loose_fit 0
+#define decent_fit     2
 /* sec 0819 */
 #define active_node_sie   3
 #define fitness           subtype
