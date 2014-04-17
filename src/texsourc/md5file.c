@@ -18,7 +18,7 @@
 #pragma warning(disable:4996)
 
 #include <stdio.h>
-#include "md5.h"
+#include "libmd5/md5.h"
 
 char * md5_file(const char * file_name)
 {

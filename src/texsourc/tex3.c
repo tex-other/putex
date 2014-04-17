@@ -1784,23 +1784,17 @@ str_number make_name_string (void)
 /* sec 0525 */
 str_number a_make_name_string_(alpha_file * f)
 {
-  register str_number Result;
-  Result = make_name_string();
-  return Result;
+  return make_name_string();
 }   /* f unreferenced ? bkph */
 /* sec 0525 */
 str_number b_make_name_string_(byte_file * f)
 {
-  register str_number Result;
-  Result = make_name_string();
-  return Result; 
+  return make_name_string(); 
 }   /* f unreferenced ? bkph */
 /* sec 0525 */
 str_number w_make_name_string_(word_file * f)
 {
-  register str_number Result;
-  Result = make_name_string();
-  return Result;
+  return make_name_string();
 }   /* f unreferenced ? bkph */
 
 /* Used by start_input to scan file name on command line */
@@ -1855,7 +1849,7 @@ lab30:
 void pack_job_name_(str_number s)
 {
   cur_area = 335;       /* "" */
-  cur_ext = s;
+  cur_ext  = s;
   cur_name = job_name;
   pack_file_name(cur_name, cur_area, cur_ext);
 }
@@ -1872,10 +1866,12 @@ void show_tex_inputs (void)
   if (format_specific)
   {
     s = format_name;                /* try specific */
-    if (grabenv(s) == NULL) s = "TEXINPUTS";  /* no format specific */
+    if (grabenv(s) == NULL)
+      s = "TEXINPUTS";  /* no format specific */
   }
 
-  if (grabenv(s) == NULL) s = "TEXINPUT";     /* 94/May/19 */
+  if (grabenv(s) == NULL)
+    s = "TEXINPUT";     /* 94/May/19 */
 
   print_nl("  ");
   print_char(' ');
@@ -1899,7 +1895,8 @@ void show_tex_inputs (void)
 
 /**********************************************************************/
 /* sec 0530 */
-void prompt_file_name_(str_number s, str_number e)/*  s - what can't be found, e - default */ 
+/*  s - what can't be found, e - default */
+void prompt_file_name_(str_number s, str_number e) 
 {
   integer k;
 
@@ -1999,6 +1996,7 @@ void open_log_file (void)
     job_name = 790;   /* default:  texput */
 
   pack_job_name(791); /* .log */
+  //pack_job_name(make_string_pool(".log"));
 
   while (!a_open_out(log_file))
   {
@@ -2011,7 +2009,8 @@ void open_log_file (void)
   {
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 //  for our version DOS/Windows
-  if (want_version) {
+  if (want_version)
+  {
 //    showversion (log_file);       /* in local.c - bkph */
 //    showversion (stdout);
     stamp_it(log_line);         // ??? use log_line ???
@@ -2029,8 +2028,10 @@ void open_log_file (void)
 /*  also change following in itex.c - bkph */
   (void) fputs(tex_version,  log_file); 
   (void) fprintf(log_file, " (%s %s)", application, yandyversion);
+
   if (format_ident > 0)
     slow_print(format_ident);     /* bkph */
+
   print_string("  ");
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (civilize_flag)
@@ -2040,27 +2041,33 @@ void open_log_file (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     print_char(' ');
     months = " JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
+
     for (k = 3 * month - 2; k <= 3 * month; k++)
       (void) putc(months[k],  log_file);
+
     print_char(' ');
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  if (civilize_flag)
-    print_int(day);
-  else
-    print_int(year);
+    if (civilize_flag)
+      print_int(day);
+    else
+      print_int(year);
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     print_char(' ');
     print_two(tex_time / 60);  /* hour */
     print_char(':');
     print_two(tex_time % 60);  /* minute */
   }
+
   input_stack[input_ptr] = cur_input;
   print_nl("**");
   l = input_stack[0].limit_field;
+
   if (buffer[l] == end_line_char)
     decr(l);
+
   for (k = 1; k <= l; k++)
     print(buffer[k]);
+
   print_ln(); 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* a good place to show the fmt file name or pool file name ? 94/June/21 */
@@ -2093,49 +2100,61 @@ void morenamecopy(ASCII_code c)
 #ifdef ALLOCATESTRING
   if (pool_ptr + 1 > current_pool_size)
     str_pool = realloc_str_pool (increment_pool_size);
-  if (pool_ptr + 1 > current_pool_size)   { /* in case it failed 94/Jan/24 */
+
+  if (pool_ptr + 1 > current_pool_size) /* in case it failed 94/Jan/24 */
+  {
     overflow("pool size", current_pool_size - init_pool_ptr); /* 97/Mar/7 */
     return;     // abort_flag set
   }
 #else
-  if (pool_ptr + 1 > pool_size){
+  if (pool_ptr + 1 > pool_size)
+  {
     overflow("pool size", pool_size - init_pool_ptr); /* pool size */
     return;     // abort_flag set
   }
 #endif
-  str_pool[pool_ptr]= c; 
-  incr(pool_ptr); 
-} 
+  str_pool[pool_ptr] = c; 
+  incr(pool_ptr);
+}
 
 int endnamecopy(void)
 {
 #ifdef ALLOCATESTRING
     if (str_ptr + 1 > current_max_strings)
       str_start = realloc_str_start(increment_max_strings + 1);
-    if (str_ptr + 1 > current_max_strings) { /* in case it failed 94/Jan/24 */
+
+    if (str_ptr + 1 > current_max_strings) /* in case it failed 94/Jan/24 */
+    {
       overflow("number of strings", current_max_strings - init_str_ptr);  /* 97/Mar/7 */
       return 0;     // abort_flag set
     }
 #else
-    if (str_ptr + 1 > max_strings){
+    if (str_ptr + 1 > max_strings)
+    {
       overflow("number of strings", max_strings - init_str_ptr); /* number of strings */
       return 0;     // abort_flag set
     }
 #endif
     return make_string();
-} 
+}
 
+/* add extension to job_name */
 void jobnameappend (void)
-{ /* add extension to job_name */
+{ 
   int k, n;
 /*  copy job_name */
   k = str_start[job_name];
   n = str_start[job_name + 1];
-  while (k < n) morenamecopy(str_pool[k++]);
+
+  while (k < n)
+    morenamecopy(str_pool[k++]);
 /*  copy `extension' */
   k = str_start[cur_ext];
   n = str_start[cur_ext + 1];
-  while (k < n) morenamecopy(str_pool[k++]);
+
+  while (k < n)
+    morenamecopy(str_pool[k++]);
+
   job_name = endnamecopy();
 }
 
@@ -2174,6 +2193,7 @@ void start_input (void)
 /* *** *** *** ***  following new in 3.14159 *** *** *** *** *** *** *** */
       if (a_open_in(input_file[cur_input.index_field], TEXINPUTPATH))
         goto lab30;
+
       name_length = name_length - 4;      /* strip extension again */
       name_of_file[name_length + 1] = ' ';  /* ' ' */
       addedextension = false;
@@ -2183,6 +2203,7 @@ void start_input (void)
 /*  string 335 is "" the empty string */
     if ((cur_ext == 335) && a_open_in(input_file[cur_input.index_field], TEXINPUTPATH))
       goto lab30;
+
     if (maketextex() && a_open_in(input_file[cur_input.index_field], TEXINPUTPATH))
       goto lab30;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */

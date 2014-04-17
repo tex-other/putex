@@ -32,10 +32,7 @@ typedef enum { false = 0, true = 1 } bool;
   #define TRUE true
 #endif /* FALSE */
 
-/* The usual null-terminated string.  */
-typedef char *string;
-
-/* A generic pointer in ANSI C.  */
-typedef void *address;
+typedef char * string;
+typedef void * address;
 
 #endif /* not TYPES_H */

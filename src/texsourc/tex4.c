@@ -1188,11 +1188,15 @@ void ship_out_(halfword p)
   {
     if (job_name == 0)
       open_log_file();
+
     pack_job_name(788);   /* .dvi */
+    //pack_job_name(make_string_pool(".dvi"));
+
     while(!b_open_out(dvi_file))
     {
       prompt_file_name(789, 788); /* file name for output  .dvi */
     }
+
     output_file_name = b_make_name_string(dvi_file);
   }
 
@@ -1233,10 +1237,11 @@ void ship_out_(halfword p)
     print_two(tex_time / 60);
     print_two(tex_time % 60);
     selector = old_setting;
-/* long to unsigned char ... */
     dvi_out(cur_length);
+
     for (s = str_start[str_ptr]; s <= pool_ptr - 1; s++)
       dvi_out(str_pool[s]);
+
     pool_ptr = str_start[str_ptr];
   } // end of if total_pages == 0
 

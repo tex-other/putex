@@ -206,7 +206,7 @@ halfword id_lookup_(integer, integer);
 str_number make_string_pool (char *s);
 void primitive_s (char * s, quarterword c, halfword o);
 void primitive_(str_number, quarterword, halfword);
-#define primitive(s, c, o) primitive_((str_number) (s), (quarterword) (c), (halfword) (o))
+#define primitive(s, c, o) primitive_(make_string_pool((char *) s), (quarterword) (c), (halfword) (o))
 void new_save_level_(group_code);
 #define new_save_level(c) new_save_level_((group_code) (c))
 void eq_destroy_(memory_word);
