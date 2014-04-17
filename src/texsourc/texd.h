@@ -1267,6 +1267,10 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 
 /****************************************************************************/
 #define font_base 0
+/* sec 0022 */
+#define null_code       0     // 0
+#define carriage_return 015   // 13
+#define invalid_code    0177  // 127
 /* sec 0040 */
 #define length(s) (str_start[(s) + 1] - str_start[(s)])
 /* sec 0041 */
@@ -1706,7 +1710,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define fam_fnt(a)                    equiv(math_font_base + a)
 #define cat_code(a)                   equiv(cat_code_base + a)
 #define lc_code(a)                    equiv(lc_code_base + a)
-#define uc_code(a)                    equiv(uc_code_base +a)
+#define uc_code(a)                    equiv(uc_code_base + a)
 #define sf_code(a)                    equiv(sf_code_base + a)
 #define math_code(a)                  equiv(math_code_base + a)
 /* sec 0232 */

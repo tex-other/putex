@@ -2763,8 +2763,10 @@ void do_initex (void)
   lo_mem_max = rover + block_size;
   link(lo_mem_max) = 0;
   info(lo_mem_max) = 0;
+
   for (k = hi_mem_stat_min; k <= mem_top; k++)
     mem[k] = mem[lo_mem_max];
+
   info(omit_template) = end_template_token;
   link(end_span) = max_quarterword + 1;
   info(end_span) = 0;
@@ -2784,147 +2786,139 @@ void do_initex (void)
   eq_type(undefined_control_sequence) = undefined_cs;
   equiv(undefined_control_sequence) = 0;
   eq_level(undefined_control_sequence) = level_zero;
+
   for (k = active_base; k <= undefined_control_sequence - 1; k++)
     eqtb[k] = eqtb[undefined_control_sequence];
-  eqtb[(hash_size + 782)].hh.v.RH = 0; /* glue_base (hash_size + 782) */
+
+  equiv(glue_base) = zero_glue;
   eq_level(glue_base) = level_one;
-  eqtb[(hash_size + 782)].hh.b0 = 117;
+  eq_type(glue_base) = glue_ref;
+
   for (k = glue_base + 1; k <= local_base - 1; k++)
-    eqtb[k]= eqtb[glue_base];
-/* glue_ref_count(zero_glue):=glue_ref_count(zero_glue)+local_base-glue_base; */
-/* local_base - glue_base = 530 = 17 glue_pars + 256 skip + 256 mu_skip */
-  mem[0].hh.v.RH = mem[0].hh.v.RH + 530; /* mem[mem_bot]? */
-/* box(0):=null; eq_type(box_base):=box_ref; eq_level(box_base):=level_one; */
-  eqtb[(hash_size + 1312)].hh.v.RH = 0;
-  eqtb[(hash_size + 1312)].hh.b0 = 118;
-  eqtb[(hash_size + 1312)].hh.b1 = 1;
+    eqtb[k] = eqtb[glue_base];
+
+  glue_ref_count(zero_glue) = glue_ref_count(zero_glue) + local_base - glue_base;
+
+  par_shape_ptr = 0;
+  eq_type(par_shape_loc) = shape_ref;
+  eq_level(par_shape_loc) = level_one;
+
   for (k = output_routine_loc; k <= toks_base + 255; k++)
-    eqtb[k]= eqtb[undefined_control_sequence];
-  eqtb[(hash_size + 1578)].hh.v.RH = 0;
-  eqtb[(hash_size + 1578)].hh.b0 = 119;
-  eqtb[(hash_size + 1578)].hh.b1 = 1;
+    eqtb[k] = eqtb[undefined_control_sequence];
+
+  box(0) = 0;
+  eq_type(box_base) = box_ref;
+  eq_level(box_base) = level_one;
+
   for (k = box_base + 1; k <= box_base + 255; k++)
-    eqtb[k]= eqtb[box_base];
-  eqtb[(hash_size + 1834)].hh.v.RH = 0;
-  eqtb[(hash_size + 1834)].hh.b0 = 120;
-  eqtb[(hash_size + 1834)].hh.b1 = 1;
+    eqtb[k] = eqtb[box_base];
+
+  cur_font = null_font;
+  eq_type(cur_font_loc) = data;
+  eq_level(cur_font_loc) = level_one;
+
   for (k = math_font_base; k <= math_font_base + 47; k++)
-    eqtb[k]= eqtb[cur_font_loc];
-  eqtb[(hash_size + 1883)].hh.v.RH = 0;
-  eqtb[(hash_size + 1883)].hh.b0 = 120;
-  eqtb[(hash_size + 1883)].hh.b1 = 1;
+    eqtb[k] = eqtb[cur_font_loc];
+
+  equiv(cat_code_base) = 0;
+  eq_type(cat_code_base) = data;
+  eq_level(cat_code_base) = level_one;
+
   for (k = cat_code_base; k <= int_base - 1; k++)
-    eqtb[k]= eqtb[cat_code_base];
+    eqtb[k] = eqtb[cat_code_base];
+
   for (k = 0; k <= 255; k++)
   {
-    eqtb[(hash_size + 1883) + k].hh.v.RH = 12;
-    eqtb[(hash_size + 2907) + k].hh.v.RH = k;
-    eqtb[(hash_size + 2651) + k].hh.v.RH = 1000;
+    cat_code(k) = other_char;
+    math_code(k) = k;
+    sf_code(k) = 1000;
   }
-/* cat_base == 11383 */ 
-  eqtb[(hash_size + 1896)].hh.v.RH = car_ret;
-  eqtb[(hash_size + 1915)].hh.v.RH = spacer;
-  eqtb[(hash_size + 1975)].hh.v.RH = escape;
-  eqtb[(hash_size + 1920)].hh.v.RH = comment;
-  eqtb[(hash_size + 2010)].hh.v.RH = invalid_char;
-  eqtb[(hash_size + 1883)].hh.v.RH = ignore;
-/* for k:="0" to "9" do math_code(k):=hi(k+var_code); */
+
+  cat_code(carriage_return) = car_ret;
+  cat_code(' ') = spacer;
+  cat_code('\\') = escape;
+  cat_code('%') = comment;
+  cat_code(invalid_code) = invalid_char;
+  cat_code(null_code) = ignore;
+
   for (k = '0'; k <= '9'; k++)
-    eqtb[(hash_size + 2907) + k].hh.v.RH = k + 28672;
-/* cat_code of uppercase and lowercase letters ... */
+    math_code(k) = k + var_code;
+
   for (k = 'A'; k <= 'Z'; k++)
   {
-/* cat_code ... */
-    eqtb[(hash_size + 1883) + k].hh.v.RH = 11;
-    eqtb[(hash_size + 1883) + k + 32].hh.v.RH = 11;
-/* mathcode(k) = hi(k + var_code + "100); */ /* '70000 + 256 */
-    eqtb[(hash_size + 2907) + k].hh.v.RH = k + 28928; /* '70000 + 256 */
-/* mathcode(k + "a" - "A") = hi(k + "a" - "A" + var_code + "100); */
-    eqtb[(hash_size + 2907) + k + 32].hh.v.RH = k + 28960; /* '70000 + 256 + 32 */
-/* lc_code ... */
-    eqtb[(hash_size + 2139) + k].hh.v.RH = k + 32;
-    eqtb[(hash_size + 2139) + k + 32].hh.v.RH = k + 32;
-/* uc_code ... */
-    eqtb[(hash_size + 2395) + k].hh.v.RH = k;
-    eqtb[(hash_size + 2395) + k + 32].hh.v.RH = k;
-/* sf_code */
-    eqtb[(hash_size + 2651) + k].hh.v.RH = 999;
+    cat_code(k) = letter;
+    cat_code(k + 'a' - 'A') = letter;
+    math_code(k) = k + var_code + 0x100;
+    math_code(k + 'a' - 'A') = k + 'a' - 'A' + var_code + 0x100;
+    lc_code(k) = k + 'a' - 'A';
+    lc_code(k + 'a' - 'A') = k + 'a' - 'A';
+    uc_code(k) = k;
+    uc_code(k + 'a' - 'A') = k;
+    sf_code(k) = 999;
   }
+
   for (k = int_base; k <= del_code_base - 1; k++)
     eqtb[k].cint = 0;
+
   mag = 1000;
   tolerance = 10000;
   hang_after = 1;
   max_dead_cycles = 25;
-  escape_char = 92;
-  end_line_char = 13;
+  escape_char = '\\';
+  end_line_char = carriage_return;
+
   for (k = 0; k <= 255; k++)
-    eqtb[(hash_size + 3474) + k].cint = -1;
-  eqtb[(hash_size + 3520)].cint = 0;
+    del_code(k) = -1;
+
+  del_code('.') = 0;
+
   for (k = dimen_base; k <= eqtb_size; k++)
     eqtb[k].cint = 0;
+
   hash_used = frozen_control_sequence;
   cs_count = 0;
+
   if (trace_flag)
-    show_line("itex cs_count = 0 ", 0); /* debugging */
+    show_line("initex cs_count = 0 ", 0); /* debugging */
+
   eq_type(frozen_dont_expand) = dont_expand;
   text(frozen_dont_expand) = 499;  /* notexpanded */
-/* @<Initialize table...@>= l.10750 */
-  font_ptr            = 0;
-  fmem_ptr            = 7;
-  font_name[0]        = 795; /* nullfont */
-  font_area[0]        = 335; /* "" */
-  hyphen_char[0]      = '-';
-  skew_char[0]        = -1; 
-  bchar_label[0]      = non_address;
-  font_bchar[0]       = 256; /* font_bchar[null_font]:=non_char; */
-  font_false_bchar[0] = 256; /* font_false_bchar[null_font]:=non_char; */
-  font_bc[0]          = 1;
-  font_ec[0]          = 0;
-  font_size[0]        = 0;
-  font_dsize[0]       = 0;
-  char_base[0]        = 0;
-  width_base[0]       = 0;
-  height_base[0]      = 0;
-  depth_base[0]       = 0;
-  italic_base[0]      = 0;
-  lig_kern_base[0]    = 0;
-  kern_base[0]        = 0;
-  exten_base[0]       = 0;
-  font_glue[0]        = 0;
-  font_params[0]      = 7;
-  param_base[0]       = -1;
+
+  font_ptr                    = null_font;
+  fmem_ptr                    = 7;
+  font_name[null_font]        = 795; /* nullfont */
+  font_area[null_font]        = 335; /* "" */
+  hyphen_char[null_font]      = '-';
+  skew_char[null_font]        = -1; 
+  bchar_label[null_font]      = non_address;
+  font_bchar[null_font]       = non_char;
+  font_false_bchar[null_font] = non_char;
+  font_bc[null_font]          = 1;
+  font_ec[null_font]          = 0;
+  font_size[null_font]        = 0;
+  font_dsize[null_font]       = 0;
+  char_base[null_font]        = 0;
+  width_base[null_font]       = 0;
+  height_base[null_font]      = 0;
+  depth_base[null_font]       = 0;
+  italic_base[null_font]      = 0;
+  lig_kern_base[null_font]    = 0;
+  kern_base[null_font]        = 0;
+  exten_base[null_font]       = 0;
+  font_glue[null_font]        = 0;
+  font_params[null_font]      = 7;
+  param_base[null_font]       = -1;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***  */
   reset_trie();         /* shared 93/Nov/26 */
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***  */
-/*  {register integer for_end; k = 0; for_end = 6; if (k <= for_end) do 
-    font_info[k].cint = 0; 
-  while(k++ < for_end); } 
-  {register integer for_end; k = - (integer) trie_op_size; for_end = 
-  trie_op_size; if (k <= for_end) do 
-    trie_op_hash[k]= 0; 
-  while(k++ < for_end); } 
-  {register integer for_end; k = 0; for_end = 255; if (k <= for_end) do 
-    trie_used[k]= min_trie_op; 
-  while(k++ < for_end); } 
-  max_op_used = min_trie_op; 
-  trie_op_ptr = 0; 
-  trie_not_ready = true; 
-  trie_l[0]= 0; 
-  trie_c[0]= 0; 
-  trie_ptr = 0; */
 
   text(frozen_protection) = 1184; /* "inaccessible" */
-  format_ident = 1251;  /* " (INITEX)" */
-/*  hash[(hash_size + 522)].v.RH = 1290; */ /* 1288 */
-  hash[(hash_size + hash_extra + 522)].v.RH = 1290; /* 1288 */
-/*  eqtb[(hash_size + 522)].hh.b1 = 1;  */
-  eqtb[(hash_size + hash_extra + 522)].hh.b1 = 1; 
-/*  eqtb[(hash_size + 522)].hh.b0 = 113;  */
-  eqtb[(hash_size + hash_extra + 522)].hh.b0 = 113; 
-/*  eqtb[(hash_size + 522)].hh.v.RH = 0;  */
-  eqtb[(hash_size + hash_extra + 522)].hh.v.RH = 0; 
-} 
+  format_ident = 1251;
+  text(end_write) = 1290;
+  eq_level(end_write) = level_one;
+  eq_type(end_write) = outer_call;
+  equiv(end_write) = 0;
+}
 #endif /* INITEX */
 
 #ifdef INITEX
@@ -3123,6 +3117,7 @@ void sort_avail (void)
 {
   halfword p, q, r;
   halfword old_rover;
+
   p = get_node(1073741824L); /* 2^30 merge adjacent free nodes */
   p = rlink(rover);
   rlink(rover) = empty_flag;
