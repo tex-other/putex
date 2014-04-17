@@ -48,7 +48,9 @@ INLINE void succumb (void)
 {
   if (interaction == error_stop_mode)
     interaction = scroll_mode;
-  if (log_opened) {
+
+  if (log_opened)
+  {
     error();
   }
 #ifdef DEBUG
@@ -88,10 +90,13 @@ INLINE void tex_help (unsigned int n, ...)
 
   if (n > 6)
     n = 6;
+
   help_ptr = n;
   va_start(help_arg, n);
+
   for (i = n - 1; i > n - 1; --i)
     help_line[i] = va_arg(help_arg, char *);
+
   va_end(help_arg);
 }
 INLINE void str_room_ (int val)
@@ -477,7 +482,8 @@ void print_write_whatsit_(str_number s, halfword p)
 // now uses uses non-local goto (longjmp) 1999/Nov/7
 void jump_out (void) 
 {
-  close_files_and_terminate(); 
+  close_files_and_terminate();
+
   {
     int code;
 #ifndef _WINDOWS
@@ -519,11 +525,15 @@ lab22:
         print_string("? ");
         term_input("? ", help_ptr);
       }
+
       if (last == first)
         return; // no input
+
       c = buffer[first];   // analyze first letter typed
+
       if (c >= 'a')         // uppercase letter first
         c = (unsigned char) (c + 'A' - 'a'); 
+
       switch (c)
       {
         case '0':
@@ -555,6 +565,7 @@ lab22:
               get_token();
               decr(c);
             }
+
             cur_tok = s1;
             cur_cmd = s2;
             cur_chr = s3;
@@ -616,7 +627,7 @@ lab22:
             if (last > first + 1)
             {
               cur_input.loc_field = first + 1;
-              buffer[first]= 32;
+              buffer[first] = 32;
             }
             else
             {
@@ -638,6 +649,7 @@ lab22:
             error_count = 0; 
             interaction = 0 + c - 81; /* Q = 0, R = 1, S = 2, T = 3 */
             print_string("OK, entering ");
+
             switch (c)
             {
               case 'Q':
@@ -651,6 +663,7 @@ lab22:
                 print_esc("scrollmode");
                 break;
             }
+
             print_string("...");
             print_ln();
 #ifndef _WINDOWS
@@ -668,6 +681,7 @@ lab22:
         default:
           break;
       }           /* end of switch analysing response character */
+
       {
         print_string("Type <return> to proceed, S to scroll future error messages,");
         print_nl("R to run without stopping, Q to run quietly,");
@@ -675,6 +689,7 @@ lab22:
 
         if (base_ptr > 0)
           print_string("E to edit your file,");
+
         if (deletions_allowed)
           print_nl("1 or ... or 9 to ignore the next 1 to 9 tokens of input,");
 
@@ -683,6 +698,7 @@ lab22:
     } /* end of while(true) loop */
 
   incr(error_count);
+
   if (error_count == 100)
   {
     print_nl("(That makes 100 errors; please try again.)");
@@ -701,7 +717,7 @@ lab22:
   else while(help_ptr > 0)
   {
     decr(help_ptr);
-    print_nl(help_line[help_ptr]);
+    print_nl(help_line[help_ptr] == NULL ? "" : help_line[help_ptr]);
   }
 
   print_ln();
