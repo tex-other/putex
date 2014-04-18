@@ -301,9 +301,9 @@ str_number w_make_name_string_(word_file *);
 #define w_make_name_string(f) w_make_name_string_((word_file *) &(f))
 void scan_file_name(void);
 void pack_job_name_(str_number);
-#define pack_job_name(s) pack_job_name_((str_number) (s))
-void prompt_file_name_(str_number, str_number);
-#define prompt_file_name(s, e) prompt_file_name_((str_number) (s), (str_number) (e))
+#define pack_job_name(s) pack_job_name_(make_string_pool((char*)s))
+void prompt_file_name_(char *, str_number);
+#define prompt_file_name(s, e) prompt_file_name_((char *) s, make_string_pool((char*)e))
 void open_log_file(void);
 void start_input(void);
 internal_font_number read_font_info_(halfword, str_number, str_number, scaled);

@@ -29,6 +29,15 @@ static void winerror (char * message)
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+void set_cur_lang(void)
+{
+  if (language <= 0)
+    cur_lang = 0;
+  else if (language > 255)
+    cur_lang = 0;
+  else
+    cur_lang = language;
+}
 INLINE void free_avail_(halfword p)
 {
   link(p) = avail;
@@ -739,7 +748,7 @@ void fatal_error_(char * s)
 void overflow_(char * s, integer n)
 {
   normalize_selector();
-  print_err("TeX capacity exceeded, sorry[");
+  print_err("TeX capacity exceeded, sorry [");
   print_string(s);
   print_char('=');
   print_int(n);
@@ -2172,8 +2181,8 @@ void print_subsidiary_data_(halfword p, ASCII_code c)
 {
   if ((pool_ptr - str_start[str_ptr]) >= depth_threshold)
   {
-    if (mem[p].hh.v.RH != 0)
-      print_string("[]");
+    if (math_type(p) != 0)
+      print_string(" []");
   }
   else
   {
@@ -2301,7 +2310,7 @@ void show_node_list_(integer p)
   {
 /*  if (p > 0) */  /* was p>null !!! line 3662 in tex.web */
     if (p != 0)    /* fixed 94/Mar/23 BUG FIX NOTE: still not fixed in 3.14159 ! */
-    print_string("[]");
+    print_string(" []");
     return; 
   } 
   n = 0; 
@@ -2349,19 +2358,19 @@ void show_node_list_(integer p)
             }
             if (mem[p + 6].cint != 0)
             {
-              print_string(", stretch");
+              print_string(", stretch ");
               print_glue(mem[p + 6].cint, mem[p + 5].hh.b1, "");
             }
             if (mem[p + 4].cint != 0)
             {
-              print_string(", shrink");
+              print_string(", shrink ");
               print_glue(mem[p + 4].cint, mem[p + 5].hh.b0, "");
             }
           } else {
             g = mem[p + 6].gr;
             if ((g != 0.0)&&(mem[p + 5].hh.b0 != 0))
             {
-              print_string(", glue set");
+              print_string(", glue set ");
               if (mem[p + 5].hh.b0 == 2)
                 print_string("- ");
               if (fabs(g)> 20000.0)
@@ -2409,7 +2418,7 @@ void show_node_list_(integer p)
           print_spec(mem[p + 4].hh.v.RH, "");
           print_char(',');
           print_scaled(mem[p + 2].cint);
-          print_string("(; float cost");
+          print_string("); float cost ");
           print_int(mem[p + 1].cint);
           {
             {
@@ -2525,7 +2534,7 @@ void show_node_list_(integer p)
           else print_string("off");
           if (mem[p + 1].cint != 0)
           {
-            print_string(", surrounded");
+            print_string(", surrounded ");
             print_scaled(mem[p + 1].cint);
           }
         }
@@ -2533,7 +2542,7 @@ void show_node_list_(integer p)
       case 6:
         {
           print_font_and_char(p + 1);
-          print_string("(ligature");
+          print_string("(ligature ");
           if (mem[p].hh.b1 > 1)
             print_char('|');
           font_in_short_display = mem[p + 1].hh.b0; 

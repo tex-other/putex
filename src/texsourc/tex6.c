@@ -1431,13 +1431,9 @@ void new_hyph_exceptions (void)
   halfword q;
   str_number s, t;
   pool_pointer u, v;
+
   scan_left_brace();
-  if (language <= 0)
-    cur_lang = 0;
-  else if (language > 255)
-    cur_lang = 0;
-  else
-    cur_lang = language;
+  set_cur_lang();
   n = 0;
   p = 0;
 

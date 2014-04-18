@@ -2330,6 +2330,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define immediate_code    4
 #define set_language_code 5
 /* sec 79 */
+extern void set_cur_lang(void);
 extern str_number make_string_pool (char *s);
 extern char * md5_file(const char * file_name);
 extern INLINE void str_room_ (int val);

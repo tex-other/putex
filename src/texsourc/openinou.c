@@ -331,7 +331,6 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
         since TeX wants to look at it.  What a kludge.  */
     if (path_index == TFMFILEPATH)
     { /* See comments in ctex.ch for why we need this.  */
-/*          extern integer tfm_temp; */ /* see texd.h for definition */
       tfm_temp = getc (*f);
     }
 #endif /* TeX */  

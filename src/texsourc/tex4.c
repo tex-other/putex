@@ -562,7 +562,7 @@ void out_what_(halfword p)
           cur_ext = 785;  /* => ".tex" */
         pack_file_name(cur_name, cur_area, cur_ext); 
         while(! a_open_out(write_file[j])) {
-          prompt_file_name(1294, 785); /* output file name  .tex */
+          prompt_file_name("output file name", ".tex");
     }
     write_open[j]= true; 
   } 
@@ -1184,17 +1184,17 @@ void ship_out_(halfword p)
   dvi_v = 0;
   cur_h = h_offset;
   dvi_f = 0;
+
   if (output_file_name == 0)
   {
     if (job_name == 0)
       open_log_file();
 
-    pack_job_name(788);   /* .dvi */
-    //pack_job_name(make_string_pool(".dvi"));
+    pack_job_name(".dvi");
 
     while(!b_open_out(dvi_file))
     {
-      prompt_file_name(789, 788); /* file name for output  .dvi */
+      prompt_file_name("file name for output", ".dvi");
     }
 
     output_file_name = b_make_name_string(dvi_file);

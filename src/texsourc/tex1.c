@@ -554,7 +554,7 @@ void show_activities (void)
       }
 
       if (link(contrib_head) != 0)
-        print_nl(" (\\output routine)");
+        print_nl("### recent contributions:");
     }
 
     show_box(link(nest[p].head_field));
@@ -563,7 +563,7 @@ void show_activities (void)
     {
       case 0:
         {
-          print_nl("### recent contributions:");
+          print_nl("prevdepth ");
 
           if  (a.cint <= ignore_depth)
             print_string("ignored");

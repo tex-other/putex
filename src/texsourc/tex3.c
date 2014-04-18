@@ -1448,14 +1448,12 @@ void begin_name (void)
 /* sec 0516 */
 bool more_name_(ASCII_code c)
 {
-  register bool Result;
-
   if (quoted_file_name == 0 && c == ' ')
-    Result = false;
+    return false;
   else if (quoted_file_name != 0 && c == '"')
   {
     quoted_file_name = 0; /* catch next space character */
-    Result = true;    /* accept ending quote, but throw away */
+    return true;    /* accept ending quote, but throw away */
   }
   else
   {
@@ -1478,9 +1476,8 @@ bool more_name_(ASCII_code c)
     } 
     else if (c == '.')
       ext_delimiter = cur_length;
-    Result = true;
+    return true;
   }
-  return Result;
 }
 /******************************** 2000 August 15th start ***********************/
 
@@ -1511,12 +1508,13 @@ int find_string (int start, int end)
 
 //  avoid problems with(cur_name == flushablestring)by going only up to str_ptr-1
 //  code in new_font (tex8.c) will take care of reuse of font name already
-//  for (k = 0; k < str_ptr; k++) {
   for (k = 0; k < str_ptr - 1; k++)
   {
     if (length(k) != nlen) continue;
-    if (strncmp((const char *) str_pool + start, (const char *) str_pool + str_start[k], nlen) == 0) {
-      if (trace_flag) {
+    if (strncmp((const char *) str_pool + start, (const char *) str_pool + str_start[k], nlen) == 0)
+    {
+      if (trace_flag)
+      {
         sprintf(log_line, "\nFOUND the string %d (%d) ", k, str_start[k+1]-str_start[k]);
         s = log_line + strlen(log_line);
         strncpy(s, (const char *)str_pool + start, nlen);
@@ -1526,13 +1524,16 @@ int find_string (int start, int end)
       return k;     // return number of matching string
     }
   }
-  if (trace_flag) {
+
+  if (trace_flag)
+  {
     sprintf(log_line, "\nNOT FOUND string ");
     s = log_line + strlen(log_line);
     strncpy(s, (const char*)str_pool + start, nlen);
     strcpy(s+nlen, "\n");
     show_line(log_line, 0);
   }
+
   return -1;          // no match found
 }
 
@@ -1548,7 +1549,8 @@ void remove_string (int start, int end)
 //  if (end < start) show_line("\nEND < START", 1);
 //  if (pool_ptr < end) show_line("\nPOOLPTR < END", 1);
 
-  if (trace_flag) {
+  if (trace_flag)
+  {
     int n = end-start;
     sprintf(log_line, "\nSTRIPPING OUT %d %d ", n, nlen);
     s = log_line + strlen(log_line);
@@ -1556,7 +1558,10 @@ void remove_string (int start, int end)
     strcpy(s+n, "\n");
     show_line(log_line, 0);
   }
-  if (nlen > 0) memcpy(str_pool+start, str_pool+end, nlen);
+
+  if (nlen > 0)
+    memcpy(str_pool+start, str_pool+end, nlen);
+
   pool_ptr = start + nlen;    // poolprt - (end-start);
 }
 
@@ -1573,10 +1578,13 @@ void show_string (int k)
   show_line(log_line, 0);
 }
 
+// debugging code
 void show_all_strings (void)
-{   // debugging code
+{
   int k;
-  for (k = 0; k < str_ptr; k++) show_string(k);
+
+  for (k = 0; k < str_ptr; k++)
+    show_string(k);
 }
 
 // int notfirst=0;    // debugging only
@@ -1584,19 +1592,17 @@ void show_all_strings (void)
 /********************************** 2000 August 15 end ****************************/
 /* sec 0517 */
 void end_name (void) 
-{ 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+{
 #ifdef ALLOCATESTRING
   if (str_ptr + 3 > current_max_strings)
-/*    str_start = realloc_str_start(increment_max_strings); */
     str_start = realloc_str_start(increment_max_strings + 3);
+
   if (str_ptr + 3 > current_max_strings)
-  {  /* in case it failed 94/Jan/24 */
+  {
     overflow("number of strings", current_max_strings - init_str_ptr);  /* 97/Mar/7 */
     return;     // abort_flag set
   }
 #else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (str_ptr + 3 > max_strings)
   {
     overflow("number of strings", max_strings - init_str_ptr); /* number of strings */
@@ -1608,50 +1614,62 @@ void end_name (void)
   
   if (area_delimiter == 0)   // no area delimiter ':' '/' or '\' found
     cur_area = 335;     // "" default area 
-  else {
-    if (save_strings_flag &&
-      (cur_area = find_string(str_start[str_ptr], str_start[str_ptr]+area_delimiter)) > 0) {
+  else
+  {
+    if (save_strings_flag && (cur_area = find_string(str_start[str_ptr], str_start[str_ptr] + area_delimiter)) > 0)
+    {
       remove_string(str_start[str_ptr], str_start[str_ptr] + area_delimiter);
       area_delimiter = 0; // area_delimiter - area_delimiter;
-      if (ext_delimiter != 0) ext_delimiter = ext_delimiter - area_delimiter;
+
+      if (ext_delimiter != 0)
+        ext_delimiter = ext_delimiter - area_delimiter;
+
 //      str_start[str_ptr + 1]= str_start[str_ptr]+ area_delimiter; // test only
 //      incr(str_ptr);    // test only
     }
-    else {          // carve out string for "cur_area"
+    else         // carve out string for "cur_area"
+    {
       cur_area = str_ptr; 
-      str_start[str_ptr + 1]= str_start[str_ptr]+ area_delimiter; 
+      str_start[str_ptr + 1] = str_start[str_ptr] + area_delimiter; 
       incr(str_ptr);
     }
-  } 
-  if (ext_delimiter == 0){ // no extension delimiter '.' found
-    cur_ext = 335;        // "" default extension 
-  if (save_strings_flag &&
-      (cur_name = find_string(str_start[str_ptr], pool_ptr)) > 0) {
-    remove_string(str_start[str_ptr], pool_ptr);
-//    (void) make_string();  // test only
   }
-  else            // Make string from str_start[str_ptr]to pool_ptr
-    cur_name = make_string();
+
+  if (ext_delimiter == 0) // no extension delimiter '.' found
+  {
+    cur_ext = 335;        // "" default extension 
+
+    if (save_strings_flag && (cur_name = find_string(str_start[str_ptr], pool_ptr)) > 0)
+    {
+      remove_string(str_start[str_ptr], pool_ptr);
+//    (void) make_string();  // test only
+    }
+    else            // Make string from str_start[str_ptr]to pool_ptr
+      cur_name = make_string();
   } 
-  else {            // did find an extension
-  if (save_strings_flag &&
-      (cur_name = find_string(str_start[str_ptr], str_start[str_ptr] + ext_delimiter - area_delimiter-1)) > 0) {
-    remove_string(str_start[str_ptr], str_start[str_ptr] + ext_delimiter - area_delimiter - 1);
+  else            // did find an extension
+  {
+    if (save_strings_flag &&
+      (cur_name = find_string(str_start[str_ptr], str_start[str_ptr] + ext_delimiter - area_delimiter-1)) > 0)
+    {
+      remove_string(str_start[str_ptr], str_start[str_ptr] + ext_delimiter - area_delimiter - 1);
 //    str_start[str_ptr + 1]= str_start[str_ptr]+ ext_delimiter - area_delimiter - 1;   // test only
 //    incr(str_ptr);    // test only
-  }
-  else {            // carve out string for "cur_name"
-    cur_name = str_ptr; 
-    str_start[str_ptr + 1]= str_start[str_ptr]+ ext_delimiter - area_delimiter - 1; 
-    incr(str_ptr);
-  }
-  if (save_strings_flag &&
-      (cur_ext = find_string(str_start[str_ptr], pool_ptr)) > 0) {
-    remove_string(str_start[str_ptr], pool_ptr);
+    }
+    else             // carve out string for "cur_name"
+    {
+      cur_name = str_ptr;
+      str_start[str_ptr + 1]= str_start[str_ptr]+ ext_delimiter - area_delimiter - 1;
+      incr(str_ptr);
+    }
+
+    if (save_strings_flag && (cur_ext = find_string(str_start[str_ptr], pool_ptr)) > 0)
+    {
+      remove_string(str_start[str_ptr], pool_ptr);
 //    (void) make_string();  // test only
-  }
-  else            // Make string from str_start[str_ptr]to pool_ptr
-    cur_ext = make_string();
+    }
+    else            // Make string from str_start[str_ptr]to pool_ptr
+      cur_ext = make_string();
   }
 }
 
@@ -1752,7 +1770,6 @@ void pack_buffered_name_(small_number n, integer a, integer b)
 /* sec 0525 */
 str_number make_name_string (void)
 {
-  register str_number Result;
   integer k;
 
 #ifdef ALLOCATESTRING
@@ -1762,40 +1779,36 @@ str_number make_name_string (void)
   if (str_ptr == current_max_strings)
     str_start = realloc_str_start(increment_max_strings);
 
-  if ((pool_ptr + name_length > current_pool_size) ||
-    (str_ptr == current_max_strings) || (cur_length > 0))
+  if ((pool_ptr + name_length > current_pool_size) || (str_ptr == current_max_strings) || (cur_length > 0))
 #else
-  if ((pool_ptr + name_length > pool_size) || (str_ptr == max_strings) ||
-      (cur_length > 0))
+  if ((pool_ptr + name_length > pool_size) || (str_ptr == max_strings) || (cur_length > 0))
 #endif
-    Result = 63;
-  else {
-    for (k = 1; k <= name_length; k++)
-    {
-      str_pool[pool_ptr]= xord[name_of_file[k]];
-//      sprintf(log_line, "%d => %d ", name_of_file[k], xord[name_of_file[k]]);
-//      show_line(log_line, 0);  // debugging only
-      incr(pool_ptr);
-    }
-    Result = make_string();
+  {
+    return '?';
   }
-  return Result;
+  else
+  {
+    for (k = 1; k <= name_length; k++)
+      append_char(xord[name_of_file[k]]);
+
+    return make_string();
+  }
 }
 /* sec 0525 */
 str_number a_make_name_string_(alpha_file * f)
 {
   return make_name_string();
-}   /* f unreferenced ? bkph */
+}
 /* sec 0525 */
 str_number b_make_name_string_(byte_file * f)
 {
   return make_name_string(); 
-}   /* f unreferenced ? bkph */
+}
 /* sec 0525 */
 str_number w_make_name_string_(word_file * f)
 {
   return make_name_string();
-}   /* f unreferenced ? bkph */
+}
 
 /* Used by start_input to scan file name on command line */
 /* Also in tex8.c new_font_, open_or_close_in, and do_extension */
@@ -1866,6 +1879,7 @@ void show_tex_inputs (void)
   if (format_specific)
   {
     s = format_name;                /* try specific */
+
     if (grabenv(s) == NULL)
       s = "TEXINPUTS";  /* no format specific */
   }
@@ -1896,13 +1910,13 @@ void show_tex_inputs (void)
 /**********************************************************************/
 /* sec 0530 */
 /*  s - what can't be found, e - default */
-void prompt_file_name_(str_number s, str_number e) 
+void prompt_file_name_(char * s, str_number e) 
 {
   integer k;
 
   if (interaction == scroll_mode);
 
-  if (s == 781)
+  if (!strcmp("input file name", s))
     print_err("I can't find file `");
   else
     print_err("I can't write on file `");
@@ -1910,7 +1924,7 @@ void prompt_file_name_(str_number s, str_number e)
   print_file_name(cur_name, cur_area, cur_ext);
   print_string("'.");
 
-  if (s == 781) /* input file name */
+  if (!strcmp("input file name", s))
   {
     if (cur_area == 335) /* "" only if path not specified */
     {
@@ -1923,7 +1937,7 @@ void prompt_file_name_(str_number s, str_number e)
     show_context();
 
   print_nl("Please type another ");
-  print(s);
+  print_string(s); 
 
   if (interaction < 2)
   {
@@ -1945,8 +1959,8 @@ void prompt_file_name_(str_number s, str_number e)
   {
     begin_name();
     k = first;
-/*  step over leading spaces ... */
-    while ((buffer[k]== 32) && (k < last))
+
+    while ((buffer[k] == ' ') && (k < last))
       incr(k);
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     quoted_file_name = 0;         /* 98/March/15 */
@@ -1966,10 +1980,10 @@ void prompt_file_name_(str_number s, str_number e)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /*  convert tilde '~' to pseudo tilde */
       if (pseudo_tilde != 0 && buffer[k]== '~')
-        buffer[k]= pseudo_tilde;
+        buffer[k] = pseudo_tilde;
 /*  convert space ' ' to pseudo space */
       if (pseudo_space != 0 && buffer[k]== ' ')
-        buffer[k]= pseudo_space;
+        buffer[k] = pseudo_space;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
       if (!more_name(buffer[k]))
         goto lab30;
@@ -1978,8 +1992,10 @@ void prompt_file_name_(str_number s, str_number e)
 lab30:
     end_name();
   }
+
   if (cur_ext == 335)    /* "" */
     cur_ext = e;      /* use default extension */
+
   pack_file_name(cur_name, cur_area, cur_ext);
 }
 /* sec 0534 */
@@ -1995,14 +2011,14 @@ void open_log_file (void)
   if (job_name == 0)
     job_name = 790;   /* default:  texput */
 
-  pack_job_name(791); /* .log */
-  //pack_job_name(make_string_pool(".log"));
+  pack_job_name(".log");
 
   while (!a_open_out(log_file))
   {
     selector = term_only;
-    prompt_file_name(793, 791); /* transcript file name  texput */
+    prompt_file_name("transcript file name", ".log");
   }
+
   texmf_log_name = a_make_name_string(log_file);
   selector = log_only;
   log_opened = true;
@@ -2011,22 +2027,16 @@ void open_log_file (void)
 //  for our version DOS/Windows
   if (want_version)
   {
-//    showversion (log_file);       /* in local.c - bkph */
-//    showversion (stdout);
     stamp_it(log_line);         // ??? use log_line ???
     strcat(log_line, "\n");
     (void) fputs(log_line, log_file);
-//    show_line(buffer, 0);        // ??? show on screen as well
-//    print_ln(); 
     stampcopy(log_line);
     strcat(log_line, "\n");
-//    show_line(buffer, 0);        // ??? show on screen as well
     (void) fputs(log_line, log_file);
-//    print_ln(); 
   }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /*  also change following in itex.c - bkph */
-  (void) fputs(tex_version,  log_file); 
+  (void) fputs(tex_version, log_file); 
   (void) fprintf(log_file, " (%s %s)", application, yandyversion);
 
   if (format_ident > 0)
@@ -2079,6 +2089,7 @@ void open_log_file (void)
       free(string_file);  /* this was allocated by strdup in openinou */
       string_file = NULL;   /* for safety */
     }
+
     if (format_file != NULL)
     {
       fprintf(log_file, "(%s)\n", format_file);
@@ -2208,7 +2219,7 @@ void start_input (void)
       goto lab30;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     end_file_reading();
-    prompt_file_name(781, 785); /* input file name  .tex */
+    prompt_file_name("input file name", ".tex");
   }   /* end of while(true)trying to get valid file name */
 
 /* maybe set  pseudo_tilde = 0  at this point ? 95/Sep/26 */
@@ -2309,6 +2320,7 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
   g = 0;
   fileopened = false;
   pack_file_name(nom, aire, 805); /* .tfm */
+
   if (!b_open_in(tfm_file)) /* new in C version d */
   {
     if (maketextfm ())
@@ -2426,34 +2438,37 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
     }
     if (lf != 6 + lh + (ec - bc + 1) + nw + nh + nd + ni + nl + nk + ne + np)
       goto lab11;
+
     if ((nw == 0) || (nh == 0) || (nd == 0) || (ni == 0))
       goto lab11;
   }
+
   lf = lf - 6 - lh;
+
   if (np < 7)
     lf = lf + 7 - np;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATEFONT
   if ((fmem_ptr + lf > current_font_mem_size))   /* 93/Nov/28 */
     font_info = realloc_font_info (increment_font_mem_size + lf);
+
   if ((font_ptr == font_max) || (fmem_ptr + lf > current_font_mem_size))
 #else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if ((font_ptr == font_max) || (fmem_ptr + lf > font_mem_size))
 #endif
   {
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     if (trace_flag)
     {
       sprintf(log_line, "font_ptr %d font_max %d fmem_ptr %d lf %d font_mem_size %d\n",
           font_ptr, font_max, fmem_ptr, lf, font_mem_size); /* debugging */
       show_line(log_line, 0);
     }
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
     print_err("Font ");
     sprint_cs(u);
     print_char('=');
     print_file_name(nom, aire, 335); /* "" */
+
     if (s >= 0)
     {
       print_string(" at ");
@@ -2465,6 +2480,7 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
       print_string(" scaled ");
       print_int(- (integer) s);
     }
+
     print_string(" not loaded: Not enough room left");
     help4("I'm afraid I won't be able to make use of this font,",
         "because my memory for character-size data is too small.",
@@ -2473,6 +2489,7 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
     error();
     goto lab30;
   }
+
   f = font_ptr + 1;
   char_base[f] = fmem_ptr - bc;
   width_base[f] = char_base[f] + ec + 1;
@@ -2483,6 +2500,7 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
   kern_base[f] = lig_kern_base[f] + nl - 256 * (128);
   exten_base[f] = kern_base[f] + 256 *(128) + nk;
   param_base[f] = exten_base[f] + ne;
+
   {
     if (lh < 2)
       goto lab11;
@@ -2502,6 +2520,7 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
       qw.b3 = d;
       font_check[f] = qw;
     }
+
     tfm_temp = getc(tfm_file);
     {
       z = tfm_temp;
@@ -2510,20 +2529,26 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
       tfm_temp = getc(tfm_file);
       z = z * 256 + tfm_temp;
     }
+
     tfm_temp = getc(tfm_file);
     z = z * 256 + tfm_temp;
     tfm_temp = getc(tfm_file);
     z =(z * 16) + (tfm_temp / 16);
+
     if (z < 65536L)
       goto lab11; 
-    while (lh > 2) {
+
+    while (lh > 2)
+    {
       tfm_temp = getc(tfm_file);
       tfm_temp = getc(tfm_file);
       tfm_temp = getc(tfm_file);
       tfm_temp = getc(tfm_file);
       decr(lh);
     }
+
     font_dsize[f] = z;
+
     if (s != -1000)
       if (s >= 0)
         z = s;
@@ -2549,8 +2574,10 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
       qw.b3 = d;
       font_info[k].qqqq = qw;
     }
+
     if ((a >= nw) || (b / 16 >= nh) || (b % 16 >= nd) || (c / 4 >= ni))
       goto lab11;
+
     switch (c % 4)
     {
       case 1 :
@@ -2623,6 +2650,7 @@ lab45:;
 /*  read ligature/kern program */
   bchlabel = 32767;     /* '77777 */
   bchar = 256;
+
   if (nl > 0)
   {
     for (k = lig_kern_base[f]; k <= kern_base[f] + 256 * (128)- 1; k++)
@@ -2849,14 +2877,17 @@ lab11:
     print_string("scaled");
     print_int(- (integer) s);
   } 
+
   if (fileopened)
     print_string(" not loadable: Bad metric (TFM) file");
   else
     print_string(" not loadable: Metric (TFM) file not found");
-  if (aire == 335)
-  {    /* "" only if path not specified */
+
+  if (aire == 335) /* "" only if path not specified */
+  {
     if (show_texinput_flag) show_tex_fonts();   /* 98/Jan/31 */
   }
+
   help5("I wasn't able to read the size data for this font,",
       "so I will ignore the font specification.",
       "[Wizards can fix TFM files using TFtoPL/PLtoTF.]",
@@ -2866,6 +2897,7 @@ lab11:
 lab30:
   if (fileopened)
     b_close(tfm_file);
+
   Result = g;
   return Result;
 }

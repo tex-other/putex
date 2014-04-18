@@ -859,14 +859,7 @@ void new_graf_(bool indented)
   push_nest();
   mode = hmode;
   space_factor = 1000;
-
-  if (language <= 0)
-    cur_lang = 0;
-  else if (language > 255)
-    cur_lang = 0;
-  else
-    cur_lang = language;
-
+  set_cur_lang();
   clang = cur_lang;
   prev_graf =(norm_min(left_hyphen_min) * 64 + norm_min(right_hyphen_min)) * 65536L + cur_lang;
 

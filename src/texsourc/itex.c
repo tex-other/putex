@@ -3373,13 +3373,16 @@ lab40:
 void trie_pack_ (trie_pointer p)
 {
   trie_pointer q;
+
   do {
     q = trie_l[p];
+
     if ((q > 0) && (trie_hash[q]== 0))
     {
       first_fit(q);
       trie_pack(q);
     }
+
     p = trie_r[p];
   } while(!(p == 0));
 }
@@ -3390,17 +3393,21 @@ void trie_fix_ (trie_pointer p)
   trie_pointer z;
 
   z = trie_hash[p];
+
   do {
     q = trie_l[p];
     c = trie_c[p];
     trie_trl[z + c] = trie_hash[q];
     trie_trc[z + c] = c;
     trie_tro[z + c] = trie_o[p];
+
     if (q > 0)
       trie_fix(q);
+
     p = trie_r[p];
   } while(!(p == 0));
 }
+/* sec 0960 */
 void new_patterns (void)
 {
 /* ******************************************************************* */
@@ -3435,29 +3442,28 @@ void new_patterns (void)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (trie_not_ready)
   {
-    if (language <= 0)
-      cur_lang = 0;
-    else if (language > 255)
-      cur_lang = 0;
-    else
-      cur_lang = language;
+    set_cur_lang();
     scan_left_brace();
     k = 0;
     hyf[0] = 0;
     digitsensed = false;
-    while (true) {
+
+    while (true)
+    {
       get_x_token();
+
       switch (cur_cmd)
       {
-        case 11:
-        case 12:
-          if (digitsensed || (cur_chr < 48) || (cur_chr > 57))
+        case letter:
+        case other_char:
+          if (digitsensed || (cur_chr < '0') || (cur_chr > '9'))
           {
             if (cur_chr == '.')
               cur_chr = 0;
             else
             {
-              cur_chr = eqtb[(hash_size + 2139) + cur_chr].hh.v.RH;
+              cur_chr = lc_code(cur_chr);
+
               if (cur_chr == 0)
               {
                 print_err("Nonletter");
@@ -3465,6 +3471,7 @@ void new_patterns (void)
                 error();
               }
             }
+
             if (k < 63)
             {
               incr(k);
@@ -3475,43 +3482,49 @@ void new_patterns (void)
           }
           else if (k < 63)
           {
-            hyf[k] = cur_chr - 48;
+            hyf[k] = cur_chr - '0';
             digitsensed = true;
           }
           break;
-        case 10:
-        case 2:
+        case spacer:
+        case right_brace:
           {
             if (k > 0)
             {
               if (hc[1] == 0)
                 hyf[0] = 0;
+
               if (hc[k] == 0)
                 hyf[k] = 0;
+
               l = k;
               v = min_trie_op;
+
               while (true) {
                 if (hyf[l]!= 0)
                   v = new_trie_op(k - l, hyf[l], v);
+
                 if (l > 0)
                   decr(l);
                 else
                   goto lab31;
               }
 lab31:
-              ;
               q = 0;
               hc[0] = cur_lang;
+
               while (l <= k) {
                 c = hc[l];
                 incr(l);
                 p = trie_l[q];
                 firstchild = true;
+
                 while ((p > 0) && (c > trie_c[p])) {
                   q = p;
                   p = trie_r[q];
                   firstchild = false;
                 }
+
                 if ((p == 0) || (c < trie_c[p]))
                 {
                   if (trie_ptr == trie_size)
@@ -3520,29 +3533,36 @@ lab31:
 /*      not dynamic ---- but can be set -h=... from command line in ini-TeX */
                     return;     // abort_flag set
                   }
+
                   incr(trie_ptr);
                   trie_r[trie_ptr] = p;
                   p = trie_ptr;
                   trie_l[p] = 0;
+
                   if (firstchild)
                     trie_l[q]= p;
                   else
                     trie_r[q]= p;
+
                   trie_c[p] = c;
                   trie_o[p] = min_trie_op;
                 }
                 q = p;
               }
+
               if (trie_o[q]!= min_trie_op)
               {
                 print_err("Duplicate pattern");
                 help1("(See Appendix H.)");
                 error();
               }
+
               trie_o[q]= v;
             }
-            if (cur_cmd == 2)
+
+            if (cur_cmd == right_brace)
               goto lab30;
+
             k = 0;
             hyf[0] = 0;
             digitsensed = false;
@@ -3566,10 +3586,11 @@ lab30:;
     print_esc("patterns");
     help1("All patterns must be given before typesetting begins.");
     error();
-    mem[lig_trick].hh.v.RH = scan_toks(false, false);
+    link(garbage) = scan_toks(false, false);
     flush_list(def_ref);
   }
 }
+/* sec 0966 */
 void init_trie (void)
 {
   trie_pointer p;
@@ -3577,19 +3598,23 @@ void init_trie (void)
   integer j, k;
   int t;                  /* 95/Jan/7 */
   trie_pointer r, s;
-  op_start[0]= - (integer) min_trie_op;
+
+  op_start[0] = - (integer) min_trie_op;
 
   for (j = 1; j <= 255; j++)
   {
     op_start[j] = op_start[j - 1] + trie_used[j - 1];
   }
+
   for (j = 1; j <= trie_op_ptr; j++)
   {
     trie_op_hash[j] = op_start[trie_op_lang[j]] + trie_op_val[j];
   }
+
   for (j = 1; j <= trie_op_ptr; j++)
   {
-    while (trie_op_hash[j] > j) {
+    while (trie_op_hash[j] > j)
+    {
       k = trie_op_hash[j];
       t = hyf_distance[k];
       hyf_distance[k] = hyf_distance[j];
@@ -3604,26 +3629,33 @@ void init_trie (void)
       trie_op_hash[k] = k;
     }
   }
+
   for (p = 0; p <= trie_size; p++)
   {
     trie_hash[p] = 0;
   }
+
   trie_l[0] = compress_trie(trie_l[0]);
+
   for (p = 0; p <= trie_ptr; p++)
   {
     trie_hash[p]= 0;
   }
+
   for (p = 0; p <= 255; p++)
   {
     trie_min[p] = p + 1;
   }
+
   trie_trl[0] = 1;
   trie_max = 0;
+
   if (trie_l[0] != 0)
   {
     first_fit(trie_l[0]);
     trie_pack(trie_l[0]);
   }
+
   if (trie_l[0] == 0)
   {
     for (r = 0; r <= 256; r++)
@@ -3676,7 +3708,7 @@ void store_fmt_file (void)
     print_err("You can't dump inside a group");
     help1("`{...\\dump}' is a no-no..");
     succumb();
-  } /* end of if save_ptr != 0 */
+  }
 
   selector = new_string;
   print_string(" (format=");
@@ -3696,12 +3728,11 @@ void store_fmt_file (void)
 
   str_room(1);
   format_ident = make_string();
-  pack_job_name(780);   /* .fmt */
-  //pack_job_name(make_string_pool(".fmt"));
+  pack_job_name(".fmt");
 
-  while(! w_open_out(fmt_file))
+  while(!w_open_out(fmt_file))
   {
-    prompt_file_name(1267, 780); /* format file name  .fmt */
+    prompt_file_name("format file name", ".fmt");
   }
 
   print_nl("Beginning to dump on file ");
@@ -3709,6 +3740,7 @@ void store_fmt_file (void)
   flush_string();
   print_nl("");
   slow_print(format_ident);
+
   dump_int(BEGINFMTCHECKSUM); /* magic FMT file start 4C 20 E6 15 hex */
 
   dump_int(mem_bot);
@@ -3719,10 +3751,13 @@ void store_fmt_file (void)
 
   dump_int(pool_ptr);
   dump_int(str_ptr);
+
   if (dumpthings(str_start[0], str_ptr + 1))
     return;
+
   if (dumpthings(str_pool[0], pool_ptr))
     return;
+
   print_ln();
   print_int(str_ptr);
   print_string(" strings of total length ");
@@ -3735,29 +3770,41 @@ void store_fmt_file (void)
   p = 0;
   q = rover;
   x = 0;
-  do {
-    if (dumpthings(mem[p], q + 2 - p))
-      return;
-    x = x + q + 2 - p;
-    var_used = var_used + q - p;
-    p = q + mem[q].hh.v.LH;
-    q = mem[q + 1].hh.v.RH;
-  } while (!(q == rover));
+
+  do
+    {
+      if (dumpthings(mem[p], q + 2 - p))
+        return;
+
+      x = x + q + 2 - p;
+      var_used = var_used + q - p;
+      p = q + mem[q].hh.v.LH;
+      q = mem[q + 1].hh.v.RH;
+    }
+  while (!(q == rover));
+
   var_used = var_used + lo_mem_max - p;
   dyn_used = mem_end + 1 - hi_mem_min;
+
   if (dumpthings(mem[p], lo_mem_max + 1 - p))
     return;
+
   x = x + lo_mem_max + 1 - p;
   dump_int(hi_mem_min);
   dump_int(avail);
+
   if (dumpthings(mem[hi_mem_min], mem_end + 1 - hi_mem_min))
     return;
+
   x = x + mem_end + 1 - hi_mem_min;
   p = avail;
-  while (p != 0) {
+
+  while (p != 0)
+  {
     decr(dyn_used);
     p = mem[p].hh.v.RH;
   }
+
   dump_int(var_used);
   dump_int(dyn_used);
   print_ln();
@@ -3768,34 +3815,41 @@ void store_fmt_file (void)
   print_int(dyn_used);
 
   k = active_base;
-  do {
-    j = k;
-    while (j < (int_base - 1)) {
-      if ((equiv(j) == equiv(j + 1)) &&
+  do
+    {
+      j = k;
+
+      while (j < (int_base - 1))
+      {
+        if ((equiv(j) == equiv(j + 1)) &&
           (eq_type(j) == eq_type(j + 1)) &&
           (eq_level(j) == eq_level(j + 1)))
-        goto lab41;
-      incr(j);
-    }
-    l = (int_base);
-    goto lab31;
+          goto lab41;
+        incr(j);
+      }
+
+      l = (int_base);
+      goto lab31;
 lab41:
-    incr(j);
-    l = j;
-    while (j < (int_base - 1)) {
-      if ((equiv(j) != equiv(j + 1)) ||
+      incr(j);
+      l = j;
+      while (j < (int_base - 1)) {
+        if ((equiv(j) != equiv(j + 1)) ||
           (eq_type(j) != eq_type(j + 1)) ||
           (eq_level(j) != eq_level(j + 1)))
-        goto lab31;
-      incr(j);
-    }
+          goto lab31;
+        incr(j);
+      }
 lab31:
-    dump_int(l - k);
-    if (dumpthings(eqtb[k], l - k))
-      return;
-    k = j + 1;
-    dump_int(k - l);
-  } while (!(k == (int_base)));
+      dump_int(l - k);
+
+      if (dumpthings(eqtb[k], l - k))
+        return;
+
+      k = j + 1;
+      dump_int(k - l);
+    }
+  while (!(k == (int_base)));
 
   do {
     j = k;
@@ -3830,7 +3884,6 @@ lab32:
 
   if (trace_flag)
   {
-    /* debugging */
     sprintf(log_line, "itex cs_count %d hash_size %d hash_extra %d hash_used %d",
         cs_count, hash_size, hash_extra, hash_used);
     show_line(log_line, 0);
@@ -3856,6 +3909,7 @@ lab32:
 /* for p <- hash_used+1 to undefined_control_sequence-1 do dump_hh(hash[p]) */
   if (dumpthings(hash[hash_used + 1], (hash_size + 780) - hash_used))
     return;
+
   dump_int(cs_count);
   print_ln();
   print_int(cs_count);
@@ -3865,54 +3919,78 @@ lab32:
   {
     if (dumpthings(font_info[0], fmem_ptr))
       return;
-/*  frozenfontptr = font_ptr; */    /* number of fonts frozen into format */
+
     dump_int(font_ptr);
+
     if (dumpthings(font_check[0], font_ptr + 1))
       return;
+
     if (dumpthings(font_size[0], font_ptr + 1))
       return;
+
     if (dumpthings(font_dsize[0], font_ptr + 1))
       return;
+
     if (dumpthings(font_params[0], font_ptr + 1))
       return;
+
     if (dumpthings(hyphen_char[0], font_ptr + 1))
       return;
+
     if (dumpthings(skew_char[0], font_ptr + 1))
       return;
+
     if (dumpthings(font_name[0], font_ptr + 1))
       return;
+
     if (dumpthings(font_area[0], font_ptr + 1))
       return;
+
     if (dumpthings(font_bc[0], font_ptr + 1))
       return;
+
     if (dumpthings(font_ec[0], font_ptr + 1))
       return;
+
     if (dumpthings(char_base[0], font_ptr + 1))
       return;
+
     if (dumpthings(width_base[0], font_ptr + 1))
       return;
+
     if (dumpthings(height_base[0], font_ptr + 1))
       return;
+
     if (dumpthings(depth_base[0], font_ptr + 1))
       return;
+
     if (dumpthings(italic_base[0], font_ptr + 1))
       return;
+
     if (dumpthings(lig_kern_base[0], font_ptr + 1))
       return;
+
     if (dumpthings(kern_base[0], font_ptr + 1))
       return;
+
     if (dumpthings(exten_base[0], font_ptr + 1))
       return;
+
     if (dumpthings(param_base[0], font_ptr + 1))
       return;
+
     if (dumpthings(font_glue[0], font_ptr + 1))
       return;
+
     if (dumpthings(bchar_label[0], font_ptr + 1))
       return;
+
     if (dumpthings(font_bchar[0], font_ptr + 1))
       return;
+
     if (dumpthings(font_false_bchar[0], font_ptr + 1))
       return;
+
     for (k = 0; k <= font_ptr; k++)
     {
       print_nl("\\font");
@@ -3921,6 +3999,7 @@ lab32:
       print_esc("");print(hash[(hash_size + hash_extra + 524) + k].v.RH);
       print_char('=');
       print_file_name(font_name[k], font_area[k], 335);
+
       if (font_size[k] != font_dsize[k])
       {
         print_string(" at ");
@@ -3929,15 +4008,18 @@ lab32:
       }
     }
   }
+
   print_ln();
   print_int(fmem_ptr - 7);
   print_string(" words of font info for ");
   print_int(font_ptr - 0);
   print_string(" preloaded font");
+
   if (font_ptr != 1)
     print_char('s');
 
   dump_int(hyph_count);
+
   for (k = 0; k <= hyphen_prime; k++)
   {
     if (hyph_word[k]!= 0)
@@ -3947,36 +4029,51 @@ lab32:
       dump_int(hyph_list[k]);
     }
   }
+
   print_ln();
   print_int(hyph_count);
   print_string(" hyphenation exception");
+
   if (hyph_count != 1)
     print_char('s');
+
   if (trie_not_ready)
     init_trie();
+
   dump_int(trie_max);
+
   if (dumpthings(trie_trl[0], trie_max + 1))
     return;
+
   if (dumpthings(trie_tro[0], trie_max + 1))
     return;
+
   if (dumpthings(trie_trc[0], trie_max + 1))
     return;
+
   dump_int(trie_op_ptr);
+
   if (dumpthings(hyf_distance[1], trie_op_ptr))
     return;
+
   if (dumpthings(hyf_num[1], trie_op_ptr))
     return;
+
   if (dumpthings(hyf_next[1], trie_op_ptr))
     return;
+
   print_nl("Hyphenation trie of length ");
   print_int(trie_max);
   print_string(" has ");
   print_int(trie_op_ptr);
   print_string(" op");
+
   if (trie_op_ptr != 1)
     print_char('s');
+
   print_string(" out of ");
   print_int(trie_op_size);
+
   for (k = 255; k >= 0; k--)
   {
     if (trie_used[k] > 0)
@@ -3995,7 +4092,7 @@ lab32:
   tracing_stats = 0;
 
   w_close(fmt_file);
-} /* end of store_fmt_file */
+}
 #endif /* INITEX */
 
 #ifdef INITEX
