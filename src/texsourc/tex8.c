@@ -781,7 +781,7 @@ void new_font_(small_number a)
 
     if ((s <= 0) || (s >= 134217728L)) /* 2^27 */
     {
-      print_err("Improper `at' size(");
+      print_err("Improper `at' size (");
       print_scaled(s);
       print_string("pt), replaced by 10pt");
       help2("I can only handle fonts at positive sizes that are",
@@ -1285,7 +1285,7 @@ void do_extension (void)
       break;
     default:
       {
-        confusion("display");
+        confusion("ext1");
         return;       // abort_flag set
       }
       break;
@@ -1424,7 +1424,7 @@ void handle_right_brace (void)
           print_esc("box");
           print_int(255);
           help3("Your \\output commands should empty \\box255,",
-            "e.g., by saying `\\ship_out\\box255'.",
+            "e.g., by saying `\\shipout\\box255'.",
             "Proceed; I'll discard its present contents.");
           box_error(255);
         }

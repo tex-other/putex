@@ -1543,7 +1543,7 @@ lab21:
               width(link(q)) = overfull_rule;
           }
           print_ln();
-          print_nl("Overfull \\hbox(");
+          print_nl("Overfull \\hbox (");
           print_scaled(- (integer) x - total_shrink[0]);
           print_string("pt too wide");
           overfull_hbox++;      /* 1996/Feb/9 */
@@ -1767,7 +1767,7 @@ halfword vpackage_(halfword p, scaled h, small_number m, scaled l)
       if ((- (integer) x - total_shrink[0] > vfuzz) || (vbadness < 100))
       {
         print_ln();
-        print_nl("Overfull \\vbox(");
+        print_nl("Overfull \\vbox (");
         print_scaled(- (integer) x - total_shrink[0]);
         print_string("pt too high");
         overfull_vbox++;    /* 1996/Feb/9 */

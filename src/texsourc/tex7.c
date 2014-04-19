@@ -150,7 +150,7 @@ lab22:
             page_so_far[6]= page_so_far[6]+ mem[q + 3].cint;
             if ((mem[q].hh.b1 != 0)&&(mem[q + 3].cint != 0))
             {
-              print_err("Infinite glue shrinkage inserted from");
+              print_err("Infinite glue shrinkage inserted from ");
               print_esc("skip");
               print_int(n);
               help3("The correction glue for page breaking with insertions",
@@ -193,7 +193,7 @@ lab22:
               if (tracing_pages > 0)
               {
                 begin_diagnostic();
-                print_nl("%% split");
+                print_nl("% split");
                 print_int(n);
                 print_string(" to");
                 print_scaled(w);
@@ -565,7 +565,7 @@ void off_save (void)
 /* sec 1069 */
 void extra_right_brace (void)
 {
-  print_err("Extra }, or forgotten");
+  print_err("Extra }, or forgotten ");
 
   switch(cur_group)
   {

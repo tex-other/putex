@@ -2247,7 +2247,7 @@ void final_cleanup (void)
       if (selector == term_and_log)
       {
         selector = term_only;
-        print_nl(" (see the transcript file for additional information)");
+        print_nl("(see the transcript file for additional information)");
         selector = term_and_log;
       }
 
@@ -2268,7 +2268,7 @@ void final_cleanup (void)
     }
 #endif /* INITEX */
     if (!is_initex)       /* 2000/March/3 */
-      print_nl(" (\\dump is performed only by INITEX)");
+      print_nl("(\\dump is performed only by INITEX)");
   }
 }
 // debugging code for checking the string pool
@@ -3706,7 +3706,7 @@ void store_fmt_file (void)
   if (save_ptr != 0)
   {
     print_err("You can't dump inside a group");
-    help1("`{...\\dump}' is a no-no..");
+    help1("`{...\\dump}' is a no-no.");
     succumb();
   }
 
@@ -4216,7 +4216,7 @@ void init_prim (void)
   primitive("divide", divide, 0);
   primitive("endcsname", end_cs_name, 0);
   primitive("endgroup", end_group, 0);
-  text(frozen_end_group) = 513;
+  text(frozen_end_group) = make_string_pool("endgroup");
   eqtb[frozen_end_group] = eqtb[cur_val]; 
   primitive("expandafter", expand_after, 0);
   primitive("font", def_font, 0);
@@ -4241,7 +4241,7 @@ void init_prim (void)
   primitive("radical", radical, 0);
   primitive("read", read_to_cs, 0);
   primitive("relax", relax, 256);
-  text(frozen_relax) = 532;
+  text(frozen_relax) = make_string_pool("relax");
   eqtb[frozen_relax] = eqtb[cur_val];
   primitive("setbox", set_box, 0);
   primitive("the", the, 0);
@@ -4300,7 +4300,7 @@ void init_prim (void)
   primitive("iffalse", if_test, 15);
   primitive("ifcase", if_test, 16);
   primitive("fi", fi_or_else, 2);
-  text(frozen_fi) = 770;
+  text(frozen_fi) = make_string_pool("fi");
   eqtb[frozen_fi] = eqtb[cur_val];
   primitive("or", fi_or_else, 4);
   primitive("else", fi_or_else, 3);

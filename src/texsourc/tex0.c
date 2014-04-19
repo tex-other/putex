@@ -2459,7 +2459,7 @@ void show_node_list_(integer p)
             {
               print_esc("setlanguage");
               print_int(mem[p + 1].hh.v.RH);
-              print_string(" (hyphenmin");
+              print_string(" (hyphenmin ");
               print_int(mem[p + 1].hh.b0);
               print_char(',');
               print_int(mem[p + 1].hh.b1);
@@ -2467,7 +2467,7 @@ void show_node_list_(integer p)
             }
             break;
           default:
-            print_string("whatsit");
+            print_string("whatsit?");
             break;
         }
         break;
@@ -2721,20 +2721,20 @@ void show_node_list_(integer p)
         break;
       case 25:
         {
-          print_esc("fraction");
+          print_esc("fraction, thickness ");
           if (mem[p + 1].cint == 1073741824L)  /* 2^30 */
             print_string("= default");
           else print_scaled(mem[p + 1].cint); 
           if ((mem[p + 4].qqqq.b0 != 0) || (mem[p + 4].qqqq.b1 != 0) ||
               (mem[p + 4].qqqq.b2 != 0) || (mem[p + 4].qqqq.b3 != 0))
           {
-            print_string(", left");
+            print_string(", left-delimiter ");
             print_delimiter(p + 4);
           }
           if ((mem[p + 5].qqqq.b0 != 0) || (mem[p + 5].qqqq.b1 != 0) ||
               (mem[p + 5].qqqq.b2 != 0)||(mem[p + 5].qqqq.b3 != 0))
           {
-            print_string(", right");
+            print_string(", right-delimiter ");
             print_delimiter(p + 5);
           }
           print_subsidiary_data(p + 2, 92);

@@ -212,7 +212,7 @@ lab22:
                         break;
                       default:
                         {
-                          confusion("disc1");
+                          confusion("disc2");
                           return;       // abort_flag set
                         }
                         break;
@@ -784,7 +784,7 @@ lab31:
   while (!(cur_p == 0));
   if ((curline != best_line) || (mem[temp_head].hh.v.RH != 0))
   {
-    confusion("disc2");
+    confusion("line breaking");
     return;       // abort_flag set
   }
   prev_graf = best_line - 1;
@@ -1553,7 +1553,7 @@ lab45:;
         {
           print_err("Improper ");
           print_esc("hyphenation");
-          print_string("will be flushed");
+          print_string(" will be flushed");
           help2("Hyphenation exceptions must contain only letters",
               "and hyphens. But continue; I'll forgive and forget.");
           error();
@@ -1784,7 +1784,7 @@ halfword vsplit_(eight_bits n, scaled h)
   {
     print_err("");
     print_esc("vsplit");
-    print_string("needs a ");
+    print_string(" needs a ");
     print_esc("vbox");
     help2("The box you are trying to split is an \\hbox.",
         "I can't split such a box, so I'll leave it alone.");
@@ -1881,7 +1881,7 @@ void freeze_page_specs_(small_number s)
   if (tracing_pages > 0)
   {
     begin_diagnostic();
-    print_nl("might split");
+    print_nl("%% goal height=");
     print_scaled(page_so_far[0]);
     print_string(", max depth=");
     print_scaled(page_max_depth);

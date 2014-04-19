@@ -202,7 +202,7 @@ void fetch_(halfword a)
     print_size(cur_size);
     print_char(' ');
     print_int(mem[a].hh.b0);
-    print_string("is undefined (character ");
+    print_string(" is undefined (character ");
     print(cur_c);
     print_char(')');
     help4("Somewhere in the math formula just ended, you used the",
@@ -1150,11 +1150,12 @@ void init_align (void)
   savecsptr = cur_cs;
   push_alignment();
   align_state = -1000000L;
+
   if ((mode == 203) && ((tail != cur_list.head_field) || (cur_list.aux_field.cint != 0)))
   {
     print_err("Improper ");
     print_esc("halign");
-    print_string("inside $$");
+    print_string(" inside $$'s");
     help3("Displays can use special alignments (like \\eqalignno)",
         "only if nothing but the alignment itself is between $$'s.",
         "So I've deleted the formulas that preceded this alignment.");

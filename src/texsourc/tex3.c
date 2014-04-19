@@ -294,7 +294,7 @@ lab31:
       {
         if (cur_order == filll)
         {
-          print_err("Illegal unit of measure(");
+          print_err("Illegal unit of measure (");
           print_string("replaced by filll)");
           help1("I dddon't go any higher than filll.");
           error();
@@ -368,7 +368,7 @@ lab45:
       goto lab88;
     else
     {
-      print_err("Illegal unit of measure(");
+      print_err("Illegal unit of measure (");
       print_string("mu inserted)");
       help4("The unit of measurement in math glue must be mu.",
           "To recover gracefully from this error, it's best to",
@@ -444,7 +444,7 @@ lab45:
     goto lab30;
   else
   {
-    print_err("Illegal unit of measure(");
+    print_err("Illegal unit of measure (");
     print_string("pt inserted)");
     help6("Dimensions can be in units of em, ex, in, pt, pc,",
       "cm, mm, dd, cc, bp, or sp; but yours is a new one!",
@@ -969,7 +969,7 @@ lab32:
         if (cur_cmd != mac_param)
           if ((cur_tok <= zero_token) || (cur_tok > t))
           {
-            print_err("Illegal parameter number in definition of");
+            print_err("Illegal parameter number in definition of ");
             sprint_cs(warning_index);
             help3("You meant to type ## instead of #, right?",
                 "Or maybe a } was forgotten somewhere earlier, and things",
@@ -1073,7 +1073,7 @@ void read_toks_(integer n, halfword r)
         if (align_state != 1000000L)
         {
           runaway();
-          print_err("File ended within");
+          print_err("File ended within ");
           print_esc("read");
           help1("This \\read has unbalanced braces.");
           align_state = 1000000L;
