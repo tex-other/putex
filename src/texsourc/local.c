@@ -179,6 +179,7 @@ void show_usage (char * program)
       "    -a    write AUX file in specified directory (default current directory)");
   strcat(s, "\n");
   show_line(log_line, 1);
+
 #ifndef _WINDOWS
   uexit(1);     // has this been setup yet ???
 #endif
@@ -266,7 +267,7 @@ void stampcopy (char *s)
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 #define MAXCHRS 256
-#define NOTDEF 127
+#define NOTDEF  127
 
 void read_xchr_sub (FILE * xchr_input)
 {
@@ -278,14 +279,14 @@ void read_xchr_sub (FILE * xchr_input)
   memset (xchr, NOTDEF, MAXCHRS);           /* mark unused */
 #else
   for (k = 0; k < MAXCHRS; k++)
-    xchr[k]= -1; /* mark unused */
+    xchr[k] = -1; /* mark unused */
 #endif
 
 #ifdef USEMEMSET
   memset (xord, NOTDEF, MAXCHRS);           /* mark unused */
 #else
   for (k = 0; k < MAXCHRS; k++)
-    xord[k]= -1;  /* mark unused */
+    xord[k] = -1;  /* mark unused */
 #endif
 
 #ifdef ALLOCATEBUFFER
@@ -629,7 +630,6 @@ void check_eqtb (char *act)
   int k, count=0;
   memory_word *eqtb = zeqtb;
 
-/*  for (k = 10280 + hash_extra; k < 10280 + eqtb_extra; k++) { */
   for (k = hash_size + 780 + hash_extra; k < hash_size + 780 + eqtb_extra; k++)
   {
     if (eqtb[k].cint != 0)
@@ -670,7 +670,7 @@ int max_address     = 0;  /* maximum address seen in allocated memory */
 
 #ifndef _WINDOWS
 #ifdef HEAPWALK
-unsigned int heapthreshold=0; /* smallest size block interested in ... */
+unsigned int heapthreshold = 0; /* smallest size block interested in ... */
 
 unsigned int heap_dump (FILE *output, int verbose)
 {
@@ -741,6 +741,7 @@ void show_maximums (FILE *output)
   unsigned heaptotal = 0;           /* no longer used */
   heaptotal = heap_dump(stdout, 0);      /* 94/Apr/3 */
 #endif
+
   sprintf(log_line, "Max allocated %d --- max address %d\n", total_allocated, max_address);
 //  if (output != NULL) fputs(log_line, output); // log file
 //  else if (flag == 0) show_line(log_line, 0); // informative
@@ -925,8 +926,8 @@ int allocate_tries (int trie_max)
   if (trace_flag)
     trace_memory("hyphen trie", n);
 
-  trie_trl = (halfword *) malloc (roundup(nl));
-  trie_tro = (halfword *) malloc (roundup(no));
+  trie_trl = (halfword *)    malloc (roundup(nl));
+  trie_tro = (halfword *)    malloc (roundup(no));
   trie_trc = (quarterword *) malloc (roundup(nc));
 
   if (trie_trl == NULL || trie_tro == NULL || trie_trc == NULL)
@@ -940,6 +941,7 @@ int allocate_tries (int trie_max)
     sprintf(log_line, "Addresses trie_trl %d trie_tro %d trie_trc %d\n", trie_trl, trie_tro, trie_trc);
     show_line(log_line, 0);
   }
+
   update_statistics ((int) trie_trl, nl, 0);
   update_statistics ((int) trie_tro, no, 0);
   update_statistics ((int) trie_trc, nc, 0);
@@ -969,7 +971,6 @@ int realloc_hyphen (int hyphen_prime)
   {
     sprintf(log_line, "ERROR: non-prime hyphen exception number (%d)\n", hyphen_prime);
     show_line(log_line, 1);
-//    exit (1);
     return -1;
   }
 /*  need not/cannot preserve old contents when hyphen prime is changed */
@@ -1013,7 +1014,6 @@ int realloc_hyphen (int hyphen_prime)
 #else
   for (k = 0; k <= hyphen_prime; k++) hyph_list[k]= 0;
 #endif
-
   hyph_count = 0;   /* or use reset_hyphen() in itex.c */
 
   if (current_prime != 0)
@@ -1035,7 +1035,7 @@ int realloc_hyphen (int hyphen_prime)
 }
 #endif
 
-int current_mem_size=0;   /* current total words in main mem allocated -1 */
+int current_mem_size = 0;   /* current total words in main mem allocated -1 */
 
 /* this gets called from itex.c when it figures out what mem_top is */
 /* or gets called from here when in ini_TeX mode */ /* and nowhere else */
@@ -1147,6 +1147,7 @@ memory_word *realloc_main (int losize, int hisize)
   if (is_initex)
   {
     show_line("ERROR: Cannot extent main memory in iniTeX\n", 1);
+
     if (! knuth_flag)
       show_line("Please use `-m=...' on command line\n", 0);
 //    abort_flag++;  // ???
@@ -1283,7 +1284,7 @@ memory_word *realloc_main (int losize, int hisize)
 int current_font_mem_size=0;
 
 /* fmemoryword can be either halfword or memory_word */
-fmemoryword *realloc_font_info (int size)
+fmemoryword * realloc_font_info (int size)
 {
   fmemoryword *newfontinfo = NULL;
   int k, minsize;
@@ -1361,9 +1362,9 @@ fmemoryword *realloc_font_info (int size)
 #endif
 
 #ifdef ALLOCATESTRING
-int current_pool_size=0;
+int current_pool_size = 0;
 
-packed_ASCII_code *realloc_str_pool (int size)
+packed_ASCII_code * realloc_str_pool (int size)
 {
   int k, minsize;
   int newsize=0;
@@ -1870,10 +1871,15 @@ int allocate_memory (void)
   }
 
   n = (inputsize + 1) * sizeof(memory_word);
-  if (trace_flag) trace_memory("input_stack", n);
+
+  if (trace_flag)
+    trace_memory("input_stack", n);
+
 /*  input_stack = (memory_word *) malloc ((inputsize + 1) * sizeof (memory_word)); */
   input_stack = (memory_word *) malloc (roundup(n));
-  if (input_stack == NULL)   {
+
+  if (input_stack == NULL)
+  {
     memory_error("input_stack", n);
 //    exit (1);           /* serious error */
     return -1;            /* serious error */

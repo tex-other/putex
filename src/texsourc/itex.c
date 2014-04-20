@@ -4309,11 +4309,11 @@ void init_prim (void)
   eqtb[frozen_null_font] = eqtb[cur_val];
   primitive("span", tab_mark, 256);
   primitive("cr", car_ret, 257);
-  text(frozen_cr) = 893;    /* cr */
+  text(frozen_cr) = make_string_pool("cr");
   eqtb[frozen_cr] = eqtb[cur_val];
   primitive("crcr", car_ret, 258);
-  text(frozen_end_template) = 895; /* endtemplate */
-  text(frozen_endv) = 895; /* endtemplate */
+  text(frozen_end_template) = make_string_pool("endtemplate");
+  text(frozen_endv) = make_string_pool("endtemplate");
   eq_type(frozen_endv) = endv;
   equiv(frozen_endv) = null_list; 
   eq_level(frozen_endv) = level_one; 
@@ -4395,7 +4395,7 @@ void init_prim (void)
   primitive("atopwithdelims", above, 5);
   primitive("left", left_right, 30);
   primitive("right", left_right, 31);
-  text(frozen_right) = 871;    /* right */
+  text(frozen_right) = make_string_pool("right");
   eqtb[frozen_right] = eqtb[cur_val]; 
   primitive("long", prefix, 1);
   primitive("outer", prefix, 2);

@@ -1411,7 +1411,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 /* sec 0159 */
 #define unset_node      13
 #define glue_stretch(a) mem[a + glue_offset].cint
-#define glue_shrink(q)  shift_amount
+#define glue_shrink     shift_amount
 #define span_count      subtype
 /* sec 0162 */
 #define zero_glue         mem_bot // 0
@@ -1624,8 +1624,8 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define frozen_null_font              (frozen_control_sequence + 10)       // (hash_size + hash_extra + 524)
 #define font_id_base                  (frozen_null_font - font_base)       // (hash_size + hash_extra + 524)
 #define undefined_control_sequence    (frozen_null_font + 1025)            // (hash_size + hash_extra + 781) = font_max + 2
-                                                                           // (hash_size + (255 - 1024) + 1025 + 524)
-                                                                           // (hash_size + 780)
+                                                                           // (hash_size + (255 - 1023) + 1025 + 524)
+                                                                           // (hash_size + 781)
 #define glue_base                     (undefined_control_sequence + 1)     // (hash_size + hash_extra + 782)
 /* sec 0224 */
 #define line_skip_code                0  // 782

@@ -126,7 +126,7 @@ char * set_program_name (char *comm)
     s++;
   else
     s = comm;
-/*  program_name = s; */
+
   return s;
 }
 
@@ -136,16 +136,20 @@ jmp_buf jumpbuffer;   // for non-local jumps
 
 int main (int ac, char *av[])
 {
-  int flag=0, ret=0;
+  int flag = 0, ret = 0;
+
 #ifndef INI
   char custom_default[PATH_MAX];
 #endif
+
   gargc = ac;         /* make available globally */
   gargv = av;         /* make available globally */
+
 #ifdef MSDOS
   program_name = set_program_name(av[0]);   /* rewritten 1994/Mar/1 - bkph */
 #else
   program_name = strrchr (av[0], PATH_SEP); 
+
   if (program_name == NULL)
     program_name = av[0];
   else
@@ -158,7 +162,6 @@ int main (int ac, char *av[])
 #endif /* INIVIR */
 
   dump_default_var = dump_default;
-/*  dump_default_length = strlen (dump_default + 1); */
   dump_default_length = strlen (dump_default_var + 1);  /* 93/Nov/20 */
 
 /* The following doesn't make sense on DOS since we can't core dump */
@@ -194,8 +197,9 @@ int main (int ac, char *av[])
   ret = setjmp(jumpbuffer);
 
   if (ret == 0)
-  { // get here when setting up jumpbuffer
+  {
     flag = main_program();    // texbody in itex.c
+
     if (trace_flag)
     {
       sprintf(log_line, "EXITING at %s %d %d %d\n", "MAIN", flag, ret, jump_used);
@@ -203,7 +207,7 @@ int main (int ac, char *av[])
     }
   }
   else
-  {  // get here from non-local jump via jumpbuffer - if any
+  {
     if (trace_flag)
     {
       sprintf(log_line, "EXITING at %s %d %d %d\n", "JUMPOUT", flag, ret, jump_used);
@@ -213,8 +217,10 @@ int main (int ac, char *av[])
 
   if (endit(flag) != 0)
     flag = 1; /* do final clean up in local.c */
+
   if (flag == 0)
     return 0;
+
 #ifdef _WINDOWS
   return flag;
 #else
@@ -241,9 +247,9 @@ void t_open_in (void)
     for (i = optind; i < gargc; i++)      /* 94/Apr/10 */
 #else
 /* We do have command line arguments. */
-  if (gargc > 1)
-  {
-    for (i = 1; i < gargc; i++)
+    if (gargc > 1)
+    {
+      for (i = 1; i < gargc; i++)
 #endif
     {
 /*  the following won't happen if pseudo_space is set ... */
@@ -286,7 +292,6 @@ void t_open_in (void)
    variable `interrupt'; then they will do everything needed.  */
 
 static RETSIGTYPE
-/* catch_interrupt () */
 catch_interrupt (int err)
 {
   (void) signal (SIGINT, SIG_IGN);  /* turn off interrupts for now */
@@ -310,7 +315,8 @@ void get_date_and_time (integer *minutes, integer *pday, integer *pmonth, intege
 
 /*  time_t clock = time ((long *) 0); */
 /*  clock = time (NULL); */
-  (void)  time (&clock);  /* - seconds since 1970 */ 
+  (void) time (&clock);  /* - seconds since 1970 */ 
+
   if (trace_flag)
   {
     sprintf(log_line, "The time is %u\n", clock);   /* debugging */
@@ -320,15 +326,18 @@ void get_date_and_time (integer *minutes, integer *pday, integer *pmonth, intege
   if (clock < 0)
   {
     show_line("Time not available!\n", 1);
-    /* clock = 0; *//* 901621283 1998 July 28 06:21:00 */
   }
+
   tmptr = localtime (&clock);
 /*  MS C runtime library has trouble for clock >= 2^31 !!! */
   if (tmptr == NULL)           /* debugging 95/Dec/30*/
   {
     sprintf(log_line, "Cannot convert time (%0ld)!\n", clock);
     show_line(log_line, 1);
-    *pyear=2038; *pmonth=1; *pday=18; *minutes=22 * 60 + 14;
+    *pyear = 2038;
+    *pmonth = 1;
+    *pday = 18;
+    *minutes = 22 * 60 + 14;
   }
   else
   {
@@ -372,11 +381,13 @@ void get_date_and_time (integer *minutes, integer *pday, integer *pmonth, intege
 void complain_line (FILE *output)
 {
   show_line("\n", 0);
+
 #ifdef ALLOCATEBUFFER
   sprintf(log_line, "! Unable to read an entire line---buf_size=%d.\n", current_buf_size);
 #else
   sprintf(log_line, "! Unable to read an entire line---buf_size=%d.\n", buf_size);
 #endif
+
   if (output == stderr)
     show_line(log_line, 1);
   else
@@ -384,17 +395,19 @@ void complain_line (FILE *output)
       show_line(log_line, 0);
     else
       fputs(log_line, output);     // never
+
   show_line("  (File may have a line termination problem.)", 0);
 }
 
 void show_bad_line (FILE *output, int first, int last)
-{ /* 1994/Jan/21 */
+{
   int i, c, d, ch;
-  char *s=log_line;
+  char *s = log_line;
 
   for (i = first; i <= last; i++)
   {
     ch = buffer[i];
+
     if ((show_in_hex && ch > 127))
     {
       c = ch >> 4;
@@ -555,8 +568,8 @@ bool input_line (FILE *f)
         break;
       else if (i == '\t' && tab_step != 0)  // deal with tab
       {
-/* i = ' '; */
         buffer[last++] = (ASCII_code) ' ';
+
 #ifdef ALLOCATEBUFFER
         if (last >= current_buf_size)
         {
@@ -565,6 +578,7 @@ bool input_line (FILE *f)
             break;
         }
 #endif
+
 #ifdef ALLOCATEBUFFER
         while ((last - first) % tab_step != 0) 
 #else
@@ -573,6 +587,7 @@ bool input_line (FILE *f)
         {
 
           buffer[last++] = (ASCII_code) ' ';
+
 #ifdef ALLOCATEBUFFER
           if (last >= current_buf_size)
           {
@@ -731,8 +746,7 @@ char *get_env_shroud (char *var)
 
 /* called from close_files_and_terminate in  tex9.c */
 
-void call_edit (ASCII_code *stringpool, pool_pointer fnstart,
-        integer fnlength, integer linenumber)
+void call_edit (ASCII_code *stringpool, pool_pointer fnstart, integer fnlength, integer linenumber)
 {
   char *command, *s, *t, *u;
   char c;
@@ -766,6 +780,7 @@ void call_edit (ASCII_code *stringpool, pool_pointer fnstart,
     (void) fclose (input_file[i]);
 
   n = fcloseall();            /* paranoia 1994/Aug/10 */
+
   if (n > 0 && verbose_flag)
   {
     sprintf(log_line, "Closed %d streams\n", n);
@@ -1006,7 +1021,7 @@ int do_dump (char *p, int item_size, int nitems, FILE *out_file)
 #if !defined (WORDS_BIGENDIAN) && !defined (NO_FMTBASE_SWAP)
   swap_items (p, nitems, item_size);
 #endif
-/*  if (fwrite (p, item_size, nitems, out_file) != nitems) */ /* bkph */
+
   if ((int) fwrite (p, item_size, nitems, out_file) != nitems)
   {
     show_line("\n", 0);
@@ -1016,8 +1031,7 @@ int do_dump (char *p, int item_size, int nitems, FILE *out_file)
     uexit(1);
   }
 
-  /* Have to restore the old contents of memory, since some of it might
-     get used again.  */
+/* Have to restore the old contents of memory, since some of it might get used again.  */
 #if !defined (WORDS_BIGENDIAN) && !defined (NO_FMTBASE_SWAP)
   swap_items (p, nitems, item_size);
 #endif
@@ -1029,21 +1043,6 @@ int do_dump (char *p, int item_size, int nitems, FILE *out_file)
 /* Here is the dual of the writing routine.  */
 int do_undump (char *p, int item_size, int nitems, FILE *in_file)
 {
-/*  if (fread(p, item_size, nitems, in_file) != nitems) */ /* bkph */
-/*  try and speed this up a bit using read() ? bkph 93/Nov/26 */
-/*  doubt whether it makes any real difference ... so forget it ! */
-#ifdef MSDOS_HACK
-  unsigned int nbytes = item_size * nitems;
- 
-  if ((unsigned int) read(fileno (in_file), p, nbytes) != nbytes)
-  {
-    show_line("\n", 0);
-    sprintf(log_line, "! Could not read %d %d-byte item%s.\n",
-               nitems, item_size, (nitems > 1) ? "s" : "");
-    show_line(log_line, 1);
-    uexit(1);
-  }
-#else
   if ((int) fread((void *) p, item_size, nitems, in_file) != nitems)
   {
     show_line("\n", 0);
@@ -1052,7 +1051,6 @@ int do_undump (char *p, int item_size, int nitems, FILE *in_file)
     show_line(log_line, 1);
     uexit(1);
   }
-#endif
 
 #if !defined (WORDS_BIGENDIAN) && !defined (NO_FMTBASE_SWAP)
   swap_items (p, nitems, item_size);
