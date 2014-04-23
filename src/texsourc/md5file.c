@@ -42,7 +42,7 @@ char * md5_file(const char * file_name)
   fclose(ship_file);
 
   for (i = 0; i < 16; ++i)
-    sprintf(md5_hex + i * 2, "%02x", md5_digest[i]);
+    sprintf(md5_hex + i * 2, "%02X", md5_digest[i]);
 
   return md5_hex;
 }

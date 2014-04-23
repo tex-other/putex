@@ -1415,26 +1415,26 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define span_count      subtype
 /* sec 0162 */
 #define zero_glue         mem_bot // 0
-#define fil_glue          zero_glue + glue_spec_size // 4
-#define fill_glue         fil_glue + glue_spec_size // 8
-#define ss_glue           fill_glue + glue_spec_size // 12
-#define fil_neg_glue      ss_glue + glue_spec_size // 16
-#define lo_mem_stat_max   fil_neg_glue + glue_spec_size - 1 // 19
+#define fil_glue          (zero_glue + glue_spec_size) // 4
+#define fill_glue         (fil_glue + glue_spec_size) // 8
+#define ss_glue           (fill_glue + glue_spec_size) // 12
+#define fil_neg_glue      (ss_glue + glue_spec_size) // 16
+#define lo_mem_stat_max   (fil_neg_glue + glue_spec_size - 1) // 19
 #define page_ins_head     mem_top
-#define contrib_head      mem_top - 1
-#define page_head         mem_top - 2
-#define temp_head         mem_top - 3
-#define hold_head         mem_top - 4
-#define adjust_head       mem_top - 5
-#define active            mem_top - 7
-#define align_head        mem_top - 8
-#define end_span          mem_top - 9
-#define omit_template     mem_top - 10
-#define null_list         mem_top - 11
-#define lig_trick         mem_top - 12
-#define garbage           mem_top - 12
-#define backup_head       mem_top - 13
-#define hi_mem_stat_min   mem_top - 13
+#define contrib_head      (mem_top - 1)
+#define page_head         (mem_top - 2)
+#define temp_head         (mem_top - 3)
+#define hold_head         (mem_top - 4)
+#define adjust_head       (mem_top - 5)
+#define active            (mem_top - 7)
+#define align_head        (mem_top - 8)
+#define end_span          (mem_top - 9)
+#define omit_template     (mem_top - 10)
+#define null_list         (mem_top - 11)
+#define lig_trick         (mem_top - 12)
+#define garbage           (mem_top - 12)
+#define backup_head       (mem_top - 13)
+#define hi_mem_stat_min   (mem_top - 13)
 #define hi_mem_stat_usage 14
 /* sec 0200 */
 #define token_ref_count(a) info(a)
@@ -1559,30 +1559,30 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define set_interaction 100
 #define max_command 100
 /* sec 0210 */
-#define undefined_cs    max_command + 1
-#define expand_after    max_command + 2
-#define no_expand       max_command + 3
-#define input           max_command + 4
-#define if_test         max_command + 5
-#define fi_or_else      max_command + 6
-#define cs_name         max_command + 7
-#define convert         max_command + 8
-#define the             max_command + 9
-#define top_bot_mark    max_command + 10
-#define call            max_command + 11
-#define long_call       max_command + 12
-#define outer_call      max_command + 13
-#define long_outer_call max_command + 14
-#define end_template    max_command + 15
-#define dont_expand     max_command + 16
-#define glue_ref        max_command + 17
-#define shape_ref       max_command + 18
-#define box_ref         max_command + 19 
-#define data            max_command + 20
+#define undefined_cs    (max_command + 1)
+#define expand_after    (max_command + 2)
+#define no_expand       (max_command + 3)
+#define input           (max_command + 4)
+#define if_test         (max_command + 5)
+#define fi_or_else      (max_command + 6)
+#define cs_name         (max_command + 7)
+#define convert         (max_command + 8)
+#define the             (max_command + 9)
+#define top_bot_mark    (max_command + 10)
+#define call            (max_command + 11)
+#define long_call       (max_command + 12)
+#define outer_call      (max_command + 13)
+#define long_outer_call (max_command + 14)
+#define end_template    (max_command + 15)
+#define dont_expand     (max_command + 16)
+#define glue_ref        (max_command + 17)
+#define shape_ref       (max_command + 18)
+#define box_ref         (max_command + 19) 
+#define data            (max_command + 20)
 /* sec 0211 */
 #define vmode 1
-#define hmode vmode + max_command + 1
-#define mmode hmode + max_command + 1
+#define hmode (vmode + max_command + 1)
+#define mmode (hmode + max_command + 1)
 /* sec 0212 */
 #define ignore_depth -65536000L
 /* sec 0213 */
@@ -1887,6 +1887,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 /* sec 0256 */
 //#define next
 #define text(a)         hash[a].v.RH
+#define next(a)         hash[a].v.LH
 #define hash_is_full    (hash_used == hash_base)
 #define font_id_text(a) text(font_id_base + a)
 /* sec 0268 */
@@ -1919,7 +1920,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 /* sec 0289 */
 #define cs_token_flag     07777 // 4095
 #define left_brace_token  0400  // 256  = 2^8 * left_brace
-#define left_brace_limit  0400  // 512  = 2^8 * (left_brace + 1)
+#define left_brace_limit  01000 // 512  = 2^8 * (left_brace + 1)
 #define right_brace_token 01000 // 512  = 2^8 * right_brace
 #define right_brace_limit 01400 // 768  = 2^8 * (right_brace + 1)
 #define math_shift_token  01400 // 768  = 2^8 * math_shift
@@ -1960,6 +1961,9 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define every_cr_text      13
 #define mark_text          14
 #define write_text         15
+/* sec 0323 */
+#define back_list(a) begin_token_list(a, backed_up)
+#define ins_list(a)  begin_token_list(a, inserted)
 /* sec 0344 */
 #define any_state_plus(a) mid_line + (a): case skip_blanks + (a): case new_line + (a)
 /* sec 0347 */
@@ -1970,6 +1974,8 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   case (a) + sub_mark:   \
   case (a) + letter:     \
   case (a) + other_char
+/* sec 0358 */
+#define no_expand_flag 257
 /* sec 0382 */
 #define top_mark_code         0
 #define first_mark_code       1
@@ -2066,7 +2072,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define char_tag(a)       (a.b2 % 4)
 /* sec 0557 */
 #define char_kern(a, b)        font_info[kern_base[a] + 256 * op_byte(b) + rem_byte(b)].cint
-#define kern_base_offset       256 * (128 + min_quarterword)
+#define kern_base_offset       (256 * (128 + min_quarterword))
 #define lig_kern_start(a, b)   lig_kern_base[a] + rem_byte(b)
 #define lig_kern_restart(a, b) lig_kern_base[a] + 256 * op_byte(b) + rem_byte(b) + 32768 - kern_base_offset
 /* sec 0558 */
@@ -2096,9 +2102,9 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define extra_info(a) info((a) + list_offset)
 /* sec 0681 */
 #define noad_size      4
-#define nucleus(a)     (a) + 1
-#define supscr(a)      (a) + 2
-#define subscr(a)      (a) + 3
+#define nucleus(a)     ((a) + 1)
+#define supscr(a)      ((a) + 2)
+#define subscr(a)      ((a) + 3)
 #define math_type      link
 #define fam            font
 #define math_char      1
@@ -2117,11 +2123,11 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define limits    1
 #define no_limits 2
 /* sec 0683 */
-#define left_delimiter(a)  (a) + 4
-#define right_delimiter(a) (a) + 5
-#define radical_noad       inner_noad + 1 // 24
+#define left_delimiter(a)  ((a) + 4)
+#define right_delimiter(a) ((a) + 5)
+#define radical_noad       (inner_noad + 1) // 24
 #define radical_noad_size  5
-#define fraction_noad      radical_noad + 1 // 25
+#define fraction_noad      (radical_noad + 1) // 25
 #define fraction_noad_size 6
 #define small_fam(a)       mem[(a)].qqqq.b0
 #define small_char(a)      mem[(a)].qqqq.b1
@@ -2132,18 +2138,18 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define numerator          supscr
 #define denominator        subscr
 /* sec 0687 */
-#define under_noad        fraction_noad + 1 // 26
-#define over_noad         under_noad + 1    // 27
-#define accent_noad       over_noad + 1     // 28
+#define under_noad        (fraction_noad + 1) // 26
+#define over_noad         (under_noad + 1   ) // 27
+#define accent_noad       (over_noad + 1    ) // 28
 #define accent_noad_size  5
 #define accent_chr(a)     (a) + 4
-#define vcenter_noad      accent_noad + 1   // 29
-#define left_noad         vcenter_noad + 1  // 30
-#define right_noad        left_noad + 1     // 31
+#define vcenter_noad      (accent_noad + 1  ) // 29
+#define left_noad         (vcenter_noad + 1 ) // 30
+#define right_noad        (left_noad + 1    ) // 31
 #define delimiter         nucleus
 #define script_allowed(a) ((type(a) >= ord_noad) && (type(a) < left_noad))
 /* sec 0688 */
-#define style_node          unset_node + 1
+#define style_node          (unset_node + 1)
 #define style_node_size     3
 #define display_style       0
 #define text_style          2
@@ -2151,7 +2157,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define script_script_style 6
 #define cramped             1
 /* sec 0689 */
-#define choice_node            unset_node + 2
+#define choice_node            (unset_node + 2)
 #define display_mlist(a)       info(a + 1)
 #define text_mlist(a)          link(a + 1)
 #define script_mlist(a)        info(a + 2)
@@ -2181,16 +2187,16 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define axis_height(a)      mathsy(22, a)
 #define total_mathsy_params 22
 /* sec 0702 */
-#define cramped_style(a) 2 * ((a) / 2) + cramped
-#define sub_style(a)     2 * ((a) / 4) + script_style + cramped
-#define sup_stype(a)     2 * ((a) / 4) + script_style + ((a) % 2)
-#define num_style(a)     (a) + 2 - 2 * ((a) / 6)
-#define denom_style(a)   2 * ((a) / 2) + cramped + 2 - 2 * ((a) / 6)
+#define cramped_style(a) (2 * ((a) / 2) + cramped)
+#define sub_style(a)     (2 * ((a) / 4) + script_style + cramped)
+#define sup_stype(a)     (2 * ((a) / 4) + script_style + ((a) % 2))
+#define num_style(a)     ((a) + 2 - 2 * ((a) / 6))
+#define denom_style(a)   (2 * ((a) / 2) + cramped + 2 - 2 * ((a) / 6))
 /* sec 0780 */
 #define span_code          256
 #define cr_code            257
-#define cr_cr_code         cr_code + 1
-#define end_template_token cs_token_flag + frozen_end_template
+#define cr_cr_code         (cr_code + 1)
+#define end_template_token (cs_token_flag + frozen_end_template)
 /* sec 0817 */
 #define tight_fit      3
 #define loose_fit      1

@@ -198,7 +198,7 @@ void end_diagnostic_(bool);
 void print_length_param_(integer);
 #define print_length_param(n) print_length_param_((integer) (n))
 void print_cmd_chr_(quarterword, halfword);
-#define print_cmd_chr(cmd, chrcode) print_cmd_chr_((quarterword) (cmd), (halfword) (chrcode))
+#define print_cmd_chr(cmd, chr_code) print_cmd_chr_((quarterword) (cmd), (halfword) (chr_code))
 void show_eqtb_(halfword);
 #define show_eqtb(n) show_eqtb_((halfword) (n))
 halfword id_lookup_(integer, integer);

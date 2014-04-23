@@ -29,7 +29,7 @@
 
 #pragma warning(disable:4996)
 #pragma warning(disable:4131) // old style declarator
-#pragma warning(disable:4135) // conversion between different integral types 
+#pragma warning(disable:4135) // conversion between different integral types
 #pragma warning(disable:4127) // conditional expression is constant
 
 #include <setjmp.h>
@@ -44,8 +44,6 @@
 #include <io.h>    // needed for _finddata_t 
 #include <ctype.h> // needed for isascii and isalpha
 
-//////////////////////////////////////////////////////////////////////////////////
-
 #define NAME_MAX 255      // max size of name component
 
 #define ISALPHA(c) (isascii (c) && isalpha(c))
@@ -58,10 +56,9 @@
 // default paths to look for things
 
 #define TEXPATH    "C:/yandy/yandytex/"
-
-#define TEXFORMATS TEXPATH "fmt"
-#define TEXPOOL    TEXPATH "pool"
-#define TEXFONTS   TEXPATH "tfm"
+#define TEXFORMATS "C:/yandy/yandytex/fmt"
+#define TEXPOOL    "C:/yandy/yandytex/pool"
+#define TEXFONTS   "C:/yandy/yandytex/tfm"
 #define TEXINPUTS  TEXPATH "tex//;" "C:/tex;" "C:/texinput"
 
 // structure used by fontmap
@@ -86,8 +83,7 @@ char * file_p(string fn);
 bool dir_p(string fn);
 string *find_dir_list (string path);
 void add_directory (string **dir_list_ptr, unsigned *dir_count_ptr, string dir);
-void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirname,
-          struct _finddata_t findt, integer recurseflag);
+void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirname, struct _finddata_t findt, integer recurseflag);
 void save_dir_list (string path,  string *dir_list);
 string *initialize_path_list (string env_name,  string default_path);
 int xfind_path_filename (string buffer, string filename,  string * dir_list);
@@ -532,23 +528,33 @@ void set_paths (int path_bits)
 /*  added code to look for some PC TeX flavour environment names 94/Jan/6 */
 /*  which, in case of formats, could lead to I'm stymied errors ... */
 
-  if (path_bits & TEXFORMATPATHBIT) {
+  if (path_bits & TEXFORMATPATHBIT)
+  {
     s = "TEXFORMATS";
     t = TEXFORMATS;
-    if (grabenv(s) == NULL) {   /* see if env var defined 94/May/19*/
+
+    if (grabenv(s) == NULL)   /* see if env var defined 94/May/19*/
+    {
       strcpy(buffer, texpath);  /* not, see if texpath\fmt is directory */
       strcat(buffer, PATH_SEP_STRING); 
       strcat(buffer, "fmt");
-      if (trace_flag) {
+
+      if (trace_flag)
+      {
         sprintf(log_line, "Checking `%s' = %s %s %s\n", buffer, texpath, PATH_SEP_STRING, "fmt"); /* 95/Jan/25 */
         show_line(log_line, 0);
       }
-      if (dir_p(buffer)) t = xstrdup(buffer); /* 96/Jan/20 */
-      else {
+
+      if (dir_p(buffer))
+        t = xstrdup(buffer); /* 96/Jan/20 */
+      else
+      {
         s = "TEXFMTS";      /* added PC-TeX version 94/Jan/6 */
         if (getenv(s) == NULL)  s = "TEXFMT"; /* em-TeX ... */
       }
-      if (trace_flag) {
+
+      if (trace_flag)
+      {
         sprintf(log_line, "\nSetting up %s (default %s) ", "TEXFORMATS", t);
         show_line(log_line, 0);
       }
@@ -559,7 +565,8 @@ void set_paths (int path_bits)
 /* if (t != TEXFORMATS) free (t); */
   }
 
-  if (path_bits & TEXPOOLPATHBIT) {
+  if (path_bits & TEXPOOLPATHBIT)
+  {
     s = "TEXPOOL";
     t = TEXPOOL;
     if (grabenv(s) == NULL) {     /* 1994/May/19 */
@@ -680,7 +687,8 @@ bool test_read_access (unsigned char *name, int path_index)
   string foundname;
 #endif  
 
-  if (open_trace_flag) {
+  if (open_trace_flag)
+  {
     sprintf(log_line, "Test read access for `%s' ", name);  /* C */
     show_line(log_line, 0);
   }
@@ -690,15 +698,19 @@ bool test_read_access (unsigned char *name, int path_index)
 #ifdef CACHEFILENAME
 /*  If file name and path_index matches - and saved filename exists */
 /*  then use cached full path / file name 96/Nov/16 */
-  if (cache_file_flag) {
+  if (cache_file_flag)
+  {
     if (path_index == last_path_index &&
-        strcmp((const char *)name, last_name) == 0 && *last_filename != '\0') { 
-      if (open_trace_flag) {
+        strcmp((const char *)name, last_name) == 0 && *last_filename != '\0')
+    {
+      if (open_trace_flag)
+      {
         sprintf(log_line, "\nFOUND `%s' (%d) IN CACHE: `%s' ",
             name, path_index, last_filename); 
 /*            name+1, path_index, last_filename); */
         show_line(log_line, 0);
       }
+
       strcpy((char *)name, last_filename); 
       return TRUE;
     }
@@ -1031,7 +1043,8 @@ char *file_p (string fn)
   long hFind;
   int ret;
 
-  if (open_trace_flag) {
+  if (open_trace_flag)
+  {
     sprintf(log_line, "Is `%s' a readable file? ", fn);
     show_line(log_line, 0);
   }
@@ -1039,11 +1052,14 @@ char *file_p (string fn)
 /*  allow for `normal' (_A_NORMAL) as well as `read-only' files */
 
   hFind = _findfirst (fn, &fi);
-  if (hFind > 0) {
+
+  if (hFind > 0)
+  {
     ret = 0;
     _findclose (hFind);
   }
-  else ret = -1;
+  else
+    ret = -1;
 
 /*  check whether found and whether *not* a sub-directory */
   if (ret == 0) {
@@ -1097,6 +1113,7 @@ bool dir_p (string fn)
   char tmpfn[FILENAME_MAX];       /* long enough ??? */
 
   strcpy (tmpfn, fn);           /* make copy so can modify */
+
   if (open_trace_flag)
   {
     sprintf(log_line, "Is `%s' a directory? ", tmpfn);

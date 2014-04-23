@@ -94,7 +94,7 @@ INLINE void print_err (const char * s)
 }
 INLINE void tex_help (unsigned int n, ...)
 {
-  unsigned int i;
+  int i;
   va_list help_arg;
 
   if (n > 6)
@@ -103,7 +103,7 @@ INLINE void tex_help (unsigned int n, ...)
   help_ptr = n;
   va_start(help_arg, n);
 
-  for (i = n - 1; i > n - 1; --i)
+  for (i = n - 1; i > -1; --i)
     help_line[i] = va_arg(help_arg, char *);
 
   va_end(help_arg);
@@ -392,7 +392,7 @@ void print_the_digs_ (eight_bits k)
   {
     decr(k);
 
-    if (dig[k]< 10)
+    if (dig[k] < 10)
       print_char('0' + dig[k]);
     else
       print_char('A' + dig[k]);
@@ -403,7 +403,9 @@ void print_int_ (integer n)
 {
   char k;
   integer m;
+
   k = 0;
+
   if (n < 0)
   {
     print_char('-');
@@ -414,14 +416,14 @@ void print_int_ (integer n)
     {
       m = -1 - n;
       n = m / 10;
-      m =(m % 10) + 1;
+      m = (m % 10) + 1;
       k = 1;
 
       if (m < 10)
-        dig[0]= (char) m;
+        dig[0] = (char) m;
       else
       {
-        dig[0]= 0;
+        dig[0] = 0;
         incr(n);
       }
     }
@@ -450,21 +452,21 @@ void print_cs_ (integer p)
       }
       else
       {
-        print_esc(""); print(p - 257);
+        print_esc(""); print(p - single_base);
 
         if (cat_code(p - single_base) == letter)
           print_char(' ');
       }
-    else if (p < 1)
+    else if (p < active_base)
       print_esc("IMPOSSIBLE.");
-    else print(p - 1);
+    else print(p - active_base);
   else if (p >= undefined_control_sequence)
     print_esc("IMPOSSIBLE.");
   else if ((text(p) >= str_ptr))
     print_esc("NONEXISTENT.");
   else
   {
-    print_esc(""); print(hash[p].v.RH);
+    print_esc(""); print(text(p));
     print_char(' ');
   }
 }
@@ -485,7 +487,7 @@ void sprint_cs_(halfword p)
     }
   else
   {
-    print_esc(""); print(hash[p].v.RH);
+    print_esc(""); print(text(p));
   }
 }
 /* sec 0518 */
@@ -525,9 +527,11 @@ void jump_out (void)
 
   {
     int code;
+
 #ifndef _WINDOWS
     fflush(stdout); 
 #endif
+
     ready_already = 0;
 
     if (trace_flag)
@@ -560,6 +564,7 @@ void error (void)
     {
 lab22:
       clear_for_error_prompt();
+
       { /* prompt_input */
         print_string("? ");
         term_input("? ", help_ptr);
@@ -798,12 +803,14 @@ void overflow_(char * s, integer n)
     {
       sprintf(log_line, "\n  (Maybe use -h=... on command line in ini-TeX)\n");
       show_line(log_line, 0);
-    } else if (!strcmp(s, "exception dictionary") && n == hyphen_prime)
+    }
+    else if (!strcmp(s, "exception dictionary") && n == hyphen_prime)
     {
       sprintf(log_line, "\n  (Maybe use -e=... on command line in ini-TeX)\n");
       show_line(log_line, 0);
     }
   }
+
   succumb();
 }
 /* sec 0095 */
@@ -860,6 +867,7 @@ bool init_terminal (void)
     fflush(stdout);
     flag = input_ln(stdin, true);
 #endif
+
     if (!flag)
     {
       show_char('\n');
@@ -905,6 +913,7 @@ str_number make_string (void)
 #endif
   incr(str_ptr);
   str_start[str_ptr] = pool_ptr;
+
   return (str_ptr - 1);
 }
 /* sec 0044 */
@@ -923,6 +932,7 @@ bool str_eq_buf_ (str_number s, integer k)
       result = false;
       goto lab45;
     }
+
     incr(j);
     incr(k);
   }
@@ -974,11 +984,13 @@ void print_hex_(integer n)
   k = 0;
   print_char('"');
 
-  do {
-    dig[k] = (unsigned char) (n % 16);
-    n = n / 16;
-    incr(k);
-  } while (!(n == 0));
+  do
+    {
+      dig[k] = (unsigned char) (n % 16);
+      n = n / 16;
+      incr(k);
+    }
+  while (!(n == 0));
 
   print_the_digs(k);
 }
@@ -1019,7 +1031,7 @@ void print_roman_int_(integer n)
     else
     {
       j = j + 2;
-      v = v / (str_pool[j - 1]- '0');
+      v = v / (str_pool[j - 1] - '0');
     }
   }
 }
@@ -1039,10 +1051,7 @@ void print_current_string (void)
 
 int stringlength (int str_ptr)
 {
-  int nstart, nnext;
-  nstart = str_start[str_ptr];
-  nnext = str_start[str_ptr + 1];
-  return (nnext - nstart) + 2;
+  return (str_start[str_ptr + 1] - str_start[str_ptr]) + 2;
 }
 
 char * add_string (char *s, char * str_string)
@@ -1068,38 +1077,53 @@ char * make_up_help_string (int nhelplines)
   int k, nlen = 0;
   
 //  get length of help for this specific message
-  for (k = nhelplines - 1; k >= 0; k--) {
-    //nlen += stringlength(help_line[k]);
+  for (k = nhelplines - 1; k >= 0; k--)
+  {
     nlen += strlen(help_line[k]);
   }
+
   nlen += 2; // for blank line separator: "\r\n"
-  if (addextrahelp) {
+
+  if (addextrahelp)
+  {
     nlen += stringlength(265);
     nlen += stringlength(266);
     nlen += stringlength(267);
+
     if (base_ptr > 0)
       nlen += stringlength(268);
+
     if (deletions_allowed)
       nlen += stringlength(269);
+
     nlen += stringlength(270);
   }
+
   helpstring = (char *) malloc(nlen + 1); // +1 = '\0'
   s = helpstring;
-  for (k = nhelplines-1; k >= 0; k--) {
+
+  for (k = nhelplines-1; k >= 0; k--)
+  {
     s = add_string(s, help_line[k]);
   }
-  if (addextrahelp) {
+
+  if (addextrahelp)
+  {
     strcpy(s, "\r\n");
     s += 2;
     s = add_string(s, "Type <return> to proceed, S to scroll future error messages,");
     s = add_string(s, "R to run without stopping, Q to run quietly,");
     s = add_string(s, "I to insert something, ");
+
     if (base_ptr > 0)
       s = add_string(s, "E to edit your file, ");
+
     if (deletions_allowed)
       s = add_string(s, "1 or ... or 9 to ignore the next 1 to 9 tokens of input,");
+
     s = add_string(s, "H for help, X to quit.");
   }
+
   return helpstring;
 }
 
@@ -1108,6 +1132,7 @@ char * make_up_query_string (int promptstr)
   char *querystr;
   int nstart, nnext, n;
   char *s;
+
   nstart = str_start[ promptstr];
   nnext = str_start[ promptstr + 1];
   n = nnext - nstart;
@@ -1116,6 +1141,7 @@ char * make_up_query_string (int promptstr)
   memcpy(s, &str_pool[nstart], n);  
   s += n;
   *s = '\0';
+
   return querystr;
 }
 
@@ -1136,10 +1162,15 @@ void term_input (char * term_str, int term_help_lines)
 //    free(helpstring);
 //  }
   show_line("\n", 0);    // force it to show what may be buffered up ???
-  helpstring = NULL;  
+  helpstring = NULL;
+
 #ifdef _WINDOWS
-  if (term_str != NULL) querystring = term_str;
-  if (term_help_lines != NULL) helpstring = make_up_help_string(term_help_lines);
+  if (term_str != NULL)
+    querystring = term_str;
+
+  if (term_help_lines != NULL)
+    helpstring = make_up_help_string(term_help_lines);
+
   if (helpstring == NULL && querystring != NULL)
   {
     if (strcmp(querystring, ": ") == 0)
@@ -1155,10 +1186,15 @@ void term_input (char * term_str, int term_help_lines)
     else if (strcmp(querystring, "*") == 0)   // get_next
       helpstring = xstrdup("Please type a control sequence\r\n(or ^z to exit)");
   }
+
   flag = ConsoleInput(querystring, helpstring, (char *) &buffer[first]);  // ???
 //  flag == 0 means trouble --- EOF on terminal
-  if (querystring != NULL) free(querystring);
-  if (helpstring != NULL) free(helpstring);
+  if (querystring != NULL)
+    free(querystring);
+
+  if (helpstring != NULL)
+    free(helpstring);
+
   helpstring = querystring = NULL;
 
   last = first + strlen((char *) &buffer[first]); /* -1 ? */
@@ -1185,9 +1221,11 @@ void term_input (char * term_str, int term_help_lines)
   print_ln();
 #else
   decr(selector);     // shut off echo
+
   if (last != first)
     for (k = first; k <= last - 1; k++)
       print(buffer[k]);
+
   print_ln();
   incr(selector);     // reset selector again
 #endif
@@ -1249,7 +1287,8 @@ scaled round_decimals_(small_number k)
 
   a = 0;
 
-  while (k > 0) {
+  while (k > 0)
+  {
     decr(k);
     a = (a + dig[k] * 131072L) / 10; /* 2^17 */
   }
@@ -1259,7 +1298,7 @@ scaled round_decimals_(small_number k)
 /* sec 0103 */
 /* This has some minor speedup changes - no real advantage probably ... */
 void print_scaled_(scaled s)
-{ 
+{
   scaled delta;
 
   if (s < 0)
@@ -1273,13 +1312,15 @@ void print_scaled_(scaled s)
   s = 10 * (s % 65536L) + 5;
   delta = 10;
 
-  do {
-    if (delta > 65536L)
-      s = s - 17232; /* 2^15 - 50000 - rounding */
-    print_char('0' + (s / 65536L));
-    s = 10 * (s % 65536L);
-    delta = delta * 10;
-  } while (!(s <= delta));
+  do
+    {
+      if (delta > 65536L)
+        s = s - 17232; /* 2^15 - 50000 - rounding */
+      print_char('0' + (s / 65536L));
+      s = 10 * (s % 65536L);
+      delta = delta * 10;
+    }
+  while (!(s <= delta));
 }
 /* sec 0105 */
 scaled mult_and_add_(integer n, scaled x, scaled y, scaled maxanswer)
@@ -1305,7 +1346,9 @@ scaled x_over_n_(scaled x, integer n)
 {
   register scaled Result;
   bool negative;
+
   negative = false;
+
   if (n == 0)
   {
     arith_error = true;
@@ -1344,6 +1387,7 @@ scaled xn_over_d_(scaled x, integer n, integer d)
   register scaled Result;
   bool positive;
   nonnegative_integer t, u, v;
+
   if (x >= 0)
     positive = true; 
   else
@@ -1358,7 +1402,8 @@ scaled xn_over_d_(scaled x, integer n, integer d)
 
   if (u / d >= 32768L)
     arith_error = true; 
-  else u = 32768L * (u / d) + (v / d);
+  else
+    u = 32768L * (u / d) + (v / d);
 
   if (positive)
   {
@@ -1397,7 +1442,7 @@ halfword badness_(scaled t, scaled s)
       return (r * r * r + 131072L) / 262144L;  /* 2^17 */
   }
 }
-
+/* sec 0114 */
 #ifdef DEBUG
 void print_word_(memory_word w)
 { 
@@ -1642,13 +1687,15 @@ void flush_list_(halfword p)          /* paragraph 123 */
   {
     r = p;
 
-    do {
-      q = r;
-      r = link(r);
+    do
+      {
+        q = r;
+        r = link(r);
 #ifdef STAT
-      decr(dyn_used);
+        decr(dyn_used);
 #endif /* STAT */
-    } while (!(r == 0));     /* r != null */
+      }
+    while (!(r == 0));     /* r != null */
 
     link(q) = avail;
     avail = p;
@@ -1665,112 +1712,121 @@ halfword get_node_(integer s)
 lab20:
 
   p = rover;
-  do {
-      q = p + mem[p].hh.v.LH;
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-      while ((mem[q].hh.v.RH == empty_flag)) {
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-        if (q == 0) {
-/* should never happen, since this field is reference count for zeroglue */
-        }  /* debugging code 93/DEC/15 */ /* eventually remove */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-        t = mem[q + 1].hh.v.RH;
+
+  do
+    {
+      q = p + node_size(p);
+
+      while ((mem[q].hh.v.RH == empty_flag))
+      {
+        t = rlink(q);
+
         if (q == rover)
           rover = t;
-        mem[t + 1].hh.v.LH = mem[q + 1].hh.v.LH;
-        mem[mem[q + 1].hh.v.LH + 1].hh.v.RH = t;
-        q = q + mem[q].hh.v.LH;
+
+        llink(t) = llink(q);
+        rlink(llink(q)) = t;
+        q = q + node_size(q);
       }
+
       r = q - s;
+
       if (r > toint(p + 1)) 
       {
-        mem[p].hh.v.LH = r - p;
+        node_size(p) = r - p;
         rover = p;
         goto lab40;
       }
+
       if (r == p)
-        if (mem[p + 1].hh.v.RH != p)
+        if (rlink(p) != p)
         {
-          rover = mem[p + 1].hh.v.RH;
-          t = mem[p + 1].hh.v.LH;
-          mem[rover + 1].hh.v.LH = t;
-          mem[t + 1].hh.v.RH = rover;
+          rover = rlink(p);
+          t = llink(p);
+          llink(rover) = t;
+          rlink(t) = rover;
           goto lab40;
         }
-      mem[p].hh.v.LH = q - p;
-      p = mem[p + 1].hh.v.RH;
-  } while (!(p == rover));
+
+      node_size(p) = q - p;
+      p = rlink(p);
+    }
+  while (!(p == rover));
+
   if (s == 1073741824L)    /* 2^30 - special case - merge adjacent */
   {
-    Result = empty_flag;
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+    Result = max_halfword;
+
     if (trace_flag)
       show_line("Merged adjacent multi-word nodes\n", 0);
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
     return Result;
   }
+
 /*  maybe try downward epxansion first instead ? */
   if (lo_mem_max + 2 < hi_mem_min)
-/*  if (lo_mem_max + 2 <= 262143L) */  /* NO! */
     if (lo_mem_max + 2 <= mem_bot + max_halfword)  /* silly ? flush 93/Dec/16 */
     {
-/*    if (hi_mem_min - lo_mem_max >= 1998) */
+      /* if (hi_mem_min - lo_mem_max >= 1998) */
       if (hi_mem_min - lo_mem_max >= (block_size + block_size - 2))
-/*    t = lo_mem_max + 1000;  */
+        /* t = lo_mem_max + 1000; */
         t = lo_mem_max + block_size;
       else
-        t = lo_mem_max + 1 +(hi_mem_min - lo_mem_max) / 2;
-      p = mem[rover + 1].hh.v.LH;
+        t = lo_mem_max + 1 + (hi_mem_min - lo_mem_max) / 2;
+
+      p = llink(rover);
       q = lo_mem_max;
-      mem[p + 1].hh.v.RH = q;
-      mem[rover + 1].hh.v.LH = q;
-/*    if (t > 262143L)   t = 262143L;  */ /* NO! */
+      rlink(p) = q;
+      llink(rover) = q;
+
       if (t > mem_bot + max_halfword)
         t = mem_bot + max_halfword;     /* silly ? flush 93/Dec/16 */
-      mem[q + 1].hh.v.RH = rover;
-      mem[q + 1].hh.v.LH = p;
-      mem[q].hh.v.RH = empty_flag;
-      mem[q].hh.v.LH = t - lo_mem_max; /* block size */
+
+      rlink(q) = rover;
+      llink(q) = p;
+      link(q) = empty_flag;
+      node_size(q) = t - lo_mem_max; /* block size */
       lo_mem_max = t;
-      mem[lo_mem_max].hh.v.RH = 0;
-      mem[lo_mem_max].hh.v.LH = 0;
+      link(lo_mem_max) = 0;
+      info(lo_mem_max) = 0;
       rover = q;
       goto lab20;
     }
-/*  overflow("main memory size", mem_max + 1 - mem_min);  */ /* what used to happen! */
+
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* we've run out of space in the middle for variable length blocks */
 /* try and add new block from below mem_bot *//* first check if space ! */
-  if (mem_min - (block_size + 1) <= mem_start) {/* extend lower memory downwards */
-/*    realloc_main (mem_top/2, 0); */
+  if (mem_min - (block_size + 1) <= mem_start) /* extend lower memory downwards */
+  {
     mem = realloc_main (mem_top/2 + block_size, 0);  /* zzzaa = zmem = mem */
-    if (mem == NULL) {
+
+    if (mem == NULL)
+    {
       return 0;
     }
   }
-/*  if (trace_flag) show_line("Extending downwards by %d\n", block_size, 0); */
-  if (mem_min - (block_size + 1) <= mem_start) { /* check again */
-    if (trace_flag) {
+
+  if (mem_min - (block_size + 1) <= mem_start) /* check again */
+  {
+    if (trace_flag)
+    {
       sprintf(log_line, "mem_min %d, mem_start %d, block_size %d\n", mem_min, mem_start, block_size);
       show_line(log_line, 0);
     }
+
     overflow("main memory size", mem_max + 1 - mem_min); /* darn: allocation failed ! */
     return 0;     // abort_flag set
   }
 /* avoid function call in following ? */
   add_variable_space (block_size); /* now to be found in itex.c */
   goto lab20;         /* go try get_node again */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
-  lab40: mem[r].hh.v.RH = 0; 
-  ;
+lab40:
+  link(r) = 0;
+
 #ifdef STAT
   var_used = var_used + s; 
 #endif /* STAT */
-
-/*  if (trace_flag) {
-    if (r == 0) show_line("r IS ZERO in ZGETNODE!\n", 0);
-  } */      /* debugging code 93/dec/15 */
 
   Result = r; 
   return Result; 
@@ -2547,7 +2603,7 @@ void show_node_list_(integer p)
 
           {
             {
-              str_pool[pool_ptr]= 46;
+              str_pool[pool_ptr] = 46;
               incr(pool_ptr);
             }
             show_node_list(mem[p + 5].hh.v.RH);
@@ -2559,28 +2615,29 @@ void show_node_list_(integer p)
       case rule_node:
         {
           print_esc("rule(");
-          print_rule_dimen(mem[p + 3].cint);
+          print_rule_dimen(height(p));
           print_char('+');
-          print_rule_dimen(mem[p + 2].cint);
+          print_rule_dimen(depth(p));
           print_string(")x");
-          print_rule_dimen(mem[p + 1].cint);
+          print_rule_dimen(width(p));
         }
         break;
-      case 3:
+
+      case ins_node:
         {
           print_esc("insert");
-          print_int(mem[p].hh.b1);
+          print_int(subtype(p));
           print_string(", natural size ");
-          print_scaled(mem[p + 3].cint);
+          print_scaled(height(p));
           print_string("; split(");
-          print_spec(mem[p + 4].hh.v.RH, "");
+          print_spec(split_top_ptr(p), "");
           print_char(',');
-          print_scaled(mem[p + 2].cint);
+          print_scaled(depth(p));
           print_string("); float cost ");
-          print_int(mem[p + 1].cint);
+          print_int(float_cost(p));
           {
             {
-              str_pool[pool_ptr]= 46;
+              str_pool[pool_ptr] = 46;
               incr(pool_ptr);
             }
             show_node_list(mem[p + 4].hh.v.LH);
@@ -2589,144 +2646,179 @@ void show_node_list_(integer p)
         }
         break;
       case 8:
-        switch (mem[p].hh.b1)
+        switch (subtype(p))
         {
-          case 0:
+          case open_node:
             {
               print_write_whatsit(1279, p);   /* debug # (-1 to exit): */
               print_char('=');
-              print_file_name(mem[p + 1].hh.v.RH, mem[p + 2].hh.v.LH, mem[p + 2].hh.v.RH);
+              print_file_name(open_name(p), open_area(p), open_ext(p));
             }
             break;
-          case 1:
+
+          case write_node:
             {
               print_write_whatsit(591, p);  /* write */
-              print_mark(mem[p + 1].hh.v.RH);
+              print_mark(write_tokens(p));
             }
             break;
-          case 2:
+
+          case close_node:
             print_write_whatsit(1280, p); /* closeout */
             break;
-          case 3:
+
+          case special_node:
             {
               print_esc("special");
-              print_mark(mem[p + 1].hh.v.RH);
+              print_mark(write_tokens(p));
             }
             break;
-          case 4:
+
+          case language_node:
             {
               print_esc("setlanguage");
-              print_int(mem[p + 1].hh.v.RH);
+              print_int(what_lang(p));
               print_string(" (hyphenmin ");
-              print_int(mem[p + 1].hh.b0);
+              print_int(what_lhm(p));
               print_char(',');
-              print_int(mem[p + 1].hh.b1);
+              print_int(what_rhm(p));
               print_char(')');
             }
             break;
+
           default:
             print_string("whatsit?");
             break;
         }
         break;
-      case 10:
-        if (mem[p].hh.b1 >= 100)
+
+      case glue_node:
+        if (subtype(p) >= a_leaders)
         {
           print_esc("");
-          if (mem[p].hh.b1 == 101)
+
+          if (subtype(p) == c_leaders)
             print_char('c');
-          else if (mem[p].hh.b1 == 102)
+          else if (subtype(p) == x_leaders)
             print_char('x');
+
           print_string("leaders ");
-          print_spec(mem[p + 1].hh.v.LH, "");
+
+          print_spec(glue_ptr(p), "");
           {
             {
-              str_pool[pool_ptr]= 46;
+              str_pool[pool_ptr] = 46;
               incr(pool_ptr);
             }
             show_node_list(mem[p + 1].hh.v.RH);
             decr(pool_ptr);
           }
-        } else {
+        }
+        else
+        {
           print_esc("glue");
-          if (mem[p].hh.b1 != 0)
+
+          if (subtype(p) != normal)
           {
             print_char('(');
-            if (mem[p].hh.b1 < 98)
-              print_skip_param(mem[p].hh.b1 - 1);
-            else if (mem[p].hh.b1 == 98)
+
+            if (subtype(p) < cond_math_glue)
+              print_skip_param(subtype(p) - 1);
+            else if (subtype(p) == cond_math_glue)
               print_esc("nonscript");
             else print_esc("mskip");
+
             print_char(')');
           }
-          if (mem[p].hh.b1 != 98)
+
+          if (subtype(p) != cond_math_glue)
           {
             print_char(' ');
-            if (mem[p].hh.b1 < 98)
-              print_spec(mem[p + 1].hh.v.LH, "");
+
+            if (subtype(p) < cond_math_glue)
+              print_spec(glue_ptr(p), "");
             else
-              print_spec(mem[p + 1].hh.v.LH, "mu");
+              print_spec(glue_ptr(p), "mu");
           }
         }
         break;
-      case 11:
-        if (mem[p].hh.b1 != 99)
+
+      case kern_node:
+        if (subtype(p) != mu_glue)
         {
           print_esc("kern");
-          if (mem[p].hh.b1 != 0)
+
+          if (subtype(p) != normal)
             print_char(' ');
-          print_scaled(mem[p + 1].cint);
-          if (mem[p].hh.b1 == 2)
+
+          print_scaled(width(p));
+
+          if (subtype(p) == acc_kern)
             print_string(" (for accent)");
-        } else {
+        }
+        else
+        {
           print_esc("mkern");
-          print_scaled(mem[p + 1].cint);
+          print_scaled(width(p));
           print_string("mu");
         }
         break;
-      case 9:
+
+      case math_node:
         {
           print_esc("math");
-          if (mem[p].hh.b1 == 0)
+
+          if (subtype(p) == before)
             print_string("on");
-          else print_string("off");
-          if (mem[p + 1].cint != 0)
+          else
+            print_string("off");
+
+          if (width(p) != 0)
           {
             print_string(", surrounded ");
-            print_scaled(mem[p + 1].cint);
+            print_scaled(width(p));
           }
         }
         break;
-      case 6:
+
+      case ligature_node:
         {
-          print_font_and_char(p + 1);
+          print_font_and_char(lig_char(p));
           print_string("(ligature ");
-          if (mem[p].hh.b1 > 1)
+
+          if (subtype(p) > 1)
             print_char('|');
-          font_in_short_display = mem[p + 1].hh.b0; 
-          short_display(mem[p + 1].hh.v.RH);
-          if (odd(mem[p].hh.b1))
+
+          font_in_short_display = font(lig_char(p)); 
+          short_display(lig_ptr(p));
+
+          if (odd(subtype(p)))
             print_char('|');
+
           print_char(')');
         }
         break;
-      case 12:
+
+      case penalty_node:
         {
           print_esc("penalty ");
-          print_int(mem[p + 1].cint);
+          print_int(penalty(p));
         }
         break;
-      case 7:
+
+      case disc_node:
         {
           print_esc("discretionary");
-          if (mem[p].hh.b1 > 0)
+
+          if (replace_count(p) > 0)
           {
             print_string(" replacing ");
-            print_int(mem[p].hh.b1);
+            print_int(replace_count(p));
           }
+
           {
             {
-              str_pool[pool_ptr]= 46;
+              str_pool[pool_ptr] = 46;
               incr(pool_ptr);
             }
             show_node_list(mem[p + 1].hh.v.LH);
@@ -2740,18 +2832,20 @@ void show_node_list_(integer p)
           decr(pool_ptr);
         }
         break;
-      case 4:
+
+      case mark_node:
         {
           print_esc("mark");
-          print_mark(mem[p + 1].cint);
+          print_mark(mark_ptr(p));
         }
         break;
-      case 5:
+
+      case adjust_node:
         {
           print_esc("vadjust");
           {
             {
-              str_pool[pool_ptr]= 46;
+              str_pool[pool_ptr] = 46;
               incr(pool_ptr);
             }
             show_node_list(mem[p + 1].cint);
@@ -2759,151 +2853,166 @@ void show_node_list_(integer p)
           }
         }
         break;
-      case 14:
-        print_style(mem[p].hh.b1);
+
+      case style_node:
+        print_style(subtype(p));
         break;
-      case 15:
+
+      case choice_node:
         {
           print_esc("mathchoice");
-          {
-            str_pool[pool_ptr]= 68;
-            incr(pool_ptr);
-          }
-          show_node_list(mem[p + 1].hh.v.LH);
+          append_char('D');
+          show_node_list(display_mlist(p));
           decr(pool_ptr);
-          {
-            str_pool[pool_ptr]= 84;
-            incr(pool_ptr);
-          }
-          show_node_list(mem[p + 1].hh.v.RH);
+          append_char('T');
+          show_node_list(text_mlist(p));
           decr(pool_ptr);
-          {
-            str_pool[pool_ptr]= 83;
-            incr(pool_ptr);
-          }
-          show_node_list(mem[p + 2].hh.v.LH);
+          append_char('S');
+          show_node_list(script_mlist(p));
           decr(pool_ptr);
-          {
-            str_pool[pool_ptr]= 115;
-            incr(pool_ptr);
-          } 
-          show_node_list(mem[p + 2].hh.v.RH); 
+          append_char('s');
+          show_node_list(script_script_mlist(p)); 
           decr(pool_ptr); 
         } 
         break;
-      case 16:
-      case 17:
-      case 18:
-      case 19:
-      case 20:
-      case 21:
-      case 22:
-      case 23:
-      case 24:
-      case 27:
-      case 26:
-      case 29:
-      case 28:
-      case 30:
-      case 31:
+
+      case ord_noad:
+      case op_noad:
+      case bin_noad:
+      case rel_noad:
+      case open_noad:
+      case close_noad:
+      case punct_noad:
+      case inner_noad:
+      case radical_noad:
+      case over_noad:
+      case under_noad:
+      case vcenter_noad:
+      case accent_noad:
+      case left_noad:
+      case right_noad:
         {
-          switch (mem[p].hh.b0)
+          switch (type(p))
           {
-            case 16:
+            case ord_noad:
               print_esc("mathord");
               break;
-            case 17:
+
+            case op_noad:
               print_esc("mathop");
               break;
-            case 18:
+
+            case bin_noad:
               print_esc("mathbin");
               break;
-            case 19:
+
+            case rel_noad:
               print_esc("mathrel");
               break;
-            case 20:
+
+            case open_noad:
               print_esc("mathopen");
               break;
-            case 21:
+
+            case close_noad:
               print_esc("mathclose");
               break;
-            case 22:
+
+            case punct_noad:
               print_esc("mathpunct");
               break;
-            case 23:
+
+            case inner_noad:
               print_esc("mathinner");
               break;
-            case 27:
+
+            case over_noad:
               print_esc("overline");
               break;
-            case 26:
+
+            case under_noad:
               print_esc("underline");
               break;
-            case 29:
+
+            case vcenter_noad:
               print_esc("vcenter");
               break;
-            case 24:
+
+            case radical_noad:
               {
                 print_esc("radical");
-                print_delimiter(p + 4);
+                print_delimiter(left_delimiter(p));
               }
               break;
-            case 28:
+
+            case accent_noad:
               {
                 print_esc("accent");
-                print_fam_and_char(p + 4);
+                print_fam_and_char(accent_chr(p));
               }
               break;
-            case 30:
+
+            case left_noad:
               {
                 print_esc("left");
-                print_delimiter(p + 1);
+                print_delimiter(delimiter(p));
               }
               break;
-            case 31:
+
+            case right_noad:
               {
                 print_esc("right");
-                print_delimiter(p + 1);
+                print_delimiter(delimiter(p));
               }
               break;
-          } 
-          if (mem[p].hh.b1 != 0)
-            if (mem[p].hh.b1 == 1)
+          }
+
+          if (subtype(p) != normal)
+            if (subtype(p) == limits)
               print_esc("limits");
-            else print_esc("nolimits");
-          if (mem[p].hh.b0 < 30)
-            print_subsidiary_data(p + 1, 46);
-          print_subsidiary_data(p + 2, 94);
-          print_subsidiary_data(p + 3, 95);
+            else
+              print_esc("nolimits");
+
+          if (type(p) < left_noad)
+            print_subsidiary_data(nucleus(p), '.');
+
+          print_subsidiary_data(supscr(p), '^');
+          print_subsidiary_data(subscr(p), '_');
         }
         break;
-      case 25:
+
+      case fraction_noad:
         {
           print_esc("fraction, thickness ");
-          if (mem[p + 1].cint == 1073741824L)  /* 2^30 */
+
+          if (thickness(p) == 1073741824L)  /* 2^30 */
             print_string("= default");
-          else print_scaled(mem[p + 1].cint); 
-          if ((mem[p + 4].qqqq.b0 != 0) || (mem[p + 4].qqqq.b1 != 0) ||
-              (mem[p + 4].qqqq.b2 != 0) || (mem[p + 4].qqqq.b3 != 0))
+          else
+            print_scaled(thickness(p));
+
+          if ((small_fam(left_delimiter(p)) != 0) || (small_char(left_delimiter(p)) != 0) ||
+              (large_fam(left_delimiter(p)) != 0) || (large_char(left_delimiter(p)) != 0))
           {
             print_string(", left-delimiter ");
-            print_delimiter(p + 4);
+            print_delimiter(left_delimiter(p));
           }
-          if ((mem[p + 5].qqqq.b0 != 0) || (mem[p + 5].qqqq.b1 != 0) ||
-              (mem[p + 5].qqqq.b2 != 0)||(mem[p + 5].qqqq.b3 != 0))
+
+          if ((small_fam(right_delimiter(p)) != 0) || (small_char(right_delimiter(p)) != 0) ||
+              (large_fam(right_delimiter(p)) != 0)||(large_char(right_delimiter(p)) != 0))
           {
             print_string(", right-delimiter ");
-            print_delimiter(p + 5);
+            print_delimiter(right_delimiter(p));
           }
-          print_subsidiary_data(p + 2, 92);
-          print_subsidiary_data(p + 3, 47);
+
+          print_subsidiary_data(numerator(p), '\\');
+          print_subsidiary_data(denominator(p), '/');
         }
         break;
+
       default:
         print_string("Unknown node type!");
         break;
     }
-    p = mem[p].hh.v.RH;
-  } 
-} 
-/* NOTE: 262143L should be empty_flag */
+    p = link(p);
+  }
+}
