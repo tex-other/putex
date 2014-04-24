@@ -26,70 +26,76 @@
 /* sec 0715 */
 halfword rebox_(halfword b, scaled w)
 {
-  register halfword Result;
   halfword p;
   internal_font_number f;
   scaled v;
-/* begin if (width(b)<>w)and(list_ptr(b)<>null) then l.14010 */
-  if ((mem[b + 1].cint != w) && (mem[b + 5].hh.v.RH != 0))
+
+  if ((width(b) != w) && (list_ptr(b) != 0))
   {
-    if (mem[b].hh.b0 == 1)
+    if (type(b) == vlist_node)
       b = hpack(b, 0, 1);
-    p = mem[b + 5].hh.v.RH;
-/*  if (is_char_node(p))and(link(p)=null) then l.14013 */
-    if (((p >= hi_mem_min)) &&(mem[p].hh.v.RH == 0))
+
+    p = list_ptr(b);
+
+    if (((p >= hi_mem_min)) && (link(p) == 0))
     {
-      f = mem[p].hh.b0;
-      v = font_info[width_base[f] + font_info[char_base[f] + mem[p].hh.b1].qqqq.b0].cint;
-      if (v != mem[b + 1].cint)
-        mem[p].hh.v.RH = new_kern(mem[b + 1].cint - v);
+      f = font(p);
+      v = char_width(f, char_info(f, character(p)));
+
+      if (v != width(b))
+        link(p) = new_kern(width(b) - v);
     }
-    free_node(b, 7);
-    b = new_glue(12);
-    mem[b].hh.v.RH = p;
-/*   while link(p)<>null do p:=link(p); l.14019 */
-    while (mem[p].hh.v.RH != 0)
-      p = mem[p].hh.v.RH;
-    mem[p].hh.v.RH = new_glue(12);
-    Result = hpack(b, w, 0);
+
+    free_node(b, box_node_size);
+    b = new_glue(ss_glue);
+    link(b) = p;
+
+    while (link(p) != 0)
+      p = link(p);
+
+    link(p) = new_glue(ss_glue);
+    return hpack(b, w, exactly);
   }
   else
   {
-    mem[b + 1].cint = w;
-    Result = b;
+    width(b) = w;
+    return b;
   }
-  return Result;
 }
 /* This is to be the start of tex5.c */
 /* sec 0716 */
 halfword math_glue_(halfword g, scaled m)
 {
-  register halfword Result;
   halfword p;
   integer n;
   scaled f;
 
   n = x_over_n(m, 65536L);
   f = tex_remainder;
+
   if (f < 0)
   {
     decr(n);
     f = f + 65536L;
   }
-  p = get_node(4);
-  mem[p + 1].cint = mult_and_add(n, mem[g + 1].cint, xn_over_d(mem[g + 1].cint, f, 65536L), 1073741823L);  /* 2^30 - 1 */
-  mem[p].hh.b0 = mem[g].hh.b0;
-  if (mem[p].hh.b0 == 0)
-    mem[p + 2].cint = mult_and_add(n, mem[g + 2].cint, xn_over_d(mem[g + 2].cint, f, 65536L), 1073741823L);  /* 2^30 - 1 */
+
+  p = get_node(glue_spec_size);
+  width(p) = mult_and_add(n, width(g), xn_over_d(width(g), f, 65536L), 1073741823L);  /* 2^30 - 1 */
+  stretch_order(p) = stretch_order(g);
+
+  if (stretch_order(p) == normal)
+    stretch(p) = mult_and_add(n, stretch(g), xn_over_d(stretch(g), f, 65536L), 1073741823L);  /* 2^30 - 1 */
   else
-    mem[p + 2].cint = mem[g + 2].cint;
-  mem[p].hh.b1 = mem[g].hh.b1;
-  if (mem[p].hh.b1 == 0)
-    mem[p + 3].cint = mult_and_add(n, mem[g + 3].cint, xn_over_d(mem[g + 3].cint, f, 65536L), 1073741823L);  /* 2^30 - 1 */
+    stretch(p) = stretch(g);
+
+  shrink_order(p) = shrink_order(g);
+
+  if (shrink_order(p) == normal)
+    shrink(p) = mult_and_add(n, shrink(g), xn_over_d(shrink(g), f, 65536L), 1073741823L);  /* 2^30 - 1 */
   else
-    mem[p + 3].cint = mem[g + 3].cint;
-  Result = p;
-  return Result;
+    shrink(p) = shrink(g);
+
+  return p;
 }
 /* sec 0717 */
 void math_kern_ (halfword p, scaled m)
@@ -97,55 +103,58 @@ void math_kern_ (halfword p, scaled m)
   integer n;
   scaled f;
 
-  if (mem[p].hh.b1 == 99)
+  if (subtype(p) == mu_glue)
   {
     n = x_over_n(m, 65536L);
     f = tex_remainder;
+
     if (f < 0)
     {
       decr(n);
       f = f + 65536L;
     }
-    mem[p + 1].cint = mult_and_add(n, mem[p + 1].cint, xn_over_d(mem[p + 1].cint, f, 65536L), 1073741823L);  /* 2^30 - 1 */
-/*    mem[p].hh.b1 = 0;  */
-    mem[p].hh.b1 = 1; /* changed in 3.14159 */
+
+    width(p) = mult_and_add(n, width(p), xn_over_d(width(p), f, 65536L), 1073741823L);  /* 2^30 - 1 */
+    subtype(p) = explicit;
   }
 }
 /* sec 0718 */
 void flush_math (void)
 {
-  flush_node_list(mem[head].hh.v.RH);
-  flush_node_list(cur_list.aux_field.cint);
-  mem[head].hh.v.RH = 0;
+  flush_node_list(link(head));
+  flush_node_list(incompleat_noad);
+  link(head) = 0;
   tail = head;
-  cur_list.aux_field.cint = 0;
+  incompleat_noad = 0;
 }
 /* sec 0720 */
 halfword clean_box_(halfword p, small_number s)
 {
-  register halfword Result;
   halfword q;
-  small_number savestyle;
+  small_number save_style;
   halfword x;
   halfword r;
 
-  switch(mem[p].hh.v.RH)
+  switch(math_type(p))
   {
-    case 1:
+    case math_char:
       {
         cur_mlist = new_noad();
-        mem[cur_mlist + 1]= mem[p];
+        mem[nucleus(cur_mlist)] = mem[p];
       }
       break;
-    case 2:
+
+    case sub_box:
       {
-        q = mem[p].hh.v.LH;
+        q = info(p);
         goto lab40;
       }
       break;
-    case 3:
-      cur_mlist = mem[p].hh.v.LH;
+
+    case sub_mlist:
+      cur_mlist = info(p);
       break;
+
     default:
       {
         q = new_null_box();
@@ -153,42 +162,47 @@ halfword clean_box_(halfword p, small_number s)
       }
     break;
   }
-  savestyle = cur_style;
+
+  save_style = cur_style;
   cur_style = s;
   mlist_penalties = false;
   mlist_to_hlist();
-  q = mem[temp_head].hh.v.RH;
-  cur_style = savestyle;
+  q = link(temp_head);
+  cur_style = save_style;
+
   {
-    if (cur_style < 4)
-      cur_size = 0;
+    if (cur_style < script_style)
+      cur_size = text_size;
     else
-      cur_size = 16 * ((cur_style - 2) / 2);
-    cur_mu = x_over_n(font_info[6 + param_base[eqtb[(hash_size + 1837) + cur_size].hh.v.RH]].cint, 18);
+      cur_size = 16 * ((cur_style - text_style) / 2);
+
+    cur_mu = x_over_n(math_quad(cur_size), 18);
   }
 lab40:
   if ((q >= hi_mem_min) || (q == 0))
     x = hpack(q, 0, 1);
-  else if ((mem[q].hh.v.RH == 0) && (mem[q].hh.b0 <= 1) && (mem[q + 4].cint == 0))
+  else if ((link(q) == 0) && (type(q) <= vlist_node) && (shift_amount(q) == 0))
     x = q;
   else
     x = hpack(q, 0, 1);
-  q = mem[x + 5].hh.v.RH;
+
+  q = list_ptr(x);
+
   if ((q >= hi_mem_min))
   {
-    r = mem[q].hh.v.RH;
-/*   if r<>null then if link(r)=null then l.14140 */
+    r = link(q);
+
     if (r != 0)
-      if (mem[r].hh.v.RH == 0)
+      if (link(r) == 0)
         if (!(r >= hi_mem_min))
-          if (mem[r].hh.b0 == 11)
+          if (type(r) == kern_node)
           {
-            free_node(r, 2);
-            mem[q].hh.v.RH = 0;   /* link(q):=null; */
+            free_node(r, small_node_size);
+            link(q) = 0;
           }
   }
-  Result = x;
-  return Result;
+
+  return x;
 }
 /* sec 0722 */
 void fetch_(halfword a)

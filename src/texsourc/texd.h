@@ -1917,6 +1917,8 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define math_shift_group  15
 #define math_left_group   16
 #define max_group_code    16
+/* sec 0274 */
+#define saved(a) save_stack[save_ptr + a].cint
 /* sec 0289 */
 #define cs_token_flag     07777 // 4095
 #define left_brace_token  0400  // 256  = 2^8 * left_brace
@@ -1992,6 +1994,8 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 /* sec 0416 */
 #define input_line_no_code (glue_val + 1)
 #define badness_code       (glue_val + 2)
+/* sec 0421 */
+#define max_dimen 07777777777
 /* sec 0438 */
 #define octal_token             (other_token + '\'') // 3111
 #define hex_token               (other_token + '"' ) // 3106
@@ -2085,6 +2089,71 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define quad(f)          param(quad_code, f)
 #define extra_space(f)   param(extra_space_code, f)
 /* sec 0564 */
+/* sec 0585 */
+#define set1      128 // c[1]
+#define set2      129 // c[2]
+#define set3      130 // c[3]
+#define set4      131 // c[4]
+#define set_rule  132 // a[4] b[4]
+#define put1      133 // c[1]
+#define put2      134 // c[2]
+#define put3      135 // c[3]
+#define put4      136 // c[4]
+#define put_rule  137 // a[4] b[4]
+#define nop       138 // NULL
+#define bop       139 // c0[4] c1[4] ... c9[4] p[4]
+#define eop       140 // NULL
+//#define dvi_push 141
+//#define dvi_pop  142
+#define right1    143 // b[1]
+#define right2    144 // b[2]
+#define right3    145 // b[3]
+#define right4    146 // b[4]
+#define w0        147 //
+#define w1        148 // b[1]
+#define w2        149 // b[2]
+#define w3        150 // b[3]
+#define w4        151 // b[4]
+#define x0        152 //
+#define x1        153 // b[1]
+#define x2        154 // b[2]
+#define x3        155 // b[3]
+#define x4        156 // b[4]
+#define down1     157 // a[1]
+#define down2     158 // a[2]
+#define down3     159 // a[3]
+#define down4     160 // a[4]
+#define y0        161 //
+#define y1        162 // a[1]
+#define y2        163 // a[2]
+#define y3        164 // a[3]
+#define y4        165 // a[4]
+#define z0        166 //
+#define z1        167 // a[1]
+#define z2        168 // a[2]
+#define z3        169 // a[3]
+#define z4        170 // a[4]
+#define fnt_num_0 171 //
+#define fnt1      235 // k[1]
+#define fnt2      236 // k[2]
+#define fnt3      237 // k[3]
+#define fnt4      238 // k[4]
+#define xxx1      239 // k[1] x[k]
+#define xxx2      240 // k[2] x[k]
+#define xxx3      241 // k[3] x[k]
+#define xxx4      242 // k[4] x[k]
+#define fnt_def1  243 // k[1] c[4] s[4] d[4] a[1] l[1] n[a + l]
+#define fnt_def2  244 // k[2] c[4] s[4] d[4] a[1] l[1] n[a + l]
+#define fnt_def3  245 // k[3] c[4] s[4] d[4] a[1] l[1] n[a + l]
+#define fnt_def4  246 // k[4] c[4] s[4] d[4] a[1] l[1] n[a + l]
+#define pre       247 // i[1] num[4] den[4] mag[4] k[1] x[k]
+#define post      248 //
+#define post_post 249 //
+/* sec 0587 */
+#define id_byte 2
+/* sec 0605 */
+#define movement_node_size 3
+#define location(a) mem[a + 2].cint
 /* sec 0608 */
 #define y_here  1
 #define z_here  2
@@ -2096,6 +2165,9 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define none_seen 0
 #define y_seen    6
 #define z_seen    12
+/* sec 0644 */
+#define exactly    0
+#define additional 1
 /* sec 0769 */
 #define u_part(a)     mem[(a) + height_offset].cint
 #define v_part(a)     mem[(a) + depth_offset].cint
@@ -2335,6 +2407,8 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 /* sec 1344 */
 #define immediate_code    4
 #define set_language_code 5
+/* sec 1371 */
+#define end_write_token (cs_token_flag + end_write)
 /* sec 79 */
 extern void set_cur_lang(void);
 extern str_number make_string_pool (char *s);

@@ -378,10 +378,10 @@ void close_files_and_terminate (void)
     }
 
     if (dvi_limit == half_buf)
-      writedvi(half_buf, dvi_buf_size - 1);
+      write_dvi(half_buf, dvi_buf_size - 1);
 
     if (dvi_ptr > 0)
-      writedvi(0, dvi_ptr - 1); 
+      write_dvi(0, dvi_ptr - 1); 
 
     print_nl("Output written on ");
 

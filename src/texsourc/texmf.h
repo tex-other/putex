@@ -51,7 +51,7 @@
 #ifdef TeX
   #define dump_file fmt_file
   #define dump_path TEXFORMATPATH
-  #define mwrite_out writedvi
+  #define mwrite_out write_dvi
   #define out_file dvi_file
   #define out_buf dvi_buf
 #else /* not TeX */
@@ -106,10 +106,10 @@ extern bool input_line (FILE *);
 
 /* This was horseshit, since for MSDOS it did no errors checking! - bkph */
 #ifdef TeX
-/* #define  writedvi(a, b)              \
+/* #define  write_dvi(a, b)              \
   (void) fwrite ((char *) &dvi_buf[a], sizeof (dvi_buf[a]),   \
                  (int) ((b) - (a) + 1), dvi_file) */
-#define writedvi(a, b)              \
+#define write_dvi(a, b)              \
   if (fwrite ((char *) &dvi_buf[a], sizeof (dvi_buf[a]),    \
          (int) ((b) - (a) + 1), dvi_file) != (size_t) ((b) - (a) + 1))   \
      FATAL_PERROR ("\n! dvi file")
@@ -128,7 +128,7 @@ extern bool input_line (FILE *);
 /* USE fwrite(...) instead of write(fileno (...)) ! */
 
 #ifdef TeX
-#define writedvi(start, end)            \
+#define write_dvi(start, end)            \
   if (write (fileno (dvi_file), (char *) &dvi_buf[start],     \
              (int) ((end) - (start) + 1))       \
       != (int) ((end) - (start) + 1))         \
