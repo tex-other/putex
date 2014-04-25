@@ -153,7 +153,7 @@ unsigned char wintodos[128] = {
   155, 151, 163, 150, 129, 236, 231, 152
 };  
 
-void show_usage (char * program)
+void show_usage (void)
 {
   char * s = log_line;
   sprintf (s, "\n"
@@ -3153,7 +3153,7 @@ int read_command_line (int ac, char **av)
     stampcopy(log_line);
     strcat(log_line, "\n");
     show_line(log_line, 0);
-    if (show_use) show_usage(av[0]);
+    if (show_use) show_usage();
     else if (quitflag == 3) {
       strcat(log_line, "\n");
       show_line(log_line, 0);
@@ -3292,7 +3292,7 @@ int init_commands (int ac, char **av)
     strcat(log_line, "\n");
     show_line(log_line, 0);
   }
-/*  if (show_use) show_usage(av[0]);   */  /* show usage and quit */
+/*  if (show_use) show_usage();   */  /* show usage and quit */
 
 /*  if we aren't including current directory in any directory lists */
 /*  then makes no sense to avoid them separately for TFM files ... */

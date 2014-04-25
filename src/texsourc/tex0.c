@@ -1155,7 +1155,9 @@ void term_input (char * term_str, int term_help_lines)
   integer k;
   int flag;
   char * helpstring = NULL;
+#ifdef _WINDOWS
   char * querystring = NULL;
+#endif
 //  if (nhelplines != 0) {
 //    helpstring = make_up_help_string (nhelplines);
 //    printf(helpstring);

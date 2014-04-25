@@ -2162,7 +2162,6 @@ scaled height_plus_depth_(internal_font_number f, fquarterword c)
 /* sec 0706 */
 halfword var_delimiter_(halfword d, small_number s, scaled v)
 {
-  register halfword Result;
   halfword b;
   internal_font_number f, g;
   quarterword c, x, y;

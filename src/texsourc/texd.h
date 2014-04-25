@@ -1626,7 +1626,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define undefined_control_sequence    (frozen_null_font + 1025)            // (hash_size + hash_extra + 781) = font_max + 2
                                                                            // (hash_size + (255 - 1023) + 1025 + 524)
                                                                            // (hash_size + 781)
-#define glue_base                     (undefined_control_sequence + 1)     // (hash_size + hash_extra + 782)
+#define glue_base                     (undefined_control_sequence + 1)     // (hash_size + 782)
 /* sec 0224 */
 #define line_skip_code                0  // 782
 #define baseline_skip_code            1  // 783
@@ -2258,17 +2258,33 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define delim2(a)           mathsy(21, a)
 #define axis_height(a)      mathsy(22, a)
 #define total_mathsy_params 22
+/* sec 0701 */
+#define mathex(a)              font_info[(a) + param_base[fam_fnt(3 + cur_size)]].cint
+#define default_rule_thickness mathex(8)
+#define big_op_spacing1        mathex(9)
+#define big_op_spacing2        mathex(10)
+#define big_op_spacing3        mathex(11)
+#define big_op_spacing4        mathex(12)
+#define big_op_spacing5        mathex(13)
+#define total_mathex_params    13
 /* sec 0702 */
 #define cramped_style(a) (2 * ((a) / 2) + cramped)
 #define sub_style(a)     (2 * ((a) / 4) + script_style + cramped)
-#define sup_stype(a)     (2 * ((a) / 4) + script_style + ((a) % 2))
+#define sup_style(a)     (2 * ((a) / 4) + script_style + ((a) % 2))
 #define num_style(a)     ((a) + 2 - 2 * ((a) / 6))
 #define denom_style(a)   (2 * ((a) / 2) + cramped + 2 - 2 * ((a) / 6))
+/* sec 0725 */
+#define new_hlist(a) mem[nucleus(a)].cint
+/* sec 0770 */
+#define preamble              link(align_head)
+#define align_stack_node_size 5
 /* sec 0780 */
 #define span_code          256
 #define cr_code            257
 #define cr_cr_code         (cr_code + 1)
 #define end_template_token (cs_token_flag + frozen_end_template)
+/* sec 0797 */
+#define span_node_size 2
 /* sec 0817 */
 #define tight_fit      3
 #define loose_fit      1
