@@ -76,464 +76,538 @@ halfword finite_shrink_(halfword p)
   q = new_spec(p);
   shrink_order(q) = normal;
   delete_glue_ref(p);
+
   return q;
 }
 /* sec 0829 */
-void try_break_ (integer pi, small_number breaktype)
+void try_break_ (integer pi, small_number break_type)
 {
   halfword r;
-  halfword prevr;
-  halfword oldl;
-  bool nobreakyet;
-  halfword prevprevr;
+  halfword prev_r;
+  halfword old_l;
+  bool no_break_yet;
+  halfword prev_prev_r;
   halfword s;
   halfword q;
   halfword v;
   integer t;
   internal_font_number f;
   halfword l;
-  bool noderstaysactive;
-  scaled linewidth;
-  char fitclass;
+  bool node_r_stays_active;
+  scaled line_width;
+  char fit_class;
   halfword b;       /* current badness */
   integer d;
-  bool artificialdemerits;
-  halfword savelink;
+  bool artificial_demerits;
+  halfword save_link;
   scaled shortfall;
 
-  if (abs(pi)>= 10000)
+  if (abs(pi)>= inf_penalty)
     if (pi > 0)
       goto lab10;
     else
-      pi = -10000;
+      pi = eject_penalty;
 
-  nobreakyet = true;
-  prevr = active;
-  oldl = 0;
+  no_break_yet = true;
+  prev_r = active;
+  old_l = 0;
+  do_all_six(copy_to_cur_active);
+/*
   cur_active_width[1] = active_width[1];
   cur_active_width[2] = active_width[2];
   cur_active_width[3] = active_width[3];
   cur_active_width[4] = active_width[4];
   cur_active_width[5] = active_width[5];
   cur_active_width[6] = active_width[6];
+*/
   while (true)
   {
 lab22:
-    r = mem[prevr].hh.v.RH;
-    if (mem[r].hh.b0 == 2)
+    r = link(prev_r);
+
+    if (type(r) == delta_node)
     {
+      do_all_six(update_width);
+/*
       cur_active_width[1] = cur_active_width[1] + mem[r + 1].cint;
       cur_active_width[2] = cur_active_width[2] + mem[r + 2].cint;
       cur_active_width[3] = cur_active_width[3] + mem[r + 3].cint;
       cur_active_width[4] = cur_active_width[4] + mem[r + 4].cint;
       cur_active_width[5] = cur_active_width[5] + mem[r + 5].cint;
       cur_active_width[6] = cur_active_width[6] + mem[r + 6].cint;
-      prevprevr = prevr;
-      prevr = r;
+*/
+      prev_prev_r = prev_r;
+      prev_r = r;
       goto lab22;
     }
+
     {
-      l = mem[r + 1].hh.v.LH;
-      if (l > oldl)
+      l = line_number(r);
+
+      if (l > old_l)
       {
-        if ((minimum_demerits < 1073741823L) &&  /* 2^30 - 1 */
-          ((oldl != easyline) || (r == active)))
+        if ((minimum_demerits < awful_bad) && ((old_l != easyline) || (r == active)))
         {
-          if (nobreakyet)
+          if (no_break_yet)
           {
-            nobreakyet = false;
+            no_break_yet = false;
+            do_all_six(set_break_width_to_background);
+/*
             break_width[1] = background[1];
             break_width[2] = background[2];
             break_width[3] = background[3];
             break_width[4] = background[4];
             break_width[5] = background[5];
             break_width[6] = background[6];
+*/
             s = cur_p;
-/* if break_type>unhyphenated then if cur_p<>null then l.16451 */
-            if (breaktype > 0)
+
+            if (break_type > unhyphenated)
               if (cur_p != 0)
               {
-                t = mem[cur_p].hh.b1;
+                t = replace_count(cur_p);
                 v = cur_p;
-                s = mem[cur_p + 1].hh.v.RH;
+                s = post_break(cur_p);
+
                 while (t > 0)
                 {
                   decr(t);
-                  v = mem[v].hh.v.RH;
+                  v = link(v);
+
                   if ((v >= hi_mem_min))
                   {
-                    f = mem[v].hh.b0;
-                    break_width[1] = break_width[1]- font_info[width_base[f]+ font_info[char_base[f]+ mem[v].hh.b1].qqqq.b0].cint;
+                    f = font(v);
+                    break_width[1] = break_width[1] - char_width(f, char_info(f, character(v)));
                   }
-                  else switch (mem[v].hh.b0)
+                  else switch (type(v))
                   {
-                    case 6:
+                    case ligature_node:
                       {
-                        f = mem[v + 1].hh.b0;
-                        break_width[1] = break_width[1]- font_info[width_base[f]+ font_info[char_base[f]+ mem[v + 1].hh.b1].qqqq.b0].cint;
+                        f = font(lig_char(v));
+                        break_width[1] = break_width[1] - char_width(f, char_info(f, character(lig_char(v))));
                       }
                       break;
-                    case 0:
-                    case 1:
-                    case 2:
-                    case 11:
-                      break_width[1] = break_width[1]- mem[v + 1].cint;
+
+                    case hlist_node:
+                    case vlist_node:
+                    case rule_node:
+                    case kern_node:
+                      break_width[1] = break_width[1] - width(v);
                       break;
+
                     default:
                       {
                         confusion("disc1");
                         return;       // abort_flag set
                       }
                       break;
-                    }
                   }
-                  while (s != 0)
-                  {  /* while s<>null do l.16453 */
-                    if ((s >= hi_mem_min))
-                    {
-                      f = mem[s].hh.b0;
-                      break_width[1] = break_width[1]+ font_info[width_base[f]+ font_info[char_base[f]+ mem[s].hh.b1].qqqq.b0].cint;
-                    }
-                    else switch(mem[s].hh.b0)
-                    {
-                      case 6:
-                        {
-                          f = mem[s + 1].hh.b0;
-                          break_width[1] = break_width[1]+ font_info[width_base[f]+ font_info[char_base[f]+ mem[s + 1].hh.b1].qqqq.b0].cint;
-                        }
-                        break;
-                      case 0:
-                      case 1:
-                      case 2:
-/* didn't used to drop through to case 11 from case 2 in  3.141 */
-                      case 11:
-/* used to be some extra code here in case 11 in 3.141 */
-                        break_width[1] = break_width[1]+ mem[s + 1].cint;
-                        break;
-                      default:
-                        {
-                          confusion("disc2");
-                          return;       // abort_flag set
-                        }
-                        break;
-                    }
-/* used to be an increment t here in 3.141 */
-                    s = mem[s].hh.v.RH;
-                  }
-                  break_width[1] = break_width[1] + disc_width;
-/* used to be a test on t here instead in 3.141 */
-                  if (mem[cur_p + 1].hh.v.RH == 0)
-                    s = mem[v].hh.v.RH;
                 }
+
                 while (s != 0)
                 {
                   if ((s >= hi_mem_min))
-                    goto lab30;
-                  switch(mem[s].hh.b0)
                   {
-                    case 10:
+                    f = font(s);
+                    break_width[1] = break_width[1] + char_width(f, char_info(f, character(s)));
+                  }
+                  else switch(type(s))
+                  {
+                    case ligature_node:
                       {
-                        v = mem[s + 1].hh.v.LH;
-                        break_width[1] = break_width[1] - mem[v + 1].cint;
-                        break_width[2 + mem[v].hh.b0] = break_width[2 + mem[v].hh.b0] - mem[v + 2].cint;
-                        break_width[6] = break_width[6] - mem[v + 3].cint;
+                        f = font(lig_char(s));
+                        break_width[1] = break_width[1] + char_width(f, char_info(f, character(lig_char(s))));
                       }
                       break;
-                    case 12:
-                      ;
+
+                    case hlist_node:
+                    case vlist_node:
+                    case rule_node:
+                    case kern_node:
+                      break_width[1] = break_width[1] + width(s);
                       break;
-                    case 9:
-/* case 9 used to drop through to case 11 in 3.141 */
-                      break_width[1] = break_width[1] - mem[s + 1].cint;
-                      break;
-                    case 11:
-/* changes here in nature of test since 3.141 */
-                      if (mem[s].hh.b1 != 1)
-                        goto lab30;
-                      else
-                        break_width[1] = break_width[1] - mem[s + 1].cint;
-                      break;
+
                     default:
-                      goto lab30;
+                      {
+                        confusion("disc2");
+                        return;       // abort_flag set
+                      }
                       break;
                   }
-                  s = mem[s].hh.v.RH;
+
+                  s = link(s);
                 }
-lab30:          ;
+
+                break_width[1] = break_width[1] + disc_width;
+
+                if (post_break(cur_p) == 0)
+                  s = link(v);
+              }
+
+              while (s != 0)
+              {
+                if ((s >= hi_mem_min))
+                  goto lab30;
+
+                switch (type(s))
+                {
+                  case glue_node:
+                    {
+                      v = glue_ptr(s);
+                      break_width[1] = break_width[1] - width(v);
+                      break_width[2 + stretch_order(v)] = break_width[2 + stretch_order(v)] - stretch(v);
+                      break_width[6] = break_width[6] - shrink(v);
+                    }
+                    break;
+
+                  case penalty_node:
+                    ;
+                    break;
+
+                  case math_node:
+                    break_width[1] = break_width[1] - width(s);
+                    break;
+
+                  case kern_node:
+                    if (subtype(s) != explicit)
+                      goto lab30;
+                    else
+                      break_width[1] = break_width[1] - width(s);
+                    break;
+
+                  default:
+                    goto lab30;
+                    break;
+                }
+
+                s = link(s);
+              }
+lab30:;
           }
-          if (mem[prevr].hh.b0 == 2)
+
+          if (type(prev_r) == delta_node)
           {
-            mem[prevr + 1].cint = mem[prevr + 1].cint - cur_active_width[1] + break_width[1];
-            mem[prevr + 2].cint = mem[prevr + 2].cint - cur_active_width[2] + break_width[2];
-            mem[prevr + 3].cint = mem[prevr + 3].cint - cur_active_width[3] + break_width[3];
-            mem[prevr + 4].cint = mem[prevr + 4].cint - cur_active_width[4] + break_width[4];
-            mem[prevr + 5].cint = mem[prevr + 5].cint - cur_active_width[5] + break_width[5];
-            mem[prevr + 6].cint = mem[prevr + 6].cint - cur_active_width[6] + break_width[6];
+            do_all_six(convert_to_break_width);
+/*
+            mem[prev_r + 1].cint = mem[prev_r + 1].cint - cur_active_width[1] + break_width[1];
+            mem[prev_r + 2].cint = mem[prev_r + 2].cint - cur_active_width[2] + break_width[2];
+            mem[prev_r + 3].cint = mem[prev_r + 3].cint - cur_active_width[3] + break_width[3];
+            mem[prev_r + 4].cint = mem[prev_r + 4].cint - cur_active_width[4] + break_width[4];
+            mem[prev_r + 5].cint = mem[prev_r + 5].cint - cur_active_width[5] + break_width[5];
+            mem[prev_r + 6].cint = mem[prev_r + 6].cint - cur_active_width[6] + break_width[6];
+*/
           }
-          else if (prevr == active)
+          else if (prev_r == active)
           {
+            do_all_six(store_break_width);
+/*
             active_width[1] = break_width[1];
             active_width[2] = break_width[2];
             active_width[3] = break_width[3];
             active_width[4] = break_width[4];
             active_width[5] = break_width[5];
             active_width[6] = break_width[6];
+*/
           }
           else
           {
-            q = get_node(7);
-            mem[q].hh.v.RH = r;
-            mem[q].hh.b0 = 2;
-            mem[q].hh.b1 = 0;
+            q = get_node(delta_node_size);
+            link(q) = r;
+            type(q) = delta_node;
+            subtype(q) = 0;
+            do_all_six(new_delta_to_break_width);
+/*
             mem[q + 1].cint = break_width[1]- cur_active_width[1];
             mem[q + 2].cint = break_width[2]- cur_active_width[2];
             mem[q + 3].cint = break_width[3]- cur_active_width[3];
             mem[q + 4].cint = break_width[4]- cur_active_width[4];
             mem[q + 5].cint = break_width[5]- cur_active_width[5];
             mem[q + 6].cint = break_width[6]- cur_active_width[6];
-            mem[prevr].hh.v.RH = q;
-            prevprevr = prevr;
-            prevr = q;
+*/
+            link(prev_r) = q;
+            prev_prev_r = prev_r;
+            prev_r = q;
           }
-          if (abs(adj_demerits) >= 1073741823L - minimum_demerits)
-            minimum_demerits = 1073741822L; /* 2^30 - 2 */
+
+          if (abs(adj_demerits) >= awful_bad - minimum_demerits)
+            minimum_demerits = awful_bad - 1;
           else
             minimum_demerits = minimum_demerits + abs(adj_demerits);
+
+          for (fit_class = very_loose_fit; fit_class <= tight_fit; fit_class++)
           {
-            register integer for_end;
-            fitclass = 0;
-            for_end = 3;
-            if (fitclass <= for_end) do
+            if (minimal_demerits[fit_class] <= minimum_demerits)
             {
-              if (minimal_demerits[fitclass] <= minimum_demerits)
+              q = get_node(passive_node_size);
+              link(q) = passive;
+              passive = q;
+              cur_break(q) = cur_p;
+#ifdef STAT
+              incr(pass_number);
+              serial(q) = pass_number;
+#endif /* STAT */
+              prev_break(q) = best_place[fit_class];
+              q = get_node(active_node_size);
+              break_node(q) = passive;
+              line_number(q) = best_pl_line[fit_class] + 1;
+              fitness(q) = fit_class;
+              type(q) = break_type;
+              total_demerits(q) = minimal_demerits[fit_class];
+              link(q) = r;
+              link(prev_r) = q;
+              prev_r = q;
+#ifdef STAT
+              if (tracing_paragraphs > 0)
               {
-                q = get_node(2);
-                mem[q].hh.v.RH = passive;
-                passive = q;
-                mem[q + 1].hh.v.RH = cur_p;
-#ifdef STAT
-                incr(pass_number);
-                mem[q].hh.v.LH = pass_number;
-#endif /* STAT */
-                mem[q + 1].hh.v.LH = best_place[fitclass];
-                q = get_node(3);
-                mem[q + 1].hh.v.RH = passive;
-                mem[q + 1].hh.v.LH = best_pl_line[fitclass] + 1;
-                mem[q].hh.b1 = fitclass;
-                mem[q].hh.b0 = breaktype;
-                mem[q + 2].cint = minimal_demerits[fitclass];
-                mem[q].hh.v.RH = r;
-                mem[prevr].hh.v.RH = q;
-                prevr = q;
-#ifdef STAT
-                if (tracing_paragraphs > 0)
-                {
-                  print_nl("@@");
-                  print_int(mem[passive].hh.v.LH);
-                  print_string(": line ");
-                  print_int(mem[q + 1].hh.v.LH - 1);
-                  print_char('.');
-                  print_int(fitclass);
-                  if (breaktype == 1)
-                    print_char('-');
-                  print_string(" t=");
-                  print_int(mem[q + 2].cint);
-                  print_string(" -> @@");
-                  if (mem[passive + 1].hh.v.LH == 0)
-                    print_char('0');
-                  else
-                    print_int(mem[mem[passive + 1].hh.v.LH].hh.v.LH);
-                }
-#endif /* STAT */
+                print_nl("@@");
+                print_int(serial(passive));
+                print_string(": line ");
+                print_int(line_number(q) - 1);
+                print_char('.');
+                print_int(fit_class);
+
+                if (break_type == hyphenated)
+                  print_char('-');
+
+                print_string(" t=");
+                print_int(total_demerits(q));
+                print_string(" -> @@");
+
+                if (prev_break(passive) == 0)
+                  print_char('0');
+                else
+                  print_int(serial(prev_break(passive)));
               }
-              minimal_demerits[fitclass] = 1073741823L; /* 2^30 - 1 */
+#endif /* STAT */
             }
-            while (fitclass++ < for_end);
+
+            minimal_demerits[fit_class] = awful_bad;
           }
+
           minimum_demerits = 1073741823L; /* 2^30 - 1 */
+
           if (r != active)
           {
-            q = get_node(7);
-            mem[q].hh.v.RH = r;
-            mem[q].hh.b0 = 2;
-            mem[q].hh.b1 = 0;
+            q = get_node(delta_node_size);
+            link(q) = r;
+            type(q) = delta_node;
+            subtype(q) = 0;
+            do_all_six(new_delta_from_break_width);
+/*
             mem[q + 1].cint = cur_active_width[1] - break_width[1];
             mem[q + 2].cint = cur_active_width[2] - break_width[2];
             mem[q + 3].cint = cur_active_width[3] - break_width[3];
             mem[q + 4].cint = cur_active_width[4] - break_width[4];
             mem[q + 5].cint = cur_active_width[5] - break_width[5];
             mem[q + 6].cint = cur_active_width[6] - break_width[6];
-            mem[prevr].hh.v.RH = q;
-            prevprevr = prevr;
-            prevr = q;
+*/
+            link(prev_r) = q;
+            prev_prev_r = prev_r;
+            prev_r = q;
           }
         }
+
         if (r == active)
           goto lab10;
+
         if (l > easyline)
         {
-          linewidth = second_width;
-          oldl = 262142L;       /* 2^18 - 2 ? */
+          line_width = second_width;
+          old_l = max_halfword - 1; /*262142L*/ /* 2^18 - 2 ? */
         }
         else
         {
-          oldl = l;
+          old_l = l;
+
           if (l > last_special_line)
-            linewidth = second_width;
+            line_width = second_width;
           else if (par_shape_ptr == 0)
-            linewidth = first_width;
+            line_width = first_width;
           else
-            linewidth = mem[par_shape_ptr + 2 * l].cint;
+            line_width = mem[par_shape_ptr + 2 * l].cint;
         }
       }
     }
+
     {
-      artificialdemerits = false;
-      shortfall = linewidth - cur_active_width[1];  /* linewidth may be ... */
+      artificial_demerits = false;
+      shortfall = line_width - cur_active_width[1];
+
       if (shortfall > 0)
-        if ((cur_active_width[3]!= 0) || (cur_active_width[4]!= 0) || (cur_active_width[5]!= 0))
+        if ((cur_active_width[3] != 0) || (cur_active_width[4] != 0) || (cur_active_width[5] != 0))
         {
           b = 0;
-          fitclass = 2;
+          fit_class = decent_fit;
         }
         else
         {
           if (shortfall > 7230584L)
-            if (cur_active_width[2]< 1663497L)
+            if (cur_active_width[2] < 1663497L)
             {
               b = 10000;
-              fitclass = 0;
+              fit_class = very_loose_fit;
               goto lab31;
             }
+
           b = badness(shortfall, cur_active_width[2]);
+
           if (b > 12)
             if (b > 99)
-              fitclass = 0;
+              fit_class = very_loose_fit;
             else
-              fitclass = 1;
+              fit_class = loose_fit;
           else
-            fitclass = 2;
-lab31:
-          ;
+            fit_class = decent_fit;
+lab31:;
         }
       else
       {
         if (- (integer) shortfall > cur_active_width[6])
-          b = 10001;
+          b = inf_bad + 1;
         else
           b = badness(- (integer) shortfall, cur_active_width[6]);
+
         if (b > 12)
-          fitclass = 3;
+          fit_class = tight_fit;
         else
-          fitclass = 2;
+          fit_class = decent_fit;
       }
-      if ((b > 10000) || (pi == -10000))
+
+      if ((b > inf_bad) || (pi == eject_penalty))
       {
-        if (final_pass && (minimum_demerits == 1073741823L) &&  /* 2^30 - 1 */
-            (mem[r].hh.v.RH == active) && (prevr == active))
-          artificialdemerits = true;
+        if (final_pass && (minimum_demerits == awful_bad) && (link(r) == active) && (prev_r == active))
+          artificial_demerits = true;
         else if (b > threshold)
           goto lab60;
-        noderstaysactive = false;
+
+        node_r_stays_active = false;
       }
       else
       {
-        prevr = r;
+        prev_r = r;
+
         if (b > threshold)
           goto lab22;
-        noderstaysactive = true;
+
+        node_r_stays_active = true;
       }
-      if (artificialdemerits)
+
+      if (artificial_demerits)
         d = 0;
       else
       {
         d = line_penalty + b;
-        if (abs(d)>= 10000)
+
+        if (abs(d) >= 10000)
           d = 100000000L;
         else
           d = d * d;
+
         if (pi != 0)
           if (pi > 0)
             d = d + pi * pi;
           else if (pi > -10000)
             d = d - pi * pi;
-        if ((breaktype == 1) && (mem[r].hh.b0 == 1))
+
+        if ((break_type == hyphenated) && (type(r) == hyphenated))
           if (cur_p != 0)
             d = d + double_hyphen_demerits;
           else
             d = d + final_hyphen_demerits;
-        if (abs(toint(fitclass)- toint(mem[r].hh.b1)) > 1)
+
+        if (abs(toint(fit_class)- toint(fitness(r))) > 1)
           d = d + adj_demerits;
       }
+
 #ifdef STAT
       if (tracing_paragraphs > 0)
       {
         if (printed_node != cur_p)
         {
           print_nl("");
+
           if (cur_p == 0)
-            short_display(mem[printed_node].hh.v.RH);
+            short_display(link(printed_node));
           else
           {
-            savelink = mem[cur_p].hh.v.RH;
-            mem[cur_p].hh.v.RH = 0;
+            save_link = link(cur_p);
+            link(cur_p) = 0;
             print_nl("");
-            short_display(mem[printed_node].hh.v.RH);
-            mem[cur_p].hh.v.RH = savelink;
+            short_display(link(printed_node));
+            link(cur_p) = save_link;
           }
+
           printed_node = cur_p;
         }
+
         print_nl("@");
+
         if (cur_p == 0)
           print_esc("par");
-        else if (mem[cur_p].hh.b0 != 10)
+        else if (type(cur_p) != glue_node)
         {
-          if (mem[cur_p].hh.b0 == 12)
+          if (type(cur_p) == penalty_node)
             print_esc("penalty");
-          else if (mem[cur_p].hh.b0 == 7)
+          else if (type(cur_p) == disc_node)
             print_esc("discretionary");
-          else if (mem[cur_p].hh.b0 == 11)
+          else if (type(cur_p) == kern_node)
             print_esc("kern");
           else
             print_esc("math");
         }
+
         print_string(" via @@");
-        if (mem[r + 1].hh.v.RH == 0)
+
+        if (break_node(r) == 0)
           print_char('0');
         else
-          print_int(mem[mem[r + 1].hh.v.RH].hh.v.LH);
+          print_int(serial(break_node(r)));
+
         print_string(" b=");
-        if (b > 10000)
+
+        if (b > inf_bad)
           print_char('*');
-        else print_int(b);
+        else
+          print_int(b);
+
         print_string(" p=");
         print_int(pi);
         print_string(" d=");
-        if (artificialdemerits)
+
+        if (artificial_demerits)
           print_char('*');
         else
           print_int(d);
       }
 #endif /* STAT */
-      d = d + mem[r + 2].cint;
-      if (d <= minimal_demerits[fitclass])
+
+      d = d + total_demerits(r);
+
+      if (d <= minimal_demerits[fit_class])
       {
-        minimal_demerits[fitclass] = d;
-        best_place[fitclass] = mem[r + 1].hh.v.RH;
-        best_pl_line[fitclass] = l;
+        minimal_demerits[fit_class] = d;
+        best_place[fit_class] = break_node(r);
+        best_pl_line[fit_class] = l;
+
         if (d < minimum_demerits)
           minimum_demerits = d;
       }
-      if (noderstaysactive)
+
+      if (node_r_stays_active)
         goto lab22;
 lab60:
-      mem[prevr].hh.v.RH = mem[r].hh.v.RH;
-      free_node(r, 3);
-      if (prevr == active)
+      link(prev_r) = link(r);
+      free_node(r, active_node_size);
+
+      if (prev_r == active)
       {
-        r = mem[active].hh.v.RH;
-        if (mem[r].hh.b0 == 2)
+        r = link(active);
+
+        if (type(r) == delta_node)
         {
+          do_all_six(update_active);
+          do_all_six(copy_to_cur_active);
+/*
           active_width[1] = active_width[1] + mem[r + 1].cint;
           active_width[2] = active_width[2] + mem[r + 2].cint;
           active_width[3] = active_width[3] + mem[r + 3].cint;
@@ -546,41 +620,50 @@ lab60:
           cur_active_width[4] = active_width[4];
           cur_active_width[5] = active_width[5];
           cur_active_width[6] = active_width[6];
-          mem[active].hh.v.RH = mem[r].hh.v.RH;
-          free_node(r, 7);
+*/
+          link(active) = link(r);
+          free_node(r, delta_node_size);
         }
       }
-      else if (mem[prevr].hh.b0 == 2)
+      else if (type(prev_r) == delta_node)
       {
-        r = mem[prevr].hh.v.RH;
+        r = link(prev_r);
+
         if (r == active)
         {
-          cur_active_width[1] = cur_active_width[1] - mem[prevr + 1].cint;
-          cur_active_width[2] = cur_active_width[2] - mem[prevr + 2].cint;
-          cur_active_width[3] = cur_active_width[3] - mem[prevr + 3].cint;
-          cur_active_width[4] = cur_active_width[4] - mem[prevr + 4].cint;
-          cur_active_width[5] = cur_active_width[5] - mem[prevr + 5].cint;
-          cur_active_width[6] = cur_active_width[6] - mem[prevr + 6].cint;
-          mem[prevprevr].hh.v.RH = active; /* prevprevr may be used ... */
-          free_node(prevr, 7);
-          prevr = prevprevr;
+          do_all_six(downdate_width);
+/*
+          cur_active_width[1] = cur_active_width[1] - mem[prev_r + 1].cint;
+          cur_active_width[2] = cur_active_width[2] - mem[prev_r + 2].cint;
+          cur_active_width[3] = cur_active_width[3] - mem[prev_r + 3].cint;
+          cur_active_width[4] = cur_active_width[4] - mem[prev_r + 4].cint;
+          cur_active_width[5] = cur_active_width[5] - mem[prev_r + 5].cint;
+          cur_active_width[6] = cur_active_width[6] - mem[prev_r + 6].cint;
+*/
+          link(prev_prev_r) = active;
+          free_node(prev_r, delta_node_size);
+          prev_r = prev_prev_r;
         }
-        else if (mem[r].hh.b0 == 2)
+        else if (type(r) == delta_node)
         {
+          do_all_six(update_width);
+          do_all_six(combine_two_deltas);
+/*
           cur_active_width[1] = cur_active_width[1] + mem[r + 1].cint;
           cur_active_width[2] = cur_active_width[2] + mem[r + 2].cint;
           cur_active_width[3] = cur_active_width[3] + mem[r + 3].cint;
           cur_active_width[4] = cur_active_width[4] + mem[r + 4].cint;
           cur_active_width[5] = cur_active_width[5] + mem[r + 5].cint;
           cur_active_width[6] = cur_active_width[6] + mem[r + 6].cint;
-          mem[prevr + 1].cint = mem[prevr + 1].cint + mem[r + 1].cint;
-          mem[prevr + 2].cint = mem[prevr + 2].cint + mem[r + 2].cint;
-          mem[prevr + 3].cint = mem[prevr + 3].cint + mem[r + 3].cint;
-          mem[prevr + 4].cint = mem[prevr + 4].cint + mem[r + 4].cint;
-          mem[prevr + 5].cint = mem[prevr + 5].cint + mem[r + 5].cint;
-          mem[prevr + 6].cint = mem[prevr + 6].cint + mem[r + 6].cint;
-          mem[prevr].hh.v.RH = mem[r].hh.v.RH;
-          free_node(r, 7);
+          mem[prev_r + 1].cint = mem[prev_r + 1].cint + mem[r + 1].cint;
+          mem[prev_r + 2].cint = mem[prev_r + 2].cint + mem[r + 2].cint;
+          mem[prev_r + 3].cint = mem[prev_r + 3].cint + mem[r + 3].cint;
+          mem[prev_r + 4].cint = mem[prev_r + 4].cint + mem[r + 4].cint;
+          mem[prev_r + 5].cint = mem[prev_r + 5].cint + mem[r + 5].cint;
+          mem[prev_r + 6].cint = mem[prev_r + 6].cint + mem[r + 6].cint;
+*/
+          link(prev_r) = link(r);
+          free_node(r, delta_node_size);
         }
       }
     }
@@ -590,13 +673,14 @@ lab10:
 #ifdef STAT
   if (cur_p == printed_node)
     if (cur_p != 0)
-      if (mem[cur_p].hh.b0 == 7)
+      if (type(cur_p) == disc_node)
       {
-        t = mem[cur_p].hh.b1;
+        t = replace_count(cur_p);
+
         while (t > 0)
         {
           decr(t);
-          printed_node = mem[printed_node].hh.v.RH;
+          printed_node = link(printed_node);
         }
       }
 #endif /* STAT */
@@ -608,249 +692,266 @@ lab10:
 void post_line_break_(integer final_widow_penalty)
 {
   halfword q, r, s;
-  bool discbreak;
-  bool postdiscbreak;
-  scaled curwidth;
-  scaled curindent;
+  bool disc_break;
+  bool post_disc_break;
+  scaled cur_width;
+  scaled cur_indent;
   quarterword t;
   integer pen;
-  halfword curline;
+  halfword cur_line;
 
-  q = mem[best_bet + 1].hh.v.RH;
+  q = break_node(best_bet);
   cur_p = 0;
+
   do
-  {
-    r = q;
-    q = mem[q + 1].hh.v.LH;
-    mem[r + 1].hh.v.LH = cur_p;
-    cur_p = r;
-  }
+    {
+      r = q;
+      q = prev_break(q);
+      next_break(r) = cur_p;
+      cur_p = r;
+    }
   while (!(q == 0));
-  curline = prev_graf + 1;
+
+  cur_line = prev_graf + 1;
+
   do
-  {
-    q = mem[cur_p + 1].hh.v.RH;
-    discbreak = false;
-    postdiscbreak = false;
-    if (q != 0)
-      if (mem[q].hh.b0 == 10)
+    {
+      q = cur_break(cur_p);
+      disc_break = false;
+      post_disc_break = false;
+
+      if (q != 0)
+        if (type(q) == glue_node)
+        {
+          delete_glue_ref(glue_ptr(q));
+          glue_ptr(q) = right_skip;
+          subtype(q) = right_skip_code + 1;
+          add_glue_ref(right_skip);
+          goto lab30;
+        }
+        else
+        {
+          if (type(q) == disc_node)
+          {
+            t = replace_count(q);
+
+            if (t == 0)
+              r = link(q);
+            else
+            {
+              r = q;
+
+              while (t > 1)
+              {
+                r = link(r);
+                decr(t);
+              }
+
+              s = link(r);
+              r = link(s);
+              link(s) = 0;
+              flush_node_list(link(q));
+              replace_count(q) = 0;
+            }
+
+            if (post_break(q) != 0)
+            {
+              s = post_break(q);
+
+              while (link(s) != 0)
+                s = link(s);
+
+              link(s) = r;
+              r = post_break(q);
+              post_break(q) = 0;
+              post_disc_break = true;
+            }
+
+            if (pre_break(q) != 0)
+            {
+              s = prev_break(q);
+              link(q) = s;
+
+              while (link(s) != 0)
+                s = link(s);
+
+              prev_break(q) = 0;
+              q = s;
+            }
+
+            link(q) = r;
+            disc_break = true;
+          }
+          else if ((type(q) == math_node) || (type(q) == kern_node))
+            width(q) = 0;
+        }
+      else
       {
-        delete_glue_ref(mem[q + 1].hh.v.LH);
-        mem[q + 1].hh.v.LH = eqtb[(hash_size + 790)].hh.v.RH;
-        mem[q].hh.b1 = 9;
-        incr(mem[eqtb[(hash_size + 790)].hh.v.RH].hh.v.RH);
-        goto lab30;
+        q = temp_head;
+
+        while (link(q) != 0)
+          q = link(q);
+      }
+
+      r = new_param_glue(right_skip_code);
+      link(r) = link(q);
+      link(q) = r;
+      q = r;
+lab30:
+      r = link(q);
+      link(q) = 0;
+      q = link(temp_head);
+      link(temp_head) = r;
+
+      if (left_skip != 0)
+      {
+        r = new_param_glue(left_skip_code);
+        link(r) = q;
+        q = r;
+      }
+
+      if (cur_line > last_special_line)
+      {
+        cur_width = second_width;
+        cur_indent = second_indent;
+      }
+      else if (par_shape_ptr == 0)
+      {
+        cur_width = first_width;
+        cur_indent = first_indent;
       }
       else
       {
-        if (mem[q].hh.b0 == 7)
+        cur_width = mem[par_shape_ptr + 2 * cur_line].cint;
+        cur_indent = mem[par_shape_ptr + 2 * cur_line - 1].cint;
+      }
+
+      adjust_tail = adjust_head;
+      just_box = hpack(q, cur_width, 0);
+      shift_amount(just_box) = cur_indent;
+      append_to_vlist(just_box);
+
+      if (adjust_head != adjust_tail)
+      {
+        link(tail) = link(adjust_head);
+        tail = adjust_tail;
+      }
+
+      adjust_tail = 0;
+
+      if (cur_line + 1 != best_line)
+      {
+        pen = inter_line_penalty;
+
+        if (cur_line == prev_graf + 1)
+          pen = pen + club_penalty;
+
+        if (cur_line + 2 == best_line)
+          pen = pen + final_widow_penalty;
+
+        if (disc_break)
+          pen = pen + broken_penalty;
+
+        if (pen != 0)
         {
-          t = mem[q].hh.b1;
-          if (t == 0)
-            r = mem[q].hh.v.RH;
-          else
-          {
-            r = q;
-            while (t > 1)
-            {
-              r = mem[r].hh.v.RH;
-              decr(t);
-            }
-            s = mem[r].hh.v.RH;
-            r = mem[s].hh.v.RH;
-            mem[s].hh.v.RH = 0;
-            flush_node_list(mem[q].hh.v.RH);
-            mem[q].hh.b1 = 0;
-          }
-          if (mem[q + 1].hh.v.RH != 0)
-          {
-            s = mem[q + 1].hh.v.RH;
-            while (mem[s].hh.v.RH != 0)
-              s = mem[s].hh.v.RH;
-            mem[s].hh.v.RH = r;
-            r = mem[q + 1].hh.v.RH;
-            mem[q + 1].hh.v.RH = 0;
-            postdiscbreak = true;
-          }
-          if (mem[q + 1].hh.v.LH != 0)
-          {
-            s = mem[q + 1].hh.v.LH;
-            mem[q].hh.v.RH = s;
-            while (mem[s].hh.v.RH != 0)
-              s = mem[s].hh.v.RH;
-            mem[q + 1].hh.v.LH = 0;
-            q = s;
-          }
-          mem[q].hh.v.RH = r;
-          discbreak = true;
+          r = new_penalty(pen);
+          link(tail) = r;
+          tail = r;
         }
-        else if ((mem[q].hh.b0 == 9) || (mem[q].hh.b0 == 11))
-          mem[q + 1].cint = 0;
       }
-    else
-    {
-      q = temp_head;
-      while (mem[q].hh.v.RH != 0)
-        q = mem[q].hh.v.RH;
-    }
-    r = new_param_glue(8);
-    mem[r].hh.v.RH = mem[q].hh.v.RH;
-    mem[q].hh.v.RH = r;
-    q = r;
-lab30:
-    ;
-    r = mem[q].hh.v.RH;
-    mem[q].hh.v.RH = 0;
-    q = mem[temp_head].hh.v.RH;
-    mem[temp_head].hh.v.RH = r;
-    if (eqtb[(hash_size + 789)].hh.v.RH != 0)
-    {
-      r = new_param_glue(7);
-      mem[r].hh.v.RH = q;
-      q = r;
-    }
-    if (curline > last_special_line)
-    {
-      curwidth = second_width;
-      curindent = second_indent;
-    }
-    else if (par_shape_ptr == 0)
-    {
-      curwidth = first_width;
-      curindent = first_indent;
-    }
-    else
-    {
-      curwidth = mem[par_shape_ptr + 2 * curline].cint;
-      curindent = mem[par_shape_ptr + 2 * curline - 1].cint;
-    }
-    adjust_tail = adjust_head;
-    just_box = hpack(q, curwidth, 0);
-    mem[just_box + 4].cint = curindent;
-    append_to_vlist(just_box);
-/* if adjust_head<>adjust_tail then l.17346 */
-    if (adjust_head != adjust_tail)
-    {
-      mem[tail].hh.v.RH = mem[adjust_head].hh.v.RH;
-      tail = adjust_tail;
-    }
-    adjust_tail = 0; /* adjust_tail:=null */
-    if (curline + 1 != best_line)
-    {
-      pen = inter_line_penalty;
-      if (curline == prev_graf + 1)
-        pen = pen + club_penalty;
-      if (curline + 2 == best_line)
-        pen = pen + final_widow_penalty;
-      if (discbreak)
-        pen = pen + broken_penalty;
-      if (pen != 0)
-      {
-        r = new_penalty(pen);
-        mem[tail].hh.v.RH = r;
-        tail = r;
-      }
-    }
-    incr(curline);
-    cur_p = mem[cur_p + 1].hh.v.LH;
-    if (cur_p != 0)
-      if (!postdiscbreak)
-      {
-        r = temp_head;
-        while (true)
+
+      incr(cur_line);
+      cur_p = next_break(cur_p);
+
+      if (cur_p != 0)
+        if (!post_disc_break)
         {
-          q = mem[r].hh.v.RH;
-          if (q == mem[cur_p + 1].hh.v.RH)
-            goto lab31;
-          if ((q >= hi_mem_min))
-            goto lab31;
-          if ((mem[q].hh.b0 < 9))
-            goto lab31;
-/* change in tests here from 3.141 != 1 instead of == 2 */
-          if (mem[q].hh.b0 == 11)
-            if (mem[q].hh.b1 != 1)
+          r = temp_head;
+
+          while (true)
+          {
+            q = link(r);
+
+            if (q == cur_break(cur_p))
               goto lab31;
-          r = q;
-        }
+
+            if ((q >= hi_mem_min))
+              goto lab31;
+
+            if (non_discardable(q))
+              goto lab31;
+
+            if (type(q) == kern_node)
+              if (subtype(q) != 1)
+                goto lab31;
+
+            r = q;
+          }
 lab31:
-        if (r != temp_head)
-        {
-          mem[r].hh.v.RH = 0;
-          flush_node_list(mem[temp_head].hh.v.RH);
-          mem[temp_head].hh.v.RH = q;
+          if (r != temp_head)
+          {
+            link(r) = 0;
+            flush_node_list(link(temp_head));
+            link(temp_head) = q;
+          }
         }
-      }
-  }
+    }
   while (!(cur_p == 0));
-  if ((curline != best_line) || (mem[temp_head].hh.v.RH != 0))
+
+  if ((cur_line != best_line) || (link(temp_head) != 0))
   {
     confusion("line breaking");
     return;       // abort_flag set
   }
+
   prev_graf = best_line - 1;
 }
 /* Reconstitute ligatures during hyphenation pass */
 /* sec 0906 */
 small_number reconstitute_(small_number j, small_number n, halfword bchar, halfword hchar)
 {
-  register small_number Result;
   halfword p;
   halfword t;
   ffourquarters q;
-  halfword currh;
-  halfword testchar;
+  halfword cur_rh;
+  halfword test_char;
   scaled w;
   font_index k;
-  hyphen_passed = 0;            /* paragraph 907 ? */
+
+  hyphen_passed = 0;
   t = hold_head;
   w = 0;
-  mem[hold_head].hh.v.RH = 0;
+  link(hold_head) = 0;
   cur_l = hu[j];
   cur_q = t;
+
   if (j == 0)
   {
     ligature_present = init_lig;
     p = init_list; 
+
     if (ligature_present)
       lft_hit = init_lft; 
-/*   while p>null do l.17772 */
-/*    while(p > 0){ */  /* NO! */
-    while(p != 0)
-    {          /* 94/Mar/22 BUG FIX */
-      {
-/*    append_charnode_to_t(character(p)); */ 
-        mem[t].hh.v.RH = get_avail();
-        t = mem[t].hh.v.RH;
-        mem[t].hh.b0 = hf;
-        mem[t].hh.b1 = mem[p].hh.b1;
-      }
-      p = mem[p].hh.v.RH; /* p:=link(p); */
+
+    while(p != 0) /* 94/Mar/22 BUG FIX */
+    {
+      append_charnode_to_t(character(p));
+      p = link(p);
     }
   }
   else if (cur_l < 256)
   {
-    mem[t].hh.v.RH = get_avail();
-    t = mem[t].hh.v.RH;
-    mem[t].hh.b0 = hf;
-    mem[t].hh.b1 = cur_l;
+    append_charnode_to_t(cur_l);
   }
-  lig_stack = 0;    /* lig_stack:=null; */
-  {
-    if (j < n)
-      cur_r = hu[j + 1];
-    else
-      cur_r = bchar;
-    if (odd(hyf[j]))
-      currh = hchar;
-    else
-      currh = 256; 
-  }
+
+  lig_stack = 0;
+  set_cur_r();
+
 lab22:
-  if (cur_l == 256)   /* if cur_l = non_char then */
+  if (cur_l == non_char)
   {
-    k = bchar_label[hf];    /* begin k:=bchar_label[hf]; */
-/*  if k=non_address then goto done@+else q:=font_info[k].qqqq; l.17812 */
-/*    if (k == font_mem_size) */
+    k = bchar_label[hf];
+
     if (k == non_address)    /* i.e. 0 ---  96/Jan/15 */
       goto lab30;
     else
@@ -858,103 +959,111 @@ lab22:
   }
   else
   {
-    q = font_info[char_base[hf]+ cur_l].qqqq;
-    if (((q.b2) % 4)!= 1)
+    q = char_info(hf, cur_l);
+
+    if (char_tag(q) != lig_tag)
       goto lab30;
-    k = lig_kern_base[hf] + q.b3;
+
+    k = lig_kern_start(hf, q);
     q = font_info[k].qqqq;
-    if (q.b0 > 128)
+
+    if (skip_byte(q) > stop_flag)
     {
-      k = lig_kern_base[hf]+ 256 * q.b2 + q.b3 + 32768L - 256 *(128);
+      k = lig_kern_restart(hf, q);
       q = font_info[k].qqqq;
     }
   }
-  if (currh < 256) /* if cur_rh < non_char then test_char:=cur_rh */
-    testchar = currh;
+  if (cur_rh < non_char)
+    test_char = cur_rh;
   else
-    testchar = cur_r;  /* else test_char:=cur_r; l.17817 */
-/* loop@+begin if next_char(q)=test_char then if skip_byte(q)<=stop_flag then */
+    test_char = cur_r;
+
   while (true)
   {
-    if (q.b1 == testchar)
-      if (q.b0 <= 128)
-        if (currh < 256)   /*  if cur_rh<non_char then */
+    if (next_char(q) == test_char)
+      if (skip_byte(q) <= 128)
+        if (cur_rh < non_char)
         {
           hyphen_passed = j;
-          hchar = 256;
-          currh = 256;
+          hchar = non_char;
+          cur_rh = non_char;
           goto lab22;     /* goto continue; */
         }
         else
-        {    /* else begin if hchar<non_char then if odd(hyf[j]) then */
-          if (hchar < 256)
+        {
+          if (hchar < non_char)
             if (odd(hyf[j]))
             {
               hyphen_passed = j;
-              hchar = 256;
+              hchar = non_char;
             }
-          if (q.b2 < 128)  /* if op_byte(q)<kern_flag then */
+
+          if (op_byte(q) < kern_flag)
           {
-// @<Carry out a ligature replacement, updating the cursor structure
-//  and possibly advancing~|j|; |goto continue| if the cursor doesn't
-//  advance, otherwise |goto done|@>;  => l.17869
-            if (cur_l == 256)    /* begin if cur_l=non_char then lft_hit:=true; */
+            if (cur_l == non_char)
               lft_hit = true;
+
             if (j == n)
-              if (lig_stack == 0)/* if lig_stack=null ? */
+              if (lig_stack == 0)
                 rt_hit = true;
+
             {
               if (interrupt != 0)
               {
                 pause_for_instructions();
               }
             }
-            switch(q.b2)  /* case op_byte(q) of */
+
+            switch (op_byte(q))
             {
               case 1:
               case 5:
                 {
-                  cur_l = q.b3;
+                  cur_l = rem_byte(q);
                   ligature_present = true;
                 }
                 break;
+
               case 2:
               case 6:
                 {
-                  cur_r = q.b3;
-/*   if lig_stack>null then character(lig_stack):=cur_r */
-/*      if (lig_stack > 0) */      /* 94/Mar/22 */
-                  if (lig_stack != 0)      /* line breaking?? */
-                    mem[lig_stack].hh.b1 = cur_r; /* l.17877 ? */
+                  cur_r = rem_byte(q);
+
+                  if (lig_stack != 0)
+                    character(lig_stack) = cur_r;
                   else
                   {
                     lig_stack = new_lig_item(cur_r);
+
                     if (j == n)
-                      bchar = 256;
+                      bchar = non_char;
                     else
                     {
                       p = get_avail();
-                      mem[lig_stack + 1].hh.v.RH = p;
-                      mem[p].hh.b1 = hu[j + 1];
-                      mem[p].hh.b0 = hf;
+                      list_ptr(lig_stack) = p;
+                      character(p) = hu[j + 1];
+                      font(p) = hf;
                     }
                   }
                 }
                 break;
+
               case 3:
                 {
-                  cur_r = q.b3;
+                  cur_r = rem_byte(q);
                   p = lig_stack;
                   lig_stack = new_lig_item(cur_r);
-                  mem[lig_stack].hh.v.RH = p;
+                  link(lig_stack) = p;
                 }
                 break;
+
               case 7:
               case 11:
                 {
                   if (ligature_present)
                   {
                     p = new_ligature(hf, cur_l, mem[cur_q].hh.v.RH);
+
                     if (lft_hit)
                     {
                       mem[p].hh.b1 = 2;
@@ -970,21 +1079,18 @@ lab22:
                     ligature_present = false;
                   }
                   cur_q = t;
-                  cur_l = q.b3;
+                  cur_l = rem_byte(q);
                   ligature_present = true;
                 }
                 break;
+
               default:
                 {
-/* othercases begin cur_l:=rem_byte(q);
-    ligature_present:=true; {\.{=:}} l.17869 */
-                  cur_l = q.b3;
+                  cur_l = rem_byte(q);
                   ligature_present = true;
-/*   if lig_stack>null then pop_lig_stack l.17870 => l.17828 */
-/*      if (lig_stack > 0)*/       /* 94/Mar/22 ??? */
+
                   if (lig_stack != 0)        /* BUG FIX  */
                   {
-/*        if (mem[lig_stack + 1].hh.v.RH > 0) */ /* 94/Mar/22  */
                     if (mem[lig_stack + 1].hh.v.RH != 0) /* l.17828 ? */
                     {
                       mem[t].hh.v.RH = mem[lig_stack + 1].hh.v.RH;
@@ -1001,9 +1107,9 @@ lab22:
                       else
                         cur_r = bchar;
                       if (odd(hyf[j]))
-                        currh = hchar;
+                        cur_rh = hchar;
                       else
-                        currh = 256;
+                        cur_rh = 256;
                     }
                     else
                       cur_r = mem[lig_stack].hh.b1;
@@ -1012,109 +1118,57 @@ lab22:
                     goto lab30;
                   else
                   {
-                    {
-                      mem[t].hh.v.RH = get_avail();
-                      t = mem[t].hh.v.RH;
-                      mem[t].hh.b0 = hf;
-                      mem[t].hh.b1 = cur_r;
-                    }
+                    append_charnode_to_t(cur_r);
                     incr(j);
-                    {
-                      if (j < n)
-                        cur_r = hu[j + 1];
-                      else
-                        cur_r = bchar;
-                      if (odd(hyf[j]))
-                        currh = hchar;
-                      else
-                        currh = 256;
-                    }
+                    set_cur_r();
                   }
                 }
                 break;
             }
-            if (q.b2 > 4)
-              if (q.b2 != 7)
+
+            if (op_byte(q) > 4)
+              if (op_byte(q) != 7)
                 goto lab30;
+
             goto lab22;
           }
-          w = font_info[kern_base[hf]+ 256 * q.b2 + q.b3].cint;
+
+          w = char_kern(hf, q);
           goto lab30;
         }
-    if (q.b0 >= 128)
-      if (currh == 256)
+
+    if (q.b0 >= stop_flag)
+      if (cur_rh == non_char)
         goto lab30;
       else
       {
-        currh = 256;
+        cur_rh = non_char;
         goto lab22;
       }
-    k = k + q.b0 + 1;
+      
+    k = k + skip_byte(q) + 1;
     q = font_info[k].qqqq;
   }
-lab30:;
-  if (ligature_present)
-  {
-    p = new_ligature(hf, cur_l, mem[cur_q].hh.v.RH);
-    if (lft_hit)
-    {
-      mem[p].hh.b1 = 2;
-      lft_hit = false;
-    }
-    if (rt_hit)
-      if (lig_stack == 0)  /* if lig_stack=null ? */
-      {
-        incr(mem[p].hh.b1);
-        rt_hit = false;
-      }
-    mem[cur_q].hh.v.RH = p;
-    t = p;
-    ligature_present = false;
-  }
+lab30:
+  wrap_lig(rt_hit);
+
   if (w != 0)
   {
-    mem[t].hh.v.RH = new_kern(w);
-    t = mem[t].hh.v.RH;
+    link(t) = new_kern(w);
+    t = link(t);
     w = 0;
   }
-/*  if (lig_stack > 0)*/     /* 94/Mar/22 ??? l.17870 */
+
   if (lig_stack != 0)        /* l.17841 */
   {
-/* begin cur_q:=t; cur_l:=character(lig_stack);
-  ligature_present:=true; l.17842 */
     cur_q = t;
-    cur_l = mem[lig_stack].hh.b1;
+    cur_l = character(lig_stack);
     ligature_present = true;
-    {
-/*   pop_lig_stack; goto continue; l.17843 => l.17828 */
-/*      if (mem[lig_stack + 1].hh.v.RH > 0) *//* 94/Mar/22 */
-      if (mem[lig_stack + 1].hh.v.RH != 0) /* BUG FIX */
-      {
-        mem[t].hh.v.RH = mem[lig_stack + 1].hh.v.RH;
-        t = mem[t].hh.v.RH;
-        incr(j);
-      }
-      p = lig_stack;
-      lig_stack = mem[p].hh.v.RH;
-      free_node(p, 2);
-      if (lig_stack == 0)
-      {
-        if (j < n)
-          cur_r = hu[j + 1];
-        else
-          cur_r = bchar;
-        if (odd(hyf[j]))
-          currh = hchar;
-        else
-          currh = 256;
-      }
-      else
-        cur_r = mem[lig_stack].hh.b1;
-    }
+    pop_lig_stack();
     goto lab22;
   }
-  Result = j;
-  return Result;
+
+  return j;
 }
 /* #pragma optimize ("g", off) */ /* not needed for MSVC it seems ... */
 /* sec 0895 */
@@ -1125,146 +1179,177 @@ void hyphenate (void)
   int l;              /* 95/Jan/7 */
   halfword q, r, s;
   halfword bchar;
-  halfword majortail, minortail;
+  halfword major_tail, minor_tail;
 /*  ASCII_code c;  */
   int c;              /* 95/Jan/7 */
-  char cloc;
-/*  integer rcount; */
-  int rcount;           /* 95/Jan/7 */
-  halfword hyfnode;
+  char c_loc;
+/*  integer r_count; */
+  int r_count;           /* 95/Jan/7 */
+  halfword hyf_node;
   trie_pointer z;
   integer v;
   hyph_pointer h;
   str_number k;
   pool_pointer u;
 
-  for (j = 0; j <= hn; j++) hyf[j] = 0;
+  for (j = 0; j <= hn; j++)
+    hyf[j] = 0;
+
   h = hc[1];
   incr(hn);
   hc[hn] = cur_lang;
-  for (j = 2; j <= hn; j++) h = (h + h + hc[j]) % hyphen_prime;
+
+  for (j = 2; j <= hn; j++)
+    h = (h + h + hc[j]) % hyphen_prime;
+
   while (true)
   {
     k = hyph_word[h];
+
     if (k == 0)
       goto lab45;
+
     if (length(k) < hn)
       goto lab45;
+
     if (length(k) == hn)
     {
       j = 1;
       u = str_start[k];
+
       do
-      {
-        if (str_pool[u] < hc[j])
-          goto lab45;
-        if (str_pool[u] > hc[j])
-          goto lab30;
-        incr(j);
-        incr(u);
-      }
+        {
+          if (str_pool[u] < hc[j])
+            goto lab45;
+
+          if (str_pool[u] > hc[j])
+            goto lab30;
+
+          incr(j);
+          incr(u);
+        }
       while(!(j > hn));
+
       s = hyph_list[h];
+
       while (s != 0)
-      {  /* while s<>null do l.18173 */
+      {
         hyf[mem[s].hh.v.LH] = 1;
         s = mem[s].hh.v.RH;
       }
+
       decr(hn);
       goto lab40;
     }
 lab30:;
     if (h > 0)
       decr(h);
-/*    else h = 607;  */
     else
       h = hyphen_prime;
   }
 lab45:
   decr(hn);
-  if (trie_trc[cur_lang + 1]!= cur_lang)
+
+  if (trie_trc[cur_lang + 1] != cur_lang)
     return;
+
   hc[0] = 0;
-  hc[hn + 1]= 0;
-  hc[hn + 2]= 256;
+  hc[hn + 1] = 0;
+  hc[hn + 2] = 256;
+
   for (j = 0; j <= hn - rhyf + 1; j++)
   {
     z = trie_trl[cur_lang + 1] + hc[j];
     l = j;
-    while (hc[l]== trie_trc[z])
+
+    while (hc[l] == trie_trc[z])
     {
-      if (trie_tro[z]!= min_trie_op)
+      if (trie_tro[z] != min_trie_op)
       {
         v = trie_tro[z];
+
         do
-        {
-          v = v + op_start[cur_lang];
-          i = l - hyf_distance[v];
-          if (hyf_num[v] > hyf[i])
-            hyf[i]= hyf_num[v];
-          v = hyf_next[v];
-        }
+          {
+            v = v + op_start[cur_lang];
+            i = l - hyf_distance[v];
+
+            if (hyf_num[v] > hyf[i])
+              hyf[i]= hyf_num[v];
+
+            v = hyf_next[v];
+          }
         while(!(v == min_trie_op));
       }
+
       incr(l);
-      z = trie_trl[z]+ hc[l];
+      z = trie_trl[z] + hc[l];
     }
   }
 lab40:
   for (j = 0; j <= lhyf - 1; j++)
     hyf[j] = 0;
+
   for (j = 0; j <= rhyf - 1; j++)
     hyf[hn - j]= 0;
+
   for (j = lhyf; j <= hn - rhyf; j++)
     if (odd(hyf[j]))
       goto lab41;
+
   return;
 lab41:;
-  q = mem[hb].hh.v.RH;
-  mem[hb].hh.v.RH = 0;
-  r = mem[ha].hh.v.RH;
-  mem[ha].hh.v.RH = 0;
+  q = link(hb);
+  link(hb) = 0;
+  r = link(ha);
+  link(ha) = 0;
   bchar = hyfbchar;
+
   if ((ha >= hi_mem_min))
-    if (mem[ha].hh.b0 != hf)
+    if (font(ha) != hf)
       goto lab42;
     else
     {
       init_list = ha;
       init_lig = false;
-      hu[0] = mem[ha].hh.b1;
+      hu[0] = character(ha);
     }
-  else if (mem[ha].hh.b0 == 6)
-    if (mem[ha + 1].hh.b0 != hf)
+  else if (type(ha) == ligature_node)
+    if (font(lig_char(ha)) != hf)
       goto lab42;
     else
     {
-      init_list = mem[ha + 1].hh.v.RH;
+      init_list = lig_ptr(ha);
       init_lig = true;
-      init_lft = (mem[ha].hh.b1 > 1);
-      hu[0] = mem[ha + 1].hh.b1;
+      init_lft = (subtype(ha) > 1);
+      hu[0] = character(lig_char(ha));
+
       if (init_list == 0)
         if (init_lft)
         {
-          hu[0]= 256;
+          hu[0] = 256;
           init_lig = false;
         }
-      free_node(ha, 2);
+
+        free_node(ha, small_node_size);
     }
   else
   {
     if (!(r >= hi_mem_min))
-      if (mem[r].hh.b0 == 6)
-        if (mem[r].hh.b1 > 1)
+      if (type(r) == ligature_node)
+        if (subtype(r) > 1)
           goto lab42;
+
     j = 1;
     s = ha;
     init_list = 0;
     goto lab50;
   }
+
   s = cur_p;
-  while (mem[s].hh.v.RH != ha)
-    s = mem[s].hh.v.RH;
+
+  while (link(s) != ha)
+    s = link(s);
+
   j = 0;
   goto lab50;
 lab42:
@@ -1275,146 +1360,155 @@ lab42:
   init_list = 0;
 lab50:
   flush_node_list(r);
+
   do
-  {
-    l = j;
-    j = reconstitute(j, hn, bchar, hyf_char) + 1;
-    if (hyphen_passed == 0)
     {
-      mem[s].hh.v.RH = mem[hold_head].hh.v.RH;
-/*    while(mem[s].hh.v.RH > 0)*/ /* 94/Mar/22 */
-      while (link(s) != 0) /* l.17903 */
-        s = link(s);
-      if (odd(hyf[j - 1]))
+      l = j;
+      j = reconstitute(j, hn, bchar, hyf_char) + 1;
+
+      if (hyphen_passed == 0)
       {
-        l = j;
-        hyphen_passed = j - 1;
-        mem[hold_head].hh.v.RH = 0; /* link(hold_head):=null; */
+        link(s) = link(hold_head);
+
+        while (link(s) != 0) /* l.17903 */
+          s = link(s);
+
+        if (odd(hyf[j - 1]))
+        {
+          l = j;
+          hyphen_passed = j - 1;
+          link(hold_head) = 0;
+        }
       }
-    }
-    if (hyphen_passed > 0)
-      do
-      {
-        r = get_node(2);
-        mem[r].hh.v.RH = mem[hold_head].hh.v.RH;
-        mem[r].hh.b0 = 7;
-        majortail = r;
-        rcount = 0;
-/* while link(major_tail) > null do advance_major_tail; l.17929 */
-/*      while(mem[majortail].hh.v.RH > 0) { */ /* 94/Mar/22 */
-        while (mem[majortail].hh.v.RH != 0)
-        {
-          majortail = mem[majortail].hh.v.RH;
-          incr(rcount);
-        }
-        i = hyphen_passed;
-        hyf[i]= 0;
-        minortail = 0;
-        mem[r + 1].hh.v.LH = 0;
-        hyfnode = new_character(hf, hyf_char);
-        if (hyfnode != 0)
-        {
-          incr(i);
-          c = hu[i];
-          hu[i]= hyf_char;
+
+      if (hyphen_passed > 0)
+        do
           {
-            mem[hyfnode].hh.v.RH = avail;
-            avail = hyfnode;
-#ifdef STAT
-            decr(dyn_used);
-#endif /* STAT */
-          }
-        }
-        while (l <= i)
-        {
-          l = reconstitute(l, i, font_bchar[hf], 256) + 1;
-/*        if (mem[hold_head].hh.v.RH > 0)*/  /* 94/Mar/22 */
-          if (mem[hold_head].hh.v.RH != 0) /* BUG FIX ??? */
-          {
-            if (minortail == 0) /* if minor_tail=null then */
-              mem[r + 1].hh.v.LH = mem[hold_head].hh.v.RH;
+            r = get_node(small_node_size);
+            link(r) = link(hold_head);
+            type(r) = disc_node;
+            major_tail = r;
+            r_count = 0;
+
+            while (mem[major_tail].hh.v.RH != 0)
+            {
+              major_tail = link(major_tail);
+              incr(r_count);
+            }
+
+            i = hyphen_passed;
+            hyf[i] = 0;
+            minor_tail = 0;
+            pre_break(r) = 0;
+            hyf_node = new_character(hf, hyf_char);
+
+            if (hyf_node != 0)
+            {
+              incr(i);
+              c = hu[i];
+              hu[i] = hyf_char;
+              free_avail(hyf_node);
+            }
+
+            while (l <= i)
+            {
+              l = reconstitute(l, i, font_bchar[hf], non_char) + 1;
+
+              if (link(hold_head) != 0) /* BUG FIX ??? */
+              {
+                if (minor_tail == 0)
+                  pre_break(r) = link(hold_head);
+                else
+                  link(minor_tail) = link(hold_head);
+
+                minor_tail = link(hold_head);
+
+                while (link(minor_tail) != 0)  /* BUG FIX */
+                  minor_tail = link(minor_tail);
+              }
+            }
+
+            if (hyf_node != 0) /* if hyf_node<>null then l.17956 */
+            {
+              hu[i] = c;
+              l = i;
+              decr(i);
+            }
+
+            minor_tail = 0;
+            post_break(r) = 0;
+            c_loc = 0;
+
+            if (bchar_label[hf] != non_address) /* i.e. 0 --- 96/Jan/15 */
+            {
+              decr(l);
+              c = hu[l];
+              c_loc = l;
+              hu[l]= 256;
+            }
+
+            while (l < j)
+            {
+              do
+                {
+                  l = reconstitute(l, hn, bchar, 256) + 1;
+
+                  if (c_loc > 0)
+                  {
+                    hu[c_loc] = c;    /* c may be used ... */
+                    c_loc = 0;
+                  }
+
+                  if (link(hold_head) != 0)     /* BUG FIX */
+                  {
+                    if (minor_tail == 0) /* begin if minor_tail=null then */
+                      post_break(r) = link(hold_head);
+                    else
+                      link(minor_tail) = link(hold_head);
+
+                    minor_tail = link(hold_head);
+
+                    while (link(minor_tail) != 0)    /* ??? */
+                      minor_tail = link(minor_tail);
+                  }
+                }
+              while (!(l >= j));
+
+              while (l > j)
+              {
+                j = reconstitute(j, hn, bchar, non_char) + 1;
+                link(major_tail) = link(hold_head);
+
+                while (mem[major_tail].hh.v.RH != 0)
+                {
+                  major_tail = link(major_tail);
+                  incr(r_count);
+                }
+              }
+            }
+
+            if (r_count > 127)
+            {
+              link(s) = link(r);
+              link(r) = 0;
+              flush_node_list(r);
+            }
             else
-              mem[minortail].hh.v.RH = mem[hold_head].hh.v.RH;
-            minortail = mem[hold_head].hh.v.RH;
-/*    while(mem[minortail].hh.v.RH > 0)*/ /* 94/Mar/22 */
-            while (mem[minortail].hh.v.RH != 0)  /* BUG FIX */
-              minortail = mem[minortail].hh.v.RH;
-          }
-        }
-        if (hyfnode != 0) /* if hyf_node<>null then l.17956 */
-        {
-          hu[i]= c;
-          l = i;
-          decr(i);
-        }
-        minortail = 0;
-        mem[r + 1].hh.v.RH = 0;
-        cloc = 0;
-/* if bchar_label[hf]<non_address then l.17991 3.1415 */
-/*      if (bchar_label[hf]< font_mem_size) */
-/* if bchar_label[hf]<>non_address then l.17991 3.14159 */
-        if (bchar_label[hf]!= non_address) /* i.e. 0 --- 96/Jan/15 */
-        {
-          decr(l);
-          c = hu[l];
-          cloc = l;
-          hu[l]= 256;
-        }
-        while (l < j)
-        {
-          do
-          {
-            l = reconstitute(l, hn, bchar, 256) + 1;
-            if (cloc > 0)
             {
-              hu[cloc] = c;    /* c may be used ... */
-              cloc = 0;
+              link(s) = r;
+              replace_count(r) = r_count;
             }
-/*    if (mem[hold_head].hh.v.RH > 0)  */    /* 94/Mar/22 ??? */
-            if (mem[hold_head].hh.v.RH != 0)     /* BUG FIX */
-            {
-              if (minortail == 0) /* begin if minor_tail=null then */
-                mem[r + 1].hh.v.RH = mem[hold_head].hh.v.RH;
-              else
-                mem[minortail].hh.v.RH = mem[hold_head].hh.v.RH;
-              minortail = mem[hold_head].hh.v.RH;
-/*     while link(minor_tail)>null do minor_tail:=link(minor_tail); l.17977 */
-/*      while(mem[minortail].hh.v.RH > 0)*/ /* 94/Mar/22 */
-              while (mem[minortail].hh.v.RH != 0)    /* ??? */
-                minortail = mem[minortail].hh.v.RH;
-            }
+
+            s = major_tail;
+            hyphen_passed = j - 1;
+            link(hold_head) = 0;
           }
-          while (!(l >= j));
-          while (l > j)
-          {
-            j = reconstitute(j, hn, bchar, 256) + 1;
-            mem[majortail].hh.v.RH = mem[hold_head].hh.v.RH;
-/*          while (mem[majortail].hh.v.RH > 0) { */ /* 94/Mar/22 */
-            while (mem[majortail].hh.v.RH != 0)
-            {
-              majortail = mem[majortail].hh.v.RH;
-              incr(rcount);
-            }
-          }
-        }
-        if (rcount > 127)
-        {
-          mem[s].hh.v.RH = mem[r].hh.v.RH;
-          mem[r].hh.v.RH = 0; /* link(r):=null */
-          flush_node_list(r);
-        }
-        else
-        {
-          mem[s].hh.v.RH = r;
-          mem[r].hh.b1 = rcount;
-        }
-        s = majortail;
-        hyphen_passed = j - 1;
-        mem[hold_head].hh.v.RH = 0;  /* link(hold_head):=null; */
-      } while(!(! odd(hyf[j - 1])));
-     } while(!(j > hn));
-     mem[s].hh.v.RH = q;
-     flush_list(init_list);
+        while(!(! odd(hyf[j - 1])));
+    }
+  while(!(j > hn));
+
+  link(s) = q;
+  flush_list(init_list);
 }
 /* #pragma optimize ("g", off) */ /* not needed for MSVC it seems ... */
 /* used only in itex.c */
@@ -1443,22 +1537,22 @@ void new_hyph_exceptions (void)
 lab21:
     switch (cur_cmd)
     {
-      case 11:
-      case 12:
-      case 68:
-        if (cur_chr == 45)
+      case letter:
+      case other_char:
+      case char_given:
+        if (cur_chr == '-')
         {
           if (n < 63)
           {
             q = get_avail();
-            mem[q].hh.v.RH = p;
-            mem[q].hh.v.LH = n;
+            link(q) = p;
+            info(q) = n;
             p = q;
           }
         }
         else
         {
-          if (eqtb[(hash_size + 2139) + cur_chr].hh.v.RH == 0)
+          if (lc_code(cur_chr) == 0)
           {
             print_err("Not a letter");
             help2("Letters in \\hyphenation words must have \\lccode>0.",
@@ -1468,63 +1562,71 @@ lab21:
           else if (n < 63)
           {
             incr(n);
-            hc[n]= eqtb[(hash_size + 2139) + cur_chr].hh.v.RH;
+            hc[n] = lc_code(cur_chr);
           }
         }
         break;
-      case 16:
+
+      case char_num:
         {
           scan_char_num();
           cur_chr = cur_val;
-          cur_cmd = 68;
+          cur_cmd = char_given;
           goto lab21;
         }
         break;
-      case 10:
-      case 2:
+
+      case spacer:
+      case right_brace:
         {
           if (n > 1)
           {
             incr(n);
-            hc[n]= cur_lang;
+            hc[n] = cur_lang;
             str_room(n);
             h = 0;
+
             for (j = 1; j <= n; j++)
             {
-              h =(h + h + hc[j]) % hyphen_prime;
-              {
-                str_pool[pool_ptr]= hc[j];
-                incr(pool_ptr);
-              }
+              h = (h + h + hc[j]) % hyphen_prime;
+              append_char(hc[j]);
             }
+
             s = make_string();
-/*    if (hyph_count == 607)*/
+
             if (hyph_count == hyphen_prime)
             {
-/*      overflow(942, 607);  */
               overflow("exception dictionary", hyphen_prime); /* exception dictionary - NOT DYNAMIC */
-/*    not dynamic ---- but can be set -e=... from command line in ini-TeX */
+              /*    not dynamic ---- but can be set -e=... from command line in ini-TeX */
               return;     // abort_flag set
             }
+
             incr(hyph_count);
-            while (hyph_word[h]!= 0)
+
+            while (hyph_word[h] != 0)
             {
               k = hyph_word[h];
+
               if (length(k) < length(s))
                 goto lab40;
+
               if (length(k) > length(s))
                 goto lab45;
+
               u = str_start[k];
               v = str_start[s];
+
               do
-              {
-                if (str_pool[u] < str_pool[v])
-                  goto lab40;
-                if (str_pool[u] > str_pool[v])
-                  goto lab45;
-                incr(u);
-                incr(v);
-              }
+                {
+                  if (str_pool[u] < str_pool[v])
+                    goto lab40;
+
+                  if (str_pool[u] > str_pool[v])
+                    goto lab45;
+
+                  incr(u);
+                  incr(v);
+                }
               while(!(u == str_start[k + 1]));
 lab40:
               q = hyph_list[h];
@@ -1536,19 +1638,22 @@ lab40:
 lab45:;
               if (h > 0)
                 decr(h);
-/*      else h = 607;  */
               else
                 h = hyphen_prime;
             }
-            hyph_word[h]= s;
-            hyph_list[h]= p;
+
+            hyph_word[h] = s;
+            hyph_list[h] = p;
           }
-          if (cur_cmd == 2)
+
+          if (cur_cmd == right_brace)
             return;
+
           n = 0;
           p = 0;
         }
         break;
+
       default:
         {
           print_err("Improper ");
@@ -1565,49 +1670,53 @@ lab45:;
 /* sec 0968 */
 halfword prune_page_top_(halfword p)
 {
-  register halfword Result;
-  halfword prevp;
+  halfword prev_p;
   halfword q;
 
-  prevp = temp_head;
-  mem[temp_head].hh.v.RH = p;
-/* while p<>null do l.18803 */
+  prev_p = temp_head;
+  link(temp_head) = p;
+
   while(p != 0)
-    switch(mem[p].hh.b0)
+    switch(type(p))
     {
-      case 0:
-      case 1:
-      case 2:
+      case hlist_node:
+      case vlist_node:
+      case rule_node:
         {
-          q = new_skip_param(10);
-          mem[prevp].hh.v.RH = q;
-          mem[q].hh.v.RH = p;
-          if (mem[temp_ptr + 1].cint > mem[p + 3].cint)
-            mem[temp_ptr + 1].cint = mem[temp_ptr + 1].cint - mem[p + 3].cint;
+          q = new_skip_param(split_top_skip_code);
+          link(prev_p) = q;
+          link(q) = p;
+
+          if (width(temp_ptr) > height(p))
+            width(temp_ptr) = width(temp_ptr) - height(p);
           else
-            mem[temp_ptr + 1].cint = 0;
-          p = 0;  /* p:=null */
+            width(temp_ptr) = 0;
+
+          p = 0;
         }
         break;
-      case 8:
-      case 4:
-      case 3:
+
+      case whatsit_node:
+      case mark_node:
+      case ins_node:
         {
-          prevp = p;
-          p = mem[prevp].hh.v.RH;
+          prev_p = p;
+          p = link(prev_p);
         }
         break;
-      case 10:
-      case 11:
-      case 12:
+
+      case glue_node:
+      case kern_node:
+      case penalty_node:
         {
           q = p;
-          p = mem[q].hh.v.RH;
-          mem[q].hh.v.RH = 0;
-          mem[prevp].hh.v.RH = p;
+          p = link(q);
+          link(q) = 0;
+          link(prev_p) = p;
           flush_node_list(q);
         }
         break;
+
       default:
         {
           confusion("pruning");
@@ -1615,75 +1724,85 @@ halfword prune_page_top_(halfword p)
         }
         break;
     }
-  Result = mem[temp_head].hh.v.RH;
-  return Result;
+
+  return link(temp_head);
 }
 /* sec 0970 */
 halfword vert_break_(halfword p, scaled h, scaled d)
 {
-  register halfword Result;
-  halfword prevp;
+  halfword prev_p;
   halfword q, r;
   integer pi;
   integer b;
-  integer leastcost;
+  integer least_cost;
   halfword best_place;
-  scaled prevdp; 
+  scaled prev_dp; 
 /*  small_number t;  */
   int t;              /* 95/Jan/7 */
-  prevp = p;
+  prev_p = p;
 
-  leastcost = 1073741823L;  /* 2^30 - 1 */
+  least_cost = awful_bad;
+  do_all_six(set_height_zero);
+/*
   active_width[1] = 0;
   active_width[2] = 0;
   active_width[3] = 0;
   active_width[4] = 0;
   active_width[5] = 0;
   active_width[6] = 0;
-  prevdp = 0;
+*/
+  prev_dp = 0;
+
   while (true)
   {
-    if (p == 0)  /* if p=null l.18879 */
-      pi = -10000;
-    else switch(mem[p].hh.b0)
+    if (p == 0)
+      pi = eject_penalty;
+    else switch(type(p))
     {
-      case 0:
-      case 1:
-      case 2:
+      case hlist_node:
+      case vlist_node:
+      case rule_node:
         {
-          active_width[1]= active_width[1]+ prevdp + mem[p + 3].cint;
-          prevdp = mem[p + 2].cint;
+          cur_height = cur_height + prev_dp + height(p);
+          prev_dp = depth(p);
           goto lab45;
         }
         break;
-      case 8:
+
+      case whatsit_node:
         goto lab45;
         break;
-      case 10:
-        if ((mem[prevp].hh.b0 < 9))
+
+      case glue_node:
+        if (precedes_break(prev_p))
           pi = 0;
         else
           goto lab90;
         break;
-      case 11:
+
+      case kern_node:
         {
-          if (mem[p].hh.v.RH == 0)/* if link(p)=null l.18903 */
-            t = 12;
+          if (link(p) == 0)
+            t = penalty_node;
           else
-            t = mem[mem[p].hh.v.RH].hh.b0;
-          if (t == 10)
+            t = type(link(p));
+
+          if (t == glue_node)
             pi = 0;
           else
             goto lab90;
         }
         break;
-      case 12:
-        pi = mem[p + 1].cint;
+
+      case penalty_node:
+        pi = penalty(p);
         break;
-      case 4:
-      case 3:
+
+      case mark_node:
+      case ins_node:
         goto lab45;
         break;
+
       default:
         {
           confusion("vertbreak");
@@ -1691,44 +1810,50 @@ halfword vert_break_(halfword p, scaled h, scaled d)
         }
         break;
     }
-    if (pi < 10000)      /* pi may be used ... */
+
+    if (pi < inf_penalty)
     {
-      if (active_width[1] < h)
+      if (cur_height < h)
         if ((active_width[3] != 0) || (active_width[4] != 0) || (active_width[5]!= 0))
           b = 0;
         else
-          b = badness(h - active_width[1], active_width[2]);
+          b = badness(h - cur_height, active_width[2]);
       else if (active_width[1] - h > active_width[6])
-        b = 1073741823L;  /* 2^30 - 1 */
+        b = awful_bad;
       else
-        b = badness(active_width[1] - h, active_width[6]);
-      if (b < 1073741823L) /* 2^30 - 1 */
-        if (pi <= -10000)
+        b = badness(cur_height - h, active_width[6]);
+
+      if (b < awful_bad)
+        if (pi <= eject_penalty)
           b = pi;
-        else if (b < 10000)
+        else if (b < inf_bad)
           b = b + pi;
         else
-          b = 100000L;
-      if (b <= leastcost)
+          b = deplorable;
+
+      if (b <= least_cost)
       {
         best_place = p;
-        leastcost = b;
-        best_height_plus_depth = active_width[1]+ prevdp;
+        least_cost = b;
+        best_height_plus_depth = cur_height + prev_dp;
       }
-      if ((b == 1073741823L) || (pi <= -10000))  /* 2^30 - 1 */
+
+      if ((b == awful_bad) || (pi <= eject_penalty))
         goto lab30;
     }
-    if ((mem[p].hh.b0 < 10) || (mem[p].hh.b0 > 11))
+
+    if ((type(p) < glue_node) || (type(p) > kern_node))
       goto lab45;
 lab90:
-    if (mem[p].hh.b0 == 11)
+    if (type(p) == kern_node)
       q = p;
     else
     {
-      q = mem[p + 1].hh.v.LH;
-      active_width[2 + mem[q].hh.b0] = active_width[2 + mem[q].hh.b0]+ mem[q + 2].cint;
-      active_width[6] = active_width[6]+ mem[q + 3].cint;
-      if ((mem[q].hh.b1 != 0)&&(mem[q + 3].cint != 0))
+      q = glue_ptr(p);
+      active_width[2 + stretch_order(q)] = active_width[2 + stretch_order(q)] + stretch(q);
+      active_width[6] = active_width[6] + shrink(q);
+
+      if ((shrink_order(q) != normal) && (shrink(q) != 0))
       {
         print_err("Infinite glue shrinkage found in box being split");
         help4("The box you are \\vsplitting contains some infinitely",
@@ -1737,50 +1862,52 @@ lab90:
             "since the offensive shrinkability has been made finite.");
         error();
         r = new_spec(q);
-        mem[r].hh.b1 = 0;
+        shrink_order(r) = normal;
         delete_glue_ref(q);
-        mem[p + 1].hh.v.LH = r;
+        glue_ptr(p) = r;
         q = r;
       }
     }
-    active_width[1] = active_width[1]+ prevdp + mem[q + 1].cint;
-    prevdp = 0;
+
+    cur_height = cur_height + prev_dp + width(q);
+    prev_dp = 0;
 lab45:
-    if (prevdp > d)
+    if (prev_dp > d)
     {
-      active_width[1] = active_width[1]+ prevdp - d;
-      prevdp = d;
+      cur_height = cur_height + prev_dp - d;
+      prev_dp = d;
     }
-    prevp = p;
-    p = mem[prevp].hh.v.RH;
+
+    prev_p = p;
+    p = link(prev_p);
   }
 lab30:
-  Result = best_place; /* best_place may be used ... */
-  return Result;
+  return best_place;
 }
 /* called only from tex7.c */
 /* sec 0977 */
 halfword vsplit_(eight_bits n, scaled h)
 {
-  register halfword Result;
   halfword v;
   halfword p;
   halfword q;
 
-  v = eqtb[(hash_size + 1578) + n].hh.v.RH;
-  if (cur_mark[3]!= 0)
+  v = box(n);
+
+  if (split_first_mark != 0)
   {
-    delete_token_ref(cur_mark[3]);
-    cur_mark[3] = 0;
-    delete_token_ref(cur_mark[4]);
-    cur_mark[4] = 0;
+    delete_token_ref(split_first_mark);
+    split_first_mark = 0;
+    delete_token_ref(split_bot_mark);
+    split_bot_mark = 0;
   }
-  if (v == 0)    /* if v=null then l.18999 */
+
+  if (v == 0)
   {
-    Result = 0; /*   begin vsplit:=null; return; */
-    return(Result);
+    return 0;
   }
-  if (mem[v].hh.b0 != 1)
+
+  if (type(v) != vlist_node)
   {
     print_err("");
     print_esc("vsplit");
@@ -1789,74 +1916,82 @@ halfword vsplit_(eight_bits n, scaled h)
     help2("The box you are trying to split is an \\hbox.",
         "I can't split such a box, so I'll leave it alone.");
     error();
-    Result = 0;
-    return(Result);
+    return 0;
   }
-  q = vert_break(mem[v + 5].hh.v.RH, h, split_max_depth);
-  p = mem[v + 5].hh.v.RH;
+
+  q = vert_break(list_ptr(v), h, split_max_depth);
+  p = list_ptr(v);
+
   if (p == q)
-    mem[v + 5].hh.v.RH = 0;
+    list_ptr(v) = 0;
   else while (true)
   {
-    if (mem[p].hh.b0 == 4)
-      if (cur_mark[3]== 0)
+    if (type(p) == mark_node)
+      if (split_first_mark == 0)
       {
-        cur_mark[3] = mem[p + 1].cint;
-        cur_mark[4] = cur_mark[3];
-        mem[cur_mark[3]].hh.v.LH = mem[cur_mark[3]].hh.v.LH + 2;
+        split_first_mark = mark_ptr(p);
+        split_bot_mark = split_first_mark;
+        token_ref_count(split_first_mark) = token_ref_count(split_first_mark) + 2;
       }
       else
       {
-        delete_token_ref(cur_mark[4]);
-        cur_mark[4]= mem[p + 1].cint;
-        incr(mem[cur_mark[4]].hh.v.LH);
+        delete_token_ref(split_bot_mark);
+        split_bot_mark = mark_ptr(p);
+        add_token_ref(split_bot_mark);
       }
-    if (mem[p].hh.v.RH == q)
+
+    if (link(p) == q)
     {
-      mem[p].hh.v.RH = 0;
+      link(p) = 0;
       goto lab30;
     }
-    p = mem[p].hh.v.RH;
+    p = link(p);
   }
 lab30:;
   q = prune_page_top(q);
-  p = mem[v + 5].hh.v.RH;
-  free_node(v, 7);
-  if (q == 0)    /* if q=null l.18993 */
-    eqtb[(hash_size + 1578) + n].hh.v.RH = 0;  /* then box(n):=null */
+  p = list_ptr(v);
+  free_node(v, box_node_size);
+ 
+  if (q == 0)
+    box(n) = 0;
   else
-    eqtb[(hash_size + 1578) + n].hh.v.RH = vpackage(q, 0, 1, 1073741823L);  /* 2^30 - 1 */
-  Result = vpackage(p, h, 0, split_max_depth);
-  return Result;
+    box(n) = vpackage(q, 0, 1, 1073741823L);  /* 2^30 - 1 */
+
+  return vpackage(p, h, exactly, split_max_depth);
 }
 /* sec 0985 */
 void print_totals (void)
 {
   print_scaled(page_so_far[1]);
+
   if (page_so_far[2] != 0)
   {
     print_string(" plus ");
     print_scaled(page_so_far[2]);
     print_string("");
   }
+
   if (page_so_far[3] != 0)
   {
     print_string(" plus ");
     print_scaled(page_so_far[3]);
     print_string("fil");
   }
+
   if (page_so_far[4] != 0)
   {
     print_string(" plus ");
     print_scaled(page_so_far[4]);
     print_string("fill");
   }
+
   if (page_so_far[5] != 0)
   {
     print_string(" plus ");
     print_scaled(page_so_far[5]);
     print_string("filll");
   }
+
   if (page_so_far[6] != 0)
   {
     print_string(" minus ");
@@ -1867,22 +2002,25 @@ void print_totals (void)
 void freeze_page_specs_(small_number s)
 {
   page_contents = s;
-  page_so_far[0] = vsize;
+  page_goal = vsize;
   page_max_depth = max_depth;
-  page_so_far[7] = 0;
+  page_depth = 0;
+  do_all_six(set_page_so_far_zero);
+/*
   page_so_far[1] = 0;
   page_so_far[2] = 0;
   page_so_far[3] = 0;
   page_so_far[4] = 0;
   page_so_far[5] = 0;
   page_so_far[6] = 0;
-  least_page_cost = 1073741823L;  /* 2^30 - 1 */
+*/
+  least_page_cost = awful_bad;
 #ifdef STAT
   if (tracing_pages > 0)
   {
     begin_diagnostic();
     print_nl("%% goal height=");
-    print_scaled(page_so_far[0]);
+    print_scaled(page_goal);
     print_string(", max depth=");
     print_scaled(page_max_depth);
     end_diagnostic(false);
@@ -1895,18 +2033,20 @@ void box_error_(eight_bits n)
   error();
   begin_diagnostic();
   print_nl("The following box has been deleted:");
-  show_box(eqtb[(hash_size + 1578) + n].hh.v.RH);
+  show_box(box(n));
   end_diagnostic(true);
-  flush_node_list(eqtb[(hash_size + 1578) + n].hh.v.RH);
-  eqtb[(hash_size + 1578) + n].hh.v.RH = 0;
+  flush_node_list(box(n));
+  box(n) = 0;
 }
 /* sec 0993 */
 void ensure_vbox_(eight_bits n)
 {
-  halfword p; 
-  p = eqtb[(hash_size + 1578) + n].hh.v.RH;
-  if (p != 0) /* if p<>null then if type(p)=hlist_node then l.19324 */
-    if (mem[p].hh.b0 == 0)
+  halfword p;
+
+  p = box(n);
+
+  if (p != 0)
+    if (type(p) == hlist_node)
     {
       print_err("Insertions can only be added to a vbox");
       help3("Tut tut: You're trying to \\insert into a",
@@ -1920,33 +2060,37 @@ void ensure_vbox_(eight_bits n)
 void fire_up_(halfword c)
 {
   halfword p, q, r, s;
-  halfword prevp;
+  halfword prev_p;
 /*  unsigned char n;  */
   unsigned int n;         /* 95/Jan/7 */
   bool wait;
-  integer savevbadness;
-  scaled savevfuzz;
-  halfword savesplittopskip;
+  integer save_vbadness;
+  scaled save_vfuzz;
+  halfword save_split_top_skip;
 
-  if (mem[best_page_break].hh.b0 == 12)
+  if (type(best_page_break) == penalty_node)
   {
-    geq_word_define((hash_size + 3202), mem[best_page_break + 1].cint);
-    mem[best_page_break + 1].cint = 10000;
+    geq_word_define(int_base + output_penalty_code, penalty(best_page_break));
+    penalty(best_page_break) = inf_penalty;
   }
   else
-    geq_word_define((hash_size + 3202), 10000);
-  if (cur_mark[2]!= 0)
+    geq_word_define(int_base + output_penalty_code, inf_penalty);
+
+  if (bot_mark != 0)
   {
-    if (cur_mark[0]!= 0)
-      delete_token_ref(cur_mark[0]);
-    cur_mark[0]= cur_mark[2];
-    incr(mem[cur_mark[0]].hh.v.LH);
-    delete_token_ref(cur_mark[1]);
-    cur_mark[1]= 0;
+    if (top_mark != 0)
+      delete_token_ref(top_mark);
+
+    top_mark = bot_mark;
+    add_token_ref(top_mark);
+    delete_token_ref(first_mark);
+    first_mark = 0;
   }
+
   if (c == best_page_break)
     best_page_break = 0;
-  if (eqtb[(hash_size + 1833)].hh.v.RH != 0)
+
+  if (box(255) != 0)
   {
     print_err("");
     print_esc("box");
@@ -1955,162 +2099,190 @@ void fire_up_(halfword c)
         "Proceed, and I'll discard its present contents.");
     box_error(255);
   }
+
   insert_penalties = 0;
-  savesplittopskip = eqtb[(hash_size + 792)].hh.v.RH;
+  save_split_top_skip = split_top_skip;
+
   if (holding_inserts <= 0)
   {
-    r = mem[mem_top].hh.v.RH;
-    while (r != mem_top)
+    r = link(page_ins_head);
+
+    while (r != page_ins_head)
     {
-      if (mem[r + 2].hh.v.LH != 0)
+      if (best_ins_ptr(r) != 0)
       {
-        n = mem[r].hh.b1;
+        n = subtype(r);
         ensure_vbox(n);
-/*    if box(n)=null then box(n):=new_null_box; l.19759 */
-        if (eqtb[(hash_size + 1578) + n].hh.v.RH == 0)
-          eqtb[(hash_size + 1578) + n].hh.v.RH = new_null_box();
-        p = eqtb[(hash_size + 1578) + n].hh.v.RH + 5;
-        while (mem[p].hh.v.RH != 0)
-          p = mem[p].hh.v.RH;
-        mem[r + 2].hh.v.RH = p;
+
+        if (box(n) == 0)
+          box(n) = new_null_box();
+
+        p = box(n) + list_offset;
+
+        while (link(p) != 0)
+          p = link(p);
+
+        last_ins_ptr(r) = p;
       }
-      r = mem[r].hh.v.RH;
+
+      r = link(r);
     }
   }
+
   q = hold_head;
-  mem[q].hh.v.RH = 0;
-  prevp = page_head;
-  p = mem[prevp].hh.v.RH;
+  link(q) = 0;
+  prev_p = page_head;
+  p = link(prev_p);
+
   while (p != best_page_break)
   {
-    if (mem[p].hh.b0 == 3)
+    if (type(p) == ins_node)
     {
       if (holding_inserts <= 0)
       {
-        r = mem[mem_top].hh.v.RH;
-        while (mem[r].hh.b1 != mem[p].hh.b1)
-          r = mem[r].hh.v.RH;
-/*  if best_ins_ptr(r)=null then wait:=true l.19783 */
-        if (mem[r + 2].hh.v.LH == 0)
+        r = link(page_ins_head);
+
+        while (subtype(r) != subtype(p))
+          r = link(r);
+
+        if (best_ins_ptr(r) == 0)
           wait = true;
         else
         {
           wait = false;
-          s = mem[r + 2].hh.v.RH;
-          mem[s].hh.v.RH = mem[p + 4].hh.v.LH;
-          if (mem[r + 2].hh.v.LH == p)
+          s = last_ins_ptr(r);
+          link(s) = ins_ptr(p);
+
+          if (best_ins_ptr(r) == p)
           {
-            if (mem[r].hh.b0 == 1)
-              if ((mem[r + 1].hh.v.LH == p) && (mem[r + 1].hh.v.RH != 0))
+            if (type(r) == split_up)
+              if ((broken_ins(r) == p) && (broken_ins(r) != 0))
               {
-                while (mem[s].hh.v.RH != mem[r + 1].hh.v.RH)
-                  s = mem[s].hh.v.RH;
-                mem[s].hh.v.RH = 0;
-                eqtb[(hash_size + 792)].hh.v.RH = mem[p + 4].hh.v.RH;
-                mem[p + 4].hh.v.LH = prune_page_top(mem[r + 1].hh.v.RH);
-                if (mem[p + 4].hh.v.LH != 0)
+                while (link(s) != broken_ptr(r))
+                  s = link(s);
+
+                link(s) = 0;
+                split_top_skip = split_top_ptr(p);
+                ins_ptr(p) = prune_page_top(broken_ptr(r));
+
+                if (ins_ptr(p) != 0)
                 {
-                  temp_ptr = vpackage(mem[p + 4].hh.v.LH, 0, 1, 1073741823L);  /* 2^30 - 1 */
-                  mem[p + 3].cint = mem[temp_ptr + 3].cint + mem[temp_ptr + 2].cint;
-                  free_node(temp_ptr, 7);
+                  temp_ptr = vpackage(ins_ptr(p), 0, 1, 1073741823L);  /* 2^30 - 1 */
+                  height(p) = height(temp_ptr) + depth(temp_ptr);
+                  free_node(temp_ptr, box_node_size);
                   wait = true;
                 }
               }
-            mem[r + 2].hh.v.LH = 0;
-            n = mem[r].hh.b1;
-            temp_ptr = mem[eqtb[(hash_size + 1578) + n].hh.v.RH + 5].hh.v.RH;
-            free_node(eqtb[(hash_size + 1578) + n].hh.v.RH, 7);
-            eqtb[(hash_size + 1578) + n].hh.v.RH = vpackage(temp_ptr, 0, 1, 1073741823L);  /* 2^30 - 1 */
+
+            best_ins_ptr(r) = 0;
+            n = subtype(r);
+            temp_ptr = list_ptr(box(n));
+            free_node(box(n), box_node_size);
+            box(n) = vpackage(temp_ptr, 0, 1, 1073741823L);  /* 2^30 - 1 */
           }
           else
           {
-            while (mem[s].hh.v.RH != 0)
-              s = mem[s].hh.v.RH;
-            mem[r + 2].hh.v.RH = s;
+            while (link(s) != 0)
+              s = link(s);
+
+            last_ins_ptr(r) = s;
           }
         }
-        mem[prevp].hh.v.RH = mem[p].hh.v.RH;
-        mem[p].hh.v.RH = 0;
+
+        link(prev_p) = link(p);
+        link(p) = 0;
+
         if (wait)
         {
-          mem[q].hh.v.RH = p;
+          link(q) = p;
           q = p;
           incr(insert_penalties);
         }
         else
         {
-          delete_glue_ref(mem[p + 4].hh.v.RH);
-          free_node(p, 5);
+          delete_glue_ref(split_top_ptr(p));
+          free_node(p, ins_node_size);
         }
-        p = prevp;
+
+        p = prev_p;
       }
     }
-    else if (mem[p].hh.b0 == 4)
+    else if (type(p) == mark_node)
     {
-      if (cur_mark[1] == 0)
+      if (first_mark == 0)
       {
-        cur_mark[1]= mem[p + 1].cint;
-        incr(mem[cur_mark[1]].hh.v.LH);
+        first_mark = mark_ptr(p);
+        add_token_ref(first_mark);
       }
-      if (cur_mark[2] != 0)
-        delete_token_ref(cur_mark[2]);
-      cur_mark[2]= mem[p + 1].cint;
-      incr(mem[cur_mark[2]].hh.v.LH);
+
+      if (bot_mark != 0)
+        delete_token_ref(bot_mark);
+
+      bot_mark = mark_ptr(p);
+      add_token_ref(bot_mark);
     }
-    prevp = p;
-    p = mem[prevp].hh.v.RH;
+    prev_p = p;
+    p = link(prev_p);
   }
-  eqtb[(hash_size + 792)].hh.v.RH = savesplittopskip;
+
+  split_top_skip = save_split_top_skip;
+
   if (p != 0)    /* if p<>null then l.19730 */
   {
-    if (mem[contrib_head].hh.v.RH == 0)/* if link(contrib_head)=null then */
+    if (link(contrib_head) == 0)
       if (nest_ptr == 0)
         tail = page_tail;
       else
         nest[0].tail_field = page_tail;
-    mem[page_tail].hh.v.RH = mem[contrib_head].hh.v.RH;
-    mem[contrib_head].hh.v.RH = p;
-    mem[prevp].hh.v.RH = 0; /*   link(prev_p):=null; */
+
+    link(page_tail) = link(contrib_head);
+    link(contrib_head) = p;
+    link(prev_p) = 0;
   }
-  savevbadness = vbadness;
-  vbadness = 10000;
-  savevfuzz = eqtb[(hash_size + 3739)].cint;
-  eqtb[(hash_size + 3739)].cint = 1073741823L;  /* 2^30 - 1 */
-  eqtb[(hash_size + 1833)].hh.v.RH = vpackage(mem[page_head].hh.v.RH, best_size, 0, page_max_depth);
-  vbadness = savevbadness;
-  eqtb[(hash_size + 3739)].cint = savevfuzz;
-/*  if (last_glue != 262143L) */
+
+  save_vbadness = vbadness;
+  vbadness = inf_bad;
+  save_vfuzz = vfuzz;
+  vfuzz = max_dimen;
+  box(255) = vpackage(link(page_head), best_size, 0, page_max_depth);
+  vbadness = save_vbadness;
+  vfuzz = save_vfuzz;
+
   if (last_glue != empty_flag)
     delete_glue_ref(last_glue);
+
   page_contents = 0;
   page_tail = page_head;
-  mem[page_head].hh.v.RH = 0;
-/*  last_glue = 262143L;  */
+  link(page_head) = 0;
   last_glue = empty_flag;
   last_penalty = 0;
   last_kern = 0;
-  page_so_far[7] = 0;
+  page_depth = 0;
   page_max_depth = 0;
+
   if (q != hold_head)
   {
-    mem[page_head].hh.v.RH = mem[hold_head].hh.v.RH;
+    link(page_head) = link(hold_head);
     page_tail = q;
   }
-  r = mem[mem_top].hh.v.RH;
-  while (r != mem_top)
+
+  r = link(page_ins_head);
+
+  while (r != page_ins_head)
   {
-    q = mem[r].hh.v.RH;
-    free_node(r, 4);
+    q = link(r);
+    free_node(r, page_ins_node_size);
     r = q;
   }
-  mem[mem_top].hh.v.RH = mem_top;
-/* if (top_mark<>null)and(first_mark=null) then l.19654 */
-  if ((cur_mark[0]!= 0) && (cur_mark[1]== 0))
+ 
+  link(page_ins_head) = page_ins_head;
+
+  if ((top_mark != 0) && (first_mark == 0))
   {
-    cur_mark[1] = cur_mark[0];
-    incr(mem[cur_mark[0]].hh.v.LH);
+    first_mark = top_mark;
+    add_token_ref(top_mark);
   }
-/* if output_routine<>null then */
+
   if (output_routine != 0)
     if (dead_cycles >= max_dead_cycles)
     {
@@ -2127,31 +2299,34 @@ void fire_up_(halfword c)
       output_active = true;
       incr(dead_cycles);
       push_nest();
-      mode = -1;
+      mode = -vmode;
       cur_list.aux_field.cint = ignore_depth;
       mode_line = - (integer) line;
-      begin_token_list(output_routine, 6); /* output */
-      new_save_level(8);
+      begin_token_list(output_routine, output_text);
+      new_save_level(output_group);
       normal_paragraph();
       scan_left_brace();
       return;
     }
+
   {
-    if (mem[page_head].hh.v.RH != 0)
+    if (link(page_head) != 0)
     {
-      if (mem[contrib_head].hh.v.RH == 0)
+      if (link(contrib_head) == 0)
         if (nest_ptr == 0)
           tail = page_tail;
         else
           nest[0].tail_field = page_tail;
       else
-        mem[page_tail].hh.v.RH = mem[contrib_head].hh.v.RH;
-      mem[contrib_head].hh.v.RH = mem[page_head].hh.v.RH;
-      mem[page_head].hh.v.RH = 0;
+        link(page_tail) = link(contrib_head);
+
+      link(contrib_head) = link(page_head);
+      link(page_head) = 0;
       page_tail = page_head;
     }
-    ship_out(eqtb[(hash_size + 1833)].hh.v.RH);
-    eqtb[(hash_size + 1833)].hh.v.RH = 0; 
+
+    ship_out(box(255));
+    box(255) = 0;
   }
 }
 /* used to continue here with build_page etc in tex6.c */

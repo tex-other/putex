@@ -324,7 +324,8 @@ typedef char fourchoices;
 
 typedef char glue_ord; 
 
-typedef struct {
+typedef struct
+{
 /*  short mode_field;  */
   int mode_field;
   halfword head_field, tail_field;
@@ -334,7 +335,8 @@ typedef struct {
 
 typedef char group_code;
 
-typedef struct {
+typedef struct
+{
   quarterword state_field, index_field; 
   halfword start_field, loc_field, limit_field, name_field;
 } in_state_record; 
@@ -714,6 +716,7 @@ EXTERN str_number texmf_log_name;   // LOG file
 EXTERN byte_file dvi_file; 
 EXTERN byte_file tfm_file;
 EXTERN char * dvi_file_name;
+EXTERN char * pdf_file_name;
 EXTERN char * log_file_name;
 
 /*******************************************************************/
@@ -1984,6 +1987,11 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define bot_mark_code         2
 #define split_first_mark_code 3
 #define split_bot_mark_code   4
+#define top_mark              cur_mark[top_mark_code]
+#define first_mark            cur_mark[first_mark_code]
+#define bot_mark              cur_mark[bot_mark_code]
+#define split_first_mark      cur_mark[split_first_mark_code]
+#define split_bot_mark        cur_mark[split_bot_mark_code]
 /* sec 0400 */
 #define int_val   0
 #define dimen_val 1
@@ -2291,7 +2299,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define very_loose_fit 0
 #define decent_fit     2
 /* sec 0819 */
-#define active_node_sie   3
+#define active_node_size  3
 #define fitness           subtype
 #define break_node        rlink
 #define line_number       llink
@@ -2299,6 +2307,112 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define unhyphenated      0
 #define hyphenated        1
 #define last_active       active
+/* sec 0821 */
+#define passive_node_size 2
+#define cur_break         rlink
+#define prev_break        llink
+#define serial            info
+/* sec 0822 */
+#define delta_node_size 7
+#define delta_node      2
+/* sec 0823 */
+#define do_all_six(a) a(1); a(2); a(3); a(4); a(5); a(6)
+/* sec 0829 */
+#define copy_to_cur_active(a) cur_active_width[a] = active_width[a]
+/* sec 0832 */
+#define update_width(a) cur_active_width[a] = cur_active_width[a] + mem[r + (a)].cint
+/* sec 0833 */
+#define awful_bad 07777777777
+/* sec 0837 */
+#define set_break_width_to_background(a) break_width[a] = background[a]
+/* sec 0843 */
+#define convert_to_break_width(a)   mem[prev_r + (a)].cint = mem[prev_r + (a)].cint - cur_active_width[a] + break_width[a]
+#define store_break_width(a)        active_width[a] = break_width[a]
+#define new_delta_to_break_width(a) mem[q + (a)].cint = break_width[(a)] - cur_active_width[(a)]
+/* sec 0844 */
+#define new_delta_from_break_width(a) mem[q + (a)].cint = cur_active_width[(a)] - break_width[(a)]
+/* sec 0860 */
+#define combine_two_deltas(a) mem[prev_r + (a)].cint = mem[prev_r + (a)].cint + mem[r + (a)].cint
+#define downdate_width(a)     cur_active_width[(a)] = cur_active_width[(a)] - mem[prev_r + (a)].cint
+/* sec 0861 */
+#define update_active(a) active_width[(a)] = active_width[(a)] + mem[r + (a)].cint
+/* sec 0877 */
+#define next_break prev_break
+/* sec 0908 */
+#define append_charnode_to_t(a) \
+  {                             \
+    link(t) = get_avail();      \
+    t = link(t);                \
+    font(t) = hf;               \
+    character(t) = (a);         \
+  }
+#define set_cur_r()      \
+  {                      \
+    if (j < n)           \
+      cur_r = hu[j + 1]; \
+    else                 \
+      cur_r = bchar;     \
+                         \
+    if (odd(hyf[j]))     \
+      cur_rh = hchar;    \
+    else                 \
+      cur_rh = non_char; \
+  }
+/* sec 0910 */
+#define wrap_lig(a)                           \
+  if (ligature_present)                       \
+  {                                           \
+    p = new_ligature(hf, cur_l, link(cur_q)); \
+                                              \
+    if (lft_hit)                              \
+    {                                         \
+      subtype(p) = 2;                         \
+      lft_hit = false;                        \
+    }                                         \
+                                              \
+    if ((a))                                  \
+      if (lig_stack == 0)                     \
+      {                                       \
+        incr(subtype(p));                     \
+        rt_hit = false;                       \
+      }                                       \
+                                              \
+    link(cur_q) = p;                          \
+    t = p;                                    \
+    ligature_present = false;                 \
+  }
+#define pop_lig_stack()                       \
+  {                                           \
+    if (lig_ptr(lig_stack) != 0)              \
+    {                                         \
+      link(t) = lig_ptr(lig_stack);           \
+      t = link(t);                            \
+      incr(j);                                \
+    }                                         \
+                                              \
+    p = lig_stack;                            \
+    lig_stack = link(p);                      \
+    free_node(p, small_node_size);            \
+                                              \
+    if (lig_stack == 0)                       \
+    {                                         \
+      set_cur_r();                            \
+    }                                         \
+    else                                      \
+      cur_r = character(lig_stack);           \
+  }
+/* sec 0914 */
+#define advance_major_tail()       \
+  {                                \
+    major_tail = link(major_tail); \
+    incr(r_count);                 \
+  }
+/* sec 0970 */
+#define active_height      active_width
+#define cur_height         active_height[1]
+#define set_height_zero(a) active_width[(a)] = 0
+/* sec 0974 */
+#define deplorable 100000L
 /* sec 0981 */
 #define page_ins_node_size 4
 #define inserting          0
@@ -2307,6 +2421,13 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define broken_ins(a)      info(a + 1)
 #define last_ins_ptr(a)    link(a + 2)
 #define best_ins_ptr(a)    info(a + 2)
+/* sec 0982 */
+#define page_goal   page_so_far[0]
+#define page_total  page_so_far[1]
+#define page_shrink page_so_far[6]
+#define page_depth  page_so_far[7]
+/* sec 0987 */
+#define set_page_so_far_zero(a) page_so_far[(a)] = 0
 /* sec 1034 */
 #define adjust_space_factor()   \
 {                               \

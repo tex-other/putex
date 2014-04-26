@@ -41,53 +41,39 @@
   #define INLINE inline
 #endif
 
-/* need io.h for write() - bkph */
-
-#ifdef MSDOS
-/* #include <io.h> */ /* conflict with read() in pascal.h ??? */
-//int __cdecl write(int, const void *, unsigned int);
-#endif
-
 #ifdef TeX
-  #define dump_file fmt_file
-  #define dump_path TEXFORMATPATH
+  #define dump_file  fmt_file
+  #define dump_path  TEXFORMATPATH
   #define mwrite_out write_dvi
-  #define out_file dvi_file
-  #define out_buf dvi_buf
-#else /* not TeX */
-  #define dump_file basefile
-  #define dump_path MFBASEPATH
-  #define write_out writegf
-  #define out_file gffile
-  #define out_buf gfbuf
+  #define out_file   dvi_file
+  #define out_buf    dvi_buf
 #endif /* not TeX */
 
-/* File types.  */
-typedef FILE *byte_file, *word_file;
+/* File types. */
+typedef FILE * byte_file;
+typedef FILE * word_file;
 
 /* Read a line of input as quickly as possible.  */
 #define input_ln(stream, flag) input_line (stream)
 extern bool input_line (FILE *);
-/* was extern bool input_line(); */
-
 
 /* We need to read an integer from stdin if we're debugging.  */
 #ifdef DEBUG
-#define getint()  inputint (stdin)
+  #define getint() inputint (stdin)
 #else
-#define getint()
+  #define getint()
 #endif
 
 /* `b_open_in' (and out) is used only for reading (and writing) .tfm
    files; `w_open_in' (and out) only for dump files.  The filenames are
    passed in as a global variable, `name_of_file'.  */
    
-#define b_open_in(f) open_input (&(f), TFMFILEPATH, FOPEN_RBIN_MODE)
-#define w_open_in(f) open_input (&(f), dump_path, FOPEN_RBIN_MODE)
+#define b_open_in(f)  open_input  (&(f), TFMFILEPATH, FOPEN_RBIN_MODE)
+#define w_open_in(f)  open_input  (&(f), dump_path, FOPEN_RBIN_MODE)
 #define b_open_out(f) open_output (&(f), FOPEN_WBIN_MODE)
-#define w_open_out b_open_out
-#define b_close a_close
-#define w_close a_close
+#define w_open_out    b_open_out
+#define b_close       a_close
+#define w_close       a_close
 
 /* This routine has to return four values.  */
 #define dateandtime(i, j, k, l) get_date_and_time (&(i), &(j), &(k), &(l))
@@ -109,9 +95,9 @@ extern bool input_line (FILE *);
 /* #define  write_dvi(a, b)              \
   (void) fwrite ((char *) &dvi_buf[a], sizeof (dvi_buf[a]),   \
                  (int) ((b) - (a) + 1), dvi_file) */
-#define write_dvi(a, b)              \
-  if (fwrite ((char *) &dvi_buf[a], sizeof (dvi_buf[a]),    \
-         (int) ((b) - (a) + 1), dvi_file) != (size_t) ((b) - (a) + 1))   \
+#define write_dvi(a, b)                                                 \
+  if (fwrite ((char *) &dvi_buf[a], sizeof (dvi_buf[a]),                \
+         (int) ((b) - (a) + 1), dvi_file) != (size_t) ((b) - (a) + 1))  \
      FATAL_PERROR ("\n! dvi file")
 #else
 #define writegf(a, b)             \
@@ -152,12 +138,8 @@ extern bool input_line (FILE *);
   do_undump ((char *) &(base), sizeof (base), (int) (len), dump_file)
 
 /* We define the routines to do the actual work in texmf.c.  */
-// extern void do_dump (char *, int, int, FILE *);
 extern int do_dump (char *, int, int, FILE *);
-/* extern void do_dump(); */
-// extern void do_undump (char *, int, int, FILE *);
 extern int do_undump (char *, int, int, FILE *);
-/* extern void do_undump(); */
 
 /* Use the above for all the other dumping and undumping.  */
 #define generic_dump(x) dumpthings (x, 1)
@@ -172,51 +154,30 @@ extern int do_undump (char *, int, int, FILE *);
 
 /* `dump_int' is called with constant integers, so we put them into a
    variable first.  */
-#define dump_int(x)             \
-  do                  \
-    {                 \
-      integer x_val = (x);            \
-      generic_dump (x_val);           \
-    }                 \
+#define dump_int(x)         \
+  do                        \
+    {                       \
+      integer x_val = (x);  \
+      generic_dump (x_val); \
+    }                       \
   while (0)
 
 /* web2c/regfix puts variables in the format file loading into
    registers.  Some compilers aren't willing to take addresses of such
    variables.  So we must kludge.  */
 #ifdef REGFIX
-#define undump_int(x)             \
-  do                  \
-    {                 \
-      integer x_val;              \
-      generic_undump (x_val);           \
+#define undump_int(x)         \
+  do                          \
+    {                         \
+      integer x_val;          \
+      generic_undump (x_val); \
       x = x_val;              \
-    }                 \
+    }                         \
   while (0)
 #else
 #define undump_int  generic_undump
 #endif
 
-/* Metafont wants to write bytes to the TFM file.  The casts in these
-   routines are important, since otherwise memory is clobbered in some
-   strange way, which causes ``13 font metric dimensions to be
-   decreased'' in the trap test, instead of 4.  */
-
-#define bwritebyte(f, b)    putc ((char) (b), f)
-#define bwrite2bytes(f, h)            \
-  do                  \
-    {                 \
-      integer v = (integer) (h);          \
-      putc (v >> 8, f);  putc (v & 0xff, f);        \
-    }                 \
-  while (0)
-#define bwrite4bytes(f, w)            \
-  do                  \
-    {                 \
-      integer v = (integer) (w);          \
-      putc (v >> 24, f); putc (v >> 16, f);       \
-      putc (v >> 8, f);  putc (v & 0xff, f);        \
-    }                 \
-  while (0)
 
 /* If we're running on an ASCII system, there is no need to use the
    `xchr' array to convert characters to the external encoding.  */

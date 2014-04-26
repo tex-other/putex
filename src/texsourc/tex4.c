@@ -1331,7 +1331,7 @@ void ship_out_(halfword p)
     max_v = height(p) + depth(p) + v_offset;
 
   if (width(p) + h_offset > max_h)
-    max_h = height(p) + h_offset;
+    max_h = width(p) + h_offset;
 
   dvi_h = 0;
   dvi_v = 0;
