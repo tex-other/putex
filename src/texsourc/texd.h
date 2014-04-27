@@ -1921,7 +1921,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define math_left_group   16
 #define max_group_code    16
 /* sec 0274 */
-#define saved(a) save_stack[save_ptr + a].cint
+#define saved(a) save_stack[save_ptr + (a)].cint
 /* sec 0289 */
 #define cs_token_flag     07777 // 4095
 #define left_brace_token  0400  // 256  = 2^8 * left_brace
@@ -2413,6 +2413,9 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define set_height_zero(a) active_width[(a)] = 0
 /* sec 0974 */
 #define deplorable 100000L
+/* sec 0980 */
+#define inserts_only 1
+#define box_there    2
 /* sec 0981 */
 #define page_ins_node_size 4
 #define inserting          0
@@ -2500,8 +2503,8 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define mskip_code   5
 /* sec 1071 */
 #define box_flag      010000000000
-#define ship_out_flag box_flag + 512
-#define leader_flag   box_flag + 513
+#define ship_out_flag (box_flag + 512)
+#define leader_flag   (box_flag + 513)
 #define box_code      0
 #define copy_code     1
 #define last_box_code 2

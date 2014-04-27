@@ -34,7 +34,6 @@ void give_err_help (void)
 /* sec 0524 */
 bool open_fmt_file (void)
 {
-  register bool Result;
   integer j;
   j = cur_input.loc_field;
 
@@ -124,14 +123,14 @@ bool open_fmt_file (void)
       }
       show_line(log_line, 1);   // show all three lines at once
     }
-    Result = false;
-    return(Result);
+
+    return false;
   }
 
 lab40:
   cur_input.loc_field = j;
-  Result = true;
-  return Result;
+
+  return true;
 }
 /**************************************************************************/
 void print_char_string (unsigned char *s)
@@ -327,7 +326,7 @@ void close_files_and_terminate (void)
     print_nl("No pages of output.");
   else
   {
-    dvi_out(248); /* post - start of postamble */
+    dvi_out(post);
     dvi_four(last_bop);
     last_bop = dvi_offset + dvi_ptr - 5;
     dvi_four(25400000L);     /* magic DVI scale factor */ 
@@ -349,24 +348,28 @@ void close_files_and_terminate (void)
 
       show_line(log_line, 1);
     }
+
     dvi_out((total_pages / 256) % 256);
     dvi_out(total_pages % 256);
 
     if (show_fonts_used && log_opened)     /* 97/Dec/24 */
       show_font_info();           // now in local.c
 
-    while (font_ptr > 0) {
+    while (font_ptr > 0)
+    {
       if (font_used[font_ptr])
         dvi_font_def(font_ptr);
 
       decr(font_ptr);
     }
-    dvi_out(249); /* post_post end of postamble */
+
+    dvi_out(post_post);
     dvi_four(last_bop);
     dvi_out(2);
     k = 4 + ((dvi_buf_size - dvi_ptr) % 4);
 
-    while (k > 0) {
+    while (k > 0)
+    {
       dvi_out(223); /* four to seven bytes of 223 */
       decr(k);
     }

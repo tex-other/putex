@@ -75,9 +75,11 @@ void math_fraction (void)
         scan_dimen(false, false, false);
         thickness(incompleat_noad) = cur_val;
         break;
+
       case over_code:
         thickness(incompleat_noad) = default_code;
         break;
+
       case atop_code:
         thickness(incompleat_noad) = 0;
         break;
@@ -151,9 +153,9 @@ void after_math (void)
 
   danger = false;
   
-  if ((font_params[fam_fnt(2 + text_size)] < 22) ||
-    (font_params[fam_fnt(2 + script_size)] < 22) ||
-    (font_params[fam_fnt(2 + script_script_size)] < 22))
+  if ((font_params[fam_fnt(2 + text_size)] < total_mathsy_params) ||
+    (font_params[fam_fnt(2 + script_size)] < total_mathsy_params) ||
+    (font_params[fam_fnt(2 + script_script_size)] < total_mathsy_params))
   {
     print_err("Math formula deleted: Insufficient symbol fonts");
     help3("Sorry, but I can't typeset math unless \\textfont 2",
@@ -163,9 +165,9 @@ void after_math (void)
     flush_math();
     danger = true;
   }
-  else if ((font_params[fam_fnt(3 + text_size)] < 13) ||
-      (font_params[fam_fnt(3 + script_size)] < 13) ||
-      (font_params[fam_fnt(3 + script_script_size)] < 13))
+  else if ((font_params[fam_fnt(3 + text_size)] < total_mathex_params) ||
+    (font_params[fam_fnt(3 + script_size)] < total_mathex_params) ||
+    (font_params[fam_fnt(3 + script_script_size)] < total_mathex_params))
   {
     print_err("Math formula deleted: Insufficient extension fonts");
     help3("Sorry, but I can't typeset math unless \\textfont 3",
@@ -193,6 +195,7 @@ void after_math (void)
         back_error();
       }
     }
+
     cur_mlist = p;
     cur_style = text_style;
     mlist_penalties = false;
@@ -201,14 +204,14 @@ void after_math (void)
     unsave();
     decr(save_ptr);
 
-    if (save_stack[save_ptr + 0].cint == 1)
+    if (saved(0) == 1)
       l = true;
 
     danger = false;
 
-    if ((font_params[fam_fnt(2 + text_size)] < 22) ||
-      (font_params[fam_fnt(2 + script_size)] < 22) ||
-      (font_params[fam_fnt(2 + script_script_size)] < 22))
+    if ((font_params[fam_fnt(2 + text_size)] < total_mathsy_params) ||
+      (font_params[fam_fnt(2 + script_size)] < total_mathsy_params) ||
+      (font_params[fam_fnt(2 + script_script_size)] < total_mathsy_params))
     {
       print_err("Math formula deleted: Insufficient symbol fonts");
       help3("Sorry, but I can't typeset math unless \\textfont 2",
@@ -218,9 +221,9 @@ void after_math (void)
       flush_math();
       danger = true;
     }
-    else if ((font_params[fam_fnt(3 + text_size)] < 13) ||
-       (font_params[fam_fnt(3 + script_size)] < 13) ||
-       (font_params[fam_fnt(3 + script_script_size)] < 13))
+    else if ((font_params[fam_fnt(3 + text_size)] < total_mathex_params) ||
+      (font_params[fam_fnt(3 + script_size)] < total_mathex_params) ||
+      (font_params[fam_fnt(3 + script_script_size)] < total_mathex_params))
     {
       print_err("Math formula deleted: Insufficient extension fonts");
       help3("Sorry, but I can't typeset math unless \\textfont 3",
@@ -379,7 +382,7 @@ void after_math (void)
 
     if (t != adjust_head)
     {
-      mem[tail].hh.v.RH = mem[adjust_head].hh.v.RH;
+      link(tail) = link(adjust_head);
       tail = t;
     }
 
@@ -500,12 +503,15 @@ void do_register_command_ (small_number a)
       case int_val:
         l = cur_val + count_base;
         break;
+
       case dimen_val:
         l = cur_val + scaled_base;
         break;
+
       case glue_val:
         l = cur_val + skip_base;
         break;
+
       case mu_val:
         l = cur_val + mu_skip_base;
         break;
@@ -836,8 +842,7 @@ void new_font_(small_number a)
     show_line(log_line, 0);
   }
 
-/* paragraph 1260 for f <- fontbase+1 to font_ptr do */
-  for (f = 1; f < font_ptr; f++)
+  for (f = font_base + 1; f < font_ptr; f++)
   {
     if (str_eq_str(font_name[f], cur_name) && str_eq_str(font_area[f], cur_area))
     {
@@ -864,8 +869,8 @@ void new_font_(small_number a)
       }
       else if (font_size[f] == xn_over_d(font_dsize[f], - (integer) s, 1000))
       {
-        if (ignore_frozen == 0 || f > frozenfontptr)
-        { /* 99/Mar/26 */
+        if (ignore_frozen == 0 || f > frozenfontptr) /* 99/Mar/26 */
+        {
           if (trace_flag)
           {
             sprintf(log_line, "SKIPPING %ld ", s);
@@ -960,7 +965,7 @@ void open_or_close_in (void)
 /*  if current extension is *not* empty, try to open using name as is */
 /*  string 335 is "" the empty string */
     if ((cur_ext != 335) && a_open_in(read_file[n], TEXINPUTPATH))
-      read_open[n]= 1;
+      read_open[n] = 1;
 /*  we get here if extension is "", or file with extension failed to open */
 /*  if current extension is not `tex,' and `tex' is not irrelevant, try it */
 /*  string 785 is  .tex */
@@ -968,7 +973,7 @@ void open_or_close_in (void)
 /* *** some changes in above file name handling *** */
       (!extensionirrelevantp(name_of_file, name_length, "tex")))
       {
-        name_of_file[name_length + 1] = '.';    /* .tex  */
+        name_of_file[name_length + 1] = '.';
         name_of_file[name_length + 2] = 't';
         name_of_file[name_length + 3] = 'e';
         name_of_file[name_length + 4] = 'x';
@@ -983,9 +988,9 @@ void open_or_close_in (void)
           name_of_file[name_length + 1] = ' ';
 
           if ((cur_ext == 335) && a_open_in(read_file[n], TEXINPUTPATH))
-            read_open[n]= 1;
-          else if (maketextex () && a_open_in(read_file[n], TEXINPUTPATH))
-            read_open[n]= 1;
+            read_open[n] = 1;
+          else if (maketextex() && a_open_in(read_file[n], TEXINPUTPATH))
+            read_open[n] = 1;
         }
       }
   }
@@ -1062,7 +1067,7 @@ void shift_case (void)
   {
     t = info(p); 
 
-    if (t < cs_token_flag + single_base)    /* 4095 + 257 = cs_tokenflag + single_base */
+    if (t < cs_token_flag + single_base)
     {
       c = t % 256;
 
@@ -1072,6 +1077,7 @@ void shift_case (void)
 
     p = link(p);
   }
+
   begin_token_list(link(def_ref), 3);
   free_avail(def_ref);
 }
@@ -1088,6 +1094,7 @@ void show_whatever (void)
         show_activities();
       }
       break;
+
     case show_box_code:
       {
         scan_eight_bit_int();
@@ -1102,6 +1109,7 @@ void show_whatever (void)
           show_box(box(cur_val));
       }
       break;
+
     case show_code:
       {
         get_token();
@@ -1121,6 +1129,7 @@ void show_whatever (void)
         goto lab50;
       }
       break;
+
     default:
       {
         p = the_toks();
@@ -1199,6 +1208,7 @@ void new_write_whatsit_(small_number w)
     else if (cur_val > 15)
       cur_val = 16;
   }
+
   write_stream(tail) = cur_val;
 }
 /* sec 1348 */
@@ -1221,6 +1231,7 @@ void do_extension (void)
         open_ext(tail) = cur_ext;
       }
       break;
+
     case write_node:
       {
         k = cur_cs;
@@ -1230,12 +1241,14 @@ void do_extension (void)
         write_tokens(tail) = def_ref;
       }
       break;
+
     case close_node:
       {
         new_write_whatsit(write_node_size);
         write_tokens(tail) = 0;
       }
       break;
+
     case special_node:
       {
         new_whatsit(special_node, write_node_size);
@@ -1244,6 +1257,7 @@ void do_extension (void)
         write_tokens(tail) = def_ref;
       }
       break;
+
     case immediate_code:
       {
         get_x_token();
@@ -1261,6 +1275,7 @@ void do_extension (void)
           back_input();
       }
       break;
+
     case set_language_code:
       if (abs(mode) != hmode)
       {
@@ -1283,6 +1298,7 @@ void do_extension (void)
         what_rhm(tail) = norm_min(right_hyphen_min);
       }
       break;
+
     default:
       {
         confusion("ext1");
@@ -1325,6 +1341,7 @@ void handle_right_brace (void)
     case simple_group:
       unsave();
       break;
+
     case bottom_level:
       {
         print_err("Too many }'s");
@@ -1333,32 +1350,38 @@ void handle_right_brace (void)
         error();
       }
       break;
+
     case semi_simple_group:
     case math_shift_group:
     case math_left_group:
       extra_right_brace();
       break;
+
     case hbox_group:
       package(0);
       break;
+
     case adjust_hbox_group:
       {
         adjust_tail = adjust_head;
         package(0);
       }
       break;
+
     case vbox_group:
       {
         end_graf();
         package(0);
       }
       break;
+
     case vtop_group:
       {
         end_graf();
         package(vtop_code);
       }
       break;
+
     case insert_group:
       {
         end_graf();
@@ -1368,14 +1391,14 @@ void handle_right_brace (void)
         f = floating_penalty;
         unsave();
         decr(save_ptr);
-        p = vpackage(mem[head].hh.v.RH, 0, 1, 1073741823L);  /* 2^30 - 1 */
+        p = vpackage(link(head), 0, 1, 1073741823L);  /* 2^30 - 1 */
         pop_nest();
 
-        if (save_stack[save_ptr + 0].cint < 255)
+        if (saved(0) < 255)
         {
-          tail_append(get_node(5));
+          tail_append(get_node(ins_node_size));
           type(tail) = ins_node;
-          subtype(tail) = save_stack[save_ptr + 0].cint;
+          subtype(tail) = saved(0);
           height(tail) = height(p) + depth(p);
           ins_ptr(tail) = list_ptr(p);
           split_top_ptr(tail) = q;
@@ -1384,7 +1407,7 @@ void handle_right_brace (void)
         }
         else
         {
-          tail_append(get_node(2));
+          tail_append(get_node(small_node_size));
           type(tail) = adjust_node;
           subtype(tail) = 0;
           adjust_ptr(tail) = list_ptr(p);
@@ -1406,12 +1429,14 @@ void handle_right_brace (void)
           help2("Your sneaky output routine has problematic {'s and/or }'s.",
             "I can't handle that very well; good luck.");
           error();
+
           do
             {
               get_token();
             }
           while (!(cur_input.loc_field == 0));
         }
+
         end_token_list();
         end_graf();
         unsave();
@@ -1449,9 +1474,11 @@ void handle_right_brace (void)
         build_page();
       }
       break;
+
     case disc_group:
       build_discretionary();
       break;
+
     case align_group:
       {
         back_input();
@@ -1463,6 +1490,7 @@ void handle_right_brace (void)
         ins_error();
       }
       break;
+
     case no_align_group:
       {
         end_graf();
@@ -1470,12 +1498,13 @@ void handle_right_brace (void)
         align_peek();
       }
       break;
+
     case vcenter_group:
       {
         end_graf();
         unsave();
         save_ptr = save_ptr - 2;
-        p = vpackage(link(head), save_stack[save_ptr + 1].cint, save_stack[save_ptr + 0].cint, 1073741823L);   /* 2^30 - 1 */
+        p = vpackage(link(head), saved(1), saved(0), 1073741823L);   /* 2^30 - 1 */
         pop_nest();
         tail_append(new_noad());
         type(tail) = vcenter_noad;
@@ -1483,16 +1512,19 @@ void handle_right_brace (void)
         info(nucleus(tail)) = p;
       }
       break;
+
     case math_choice_group:
       build_choices();
       break;
+
     case math_group:
       {
         unsave();
         decr(save_ptr);
-        math_type(save_stack[save_ptr + 0].cint) = sub_mlist;
+        math_type(saved(0)) = sub_mlist;
         p = fin_mlist(0);
-        info(save_stack[save_ptr + 0].cint) = p;
+        info(saved(0)) = p;
+
         if (p != 0)
           if (link(p) == 0)
             if (type(p) == ord_noad)
@@ -1500,12 +1532,12 @@ void handle_right_brace (void)
               if (math_type(subscr(p)) == 0)
                 if (math_type(supscr(p)) == 0)
                 {
-                  mem[save_stack[save_ptr + 0].cint].hh = mem[p + 1].hh;
+                  mem[saved(0)].hh = mem[nucleus(p)].hh;
                   free_node(p, noad_size);
                 }
             }
             else if (type(p) == accent_noad)
-              if (save_stack[save_ptr + 0].cint == nucleus(tail))
+              if (saved(0) == nucleus(tail))
                 if (type(tail) == ord_noad)
                 {
                   q = head;
@@ -1569,6 +1601,7 @@ lab21:
     case hmode + char_given:
       goto lab70;
       break;
+
     case hmode + char_num:
       {
         scan_char_num();
@@ -1576,6 +1609,7 @@ lab21:
         goto lab70;
       }
       break;
+
     case hmode + no_boundary:
       {
         get_x_token();
@@ -1586,22 +1620,26 @@ lab21:
         goto lab21;
       }
       break;
+
     case hmode + spacer:
       if (space_factor == 1000)
         goto lab120;
       else
         app_space();
       break;
+
     case hmode + ex_space:
     case mmode + ex_space:
       goto lab120;
       break;
+
     case any_mode(relax):
     case vmode + spacer:
     case mmode + spacer:
     case mmode + no_boundary:
       ;
       break;
+
     case any_mode(ignore_spaces):
       {
         do
@@ -1612,10 +1650,12 @@ lab21:
         goto lab21;
       }
       break;
+
     case vmode + stop:
       if (its_all_over())
         return;
       break;
+
     case vmode + vmove:
     case hmode + hmove:
     case mmode + hmove:
@@ -1626,6 +1666,7 @@ lab21:
     case any_mode(mac_param):
       report_illegal_case();
       break;
+
     case non_math(sup_mark):
     case non_math(sub_mark):
     case non_math(math_char_num):
@@ -1652,6 +1693,7 @@ lab21:
     case mmode + hrule:
       insert_dollar_sign();
       break;
+
     case vmode + hrule:
     case hmode + vrule:
     case mmode + vrule:
@@ -1664,31 +1706,38 @@ lab21:
           space_factor = 1000;
       }
       break;
+
     case vmode + vskip:
     case hmode + hskip:
     case mmode + hskip:
     case mmode + mskip:
       append_glue();
       break;
+
     case any_mode(kern):
     case mmode + mkern:
       append_kern();
       break;
+
     case non_math(left_brace):
       new_save_level(simple_group);
       break;
+
     case any_mode(begin_group):
       new_save_level(semi_simple_group);
       break;
+
     case any_mode(end_group):
       if (cur_group == semi_simple_group)
         unsave();
       else
         off_save();
       break;
+
     case any_mode(right_brace):
       handle_right_brace();
       break;
+
     case vmode + hmove:
     case hmode + vmove:
     case mmode + vmove:
@@ -1702,15 +1751,19 @@ lab21:
           scan_box(- (integer) cur_val);
       }
       break;
+
     case any_mode(leader_ship):
       scan_box(leader_flag - a_leaders + cur_chr);
       break;
+
     case any_mode(make_box):
       begin_box(0);
       break;
+
     case vmode + start_par:
       new_graf(cur_chr > 0);
       break;
+
     case vmode + letter:
     case vmode + other_char:
     case vmode + char_num:
@@ -1729,10 +1782,12 @@ lab21:
         new_graf(true);
       }
       break;
+
     case hmode + start_par:
     case mmode + start_par:
       indent_in_hmode();
       break;
+
     case vmode + par_end:
       {
         normal_paragraph();
@@ -1741,6 +1796,7 @@ lab21:
           build_page();
       }
       break;
+
     case hmode + par_end:
       {
         if (align_state < 0)
@@ -1752,6 +1808,7 @@ lab21:
           build_page();
       }
       break;
+
     case hmode + stop:
     case hmode + vskip:
     case hmode + hrule:
@@ -1759,52 +1816,66 @@ lab21:
     case hmode + halign:
       head_for_vmode();
       break;
+
     case any_mode(insert):
     case hmode + vadjust:
     case mmode + vadjust:
       begin_insert_or_adjust();
       break;
+
     case any_mode(mark):
       make_mark();
       break;
+
     case any_mode(break_penalty):
       append_penalty();
       break;
+
     case any_mode(remove_item):
       delete_last();
       break;
+
     case vmode + un_vbox:
     case hmode + un_hbox:
     case mmode + un_hbox:
       unpackage();
       break;
+
     case hmode + ital_corr:
       append_italic_correction();
       break;
+
     case mmode + ital_corr:
       tail_append(new_kern(0));
       break;
+
     case hmode + discretionary:
     case mmode + discretionary:
       append_discretionary();
       break;
+
     case hmode + accent:
       make_accent();
       break;
+
     case any_mode(car_ret):
     case any_mode(tab_mark):
       align_error();
       break;
+
     case any_mode(no_align):
       noalign_error();
       break;
+
     case any_mode(omit):
       omit_error();
       break;
+
     case vmode + halign:
     case hmode + valign:
       init_align();
       break;
+
     case mmode + halign:
       if (privileged ())
         if (cur_group == math_shift_group)
@@ -1812,16 +1883,20 @@ lab21:
         else
           off_save();
       break;
+
     case vmode + endv:
     case hmode + endv:
       do_endv();
       break;
+
     case any_mode(end_cs_name):
       cs_error();
       break;
+
     case hmode + math_shift:
       init_math();
       break;
+
     case mmode + eq_no:
       if (privileged ())
         if (cur_group == math_shift_group)
@@ -1829,6 +1904,7 @@ lab21:
         else
           off_save();
       break;
+
     case mmode + left_brace:
       {
         tail_append(new_noad());
@@ -1836,11 +1912,13 @@ lab21:
         scan_math(nucleus(tail));
       }
       break;
+
     case mmode + letter:
     case mmode + other_char:
     case mmode + char_given:
       set_math_char(math_code(cur_chr));
       break;
+
     case mmode + char_num:
       {
         scan_char_num();
@@ -1848,21 +1926,25 @@ lab21:
         set_math_char(math_code(cur_chr));
       }
       break;
+
     case mmode + math_char_num:
       {
         scan_fifteen_bit_int();
         set_math_char(cur_val);
       }
       break;
+
     case mmode + math_given:
       set_math_char(cur_chr);
       break;
+
     case mmode + delim_num:
       {
         scan_twenty_seven_bit_int();
         set_math_char(cur_val / 4096);
       }
       break;
+
     case mmode + math_comp:
       {
         tail_append(new_noad());
@@ -1870,16 +1952,20 @@ lab21:
         scan_math(nucleus(tail));
       }
       break;
+
     case mmode + limit_switch:
       math_limit_switch();
       break;
+
     case mmode + radical:
       math_radical();
       break;
+
     case mmode + accent:
     case mmode + math_accent:
       math_ac();
       break;
+
     case mmode + vcenter:
       {
         scan_spec(vcenter_group, false);
@@ -1892,34 +1978,42 @@ lab21:
           begin_token_list(every_vbox, every_vbox_text);
       }
       break;
+
     case mmode + math_style:
       tail_append(new_style(cur_chr));
       break;
+
     case mmode + non_script:
       {
         tail_append(new_glue(0));
         subtype(tail) = cond_math_glue;
       }
       break;
+
     case mmode + math_choice:
       append_choices();
       break;
+
     case mmode + sub_mark:
     case mmode + sup_mark:
       sub_sup();
       break;
+
     case mmode + above:
       math_fraction();
       break;
+
     case mmode + left_right:
       math_left_right();
       break;
+
     case mmode + math_shift:
       if (cur_group == math_shift_group)
         after_math();
       else
         off_save();
       break;
+
     case any_mode(toks_register):
     case any_mode(assign_toks):
     case any_mode(assign_int):
@@ -1952,30 +2046,37 @@ lab21:
     case any_mode(set_interaction):
       prefixed_command();
       break;
+
     case any_mode(after_assignment):
       {
         get_token();
         after_token = cur_tok;
       }
       break;
+
     case any_mode(after_group):
       {
         get_token();
         save_for_after(cur_tok);
       }
       break;
+
     case any_mode(in_stream):
       open_or_close_in();
       break;
+
     case any_mode(message):
       issue_message();
       break;
+
     case any_mode(case_shift):
       shift_case();
       break;
+
     case any_mode(xray):
       show_whatever();
       break;
+
     case any_mode(extension):
       do_extension();
       break;
@@ -2005,6 +2106,7 @@ lab70:
 #endif /* STAT */
     }
   }
+
   font(lig_stack) = main_f;
   cur_l = cur_chr;
   character(lig_stack) = cur_l;
@@ -2097,6 +2199,7 @@ lab100:
 
 lab101:
   adjust_space_factor();
+
   {
     lig_stack = avail;
 
@@ -2111,6 +2214,7 @@ lab101:
 #endif /* STAT */
     }
   }
+
   font(lig_stack) = main_f;
   cur_r = cur_chr;
   character(lig_stack) = cur_r;
