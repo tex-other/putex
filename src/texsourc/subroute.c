@@ -265,7 +265,7 @@ char * read_a_line (FILE *f,  char *line, int limit)
   }
 
   if (c != EOF || loc > 0)
-  {      /* normal line or EOF at end of line */
+  {
     line[loc] = '\0';       /* terminate */
     return line;          /* and return */
   }
@@ -301,24 +301,24 @@ void set_paths (int path_bits)
     s = "TEXFORMATS";
     t = TEXFORMATS;
 
-    if (grabenv(s) == NULL)   /* see if env var defined 94/May/19*/
+    if (grabenv(s) == NULL)
     {
-      strcpy(buffer, texpath);  /* not, see if texpath\fmt is directory */
+      strcpy(buffer, texpath);
       strcat(buffer, PATH_SEP_STRING); 
       strcat(buffer, "fmt");
 
       if (trace_flag)
       {
-        sprintf(log_line, "Checking `%s' = %s %s %s\n", buffer, texpath, PATH_SEP_STRING, "fmt"); /* 95/Jan/25 */
+        sprintf(log_line, "Checking `%s' = %s %s %s\n", buffer, texpath, PATH_SEP_STRING, "fmt");
         show_line(log_line, 0);
       }
 
       if (dir_p(buffer))
-        t = xstrdup(buffer); /* 96/Jan/20 */
+        t = xstrdup(buffer);
       else
       {
-        s = "TEXFMTS";      /* added PC-TeX version 94/Jan/6 */
-        if (getenv(s) == NULL)  s = "TEXFMT"; /* em-TeX ... */
+        s = "TEXFMTS";
+        if (getenv(s) == NULL)  s = "TEXFMT";
       }
 
       if (trace_flag)
@@ -327,41 +327,48 @@ void set_paths (int path_bits)
         show_line(log_line, 0);
       }
     }
-/* path_dirs[TEXFORMATPATH] = initialize_path_list ("TEXFORMATS", TEXFORMATS); */
-/* path_dirs[TEXFORMATPATH] = initialize_path_list (s, TEXFORMATS); */
+
     path_dirs[TEXFORMATPATH] = initialize_path_list (s, t);
-/* if (t != TEXFORMATS) free (t); */
   }
 
   if (path_bits & TEXPOOLPATHBIT)
   {
     s = "TEXPOOL";
     t = TEXPOOL;
-    if (grabenv(s) == NULL) {     /* 1994/May/19 */
-      s = "TEXFORMATS";       /* try in format directory next */
-      if (grabenv(s) == NULL) {   /* see if environment var defined */
-        strcpy(buffer, texpath);  /* no, see if texpath\fmt is direct */
+    if (grabenv(s) == NULL)
+    {
+      s = "TEXFORMATS";
+
+      if (grabenv(s) == NULL)
+      {
+        strcpy(buffer, texpath);
         strcat(buffer, PATH_SEP_STRING); 
         strcat(buffer, "fmt");
-        if (trace_flag) {
-          sprintf(log_line, "Checking `%s' = %s %s %s\n", buffer, texpath, PATH_SEP_STRING, "fmt"); /* 95/Jan/25 */
+
+        if (trace_flag)
+        {
+          sprintf(log_line, "Checking `%s' = %s %s %s\n", buffer, texpath, PATH_SEP_STRING, "fmt");
           show_line(log_line, 0);
         }
-        if (dir_p(buffer)) t = xstrdup(buffer);   /* 96/Jan/20 */
-        else {
-          s = "TEXFMTS";      /* added PC-TeX version 94/Jan/6 */
-          if (getenv(s) == NULL)  s = "TEXFMT"; /* em-TeX ... */
+
+        if (dir_p(buffer))
+          t = xstrdup(buffer);
+        else
+        {
+          s = "TEXFMTS";
+          if (getenv(s) == NULL)
+            s = "TEXFMT";
         }
-        if (trace_flag) {
+
+        if (trace_flag)
+        {
           sprintf(log_line, "\nSetting up %s (default %s) ", "TEXPOOL", t);
           show_line(log_line, 0);
         }
       }
     }
-/*    path_dirs[TEXPOOLPATH] = initialize_path_list ("TEXPOOL", TEXPOOL); */
-/*    path_dirs[TEXPOOLPATH] = initialize_path_list (s, TEXPOOL); */
+
     path_dirs[TEXPOOLPATH] = initialize_path_list (s, t);
-/*    if (t != TEXPOOL) free (t); */
   }
 
   if (path_bits & TFMFILEPATHBIT)
@@ -400,36 +407,43 @@ void set_paths (int path_bits)
         t = xstrdup(buffer);
       else
       {
-        s = "TEXTFMS";      /* added PC-TeX version 94/Jan/6 */
-        if (getenv(s) == NULL) s = "TEXTFM"; /* em-TeX uses TEXTFM ... */
+        s = "TEXTFMS";
+        if (getenv(s) == NULL) s = "TEXTFM";
       }
-      if (trace_flag) {
+
+      if (trace_flag)
+      {
         sprintf(log_line, "\nSetting up %s (default %s) ", "TEXFONTS", t);
         show_line(log_line, 0);
       }
     }
 
     path_dirs[TFMFILEPATH] = initialize_path_list (s, t);
-
   }
 
   if (path_bits & TEXINPUTPATHBIT)
   {
-    if (format_specific) {                /* 1994/Oct/25 */
-      s = format_name;                /* try specific */
-      if (grabenv(s) == NULL) s = "TEXINPUTS";    /* no format specific */
+    if (format_specific)
+    {
+      s = format_name;
+
+      if (grabenv(s) == NULL)
+        s = "TEXINPUTS";
     }
     else
-      s = "TEXINPUTS";               /* normal case */
+      s = "TEXINPUTS";
 
-    if (grabenv(s) == NULL) {             /* 1994/May/19 */
-      s = "TEXINPUT"; /* added PC-TeX vers 94/Jan/6 */
-      if (trace_flag) {
+    if (grabenv(s) == NULL)
+    {
+      s = "TEXINPUT";
+
+      if (trace_flag)
+      {
         sprintf(log_line, "\nSetting up %s ", "TEXINPUTS");
         show_line(log_line, 0);
       }
     }
-/*    path_dirs[TEXINPUTPATH] = initialize_path_list ("TEXINPUTS", TEXINPUTS); */
+
     path_dirs[TEXINPUTPATH]  = initialize_path_list (s, TEXINPUTS);
   }
 }
@@ -458,12 +472,6 @@ bool test_read_access (unsigned char *name, int path_index)
 #else
   string foundname;
 #endif  
-
-  if (open_trace_flag)
-  {
-    sprintf(log_line, "Test read access for `%s' ", name);  /* C */
-    show_line(log_line, 0);
-  }
 
   if (*name == '\0') return FALSE;  /* sanity check */
 
@@ -540,12 +548,14 @@ bool test_read_access (unsigned char *name, int path_index)
 
   if (open_trace_flag) {
 #ifdef BUILDNAMEDIRECT
-    if (foundflag != 0) {
+    if (foundflag != 0)
+    {
       sprintf(log_line, "`%s' in test_read_access\n", buffer);
       show_line(log_line, 0);
     }
 #else
-    if (foundname != NULL) {
+    if (foundname != NULL)
+    {
       sprintf(log_line, "`%s' in test_read_access\n", foundname);
       show_line(log_line, 0);
     }
@@ -554,19 +564,23 @@ bool test_read_access (unsigned char *name, int path_index)
 
 /*  If we found it somewhere, save it.  */
 #ifdef BUILDNAMEDIRECT
-  if (foundflag != 0) {
+  if (foundflag != 0)
+  {
     strcpy ((char *)name, buffer); 
 #ifdef CACHEFILENAME
-    if (cache_file_flag) {
+    if (cache_file_flag)
+    {
       strcpy(last_filename, buffer);  /* full path */
     }
 #endif
   }
 #else
-  if (foundname != NULL) {
+  if (foundname != NULL)
+  {
     strcpy (name, foundname);
 #ifdef CACHEFILENAME
-    if (cache_file_flag) {
+    if (cache_file_flag)
+    {
       strcpy(last_filename, foundname); /* full path */
       last_namelength = strlen(buffer);
     }
@@ -663,14 +677,11 @@ void map_insert (map_type map, char *key, char *value)
 /*       trailer = &p; */
   }
 
-  if (*ptr == NULL)    {
-/*      **trailer = XTALLOC (MAP_SIZE, map_element_type); *//* 94/March/19 */
+  if (*ptr == NULL)
+  {
     *ptr = (map_element_type *) xmalloc (sizeof(map_element_type));
-/*      (**trailer)->key = xstrdup (key); */
     (*ptr)->key = xstrdup (key);
-/*      (**trailer)->value = xstrdup (value); */
     (*ptr)->value = xstrdup (value);
-/*      (**trailer)->next = NULL; */
     (*ptr)->next = NULL;
   }
 }
@@ -867,113 +878,6 @@ char *file_p (string fn)
 
 
 /**************************************************************************/
-
-/* S_IFMT is file type mask 0170000 and S_IFDIR is directory 0040000 */
-
-//#pragma optimize ("g", off)   /* try and avoid compiler bug here _dos_find */
-
-/* NOTE: _dos_find... prevents running under Windows NT ??? */
-/* and presently dir_method = true so we do use this _dos_find_first */
-/* kpathsea/dir.c */
-bool dir_p (string fn)
-{
-  FILE *test;
-  char *s;
-  struct _finddata_t fi;
-  long hFind;
-  int ret;
-  char tmpfn[FILENAME_MAX];       /* long enough ??? */
-
-  strcpy (tmpfn, fn);           /* make copy so can modify */
-
-  if (open_trace_flag)
-  {
-    sprintf(log_line, "Is `%s' a directory? ", tmpfn);
-    show_line(log_line, 0);
-  }
-
-  s = tmpfn + strlen(tmpfn) - 1;
-  if (*s == '\\' || *s == '/') *s = '\0'; /* get rid of trailing path sep */
-
-/*  quick test for "." and ".." case - avoid confusion later */
-  if (strcmp (tmpfn, ".") == 0 || strcmp(tmpfn, "..") == 0) return 1; 
-
-  if (dir_method) {     /* use _findfirst *first* if requested */
-    hFind = _findfirst(tmpfn, &fi);
-    if (hFind > 0) {
-      ret = 0;
-      _findclose(hFind);
-    }
-    else ret = -1;
-
-    if (ret == 0) {
-/*      _findfirst succeeded --- now test attributes of what was found */
-      if (fi.attrib & _A_SUBDIR) {
-        if (open_trace_flag) {
-          sprintf(log_line, "Directory `%s' DOES exist ", fn);
-          show_line(log_line, 0);
-        }
-        return 1;     /* true - it is a sub-directory */
-      }
-      else {
-        if (open_trace_flag) {
-          sprintf(log_line, "`%s' is a FILE, not a DIRECTORY ", fn);
-          show_line(log_line, 0);
-        }
-        return 0;     /* false - its a file, not a dir */
-      }
-    }
-    else {
-/*      _findfirst failed --- possible causes: missing *or* top-level */
-/*      crude check first top level directory ? - assume form `c:' */
-      if (*(tmpfn+1) != ':' || *(tmpfn+2) != '\0') {
-/*        it is *not* top level and _findfirst failed - give up */
-        if (open_trace_flag) {
-          sprintf(log_line, "Directory `%s' does NOT exist ", fn);
-          show_line(log_line, 0);
-        }
-        return 0;     /* false - it is not a directory */
-      }
-/*      else drop through to old method */
-/*      else { */
-/*        top-level dir, so revert to the old method after all ... */
-/*        return dir_p_1 (fn); */ 
-/*        or try _findfirst after appending PATH_SEP and nul ? */
-/*      } */ /* drop through */
-    }
-  }
-
-/* either: dropped through (top-level of driver) or dir_method is false */
-/* use the old method --- fopen of nul in supposed directory */
-/* NOTE: nul device exists in all dirs */ /* Possible OS/2 and NDOS problem */
-  strcat (tmpfn, PATH_SEP_STRING "nul"); 
-/*  if ((test = fopen (tmpfn, "r")) == NULL) */
-  if (share_flag == 0) test = fopen (tmpfn, "r");
-  else test = _fsopen(tmpfn, "r", share_flag);    /* 1994/July/12 */
-  if (test == NULL) {
-    if (open_trace_flag) {
-      sprintf(log_line, "Directory `%s' does NOT exist ", tmpfn);
-      show_line(log_line, 0);
-    }
-    return 0;     /* false */
-  }
-  else {
-    (void) fclose(test);    /* have to remember to close it again */
-    if (open_trace_flag) {
-      sprintf(log_line, "Directory `%s' DOES exist ", tmpfn);
-      show_line(log_line, 0);
-    }
-    return 1;     /* true */
-  }
-}
-
-/* #pragma optimize ("g",)*/  /* try and avoid compiler bug here _dos_find */
-/* #pragma optimize ("g") */  /* try and avoid compiler bug here _dos_find */
-#pragma optimize ("", on)   /* 96/Sep/12 */
-
-/* NOTE: calling _stat makes packed EXE file 3,400 bytes larger ! */
-
-/* we don't want _fsopen instead of fopen here because only for dir\nul ??? */
 
 /********************************************************************************/
 
@@ -1888,7 +1792,8 @@ void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirna
   char *potential;
 #endif  /* DOS */
 
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "\nExpanding sub dir %s ", dirname);
     show_line(log_line, 0);
   }
@@ -2032,505 +1937,4 @@ void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirna
 #endif  /* end of *not* DOS case */
 }
 
-// #pragma optimize ("", on)    /* 96/Sep/12 */
-
-/************************************************************************/
-
-#define ARGSEP '='
-
-/* This version of `getopt' appears to the caller like standard Unix `getopt'
-   but it behaves differently for the user, since it allows the user
-   to intersperse the options with the other arguments.
-
-   As `getopt' works, it permutes the elements of ARGV so that,
-   when it is done, all the options precede everything else.  Thus
-   all application programs are extended to handle flexible argument
-   order. */
-
-/* For communication from `getopt' to the caller.
-   When `getopt' finds an option that takes an argument,
-   the argument value is returned here.
-   Also, when `ordering' is RETURN_IN_ORDER,
-   each non-option ARGV-element is returned here.  */
-
-char *optarg = 0;
-
-/* Index in ARGV of the next element to be scanned.
-   This is used for communication to and from the caller
-   and for communication between successive calls to `getopt'.
-
-   On entry to `getopt', zero means this is the first call; initialize.
-
-   When `getopt' returns EOF, this is the index of the first of the
-   non-option elements that the caller should itself scan.
-
-   Otherwise, `optind' communicates from one call to the next
-   how much of ARGV has been scanned so far.  */
-
-int optind = 0;
-
-/* The next char to be scanned in the option-element
-   in which the last option character we returned was found.
-   This allows us to pick up the scan where we left off.
-
-   If this is zero, or a null string, it means resume the scan
-   by advancing to the next ARGV-element.  */
-
-static char *nextchar;
-
-/* Callers store zero here to inhibit the error message
-   for unrecognized options.  */
-
-int opterr = 1;
-
-/* Describe how to deal with options that follow non-option ARGV-elements.
-
-   If the caller did not specify anything,
-   the default is REQUIRE_ORDER if the environment variable
-   POSIXLY_CORRECT is defined, PERMUTE otherwise.
-
-   REQUIRE_ORDER means don't recognize them as options;
-   stop option processing when the first non-option is seen.
-   This is what Unix does.
-   This mode of operation is selected by either setting the environment
-   variable POSIXLY_CORRECT, or using `+' as the first character
-   of the list of option characters.
-
-   PERMUTE is the default.  We permute the contents of ARGV as we scan,
-   so that eventually all the non-options are at the end.  This allows options
-   to be given in any order, even with programs that were not written to
-   expect this.
-
-   RETURN_IN_ORDER is an option available to programs that were written
-   to expect options and other ARGV-elements in any order and that care about
-   the ordering of the two.  We describe each non-option ARGV-element
-   as if it were the argument of an option with character code 1.
-   Using `-' as the first character of the list of option characters
-   selects this mode of operation.
-
-   The special argument `--' forces an end of option-scanning regardless
-   of the value of `ordering'.  In the case of RETURN_IN_ORDER, only
-   `--' can cause `getopt' to return EOF with `optind' != ARGC.  */
-
-static enum
-{
-  REQUIRE_ORDER, PERMUTE, RETURN_IN_ORDER
-} ordering;
-
-
-#define my_index strchr
-#define my_bcopy(src, dst, n) memcpy ((dst), (src), (n))
-
-
-/* Handle permutation of arguments.  */
-
-/* Describe the part of ARGV that contains non-options that have
-   been skipped.  `first_nonopt' is the index in ARGV of the first of them;
-   `last_nonopt' is the index after the last of them.  */
-
-static int first_nonopt;
-static int last_nonopt;
-
-/* Exchange two adjacent subsequences of ARGV.
-   One subsequence is elements [first_nonopt,last_nonopt)
-   which contains all the non-options that have been skipped so far.
-   The other is elements [last_nonopt,optind), which contains all
-   the options processed since those non-options were skipped.
-
-   `first_nonopt' and `last_nonopt' are relocated so that they describe
-   the new indices of the non-options in ARGV after they are moved.  */
-/* kpathsea/getopt.c */
-static void exchange (char **argv)
-{
-  int nonopts_size;         /* paranoia - bkph */
-  char **temp;            /* paranoia - bkph */
-/*  int nonopts_size = (last_nonopt - first_nonopt) * sizeof (char *); */
-  nonopts_size = (last_nonopt - first_nonopt) * sizeof (char *);
-/*  char **temp = (char **) _alloca (nonopts_size); */
-  temp = (char **) _alloca (nonopts_size);
-
-  /* Interchange the two blocks of data in ARGV.  */
-
-  my_bcopy ((char *) &argv[first_nonopt], (char *) temp, nonopts_size);
-  my_bcopy ((char *) &argv[last_nonopt], (char *) &argv[first_nonopt],
-      (optind - last_nonopt) * sizeof (char *));
-  my_bcopy ((char *) temp,
-      (char *) &argv[first_nonopt + optind - last_nonopt],
-      nonopts_size);
-
-  /* Update records for the slots the non-options now occupy.  */
-
-  first_nonopt += (optind - last_nonopt);
-  last_nonopt = optind;
-}
-
-
 char *get_env_shroud (char *);    /* in texmf.c */
-
-/* Scan elements of ARGV (whose length is ARGC) for option characters
-   given in OPTSTRING.
-
-   If an element of ARGV starts with '-', and is not exactly "-" or "--",
-   then it is an option element.  The characters of this element
-   (aside from the initial '-') are option characters.  If `getopt'
-   is called repeatedly, it returns successively each of the option characters
-   from each of the option elements.
-
-   If `getopt' finds another option character, it returns that character,
-   updating `optind' and `nextchar' so that the next call to `getopt' can
-   resume the scan with the following option character or ARGV-element.
-
-   If there are no more option characters, `getopt' returns `EOF'.
-   Then `optind' is the index in ARGV of the first ARGV-element
-   that is not an option.  (The ARGV-elements have been permuted
-   so that those that are not options now come last.)
-
-   OPTSTRING is a string containing the legitimate option characters.
-   If an option character is seen that is not listed in OPTSTRING,
-   return '?' after printing an error message.  If you set `opterr' to
-   zero, the error message is suppressed but we still return '?'.
-
-   If a char in OPTSTRING is followed by a colon, that means it wants an arg,
-   so the following text in the same ARGV-element, or the text of the following
-   ARGV-element, is returned in `optarg'.  Two colons mean an option that
-   wants an optional arg; if there is text in the current ARGV-element,
-   it is returned in `optarg', otherwise `optarg' is set to zero.
-
-   If OPTSTRING starts with `-' or `+', it requests different methods of
-   handling the non-option ARGV-elements.
-   See the comments about RETURN_IN_ORDER and REQUIRE_ORDER, above.
-
-   Long-named options begin with `--' instead of `-'.
-   Their names may be abbreviated as long as the abbreviation is unique
-   or is an exact match for some defined option.  If they have an
-   argument, it follows the option name in the same ARGV-element, separated
-   from the option name by a `=', or else the in next ARGV-element.
-   When `getopt' finds a long-named option, it returns 0 if that option's
-   `flag' field is nonzero, the value of the option's `val' field
-   if the `flag' field is zero.
-
-   The elements of ARGV aren't really const, because we permute them.
-   But we pretend they're const in the prototype to be compatible
-   with other systems.
-
-   LONGOPTS is a vector of `struct option' terminated by an
-   element containing a name which is zero.
-
-   LONGIND returns the index in LONGOPT of the long-named option found.
-   It is only valid when a long-named option has been found by the most
-   recent call.
-
-   If LONG_ONLY is nonzero, '-' as well as '--' can introduce
-   long-named options.  */
-/* kpathsea/getopt.c */
-int _getopt_internal (int argc, char *const *argv, const char *optstring,
-            const struct option *longopts, int *longind, int long_only)
-{
-  int option_index;
-  char *commandlineflag = "command line flag";
-
-  optarg = 0;
-
-  /* Initialize the internal data when the first call is made.
-     Start processing options with ARGV-element 1 (since ARGV-element 0
-     is the program name); the sequence of previously skipped
-     non-option ARGV-elements is empty.  */
-
-  if (optind == 0) {
-    first_nonopt = last_nonopt = optind = 1;
-
-    nextchar = NULL;
-
-/*     Determine how to handle the ordering of options and nonoptions.  */
-
-    if (optstring[0] == '-') {
-      ordering = RETURN_IN_ORDER;
-      ++optstring;
-    }
-    else if (optstring[0] == '+') {
-      ordering = REQUIRE_ORDER;
-      ++optstring;
-    }
-/*      else if (getenv ("POSIXLY_CORRECT") != NULL) */
-    else if (get_env_shroud ("QPTJYMZ`DPSSFDU") != NULL)
-      ordering = REQUIRE_ORDER;
-    else
-      ordering = PERMUTE;
-  }
-
-  if (nextchar == NULL || *nextchar == '\0') {
-    if (ordering == PERMUTE) {
-    /* If we have just processed some options following some non-options,
-       exchange them so that the options come first.  */
-
-      if (first_nonopt != last_nonopt && last_nonopt != optind)
-        exchange ((char **) argv);
-      else if (last_nonopt != optind)
-        first_nonopt = optind;
-
-    /* Now skip any additional non-options
-       and extend the range of non-options previously skipped.  */
-
-      while (optind < argc
-           && (argv[optind][0] != '-' || argv[optind][1] == '\0')
-         )
-        optind++;
-      last_nonopt = optind;
-    }
-
-/*   Special ARGV-element `--' means premature end of options.
-   Skip it like a null option,
-   then exchange with previous non-options as if it were an option,
-   then skip everything else like a non-option.  */
-
-    if (optind != argc && !strcmp (argv[optind], "--")) {
-      optind++;
-
-      if (first_nonopt != last_nonopt && last_nonopt != optind)
-        exchange ((char **) argv);
-      else if (first_nonopt == last_nonopt)
-        first_nonopt = optind;
-      last_nonopt = argc;
-
-      optind = argc;
-    }
-
-/*   If we have done all the ARGV-elements, stop the scan
-   and back over any non-options that we skipped and permuted.  */
-
-    if (optind == argc) {
-    /* Set the next-arg-index to point at the non-options
-       that we previously skipped, so the caller will digest them.  */
-      if (first_nonopt != last_nonopt)
-        optind = first_nonopt;
-      return EOF;
-    }
-
-/*   If we have come to a non-option and did not permute it,
-   either stop the scan or describe it to the caller and pass it by.  */
-
-    if ((argv[optind][0] != '-' || argv[optind][1] == '\0')) {
-      if (ordering == REQUIRE_ORDER)
-        return EOF;
-      optarg = argv[optind++];
-      return 1;
-    }
-
-/*   We have found another option-ARGV-element.
-   Start decoding its characters.  */ /* unusual use of bool */
-
-    nextchar = (argv[optind] + 1
-          + (longopts != NULL && argv[optind][1] == '-'));
-  }
-
-  if (longopts != NULL
-      && ((argv[optind][0] == '-'
-         && (argv[optind][1] == '-' || long_only)))) {
-    const struct option *p;
-    char *s = nextchar;
-    int exact = 0;
-    int ambig = 0;
-    const struct option *pfound = NULL;
-    int indfound=0;   /* keep compiler quiet */
-
-    while (*s && *s != '=')
-      s++;
-
-/*    Test all options for either exact match or abbreviated matches.  */
-    for (p = longopts, option_index = 0; p->name;
-       p++, option_index++)
-      if (!strncmp (p->name, nextchar, s - nextchar))
-      {
-/*      if (s - nextchar == strlen (p->name)) */
-        if (s - nextchar == (int) strlen (p->name)) { /* avoid warning bkph */
-/*      Exact match found.  */
-          pfound = p;
-          indfound = option_index;
-          exact = 1;
-          break;
-        }
-        else if (pfound == NULL) {
-    /* First nonexact match found.  */
-          pfound = p;
-          indfound = option_index;
-        }
-        else
-      /* Second nonexact match found.  */
-          ambig = 1;
-      }
-
-    if (ambig && !exact) {
-      if (opterr) {
-        sprintf(log_line,
-            "%s `%s' is ambiguous\n", commandlineflag, argv[optind]);
-        show_line(log_line, 1);
-      }
-      nextchar += strlen (nextchar);
-      optind++;
-      return '?';
-    }
-
-    if (pfound != NULL) {
-      option_index = indfound;
-      optind++;
-      if (*s) {
-/*      Don't test has_arg with >, because some C compilers don't
-      allow it to be used on enums.  */
-        if (pfound->has_arg)
-          optarg = s + 1;
-        else {
-          if (opterr) {
-            if (argv[optind - 1][1] == '-') {   /* --option */
-//          fprintf (stderr,
-              sprintf(log_line,
-                  "%s `--%s' does not take an argument\n",
-                  commandlineflag,pfound->name);
-              show_line(log_line, 1);
-            }
-            else {      /* +option or -option */
-//          fprintf (stderr,
-              sprintf(log_line,
-                  "%s `%c%s' does not take an argument\n",
-                  commandlineflag, argv[optind - 1][0], pfound->name);
-              show_line(log_line, 1);
-            }
-          }
-          nextchar += strlen (nextchar);
-          return '?';
-        }
-      }
-      else if (pfound->has_arg == 1) {
-        if (optind < argc)
-          optarg = argv[optind++];
-        else  {
-          if (opterr) {
-//        fprintf (stderr, 
-            sprintf(log_line,
-                "%s `%s' requires an argument\n",
-                commandlineflag, argv[optind - 1]);
-            show_line(log_line, 1);
-          }
-          nextchar += strlen (nextchar);
-          return '?';
-        }
-      }
-      nextchar += strlen (nextchar);
-      if (longind != NULL)
-        *longind = option_index;
-      if (pfound->flag)
-      {
-        *(pfound->flag) = pfound->val;
-        return 0;
-      }
-      return pfound->val;
-    }
-    /* Can't find it as a long option.  If this is not getopt_long_only,
-   or the option starts with '--' or is not a valid short
-   option, then it's an error.
-   Otherwise interpret it as a short option.  */
-    if (!long_only || argv[optind][1] == '-'
-        || my_index (optstring, *nextchar) == NULL) {
-      if (opterr) {
-        if (argv[optind][1] == '-') {   /* --option */
-          sprintf (log_line,
-               "don't understand %s `--%s'\n",
-               commandlineflag, nextchar);
-          show_line(log_line, 1);
-        }
-        else {    /* +option or -option */
-          sprintf (log_line,
-               "don't understand %s `%c%s'\n",
-               commandlineflag, argv[optind][0], nextchar);
-          show_line(log_line, 1);
-        }
-      }
-      nextchar = (char *) "";
-      optind++;
-      return '?';
-    }
-  }
-
-  /* Look at and handle the next option-character.  */
-
-  {
-    char c = *nextchar++;
-    char *temp = my_index (optstring, c);
-
-  /* Increment `optind' when we start to process its last character.  */
-    if (*nextchar == '\0')
-      ++optind;
-
-/*    if (temp == NULL || c == ':') */
-    if (temp == NULL || c == ARGSEP) {
-      if (opterr) {
-        if (c < 040 || c >= 0177) {
-//          fprintf (stderr,
-          sprintf(log_line,
-              "Unrecognized %s (0%o)\n", commandlineflag, c);
-          show_line(log_line, 1);
-        }
-        else {
-//      fprintf (stderr,
-          sprintf(log_line,
-              "Unrecognized %s `-%c'\n", commandlineflag, c);
-          show_line(log_line, 1);
-        }
-      }
-      return '?';
-    }
-/*    if (temp[1] == ':') */
-    if (temp[1] == ARGSEP) {
-/*      if (temp[2] == ':') */
-      if (temp[2] == ARGSEP) {
-/**       This is an option that accepts an argument optionally.  */
-        if (*nextchar != '\0')  {
-          optarg = nextchar;
-          optind++;
-        }
-        else
-          optarg = 0;
-        nextchar = NULL;
-      }
-      else {
-/*        This is an option that requires an argument.  */
-        if (*nextchar != '\0') {
-          optarg = nextchar;
-/*      If we end this ARGV-element by taking the rest as an arg,
-      we must advance to the next element now.  */
-          optind++;
-        }
-        else if (optind == argc) {
-          if (opterr) {
-            sprintf(log_line,
-                "%s `-%c' requires an argument\n",
-                commandlineflag, c);
-            show_line(log_line, 1);
-          }
-          c = '?';
-        }
-        else
-      /* We already incremented `optind' once;
-     increment it again when taking next ARGV-elt as argument.  */
-          optarg = argv[optind++];
-        nextchar = NULL;
-      }
-    }
-    return c;
-  }
-}
-/* kpathsea/getopt1.c */
-int getopt (int argc, char *const *argv, const char *optstring)
-{
-  return _getopt_internal (argc, argv, optstring,
-         (const struct option *) 0,
-         (int *) 0,
-         0);
-}
-
-#pragma optimize ("", on)
-
-/* this uses output to stderr quite a bit for errors on command line */
-/* clean up command line option error output */
-/* disallow all the weird combinations like -- */
-
-//////////////////////////////////////////////////////////////////////

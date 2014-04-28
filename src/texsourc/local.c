@@ -2470,89 +2470,6 @@ char *workdirect        = "WorkingDirectory"; /* key in [Window] section */
 bool usesourcedirectory = true;               /* use source file directory as local when WorkingDirectory is set */
 bool workingdirectory   = false;              /* if working directory set in ini */
 
-/* set up full file name for dviwindo.ini and check for [Environment] */
-bool setupdviwindo (void)
-{
-  char dviwindoini[PATH_MAX];
-  char line[PATH_MAX];
-  FILE *pinput;
-  char *windir;
-  int em = strlen(envsection);
-  int wm = strlen(wndsection);
-  int dm = strlen(workdirect);
-  int wndflag = 0;
-  int envflag = 0;
-
-/*  Easy to find Windows directory if Windows runs */
-/*  Or if user kindly set WINDIR environment variable */
-/*  Or if running in Windows NT */  
-  if ((windir = getenv("windir")) != NULL ||    /* 94/Jan/22 */
-    (windir = getenv("WINDIR")) != NULL ||
-    (windir = getenv("winbootdir")) != NULL ||  /* 95/Aug/14 */
-    (windir = getenv("SystemRoot")) != NULL ||  /* 95/Jun/23 */
-    (windir = getenv("SYSTEMROOT")) != NULL) {  /* 95/Jun/23 */
-    strcpy(dviwindoini, windir);
-    strcat(dviwindoini, "\\");
-    strcat(dviwindoini, inifilename);
-/*    sprintf(log_line, "Using WINDIR %s\n", dviwindoini); */
-  }
-  else
-  {
-    _searchenv (inifilename, "PATH", dviwindoini);
-/*    sprintf(log_line, "Using SEARCHENV %s\n", dviwindoini); */
-  }
-
-  wndflag = envflag = 0;
-/*  workingdirectory = false; */
-  if (*dviwindoini != '\0') {
-    dviwindo = xstrdup(dviwindoini);    /* avoid PATH_MAX string */
-/*    check whether dviwindo.ini actually has [Environment] section */
-    if (share_flag == 0) pinput = fopen(dviwindo, "r");
-    else pinput = _fsopen(dviwindo, "r", share_flag);
-    if (pinput != NULL) {
-      while (fgets (line, sizeof(line), pinput) != NULL) {
-        if (*line == ';') continue;
-        if (*line == '\n') continue;
-        if (*line == '[') {
-          if (wndflag && envflag) break;  /* escape early */
-        }
-        if (_strnicmp(line, wndsection, wm) == 0) {
-          if (trace_flag) {
-            sprintf(log_line, "Found %s", line);  /* DEBUGGING */
-            show_line(log_line, 0);
-          }
-          wndflag++;
-        }
-        else if (_strnicmp(line, envsection, em) == 0) {
-          if (trace_flag) {
-            sprintf(log_line, "Found %s", line);  /* DEBUGGING */
-            show_line(log_line, 0);
-          }
-/*          fclose(input); */
-/*          return true; */
-          envflag++;
-        } else if (wndflag && _strnicmp(line, workdirect, dm) == 0) {
-          if (trace_flag) {
-            sprintf(log_line, "Found %s", line);  /* DEBUGGING */
-            show_line(log_line, 0);
-          }
-          workingdirectory = true;
-        }
-      }
-      if (envflag) {
-        (void) fclose(pinput); 
-        return true;
-      }
-      if (trace_flag)
-        show_line("Failed to find [Environment]", 1); /* DEBUGGING */
-      (void) fclose(pinput);
-    }
-    else if (trace_flag) perrormod(dviwindo);  /* DEBUGGING */
-    strcpy(dviwindo, ""); /* failed, for one reason or another */
-  }
-  return false;
-}
-
 /* cache to prevent allocating twice in a row */
 
 char *lastname=NULL, *lastvalue=NULL;
@@ -2566,11 +2483,9 @@ char *grabenv (char *varname)
   FILE *pinput;
   char *s;
   int m, n;
-/*  int m = strlen(envsection); */
-/*  int n = strlen(varname); */
 
-  if (varname == NULL) return NULL;   /* sanity check */
-  if (*varname == '\0') return NULL;    /* sanity check */
+  if (varname == NULL) return NULL;    /* sanity check */
+  if (*varname == '\0') return NULL;   /* sanity check */
 /*  speedup to avoid double lookup when called from set_paths in ourpaths.c */
 /*  if (lastname != NULL && strcmp(lastname, varname) == 0) { */
   if (lastname != NULL && _strcmpi(lastname, varname) == 0)
@@ -3488,8 +3403,6 @@ void deslash_all (int ac, char **av)
 
   if ((s = getenv("USEDVIWINDOINI")) != NULL) 
     sscanf(s, "%d", &usedviwindo);      /* 94/June/14 */
-
-  if (usedviwindo) setupdviwindo();   // moved to yandytex ?
 
   check_enter(ac, av);           /* 95/Oct/28 */
 

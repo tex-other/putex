@@ -227,6 +227,7 @@ void retwiddle (unsigned char *s)
 /* in lib/openclose.c */
 bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 {
+  char * fname;
   bool openable = false;
 
 #if defined (FUNNY_CORE_DUMP) && !defined (BibTeX)
@@ -266,21 +267,10 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 
   if (test_read_access(name_of_file + 1, path_index))
   {
-/*  if (test_read_access(name_of_file, name_length, path_index)) */
-
-/*    We can assume `name_of_file' is openable, */
-/*    since `test_read_access' just returned true.  */
-/*    *f = xfopen_pas (name_of_file, fopen_mode); */
     *f = xfopen((char *) name_of_file + 1, fopen_mode);
 
-//    should we check *f == NULL ??? (should be OK because of test_read_access)
-
-/*    If we found the file in the current directory, don't leave the
-        `./' at the beginning of `name_of_file', since it looks dumb when
-        TeX says `(./foo.tex ...)', and analogously for Metafont.  */
 #ifdef MSDOS
-    if (name_of_file[1] == '.' &&         /* 1994/Mar/1 */
-      (name_of_file[2] == PATH_SEP || name_of_file[2] == '\\'))
+    if (name_of_file[1] == '.' && (name_of_file[2] == PATH_SEP || name_of_file[2] == '\\'))
 #else
     if (name_of_file[1] == '.' && name_of_file[2] == PATH_SEP) 
 #endif
