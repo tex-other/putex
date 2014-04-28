@@ -60,12 +60,13 @@ extern clock_t start_time, main_time, finish_time; /* in local.c */
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-
+/* sec 0004 */
 void initialize (void)
 {
   integer i; 
   integer k; 
   integer flag; /* bkph */
+
 #ifndef ALLOCATEHYPHEN
   hyph_pointer z;
 #endif
@@ -114,6 +115,7 @@ void initialize (void)
 /* Fill in background of `delete' for inverse mapping                  */
   for (i = 0; i <= 255; i++)
     xord[chr(i)] = 127;
+
 #ifdef JOKE
   for (i = 128; i <= 255 ; i++)
     xord[xchr[i]] = i;
@@ -202,10 +204,9 @@ void initialize (void)
     xeq_level[k] = level_one;
 
   no_new_control_sequence = true;
-  hash[hash_base].v.LH = 0; /* next(hash_base):= 0 */
-  hash[hash_base].v.RH = 0; /* text(hash_base):= 0 */
-/* 514 + hash_size + 266 = hashbase + hashsize + 10 + font_max  */
-/* for k <- hashbase+1 to undefined_control_sequence - 1 do ... p.257 */
+  next(hash_base) = 0;
+  text(hash_base) = 0;
+
   for (k = hash_base + 1; k <= undefined_control_sequence - 1; k++)
     hash[k] = hash[hash_base];
 
@@ -334,7 +335,6 @@ void initialize_aux (void)
 /*  shown_mode = 0; */
 /*  page_contents = 0; */
   page_tail = page_head;
-  //mem[mem_top - 2].hh.v.RH = 0;
   link(page_head) = 0;
 }
 #endif  // end of ifdef ALLOCATEMAIN
@@ -386,6 +386,7 @@ void line_break_ (integer final_widow_penalty)
   {
     right_skip = finite_shrink(right_skip);
   }
+
   q = left_skip;
   r = right_skip;
   background[1] = width(q) + width(r);
@@ -1085,6 +1086,7 @@ void prefixed_command (void)
       else
         eq_define(cur_font_loc, data, cur_chr);
       break;
+
     case def:
       {
         if (odd(cur_chr) && !(a >= 4) && (global_defs >= 0))
@@ -1101,6 +1103,7 @@ void prefixed_command (void)
           eq_define(p, call + (a % 4), def_ref);
       }
       break;
+
     case let:
       {
         n = cur_chr;
@@ -1142,6 +1145,7 @@ void prefixed_command (void)
           eq_define(p, cur_cmd, cur_chr);
       }
       break;
+
     case shorthand_def:
       {
         n = cur_chr;
@@ -1167,6 +1171,7 @@ void prefixed_command (void)
                 eq_define(p, char_given, cur_val);
             }
             break;
+
           case math_char_def_code:
             {
               scan_fifteen_bit_int();
@@ -1177,6 +1182,7 @@ void prefixed_command (void)
                 eq_define(p, math_given, cur_val);
             }
             break;
+
           default:
             {
               scan_eight_bit_int();
@@ -1189,24 +1195,28 @@ void prefixed_command (void)
                   else
                     eq_define(p, assign_int, count_base + cur_val);
                   break;
+
                 case dimen_def_code:
                   if ((a >= 4))
                     geq_define(p, assign_dimen, scaled_base + cur_val);
                   else
                     eq_define(p, assign_dimen, scaled_base + cur_val);
                   break;
+
                 case skip_def_code:
                   if ((a >= 4)) 
                     geq_define(p, assign_glue, skip_base + cur_val);
                   else
                     eq_define(p, assign_glue, skip_base + cur_val);
                   break;
+
                 case mu_skip_def_code:
                   if ((a >= 4))
                     geq_define(p, assign_mu_glue, mu_skip_base + cur_val);
                   else
                     eq_define(p, assign_mu_glue, mu_skip_base + cur_val);
                   break;
+
                 case toks_def_code:
                   if ((a >= 4))
                     geq_define(p, assign_toks, toks_base + cur_val);
@@ -1219,6 +1229,7 @@ void prefixed_command (void)
         }
       }
       break;
+
     case read_to_cs:
       {
         scan_int();
@@ -1242,6 +1253,7 @@ void prefixed_command (void)
           eq_define(p, call, cur_val);
       }
       break;
+
     case toks_register:
     case assign_toks:
       {
@@ -1327,6 +1339,7 @@ void prefixed_command (void)
         }
       }
       break;
+
     case assign_int:
       {
         p = cur_chr;
@@ -1339,6 +1352,7 @@ void prefixed_command (void)
           eq_word_define(p, cur_val);
       }
       break;
+
     case assign_dimen:
       {
         p = cur_chr;
@@ -1351,6 +1365,7 @@ void prefixed_command (void)
           eq_word_define(p, cur_val);
       }
       break;
+
     case assign_glue:
     case assign_mu_glue:
       {
@@ -1371,6 +1386,7 @@ void prefixed_command (void)
           eq_define(p, glue_ref, cur_val);
       }
       break;
+
     case def_code:
       {
         if (cur_chr == cat_code_base)
@@ -1423,6 +1439,7 @@ void prefixed_command (void)
             eq_word_define(p, cur_val);
       }
       break;
+
     case def_family:
       {
         p = cur_chr;
@@ -1437,12 +1454,14 @@ void prefixed_command (void)
           eq_define(p, data, cur_val);
       }
       break;
+
     case tex_register:
     case advance:
     case multiply:
     case divide:
       do_register_command(a);
       break;
+
     case set_box:
       {
         scan_eight_bit_int();
@@ -1468,21 +1487,27 @@ void prefixed_command (void)
         }
       }
       break;
+
     case set_aux:
       alter_aux();
       break;
+
     case set_prev_graf:
       alter_prev_graf();
       break;
+
     case set_page_dimen:
       alter_page_so_far();
       break;
+
     case set_page_int:
       alter_integer();
       break;
+
     case set_box_dimen:
       alter_box_dimen();
       break;
+
     case set_shape:
       {
         scan_optional_equals();
@@ -1511,6 +1536,7 @@ void prefixed_command (void)
           eq_define(par_shape_loc, shape_ref, p);
       }
       break;
+
     case hyph_data:
       if (cur_chr == 1)
       {
@@ -1539,6 +1565,7 @@ void prefixed_command (void)
         goto lab30;
       }
       break;
+
     case assign_font_dimen:
       {
         find_font_dimen(true);
@@ -1548,6 +1575,7 @@ void prefixed_command (void)
         font_info[k].cint = cur_val;
       }
       break;
+
     case assign_font_int:
       {
         n = cur_chr;
@@ -1562,12 +1590,15 @@ void prefixed_command (void)
           skew_char[f] = cur_val;
       }
       break;
+
     case def_font:
       new_font(a);
       break;
+
     case set_interaction:
       new_interaction();
       break;
+
     default:
       {
         confusion("prefix");
@@ -1600,6 +1631,7 @@ void bad_formator_pool (char *name, char *defaultname, char *envvar)
   name_of_file[name_length + 1] = ' ';
   sprintf(log_line, "(Perhaps your %s environment variable is not set correctly)\n", envvar);
   show_line(log_line, 0);
+
   {
     char *s;            /* extra info 99/April/28 */
 
@@ -1759,7 +1791,9 @@ bool load_fmt_file (void)
   }
   p = 0;                  /* mem_bot */
   q = rover;
-  do {
+
+  do
+  {
     if (undumpthings(mem[p], q + 2 - p))
       return -1;
 
@@ -2192,7 +2226,9 @@ lab6666:;
 void final_cleanup (void)
 {
   small_number c;
+
   c = cur_chr;
+
   if (job_name == 0)
     open_log_file();
 
@@ -2411,30 +2447,35 @@ void show_frozen (void)
 
 #pragma warning(disable:4127)   // conditional expression is constant
 
-/* void texbody()  */
 int texbody (void)          /* now returns a value --- bkph */
 {
   history = 3;
 
   set_paths(TEXFORMATPATHBIT + TEXINPUTPATHBIT + TEXPOOLPATHBIT + TFMFILEPATHBIT);
-/* magic number */
-  if (ready_already == 314159L)
+
+  if (ready_already == 314159L) /* magic number */
     goto lab1;
 /*  These tests are almost all compile time tests and so could be eliminated */
   bad = 0;
+
   if ((half_error_line < 30) || (half_error_line > error_line - 15))
     bad = 1;
+
   if (max_print_line < 60)
     bad = 2;
+
   if (dvi_buf_size % 8 != 0)
     bad = 3;
+
   if (1100 > mem_top)
     bad = 4;   /* not compile time */
-/*  if (hash_prime > hash_size) */
+
   if (hash_prime > (hash_size + hash_extra))
     bad = 5;
+
   if (max_in_open >= 128)
     bad = 6;   /* p.14 */
+
   if (mem_top < 267)
     bad = 7;    /* where from ? *//* not compile time */
 #ifdef INITEX
@@ -2445,18 +2486,19 @@ int texbody (void)          /* now returns a value --- bkph */
       bad = 10;
   }
 #endif /* INITEX */
-/*  if ((mem_min > 0)||(mem_max < mem_top))  */
+
   if ((mem_min > mem_bot) || (mem_max < mem_top))
     bad = 10;
+
   if ((min_quarterword > 0) || (max_quarterword < 255))
     bad = 11;
-/*  if ((0 > 0)||(262143L < 32767))  */
+
   if ((min_halfword > 0) || (max_halfword < 32767))
     bad = 12;
-/*  if ((0 < 0)||(255 > 262143L))  */
+
   if ((min_quarterword < min_halfword) || (max_quarterword > max_halfword))
     bad = 13;
-/*  if ((mem_min < 0)||(mem_max >= 262143L)||(-0 - mem_min > 262144L))  */
+
   if ((mem_min < min_halfword) || (mem_max >= max_halfword) || (mem_bot - mem_min >= max_halfword))
     bad = 14;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
@@ -2473,42 +2515,49 @@ int texbody (void)          /* now returns a value --- bkph */
   if (font_max > 256)
 #endif
     bad = 16;
-/*  if ((save_size > 262143L)||(max_strings > 262143L)) */
+
   if ((save_size > max_halfword) || (max_strings > max_halfword))
     bad = 17;
+
   if (buf_size > max_halfword)
     bad = 18;
+
   if (max_quarterword - min_quarterword < 255)
     bad = 19;
-/* if cs_token_flag + undefined_control_sequence > max_halfword then bad <- 21;*/
-/*  if ((hash_size + 4876) > 262143L)*/
-/*  if ((hash_size + 4876) > max_halfword) */
-  if ((hash_size + 4095 + 781) > max_halfword)
+
+  if (cs_token_flag + undefined_control_sequence > max_halfword)
     bad = 21;
+
   if (format_default_length > PATHMAX)
     bad = 31;
 /*  if (2 * 262143L < mem_top - mem_min) */
   if (max_halfword < (mem_top - mem_min) / 2)
     bad = 41;
+
   if (bad > 0)
   {
     sprintf(log_line, "%s%s%ld\n", "Ouch---my internal constants have been clobbered!",
         "---case ", (long) bad);
     show_line(log_line, 1);
-    if (! knuth_flag)
+
+    if (!knuth_flag)
       bad_formator_pool(format_file, "the format file", "TEXFORMATS");  /* 96/Jan/17 */
+
     goto lab9999;     // abort
   }
+
   initialize();
+
 #ifdef INITEX
   if (is_initex)
   {
     if (!get_strings_started())
       goto lab9999;   // abort
+
     init_prim();
     init_str_ptr = str_ptr;
     init_pool_ptr = pool_ptr;
-    dateandtime(tex_time, day, month, year);
+    fix_date_and_time(tex_time, day, month, year);
   }
 #endif /* INITEX */
   ready_already = 314159L;      /* magic number */
@@ -2521,16 +2570,21 @@ lab1:     /* get here directly if ready_already already set ... */
   show_line(tex_version, 0);
   sprintf(log_line, " (%s %s)", application, yandyversion);
   show_line(log_line, 0);
+
   if (format_ident > 0)
     slow_print(format_ident);
+
   print_ln();
+
 #ifndef _WINDOWS
   fflush(stdout);
 #endif
+
   job_name = 0;
   name_in_progress = false;
   log_opened = false;
   output_file_name = 0;
+
   {
     {
       input_ptr = 0;
@@ -2542,6 +2596,7 @@ lab1:     /* get here directly if ready_already already set ... */
       max_buf_stack = 0;
       param_ptr = 0;
       max_param_stack = 0;
+
 #ifdef ALLOCATEBUFFER
 /*    first = current_buf_size; */
       memset (buffer, 0, current_buf_size); /* redundant */
@@ -2549,10 +2604,6 @@ lab1:     /* get here directly if ready_already already set ... */
 /*    first = buf_size; */
       memset (buffer, 0, buf_size);     /* redundant ? */
 #endif
-/*    do {
-        buffer[first]= 0;
-        decr(first);
-      } while(!(first == 0)); */
       first = 0;              /* 1999/Jan/22 */
 
       scanner_status = 0;
@@ -2565,8 +2616,10 @@ lab1:     /* get here directly if ready_already already set ... */
       cur_input.name_field = 0;
       force_eof = false;
       align_state = 1000000L;
+
       if (!init_terminal())
         goto lab9999; // abort
+
       cur_input.limit_field = last;
       first = last + 1;
     }
@@ -2578,18 +2631,23 @@ lab1:     /* get here directly if ready_already already set ... */
     {
       if (format_ident != 0)
         initialize();
+
       if (!open_fmt_file ())
         goto lab9999; // abort
+
       if (!load_fmt_file ())
       {
         w_close(fmt_file);
         goto lab9999; // abort
       }
+
       w_close(fmt_file);
+
       while ((cur_input.loc_field < cur_input.limit_field) &&
-          (buffer[cur_input.loc_field] == 32))
+          (buffer[cur_input.loc_field] == ' '))
         incr(cur_input.loc_field);
     }
+
 #ifdef CHECKEQTB
     if (debug_flag)
       check_eqtb("after format"); /* debugging 94/Apr/5 */
@@ -2598,16 +2656,19 @@ lab1:     /* get here directly if ready_already already set ... */
       decr(cur_input.limit_field);
     else
       buffer[cur_input.limit_field] = end_line_char;
-    dateandtime(tex_time, day, month, year);
-    magic_offset = str_start[886] - 9 * 16;  /* following: */
+
+    fix_date_and_time(tex_time, day, month, year);
+
+    magic_offset = str_start[886] - 9 * ord_noad;  /* following: */
 /*  "0234000122*4000133**3**344*0400400*000000234000111*1111112341011" */
+
     if (interaction == batch_mode)
       selector = no_print;
     else
       selector = term_only;
 
     if ((cur_input.loc_field < cur_input.limit_field) &&
-      (eqtb[(hash_size + 1883) + buffer[cur_input.loc_field]].hh.v.RH != 0))
+      (cat_code(buffer[cur_input.loc_field]) != escape))
       start_input();
   }
 
@@ -2644,6 +2705,7 @@ lab9999:
     fflush(stdout);
 #endif
     ready_already = 0;
+
     if ((history != 0) && (history != 1))
       code = 1;
     else
@@ -2694,18 +2756,21 @@ void add_variable_space(int size)
 /* All ini TeX code is here at end so can use same pragma optimize for it */
 /* Ini-TeX code is rarely needed/used so make it small rather than fast   */
 
-#pragma optimize("t", off)
-#pragma optimize("s", on)
+//#pragma optimize("t", off)
+//#pragma optimize("s", on)
 
 #ifdef INITEX
 /* split out to allow sharing of code from do_initex and newpattern */
 void reset_trie (void)
 {
   integer k;
+
   for (k = - (integer) trie_op_size; k <= trie_op_size; k++)
     trie_op_hash[k] = 0;
+
   for (k = 0; k <= 255; k++)
     trie_used[k] = min_trie_op;
+
   max_op_used = min_trie_op;
   trie_op_ptr = 0;
   trie_not_ready = true;
@@ -2724,6 +2789,7 @@ void reset_hyphen (void)
     hyph_word[z] = 0;
     hyph_list[z] = 0; /* hyph_list[z]:=null; l.18131 */
   }
+
   hyph_count = 0;
 }
 /* split out to allow optimize for space, not time */
@@ -2733,13 +2799,12 @@ void do_initex (void)
   integer k;
 /*  hyph_pointer z; */
 
-/* -> 0164 */
   for (k = mem_bot + 1; k <= lo_mem_stat_max; k++)
     mem[k].cint = 0;
 
   k = mem_bot;
 
-  while(k <= lo_mem_stat_max)
+  while (k <= lo_mem_stat_max)
   {
     glue_ref_count(k) = 1;
     stretch_order(k) = normal;
@@ -3124,7 +3189,9 @@ void sort_avail (void)
   p = rlink(rover);
   rlink(rover) = empty_flag;
   old_rover = rover;
-  while (p != old_rover) {
+
+  while (p != old_rover)
+  {
     if (p < rover)
     {
       q = p;
@@ -3135,26 +3202,31 @@ void sort_avail (void)
     else
     {
       q = rover;
+
       while (rlink(q) < p)
         q = rlink(q);
+
       r = rlink(p);
       rlink(p) = rlink(q);
       rlink(q) = p;
       p = r;
     }
   }
+
   p = rover;
-  while (rlink(p) != empty_flag) {
+
+  while (rlink(p) != empty_flag)
+  {
     llink(rlink(p)) = p;
     p = rlink(p);
   }
+
   mem[p + 1].hh.v.RH = rover;
   llink(rover) = p;
 }
 #endif /* INITEX */
 
 #ifdef INITEX
-/*****************APTEX********************/
 str_number make_string_pool (char *s)
 {
   int slen = strlen(s);
@@ -3170,7 +3242,7 @@ str_number make_string_pool (char *s)
     return (make_string());
   }
 }
-/*****************APTEX********************/
+
 void primitive_ (str_number s, quarterword c, halfword o)
 { 
   pool_pointer k;
@@ -3184,10 +3256,12 @@ void primitive_ (str_number s, quarterword c, halfword o)
   {
     k = str_start[s];
     l = str_start[s + 1] - k; /* small_number l */
+
     for (j = 0; j <= l - 1; j++)
     {
       buffer[j] = str_pool[k + j];
     }
+
     cur_val = id_lookup(0, l);
     flush_string();
 /* **********************  debugging only  96/Jan/20 should not happen */
@@ -3197,6 +3271,7 @@ void primitive_ (str_number s, quarterword c, halfword o)
 #endif
     hash[cur_val].v.RH = s;
   }
+
   eqtb[cur_val].hh.b1 = 1;
   eqtb[cur_val].hh.b0 = c;
   eqtb[cur_val].hh.v.RH = o;
@@ -3225,20 +3300,23 @@ trie_op_code new_trie_op_ (small_number d, small_number n, trie_op_code v)
         overflow("pattern memory ops", trie_op_size);
         return 0;     // abort_flag set
       }
+
       u = trie_used[cur_lang];
-/*    if u=max_quarterword then ??? */
+
       if (u == max_trie_op)
       {
-/*      overflow("pattern memory ops per language", max_quarterword-min_quarterword); ??? */
         /* pattern memory ops per language */
         overflow("pattern memory ops per language", max_trie_op - min_trie_op);
         return 0;     // abort_flag set
       }
+
       incr(trie_op_ptr);
       incr(u);
       trie_used[cur_lang] = u;
+
       if (u > max_op_used)
         max_op_used = u;
+
       hyf_distance[trie_op_ptr] = d;
       hyf_num[trie_op_ptr] = n;
       hyf_next[trie_op_ptr] = v;
@@ -3248,11 +3326,13 @@ trie_op_code new_trie_op_ (small_number d, small_number n, trie_op_code v)
       Result = u;
       return(Result);
     }
+
     if ((hyf_distance[l]== d) && (hyf_num[l]== n) && (hyf_next[l]== v) && (trie_op_lang[l]== cur_lang))
     {
       Result = trie_op_val[l];
       return(Result);
     }
+
     if (h > - (integer) trie_op_size)
       decr(h);
     else
@@ -3269,20 +3349,25 @@ trie_pointer trie_node_ (trie_pointer p)
 /* the 1009, 2718, 3142 are hard-wired constants here (not hyphen_prime) */
   h = abs(toint(trie_c[p]) + 1009 * toint(trie_o[p]) +
       2718 * toint(trie_l[p]) + 3142 * toint(trie_r[p])) % trie_size;
-  while (true) {
+
+  while (true)
+  {
     q = trie_hash[h];
+
     if (q == 0)
     {
       trie_hash[h] = p;
       Result = p;
       return(Result);
     }
+
     if ((trie_c[q] == trie_c[p]) && (trie_o[q] == trie_o[p]) &&
       (trie_l[q]== trie_l[p]) && (trie_r[q]== trie_r[p]))
     {
       Result = q;
       return(Result);
     }
+
     if (h > 0)
       decr(h);
     else
@@ -3315,8 +3400,11 @@ void first_fit_ (trie_pointer p)
 
   c = trie_c[p];
   z = trie_min[c];
-  while (true) {
+
+  while (true)
+  {
     h = z - c;
+
     if (trie_max < h + 256)
     {
       if (trie_size <= h + 256)
@@ -3326,21 +3414,30 @@ void first_fit_ (trie_pointer p)
 /*      not dynamic ---- but can be set -h=... from command line in ini-TeX */
         return;     // abort_flag set
       }
-      do {
-        incr(trie_max);
-        trie_taken[trie_max] = false;
-        trie_trl[trie_max] = trie_max + 1;
-        trie_tro[trie_max] = trie_max - 1;
-      } while (!(trie_max == h + 256));
+
+      do
+        {
+          incr(trie_max);
+          trie_taken[trie_max] = false;
+          trie_trl[trie_max] = trie_max + 1;
+          trie_tro[trie_max] = trie_max - 1;
+        }
+      while (!(trie_max == h + 256));
     }
+
     if (trie_taken[h])
       goto lab45;
+
     q = trie_r[p];
-    while (q > 0) {
+
+    while (q > 0)
+    {
       if (trie_trl[h + trie_c[q]] == 0)
         goto lab45;
+
       q = trie_r[q];
     }
+
     goto lab40;
 lab45:
     z = trie_trl[z];
@@ -3833,7 +3930,8 @@ void store_fmt_file (void)
 lab41:
       incr(j);
       l = j;
-      while (j < (int_base - 1)) {
+      while (j < (int_base - 1))
+      {
         if ((equiv(j) != equiv(j + 1)) ||
           (eq_type(j) != eq_type(j + 1)) ||
           (eq_level(j) != eq_level(j + 1)))
@@ -4451,5 +4549,5 @@ void init_prim (void)
 }
 #endif /* INITEX */
 
-#pragma optimize("s", off) /* 96/Sep/12 */
-#pragma optimize("t", on)  /* 96/Sep/12 */
+//#pragma optimize("s", off) /* 96/Sep/12 */
+//#pragma optimize("t", on)  /* 96/Sep/12 */

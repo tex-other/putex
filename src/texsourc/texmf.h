@@ -75,13 +75,13 @@ extern bool input_line (FILE *);
 #define b_close       a_close
 #define w_close       a_close
 
-/* This routine has to return four values.  */
-#define dateandtime(i, j, k, l) get_date_and_time (&(i), &(j), &(k), &(l))
+/* sec 0241 */
+#define fix_date_and_time(i, j, k, l) get_date_and_time (&(i), &(j), &(k), &(l))
 
 /* If we're running under Unix, use system calls instead of standard I/O
    to read and write the output files; also, be able to make a core dump. */ 
 #ifndef unix
-  #define dumpcore() exit (1)
+  #define dumpcore() exit(1)
 #else /* unix */
   #define dumpcore abort
 #endif
@@ -199,19 +199,6 @@ extern void get_date_and_time();
 extern void t_open_in();
 // extern void call_edit();
 // extern int call_edit();
-extern bool extensionirrelevantp();
 extern bool input_line();
 // extern void do_dump();
 // extern void do_undump();
-
-#ifdef TeX
-extern bool maketextex();
-extern bool maketextfm();
-#else
-extern void main_body();
-extern bool initscreen();
-extern bool maketexmf();
-extern void updatescreen();
-extern void blankrectangle();
-extern void paintrow();
-#endif /* not TeX */

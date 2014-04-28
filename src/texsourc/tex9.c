@@ -208,6 +208,7 @@ void close_files_and_terminate (void)
       (void) fprintf(log_file, "%c%ld%s", ' ', (long)hyph_count, " hyphenation exception");
       if (hyph_count != 1)
         (void) putc('s',  log_file);
+
       (void) fprintf(log_file, "%s%ld\n",  " out of ", (long) hyphen_prime);
       (void) fprintf(log_file, " ");
       (void) fprintf(log_file, "%ld%s", (long)max_in_stack, "i,");
@@ -311,7 +312,8 @@ void close_files_and_terminate (void)
       }
   } /* end of if (log_opened) */ 
 #endif /* STAT */
-  while (cur_s > -1) {
+  while (cur_s > -1)
+  {
     if (cur_s > 0) 
       dvi_out(142);
     else

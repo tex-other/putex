@@ -114,7 +114,9 @@
 /* type definitions follow */
 
 typedef unsigned char ASCII_code;
+typedef unsigned short KANJI_code;
 typedef unsigned char eight_bits;
+typedef unsigned short sixteen_bits;
 typedef integer pool_pointer;
 typedef integer str_number;
 typedef unsigned char packed_ASCII_code;
@@ -1237,7 +1239,6 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   void uexit (int unix_code);     /* in lib/uexit.c - bkph */
   void t_open_in (void);          /* in lib/texmf.c - bkph */
 
-  bool extensionirrelevantp (unsigned char *base, int nlen, char *suffix);
 
   void call_edit (ASCII_code *filename, pool_pointer fnstart,
          integer fnlength, integer linenumber); /* from lib/texmf.c - bkph */
@@ -1246,9 +1247,6 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 
   void get_date_and_time (integer *minutes, integer *day,
             integer *month, integer *year);   /* in lib/texmf.c - bkph */
-
-  bool maketextex (void);       /* in openinou.c */
-  bool maketextfm (void);       /* in openinou.c */
 
   char *unixify (char *);       /* in pathsrch.c bkph */
 

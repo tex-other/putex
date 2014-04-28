@@ -1,0 +1,34 @@
+HEADER
+  DATE
+  MD5
+MAIN
+
+nodes
+
+ 0 hlist_node    hlist_node
+ 1 vlist_node    vlist_node
+ 2 rule_node     dir_node      ***
+ 3 ins_node      rule_node
+ 4 mark_node     ins_node
+ 5 adjust_node   disp_node     ***
+ 6 ligature_node mark_node
+ 7 disc_node     adjust_node
+ 8 whatsit_node  ligature_node
+ 9 math_node     disc_node
+10 glue_node     whatsit_node
+11 kern_node     math_node
+12 penalty_node  glue_node
+13 unset_node    kern_node
+14               penalty_node
+15               unset_node
+16
+
+font
+ font_dir[]
+
+catcode
+  16 kanji
+  17 kana
+  18 other_kchar
+
+

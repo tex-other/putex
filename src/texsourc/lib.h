@@ -108,7 +108,7 @@ extern string extend_filename (string name, string suffix);
    perror(3) with FILENAME as its argument.  */
 extern FILE *xfopen (string filename, string mode);
 // extern void xfclose (FILE *, string filename);
-extern int xfclose (FILE *, string filename);
+extern void xfclose (FILE *, string filename);
 extern void xfseek (FILE *, long, int, string filename);
 extern long xftell (FILE *, string filename);
 

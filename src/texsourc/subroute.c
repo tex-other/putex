@@ -115,14 +115,14 @@ void uexit (int unix_code)
     final_code = EXIT_FAILURE;
   else
     final_code = unix_code;
-/*---->*/
+
   if (jump_used)
   {
     show_line("Jump Buffer already used\n", 1);
     exit(1);
   }
+
   jump_used++;
-/*<----*/
   exit(final_code);
 }
 // round a double being careful about very large and very small values
@@ -132,22 +132,6 @@ integer zround (double r)
 {
   integer i;
 
-  /* R can be outside the range of an integer if glue is stretching or
-     shrinking a lot.  We can't do any better than returning the largest
-     or smallest integer possible in that case.  It doesn't seem to make
-     any practical difference.  Here is a sample input file which
-     demonstrates the problem, from phil@cs.arizona.edu:
-       \documentstyle{article}
-       \begin{document}
-       \begin{flushleft}
-       $\hbox{} $\hfill 
-       \filbreak
-       \eject
-
-     djb@silverton.berkeley.edu points out we should testing against
-     TeX's largest or smallest integer (32 bits), not the machine's.  So
-     we might as well use a floating-point constant, and avoid potential
-     compiler bugs (also noted by djb, on BSDI).  */
   if (r > 2147483647.0)
     i = 2147483647;
   else if (r < -2147483647.0)
@@ -158,122 +142,6 @@ integer zround (double r)
     i = (integer)(r - 0.5);
 
   return i;
-}
-/****************************************************************************/
-// malloc with error checking and error message
-/* kpathsea/xmalloc.c */
-void * xmalloc (unsigned size)
-{
-  void * new_mem = (void*) malloc (size ? size : 1);
-
-  if (new_mem == NULL) {
-    sprintf(log_line, "malloc: Unable to honor request for %u bytes.\n", size);
-    show_line(log_line, 1);
-    abort();         // ???
-  }
-#ifdef MYDEBUG
-  if (trace_flag)
-  {
-    sprintf(log_line, "XMALLOC %d\n", size);    /* 1996/Jan/20 */
-    show_line(log_line, 0);
-  }
-#endif
-  return new_mem;
-}
-// calloc with error checking - used by map_create
-/* kpathsea/xcalloc.c */
-address xcalloc (unsigned nelem, unsigned elsize)
-{
-  address new_mem = (address) calloc (nelem, elsize);
-  if (new_mem == NULL)
-  {
-    sprintf(log_line, "Unable to honor request for %u elements of size %u.\n", nelem, elsize);
-    show_line(log_line, 1);
-    abort();
-  }
-  return new_mem;
-}
-/* Return a copy of s in new storage. */ /* xmalloc does error checking */
-/* kpathsea/xstrdup.c */
-string xstrdup (string s)
-{
-  string pnew_string = (string) xmalloc (strlen (s) + 1);
-#ifdef MYDEBUG
-  if (trace_flag)
-  {
-    sprintf(log_line, "XSTRDUP %d %s\n", strlen(s)+1, s);
-    show_line(log_line, 0);
-  }
-#endif
-  return strcpy (pnew_string, s);
-}
-/* only used by line.c (which in turn is only used by  fontmap.c) */
-/* kpathsea/xrealloc.c */
-address xrealloc (address old_ptr, unsigned size)
-{
-  address new_mem;
-
-  if (old_ptr == NULL) new_mem = xmalloc (size);
-  else
-  {
-    new_mem = (address) realloc (old_ptr, size);
-    if (new_mem == NULL)
-    {
-      sprintf(log_line, "Unable to honor request for %u bytes.\n", size);
-      show_line(log_line, 1);
-      abort();
-    }
-  }
-  return new_mem;
-}
-// returns newly allocated string
-/* kpathsea/concat.c */
-string concat (string s1, string s2)
-{
-  string answer;
-#ifdef MYDEBUG
-  if (trace_flag)
-  {
-    sprintf(log_line, "CONCAT %s and %s ", s1, s2);
-    show_line(log_line, 0);
-  }
-#endif
-  answer = (string) xmalloc (strlen (s1) + strlen (s2) + 1);
-  strcpy (answer, s1);
-  strcat (answer, s2);
-#ifdef MYDEBUG
-  if (trace_flag)
-  {
-    sprintf(log_line, "=> %s\n", answer);
-    show_line(log_line, 0);
-  }
-#endif
-  return answer;
-}
-// returns newly allocated string
-/* kpathsea/concat3.c */
-string concat3 (string s1, string s2, string s3)
-{
-  string answer;
-#ifdef MYDEBUG
-  if (trace_flag)
-  {
-    sprintf(log_line, "CONCAT3 %s, %s, and %s ", s1, s2, s3);
-    show_line(log_line, 0);
-  }
-#endif
-  answer = (string) xmalloc (strlen (s1) + strlen (s2) + strlen (s3) + 1);
-  strcpy (answer, s1);
-  strcat (answer, s2);
-  strcat (answer, s3);
-#ifdef MYDEBUG
-  if (trace_flag)
-  {
-    sprintf(log_line, "=> %s\n", answer);
-    show_line(log_line, 0);
-  }
-#endif
-  return answer;
 }
 /***********************************************************************/
 // following used only in itex.c on pool file
@@ -296,6 +164,7 @@ bool test_eof (FILE * file)
     return true;
 /* We weren't at the end.  Back up.  */
   (void) ungetc (c, file);
+
   return false;
 }
 /* Return true on end-of-line in FILE or at the end of FILE, else false.  */
@@ -317,100 +186,6 @@ bool eoln (FILE * file)
 }
 /***********************************************************************/
 
-// following used only by fontmap.c and openinou.c
-
-// #define FATAL_PERROR(s) do { perrormod (s); exit (errno); } while (0)
-
-// perrormod puts error message on stdout instead of stderr
-
-/* These routines just check the return status from standard library
-   routines and abort if an error happens.  */
-
-// xfopen used in open_input in openinou.c
-/* kpathsea/xfopen.c */
-FILE * xfopen (char *filename, char * fmode)
-{
-  FILE *f;
-
-  assert(filename && mode);
-/* if share_flag is non-zero and we are opening for reading use fsopen */
-/* f = fopen (filename, mode); */
-  if (share_flag == 0 || *fmode != 'r')
-    f = fopen (filename, fmode);
-  else
-    f = _fsopen (filename, fmode, share_flag);
-  if (f == NULL)
-  {
-//    FATAL_PERROR (filename);
-    perrormod(filename);
-    uexit(1);   // ???
-  }
-  return f;
-}
-// xfclose not used ...
-/* kpathsea/xfopen.c */
-int xfclose (FILE *f, char *filename)
-{
-  assert(f);
-
-  if (ferror(f) != 0 || fclose(f) != 0)
-  {
-//    FATAL_PERROR (filename);
-    perrormod(filename);
-    uexit(1);   // ???
-  }
-  return 0;
-}
-/********************************************************************************/
-// following used only in map_lookup
-// return pointer to start of extension --- or NULL if there isn't one
-/* kpathsea/find-suffix.c */
-string find_suffix (string name)
-{
-  string dot_pos;
-  string slash_pos;
-
-  dot_pos = strrchr (name, '.');
-#ifdef MSDOS
-  if ((slash_pos = strrchr (name, PATH_SEP)) != NULL);
-  else if ((slash_pos = strrchr (name, '\\')) != NULL);  
-  else if ((slash_pos = strrchr (name, ':')) != NULL);
-  else slash_pos = name;
-#else
-  slash_pos = strrchr (name, PATH_SEP);
-#endif
-
-/* If the name is `foo' or `/foo.bar/baz', we have no extension.  */
-  return dot_pos == NULL || dot_pos < slash_pos ? NULL : dot_pos + 1;
-}
-// remove extension of file name - returns copy or NULL
-/* kpathsea/rm-suffix.c */
-string remove_suffix (string s)
-{
-  string ret;
-  string suffix = find_suffix (s);
-
-  if (suffix) {
-    suffix--;   /* Back up to before the dot.  */
-    ret = (char *) xmalloc (suffix - s + 1);
-    strncpy (ret, s, suffix - s);
-    ret[suffix - s] = '\0';
-  }
-  else ret = NULL;
-
-  return ret;
-}
-// add extension to file name unless it already has one
-// returns copy or the old one (warning: danger when freeing)
-/* kpathsea/extend-fname.c */
-string extend_filename (string name, string default_suffix)
-{
-  string new_s;
-  string suffix = find_suffix (name);
-
-  new_s = (suffix == NULL ? concat3 (name, ".", default_suffix) : name);
-  return new_s;
-}
 /****************************************************************************************/
 #ifdef MALLOCLINE
 
@@ -520,13 +295,6 @@ void set_paths (int path_bits)
   char *s, *t, *u;                /* 94/Jan/6 */
   char buffer[PATH_MAX];
 
-/*  eliminated lots of junk not needed for TeX itself 93/Nov/20 bkph */
-
-/*  added code to look for pool file in format directory also */
-/*  added code to look for fmt directory in tex directory also */
-/*  added code to look for tfm directory in tex directory also */
-/*  added code to look for some PC TeX flavour environment names 94/Jan/6 */
-/*  which, in case of formats, could lead to I'm stymied errors ... */
 
   if (path_bits & TEXFORMATPATHBIT)
   {
@@ -596,39 +364,42 @@ void set_paths (int path_bits)
 /*    if (t != TEXPOOL) free (t); */
   }
 
-  if (path_bits & TFMFILEPATHBIT) {
+  if (path_bits & TFMFILEPATHBIT)
+  {
     s = "TEXFONTS";
-/* Introduce encoding specific TEXFONTS env variable 97/April/2 */
-    if ((u = grabenv("ENCODING")) != NULL) {  /* get ENCODING=... */
-      encoding_name = u;        /* remember for error mess */
-/*      sprintf(log_line, "\nENCODING=%s\n", u); */
-/*      ENCODING is defined, now see if matching env variable */
-      if ((t = grabenv(u)) != NULL) { /* get TEXNANSI=c:\yandy\tfm; ... */
-/*        sprintf(loglein, "\nset %s=%s\n", u, t); */
-/*        prevent problems with TEXNANSI=1 and such mistakes! */
-/*        should have a drive letter and not be a number */
-        if (strchr(t, ':') != NULL &&
-            sscanf(t, "%d", &n) == 0) {
-          s = u;        /* look here instead of TEXFONTS=... */
-/*          sprintf(log_line, "\nUSE %s\n", u); */
+
+    if ((u = grabenv("ENCODING")) != NULL)
+    {
+      encoding_name = u;
+
+      if ((t = grabenv(u)) != NULL)
+      {
+        if (strchr(t, ':') != NULL && sscanf(t, "%d", &n) == 0)
+        {
+          s = u;
         }
       }
     }
 
-    t = TEXFONTS;         /* #define TEXFONTS TEXPATH "tfm" */
-/*    if (getenv(s) == NULL) { */
-    if (grabenv(s) == NULL) {   /* 1994/May/19 */
-      strcpy(buffer, texpath);  /* see if texpath\tfm is directory */
+    t = TEXFONTS;
+
+    if (grabenv(s) == NULL)
+    {
+      strcpy(buffer, texpath);
       strcat(buffer, PATH_SEP_STRING); 
       strcat(buffer, "tfm");
-      if (trace_flag) {
+
+      if (trace_flag)
+      {
         sprintf(log_line, "Checking `%s' = %s %s %s\n",
-            buffer, texpath, PATH_SEP_STRING, "tfm"); /* 95/Jan/25 */
+            buffer, texpath, PATH_SEP_STRING, "tfm");
         show_line(log_line, 0);
       }
-/*      if (dir_p(buffer)) t = _strdup(buffer); */
-      if (dir_p(buffer)) t = xstrdup(buffer);     /* 96/Jan/20 */
-      else {
+
+      if (dir_p(buffer))
+        t = xstrdup(buffer);
+      else
+      {
         s = "TEXTFMS";      /* added PC-TeX version 94/Jan/6 */
         if (getenv(s) == NULL) s = "TEXTFM"; /* em-TeX uses TEXTFM ... */
       }
@@ -637,19 +408,20 @@ void set_paths (int path_bits)
         show_line(log_line, 0);
       }
     }
-/*    path_dirs[TFMFILEPATH] = initialize_path_list ("TEXFONTS", TEXFONTS); */
-/*    path_dirs[TFMFILEPATH] = initialize_path_list (s, TEXFONTS); */
+
     path_dirs[TFMFILEPATH] = initialize_path_list (s, t);
-/*    if (t != TEXFONTS) free (t); */
+
   }
 
-  if (path_bits & TEXINPUTPATHBIT) {
+  if (path_bits & TEXINPUTPATHBIT)
+  {
     if (format_specific) {                /* 1994/Oct/25 */
       s = format_name;                /* try specific */
       if (grabenv(s) == NULL) s = "TEXINPUTS";    /* no format specific */
     }
-    else s = "TEXINPUTS";               /* normal case */
-/*    if (getenv(s) == NULL) */
+    else
+      s = "TEXINPUTS";               /* normal case */
+
     if (grabenv(s) == NULL) {             /* 1994/May/19 */
       s = "TEXINPUT"; /* added PC-TeX vers 94/Jan/6 */
       if (trace_flag) {
@@ -1098,7 +870,7 @@ char *file_p (string fn)
 
 /* S_IFMT is file type mask 0170000 and S_IFDIR is directory 0040000 */
 
-#pragma optimize ("g", off)   /* try and avoid compiler bug here _dos_find */
+//#pragma optimize ("g", off)   /* try and avoid compiler bug here _dos_find */
 
 /* NOTE: _dos_find... prevents running under Windows NT ??? */
 /* and presently dir_method = true so we do use this _dos_find_first */
@@ -2092,7 +1864,7 @@ char *unixify (char * t)
                                 /* avoids heavy stack usage in tree search */
                                 /* but ties up some global fixed space ... */
 
-#pragma optimize ("g", off)   /* try and avoid compiler bug here _dos_find */
+//#pragma optimize ("g", off)   /* try and avoid compiler bug here _dos_find */
 
 /* Add DIRNAME to DIR_LIST and look for subdirectories, possibly recursively.
    We assume DIRNAME is the name of a directory.  */

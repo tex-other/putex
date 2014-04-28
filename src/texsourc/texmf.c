@@ -31,7 +31,7 @@
 
 #pragma warning(disable:4996)
 #pragma warning(disable:4131) // old style declarator
-#pragma warning(disable:4135) // conversion between different integral types 
+#pragma warning(disable:4135) // conversion between different integral types
 #pragma warning(disable:4127) // conditional expression is constant
 
 #include <setjmp.h>
@@ -46,10 +46,6 @@
 /* Either `texd.h' or `mfd.h' will include `../common/texmf.h'.  */
 
 /* Note: INITEX definition in makefile only affects included *.h files */
-
-#ifdef MSDOS
-//  int __cdecl read (int, void *, unsigned int);
-#endif
 
 /* Instantiate data in `texd.h' or `mfd.h' here.  */
 
@@ -72,14 +68,10 @@
 // #include "c-ctype.h"
 // #include "c-pathch.h"
 
-/* For `struct tm'.  */
-
 #include <time.h>   // needed for time, struct tm etc.
+#include <signal.h>
 
 extern struct tm * localtime();
-
-/* Catch interrupts.  */
-#include <signal.h>   // needed for signal, SIGINT, SIG_IGN, SIG_ERR etc.
 
 /* following may be found in local.c --- used for key replacement */
 
@@ -294,11 +286,12 @@ void t_open_in (void)
 static RETSIGTYPE
 catch_interrupt (int err)
 {
-  (void) signal (SIGINT, SIG_IGN);  /* turn off interrupts for now */
-/*  interrupt = 1; */       /* make sure interrupt declared volatile */
-//  if (interrupt++ >= 3) uexit(1); /* emergency exit -- bkph */
-  if (interrupt++ >= 3) exit(1);  /* emergency exit -- bkph */
-  (void) signal (SIGINT, catch_interrupt);  /* turn them back on again */
+  (void) signal (SIGINT, SIG_IGN);
+
+  if (interrupt++ >= 3)
+    exit(1);
+
+  (void) signal (SIGINT, catch_interrupt);
 }
 
 /* Besides getting the date and time here, we also set up the interrupt
@@ -307,19 +300,16 @@ catch_interrupt (int err)
    ``Get the first line of input and prepare to start''), this is as
    good a place as any.  */
 
-void get_date_and_time (integer *minutes, integer *pday, integer *pmonth, integer *pyear)
+void get_date_and_time (integer *sys_minutes, integer *sys_day, integer *sys_month, integer *sys_year)
 {
-/*  int sig=0; */
   time_t clock;
   struct tm *tmptr;
 
-/*  time_t clock = time ((long *) 0); */
-/*  clock = time (NULL); */
   (void) time (&clock);  /* - seconds since 1970 */ 
 
   if (trace_flag)
   {
-    sprintf(log_line, "The time is %u\n", clock);   /* debugging */
+    sprintf(log_line, "The time is %u\n", clock);
     show_line(log_line, 0);   
   }
 
@@ -334,23 +324,26 @@ void get_date_and_time (integer *minutes, integer *pday, integer *pmonth, intege
   {
     sprintf(log_line, "Cannot convert time (%0ld)!\n", clock);
     show_line(log_line, 1);
-    *pyear = 2038;
-    *pmonth = 1;
-    *pday = 18;
-    *minutes = 22 * 60 + 14;
+    *sys_year    = 2038;
+    *sys_month   = 1;
+    *sys_day     = 18;
+    *sys_minutes = 22 * 60 + 14;
   }
   else
   {
-    *minutes = tmptr->tm_hour * 60 + tmptr->tm_min;
-    *pday    = tmptr->tm_mday;
-    *pmonth  = tmptr->tm_mon + 1;
-    *pyear   = tmptr->tm_year + 1900;
+    *sys_minutes = tmptr->tm_hour * 60 + tmptr->tm_min;
+    *sys_day     = tmptr->tm_mday;
+    *sys_month   = tmptr->tm_mon + 1;
+    *sys_year    = tmptr->tm_year + 1900;
 
     if (trace_flag)
     {
       sprintf(log_line, "%d-%d-%d %d:%d\n",
-        tmptr->tm_year + 1900, tmptr->tm_mon + 1, tmptr->tm_mday,
-        tmptr->tm_hour, tmptr->tm_min);
+        tmptr->tm_year + 1900,
+        tmptr->tm_mon + 1,
+        tmptr->tm_mday,
+        tmptr->tm_hour,
+        tmptr->tm_min);
       show_line(log_line, 0);
     }
   }

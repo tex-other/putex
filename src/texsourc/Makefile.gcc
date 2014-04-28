@@ -1,0 +1,5 @@
+OBJS = itex.o local.o md5file.o openinou.o subroute.o\
+			 tex0.o tex1.o tex2.o tex3.o tex4.o tex5.o tex6.o\
+			 tex7.o tex8.o tex9.o texmf.o yandy_pool.o
+
+CC = gcc

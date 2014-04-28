@@ -969,9 +969,7 @@ void open_or_close_in (void)
 /*  we get here if extension is "", or file with extension failed to open */
 /*  if current extension is not `tex,' and `tex' is not irrelevant, try it */
 /*  string 785 is  .tex */
-    else if ((cur_ext != 785) && (name_length + 5 < PATHMAX) &&
-/* *** some changes in above file name handling *** */
-      (!extensionirrelevantp(name_of_file, name_length, "tex")))
+    else if ((cur_ext != 785) && (name_length + 5 < PATHMAX))
       {
         name_of_file[name_length + 1] = '.';
         name_of_file[name_length + 2] = 't';
@@ -988,8 +986,6 @@ void open_or_close_in (void)
           name_of_file[name_length + 1] = ' ';
 
           if ((cur_ext == 335) && a_open_in(read_file[n], TEXINPUTPATH))
-            read_open[n] = 1;
-          else if (maketextex() && a_open_in(read_file[n], TEXINPUTPATH))
             read_open[n] = 1;
         }
       }

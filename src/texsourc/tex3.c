@@ -2311,9 +2311,7 @@ void start_input (void)
 /*  we get here if extension is "", or file with extension failed to open */
 /*  if current extension is not `tex,' and `tex' is not irrelevant, try it */
 /*  string 785 is .tex */
-/*    (! extensionirrelevantp(name_of_file, "tex"))){ */
-    if ((cur_ext != 785) && (name_length + 5 < PATHMAX) &&
-        (!extensionirrelevantp(name_of_file, name_length, "tex")))
+    if ((cur_ext != 785) && (name_length + 5 < PATHMAX))
     {
       //strcpy(name_of_file + name_length + 1, ".tex ");
       name_of_file[name_length + 1] = '.';
@@ -2338,8 +2336,6 @@ void start_input (void)
     if ((cur_ext == 335) && a_open_in(input_file[cur_input.index_field], TEXINPUTPATH))
       goto lab30;
 
-    if (maketextex() && a_open_in(input_file[cur_input.index_field], TEXINPUTPATH))
-      goto lab30;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     end_file_reading();
     prompt_file_name("input file name", ".tex");
@@ -2469,13 +2465,7 @@ internal_font_number read_font_info_(halfword u, str_number nom, str_number aire
 
   if (!b_open_in(tfm_file)) /* new in C version d */
   {
-    if (maketextfm ())
-    {
-      if (!b_open_in(tfm_file))
-        goto lab11;
-    }
-    else
-      goto lab11;
+    goto lab11;
   } 
 /*   was just: goto lab11; */
   fileopened = true; 

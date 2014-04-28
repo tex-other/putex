@@ -34,7 +34,8 @@ CFLAGS=/nologo /c /MT /GF /Gy /Ox /W4 /DMSDOS /DTeX /DPHARLAP /DNDEBUG
 # LFLAGS=@yandytex.nt /MAP lib\libdos.lib
 # Release version
 # LFLAGS=/MAP lib\libdos.lib
-LFLAGS=/MAP /MACHINE:X86
+LFLAGS=/MAP
+# /MACHINE:X86
 # debugging version
 # LFLAGS=@yandytex.nt /MAP /DEBUG /PDB:yandytex.pdb lib\libdos.lib
 # LFLAGS=/MAP /DEBUG /PDB:yandytex.pdb
@@ -51,7 +52,7 @@ objs = texmf.obj itex.obj openinou.obj subroute.obj local.obj \
 texmf.exe: $(objs) 
 	$(LINK) $(LFLAGS) texmf itex openinou subroute local \
 	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9 \
-	yandy_pool yandytex.res md5 md5file
+	yandy_pool yandytex.res md5 md5file kpathsea\kpathsea.lib
 	copy texmf.exe yandytex.exe
 	del ..\yandy\bin\texmf.exe
 	copy texmf.exe ..\yandy\bin\texmf.exe
