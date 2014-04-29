@@ -688,17 +688,8 @@ void hlist_out (void)
 lab21:
     if (is_char_node(p))
     {
-      if (cur_h != dvi_h)
-      {
-        movement(cur_h - dvi_h, right1);
-        dvi_h = cur_h;
-      }
-
-      if (cur_v != dvi_v)
-      {
-        movement(cur_v - dvi_v, down1);
-        dvi_v = cur_v;
-      }
+      synch_h();
+      synch_v();
 
       do
         {
@@ -714,8 +705,7 @@ lab21:
             }
 
             if (f <= 64 + font_base)
-              dvi_out(f - font_base - 1 + fnt_num_0); /* fnt_num_0 --- fnt_num_63 */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+              dvi_out(f - font_base - 1 + fnt_num_0);
 #ifdef INCREASEFONTS
             /* if we allow greater than 256 fonts */
             else if (f <= 256)
@@ -754,6 +744,7 @@ lab21:
           p = link(p);
         }
       while(!(!(p >= hi_mem_min)));
+
       dvi_h = cur_h;
   }
   else
@@ -879,21 +870,9 @@ lab21:
               while (cur_h + leader_wd <= edge)
               {
                 cur_v = base_line + shift_amount(leader_box);
-
-                if (cur_v != dvi_v)
-                {
-                  movement(cur_v - dvi_v, down1);
-                  dvi_v = cur_v;
-                }
-
+                synch_v();
                 save_v = dvi_v;
-
-                if (cur_h != dvi_h)
-                {
-                  movement(cur_h - dvi_h, right1);
-                  dvi_h = cur_h;
-                }
-
+                synch_h();
                 save_h = dvi_h;
                 temp_ptr = leader_box;
                 outer_doing_leaders = doing_leaders;
@@ -950,24 +929,12 @@ lab14:
 
     if ((rule_ht > 0) && (rule_wd > 0))
     {
-      if (cur_h != dvi_h)
-      {
-        movement(cur_h - dvi_h, right1);
-        dvi_h = cur_h;
-      }
-
+      synch_h();
       cur_v = base_line + rule_dp;
-
-      if (cur_v != dvi_v)
-      {
-        movement(cur_v - dvi_v, down1);
-        dvi_v = cur_v;
-      }
-
+      synch_v();
       dvi_out(set_rule);
       dvi_four(rule_ht);
       dvi_four(rule_wd);
-
       cur_v = base_line;
       dvi_h = dvi_h + rule_wd;
     }
@@ -1044,13 +1011,7 @@ void vlist_out (void)
           else
           {
             cur_v = cur_v + height(p);
-
-            if (cur_v != dvi_v)
-            {
-              movement(cur_v - dvi_v, down1);
-              dvi_v = cur_v;
-            }
-
+            synch_v();
             save_h = dvi_h;
             save_v = dvi_v;
             cur_h = left_edge + shift_amount(p);
@@ -1155,7 +1116,7 @@ void vlist_out (void)
                     cur_v = cur_v + (lr / 2);
                   else
                   {
-                    lx =(2 * lr + lq + 1) / (2 * lq + 2);
+                    lx = (2 * lr + lq + 1) / (2 * lq + 2);
                     cur_v = cur_v + ((lr - (lq - 1) * lx) / 2);
                   }
                 }
@@ -1163,22 +1124,10 @@ void vlist_out (void)
                 while (cur_v + leader_ht <= edge)
                 {
                   cur_h = left_edge + shift_amount(leader_box);
-
-                  if (cur_h != dvi_h)
-                  {
-                    movement(cur_h - dvi_h, right1);
-                    dvi_h = cur_h;
-                  }
-
+                  synch_h();
                   save_h = dvi_h;
                   cur_v = cur_v + height(leader_box);
-
-                  if (cur_v != dvi_v)
-                  {
-                    movement(cur_v - dvi_v, down1);
-                    dvi_v = cur_v;
-                  }
-
+                  synch_v();
                   save_v = dvi_v;
                   temp_ptr = leader_box;
                   outer_doing_leaders = doing_leaders;
@@ -1222,22 +1171,13 @@ lab14:
 
       if ((rule_ht > 0) && (rule_wd > 0))
       {
-        if (cur_h != dvi_h)
-        {
-          movement(cur_h - dvi_h, right1);
-          dvi_h = cur_h;
-        }
-
-        if (cur_v != dvi_v)
-        {
-          movement(cur_v - dvi_v, down1);
-          dvi_v = cur_v;
-        }
-
+        synch_h();
+        synch_v();
         dvi_out(put_rule);
         dvi_four(rule_ht);
         dvi_four(rule_wd);
       }
+
       goto lab15;
 lab13:
       cur_v = cur_v + rule_ht;
@@ -1245,6 +1185,7 @@ lab13:
 lab15:
     p = link(p);
   }
+
   prune_movements(save_loc);
 
   if (cur_s > 0)
@@ -1252,18 +1193,17 @@ lab15:
 
   decr(cur_s);
 }
-/****************HPDF******************/
+/* sec 0638 */
+/* following needs access to dvi_buf=zdvibuf see coerce.h */
 /*
 void error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void * user_data)
 {
-    printf ("ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no, (HPDF_UINT)detail_no);
+  printf ("ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no, (HPDF_UINT)detail_no);
+  longjmp(jumpbuffer, 1);
 }
 */
-/****************HPDF******************/
 /* sec 0638 */
-/* following needs access to dvi_buf=zdvibuf see coerce.h */
-/* sec 0638 */
-void ship_out_(halfword p)
+void dvi_ship_out_(halfword p)
 {
   integer page_loc;
   char j, k;
@@ -1324,6 +1264,7 @@ void ship_out_(halfword p)
       show_box(p);
       end_diagnostic(true);
     }
+
     goto lab30;
   }
 
@@ -1355,6 +1296,11 @@ void ship_out_(halfword p)
 
   if (total_pages == 0)
   {
+    /* HPDF init.*/
+//    yandy_pdf = HPDF_New(error_handler, NULL);
+//    yandy_pdf->pdf_version = HPDF_VER_17;
+//    HPDF_SetCompressionMode(yandy_pdf, HPDF_COMP_ALL);
+    /* */
     dvi_out(pre);
     dvi_out(id_byte);
     dvi_four(25400000L);  /* magic DVI scale factor */
@@ -1383,6 +1329,17 @@ void ship_out_(halfword p)
 
   page_loc = dvi_offset + dvi_ptr;
   dvi_out(bop);
+//  yandy_font = HPDF_GetFont (yandy_pdf, "Helvetica", NULL);
+//  pdf_font_def wrapper?
+//  pdf_special_out ? fig?
+//  yandy_page = HPDF_AddPage (yandy_pdf);
+//  HPDF_Page_SetWidth (yandy_page, 210);
+//  HPDF_Page_SetHeight (yandy_page, 210);
+//  HPDF_Page_SetFontAndSize (yandy_page, yandy_font, 10);
+//  HPDF_Page_BeginText (yandy_page);
+//  HPDF_Page_MoveTextPos(yandy_page, 10, 190);
+//  HPDF_Page_ShowText (yandy_page, "The page");
+//  HPDF_Page_EndText (yandy_page);
 
   for (k = 0; k <= 9; k++)
     dvi_four(count(k));
@@ -1397,7 +1354,7 @@ void ship_out_(halfword p)
   else
     hlist_out();
 
-  dvi_out(eop);
+  dvi_out(eop); // do not need a endpage in haru.
   incr(total_pages);
   cur_s = -1;
 lab30:;
@@ -1436,6 +1393,10 @@ lab30:;
   }
 #endif /* STAT */
 }
+void ship_out_(halfword p)
+{
+  dvi_ship_out_(p);
+}
 /* sec 0645 */
 void scan_spec_(group_code c, bool three_codes)
 {
@@ -1457,6 +1418,7 @@ void scan_spec_(group_code c, bool three_codes)
   }
 
   scan_dimen(false, false, false);
+
 lab40:
   if (three_codes)
   {

@@ -79,12 +79,10 @@
 /* mem_top largest index in mem array dumped by iniTeX mem_top <= mem_max */
 #ifdef ALLOCATEMAIN
   EXTERN integer mem_top;
-  #define max_mem_size (max_halfword / sizeof(memory_word) -1)
+  #define max_mem_size (max_halfword / sizeof(memory_word) - 1)
 #else
   #define mem_top 262140L
 #endif
-
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* mem_max == mem_top in iniTeX, otherwise mem_max >= mem_top */
@@ -108,10 +106,6 @@
 #endif
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-
-#define pool_name TEXPOOLNAME
-
-/* type definitions follow */
 
 typedef unsigned char ASCII_code;
 typedef unsigned short KANJI_code;
@@ -193,9 +187,6 @@ EXTERN integer max_buf_stack;
 #endif
 
 /* our real font_mem_size is 268435456 --- ridiculously large, of course */
-/* sec 0549 */
-#define non_char    256
-#define non_address 0
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
@@ -241,7 +232,7 @@ EXTERN integer max_buf_stack;
   #define max_trie_op       1000
 #else
   #define trie_op_size      751
-  #define neg_trie_op_size  -751
+  #define neg_trie_op_size -751
   #define min_trie_op       0
   #define max_trie_op       500
 #endif
@@ -312,7 +303,6 @@ EXTERN integer max_buf_stack;
 #ifdef INCREASEFONTS
   typedef unsigned short quarterword;
 #else
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   typedef unsigned char quarterword;
 #endif
 
@@ -352,16 +342,11 @@ typedef integer trie_pointer;
 /* typedef short hyph_pointer; */   /* increased 1996/Oct/20 ??? */
 typedef integer hyph_pointer; 
 
-EXTERN integer bad; 
-EXTERN ASCII_code xord[256]; 
-EXTERN ASCII_code xchr[256]; 
-/* EXTERN char name_of_file[PATHMAX + 1]; */
-// EXTERN char name_of_file[PATHMAX + 4]; /* padded out 512 + 4 */
-EXTERN unsigned char name_of_file[PATHMAX + 4]; // fix 2000 June 18 
-EXTERN integer name_length; 
-
-/* EXTERN ASCII_code buffer[buf_size + 1]; */
-/* EXTERN ASCII_code buffer[buf_size + 4]; */ /* padded out to ...  + 4 */
+EXTERN integer bad;
+EXTERN ASCII_code xord[256];
+EXTERN ASCII_code xchr[256];
+EXTERN unsigned char name_of_file[PATHMAX + 4]; // fix 2000 June 18
+EXTERN integer name_length;
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATESTRING
@@ -384,7 +369,7 @@ EXTERN str_number   init_str_ptr;
 
 #ifdef INITEX
   EXTERN alpha_file pool_file; 
-#endif /* INITEX */
+#endif
 
 EXTERN alpha_file log_file; 
 /* EXTERN char selector; */
@@ -499,7 +484,7 @@ EXTERN int old_setting; /* padded out */    /* 95/Jan/7 */
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef ALLOCATEZEQTB
-EXTERN memory_word * zeqtb; 
+EXTERN memory_word * zeqtb;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #else
 #ifdef INCREASEFONTS
@@ -511,12 +496,6 @@ EXTERN memory_word eqtb[(hash_size + 4007) + eqtb_extra];
 EXTERN memory_word zeqtb[(hash_size + 4007)]; 
 #endif
 #endif
-
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/* EXTERN quarterword 
-#define xeq_level (zzzad -12663)    hash_size =  9500
-#define xeq_level (zzzad -28163)    hash_size = 25000
-  zzzad[844]; */
 
 #ifdef INCREASEFONTS
   #define xeq_level (zzzad - (int_base + eqtb_extra))
@@ -565,8 +544,8 @@ EXTERN integer cs_count;
 /* despite reallocation, we still limit it to something finite */
 /* to avoid soaking up all of machine memory in case of infinite loop */
 #ifdef ALLOCATESAVESTACK
-  #define save_size 65536     /* arbitrary - ridiculously large */
-  #define initial_save_size 1000
+  #define save_size           65536     /* arbitrary - ridiculously large */
+  #define initial_save_size   1000
   #define increment_save_size 2000
   EXTERN memory_word *save_stack; 
 #else
@@ -601,8 +580,8 @@ EXTERN halfword cur_cs;
 EXTERN halfword cur_tok; 
 
 #ifdef ALLOCATENESTSTACK
-  #define nest_size 65536         /* arbitrary - ridiculously large */
-  #define initial_nest_size 100
+  #define nest_size           65536         /* arbitrary - ridiculously large */
+  #define initial_nest_size   100
   #define increment_nest_size 200
   EXTERN list_state_record * nest; 
 #else
@@ -619,17 +598,17 @@ EXTERN list_state_record cur_list;
   #define increment_param_size 200
   EXTERN halfword * param_stack; 
 #else
-#define param_size 500        /* 1997/Jan/17 */
+  #define param_size 500        /* 1997/Jan/17 */
 EXTERN halfword param_stack[param_size + 1]; 
 #endif
 EXTERN integer param_ptr; 
 EXTERN integer max_param_stack; 
 
 #ifdef ALLOCATEINPUTSTACK
-  #define stack_size 65536          /* arbitrary - ridiculously large */
-  #define initial_stack_size 100
+  #define stack_size           65536          /* arbitrary - ridiculously large */
+  #define initial_stack_size   100
   #define increment_stack_size 200
-  EXTERN in_state_record *input_stack; 
+  EXTERN in_state_record * input_stack; 
 #else
   #define stack_size 800
   EXTERN in_state_record input_stack[stack_size + 1]; 
@@ -860,13 +839,9 @@ EXTERN halfword just_box;
 EXTERN halfword passive;
 EXTERN halfword printed_node;
 EXTERN halfword pass_number;
-/* EXTERN scaled active_width[7]; */
 EXTERN scaled active_width[8];
-/* EXTERN scaled cur_active_width[7]; */
 EXTERN scaled cur_active_width[8];
-/* EXTERN scaled background[7]; */
 EXTERN scaled background[8];
-/* EXTERN scaled break_width[7]; */
 EXTERN scaled break_width[8];
 EXTERN bool no_shrink_error_yet;
 EXTERN halfword cur_p;
@@ -938,9 +913,9 @@ EXTERN bool lft_hit, rt_hit;
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* could perhaps use packed_ASCII_code for trie_trc ? */
 #ifdef ALLOCATETRIES
-  EXTERN halfword *trie_trl;
-  EXTERN halfword *trie_tro;
-  EXTERN quarterword *trie_trc;
+  EXTERN halfword * trie_trl;
+  EXTERN halfword * trie_tro;
+  EXTERN quarterword * trie_trc;
 #else
   /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   EXTERN halfword trie_trl[trie_size + 1];
@@ -1162,12 +1137,12 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   EXTERN int pseudo_space;
   EXTERN int allow_quoted_names;
   EXTERN int default_rule;
-  EXTERN char *format_file;
-  EXTERN char *source_direct;     /* 1998/Sep/29 */
-  EXTERN char *string_file;
+  EXTERN char * format_file;
+  EXTERN char * source_direct;     /* 1998/Sep/29 */
+  EXTERN char * string_file;
   EXTERN int share_flag;
-  EXTERN char *format_name;
-  EXTERN char *encoding_name;
+  EXTERN char * format_name;
+  EXTERN char * encoding_name;
   EXTERN bool format_specific;
   EXTERN bool encoding_specific;
   EXTERN bool show_line_break_stats;  /* 1996/Feb/9 */
@@ -1180,7 +1155,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   EXTERN int overfull_vbox;           /* 1996/Feb/9 */
   EXTERN int paragraph_failed;        /* 1996/Feb/9 */
   EXTERN int single_line;             /* 1996/Feb/15 */
-  EXTERN FILE *errout;
+  EXTERN FILE * errout;
   EXTERN int font_dimen_zero;   /* 1998/Oct/5 */
   EXTERN int ignore_frozen;     /* 1998/Oct/5 */
   EXTERN bool suppress_f_ligs;  /* 1999/Jan/5 */
@@ -1225,12 +1200,9 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   void try_and_open (char *);        /* in local.c - bkph */
   void check_eqtb (char *);          /* in local.c - bkph */
   void probe_memory (void);          /* in local.c - bkph */
-// void show_maximums (FILE *);      /* in local.c - bkph */
   void print_cs_names (FILE *, int); /* in local.c - bkph */
   void perrormod(char *);            /* in local.c */
-
   char *grabenv(char *);             /* in local.c - bkph */
-// void showversion (FILE *);        /* in local.c - bkph */
   void stamp_it (char *);            /* in local.c - bkph */
   void stampcopy (char *);           /* in local.c - bkph */
   bool prime (int);                  /* in local.c - bkph */
@@ -1251,13 +1223,9 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   char *unixify (char *);       /* in pathsrch.c bkph */
 
 #ifdef _WINDOWS
-  void show_line (char *, int);     /* in local.c */
+  void show_line (char *, int); /* in local.c */
   void show_char (int);         /* in local.c */
-  int main(int, char *[]);        /* in lib\texmf.c */
-#endif
-
-#ifdef CHECKPOOL
-  int checkpool (char *);         /* in itex.c - debugging */
+  int main(int, char *[]);      /* in lib\texmf.c */
 #endif
 
 #endif /* ifdef MSDOS */
@@ -2072,6 +2040,9 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define x_height_code      5
 #define quad_code          6
 #define extra_space_code   7
+/* sec 0549 */
+#define non_char    256
+#define non_address 0
 /* sec 0554 */
 #define char_info(a, b)   font_info[char_base[a] + b].qqqq
 #define char_width(a, b)  font_info[width_base[a] + b.b0].cint
@@ -2548,6 +2519,8 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 /* sec 1371 */
 #define end_write_token (cs_token_flag + end_write)
 /* sec 79 */
+extern void synch_h(void);
+extern void synch_v(void);
 extern void set_cur_lang(void);
 extern str_number make_string_pool (char *s);
 extern char * md5_file(FILE * in_file);

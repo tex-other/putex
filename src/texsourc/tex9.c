@@ -35,6 +35,7 @@ void give_err_help (void)
 bool open_fmt_file (void)
 {
   integer j;
+
   j = cur_input.loc_field;
 
 /* For Windows NT, lets allow + instead of & for format specification */
@@ -63,6 +64,7 @@ bool open_fmt_file (void)
     else
     {
       char *s = log_line;
+
       name_of_file[name_length + 1] = '\0';
       (void) sprintf(s, "%s (%s);%s\n", "Sorry, I can't find that format",
         name_of_file + 1, " will try the default."); 
@@ -85,6 +87,7 @@ bool open_fmt_file (void)
       }
       show_line(log_line, 1); // show all three lines at once
     }
+
 #ifndef _WINDOWS
     fflush(stdout);
 #endif
@@ -103,6 +106,7 @@ bool open_fmt_file (void)
     else
     {
       char *s = log_line;
+
       name_of_file[name_length + 1] = '\0';
       (void) sprintf(s, "%s (%s)!\n", "I can't find the default format file", name_of_file + 1);
       name_of_file[name_length + 1] = ' ';
@@ -257,37 +261,36 @@ void close_files_and_terminate (void)
       if (!knuth_flag)
         fprintf(log_file, " (i = in_stack, n = nest_stack, p = param_stack, b = buf_stack, s = save_stack)\n");
 
-      if (! knuth_flag)          /* 1999/Jan/17 */
+      if (!knuth_flag)
         fprintf(log_file, " %d inputs open max out of %d\n", high_in_open, max_in_open);
-      /* (%d max parens open) */ /* max_open_parens */
 
 /*  Modified 98/Jan/14 to leave out lines with zero counts */
       if (show_line_break_stats && first_pass_count > 0) /* 96/Feb/8 */
       {
         int first_count, secondcount, thirdcount;
+
         (void) fprintf(log_file, "\nSuccess at breaking %d paragraph%s:", first_pass_count, (first_pass_count == 1) ? "" : "s");
 
         if (single_line > 0)
           (void) fprintf(log_file, "\n %d single line `paragraph%s'", single_line, (single_line == 1) ? "" : "s");  /* 96/Apr/23 */
 
-        first_count = first_pass_count-single_line-second_pass_count;
+        first_count = first_pass_count - single_line - second_pass_count;
 
         if (first_count < 0)
-          first_count = 0;       /* sanity check */
+          first_count = 0;
 
         secondcount = second_pass_count - final_pass_count;
         thirdcount = final_pass_count - paragraph_failed;
 
-        if (first_count != 0 || secondcount != 0 || thirdcount != 0)
-          (void) fprintf(log_file, "\n %d first pass (\\pretolerance = %d)", first_count, pretolerance);
+        if (first_pass_count > 0)
+          (void) fprintf(log_file, "\n %d first pass (\\pretolerance = %d)", first_pass_count, pretolerance);
 
-        if (secondcount != 0 || thirdcount != 0)
-          (void) fprintf(log_file, "\n %d second pass (\\tolerance = %d)", secondcount, tolerance);
+        if (second_pass_count > 0)
+          (void) fprintf(log_file, "\n %d second pass (\\tolerance = %d)", second_pass_count, tolerance);
 
         if (final_pass_count > 0 || emergency_stretch > 0)
         {
-          (void) fprintf(log_file, "\n %d third pass (\\emergencystretch = %lgpt)", thirdcount, (double) emergency_stretch / 65536.0);
-          /* above converted from scaled points to printer's points */
+          (void) fprintf(log_file, "\n %d third pass (\\emergencystretch = %lgpt)", final_pass_count, (double) emergency_stretch / 65536.0);
         }
 
         if (paragraph_failed > 0)
@@ -318,9 +321,10 @@ void close_files_and_terminate (void)
       dvi_out(142);
     else
     {
-      dvi_out(140);
+      dvi_out(eop);
       incr(total_pages);
     }
+
     decr(cur_s);
   }
 
@@ -331,12 +335,12 @@ void close_files_and_terminate (void)
     dvi_out(post);
     dvi_four(last_bop);
     last_bop = dvi_offset + dvi_ptr - 5;
-    dvi_four(25400000L);     /* magic DVI scale factor */ 
-    dvi_four(473628672L);    /* 7227 * 65536 */
-    prepare_mag();           /* in tex2.c */
-    dvi_four(mag);           /* mag */
-    dvi_four(max_v);         /* max height + depth */
-    dvi_four(max_h);         /* max width */
+    dvi_four(25400000L);
+    dvi_four(473628672L);
+    prepare_mag();
+    dvi_four(mag);
+    dvi_four(max_v);
+    dvi_four(max_h);
     dvi_out(max_push / 256);
     dvi_out(max_push % 256);
 
@@ -367,12 +371,12 @@ void close_files_and_terminate (void)
 
     dvi_out(post_post);
     dvi_four(last_bop);
-    dvi_out(2);
+    dvi_out(id_byte);
     k = 4 + ((dvi_buf_size - dvi_ptr) % 4);
 
     while (k > 0)
     {
-      dvi_out(223); /* four to seven bytes of 223 */
+      dvi_out(223);
       decr(k);
     }
 
@@ -406,18 +410,16 @@ void close_files_and_terminate (void)
     print_int(dvi_offset + dvi_ptr);
     print_string(" bytes).");
     b_close(dvi_file);
-    /* BEGIN-MD5 */
-    //print_nl("  MD5 checksum on :");
-    //print_char_string((unsigned char *) md5_file(dvi_file));
-    //print_string(".");
-    /* END  -MD5 */
   }
+
+//  HPDF_SaveToFile (yandy_pdf, "texput.pdf");
+//  HPDF_Free(yandy_pdf);
 
   if (log_opened)
   {
     (void) putc('\n', log_file);
-    (void) a_close(log_file); 
-    selector = selector - 2; 
+    (void) a_close(log_file);
+    selector = selector - 2;
 
     if (selector == term_only)
     {
@@ -431,13 +433,14 @@ void close_files_and_terminate (void)
       print_char('.');
     }
   }
+
   print_ln();
 
   if ((edit_name_start != 0) && (interaction > 0))
   {
     call_edit(str_pool, edit_name_start, edit_name_length, edit_line);
   }
-} /* end of close_files_and_terminate */
+}
 #ifdef DEBUG
 /* sec 1338 */
 void debug_help (void) 

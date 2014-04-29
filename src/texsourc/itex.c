@@ -978,13 +978,14 @@ lab35:;
 /*     can only get here is \emergencystretch has been set positive */
       background[2] = background[2] + emergency_stretch;
       final_pass = true;
-      final_pass_count++;         /* 96 Feb 9 */
+      ++final_pass_count;         /* 96 Feb 9 */
     } /* end of if second_pass */
   } /* end of while(true)do */
 /* cannot drop through from above loop */
 lab30:                /* common exit point */
   if (best_line == 2)
     single_line++;
+
 #ifdef STAT
   if (tracing_paragraphs > 0)
   {
@@ -992,6 +993,7 @@ lab30:                /* common exit point */
     normalize_selector();
   }
 #endif /* STAT */
+
   post_line_break(final_widow_penalty);
   q = link(active);
 

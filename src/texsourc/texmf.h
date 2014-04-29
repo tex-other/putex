@@ -22,17 +22,7 @@
    02110-1301 USA.  */
 
 #include "config.h"
-/*
-#include <kpathsea/config.h>
-#include <kpathsea/ctype.h>
-#include <kpathsea/line.h>
-#include <kpathsea/readable.h>
-#include <kpathsea/variable.h>
-#include <kpathsea/absolute.h>
-#ifdef WIN32
-#include <kpathsea/concatn.h>
-#endif
- */
+
 #include <stdarg.h>
 
 #ifdef _MSC_VER
@@ -54,12 +44,12 @@ typedef FILE * byte_file;
 typedef FILE * word_file;
 
 /* Read a line of input as quickly as possible.  */
-#define input_ln(stream, flag) input_line (stream)
 extern bool input_line (FILE *);
+#define input_ln(stream, flag) input_line(stream)
 
 /* We need to read an integer from stdin if we're debugging.  */
 #ifdef DEBUG
-  #define getint() inputint (stdin)
+  #define getint() inputint(stdin)
 #else
   #define getint()
 #endif
@@ -86,48 +76,17 @@ extern bool input_line (FILE *);
   #define dumpcore abort
 #endif
 
-/* #ifndef unix */        /* change bkph 93/Nov/26 */
-/* #if ! defined unix && ! defined MSDOS */
-#ifndef unix          /* changed back bkph 93/Dec/28 fixed macro */
-
-/* This was horseshit, since for MSDOS it did no errors checking! - bkph */
+#ifndef unix
 #ifdef TeX
-/* #define  write_dvi(a, b)              \
-  (void) fwrite ((char *) &dvi_buf[a], sizeof (dvi_buf[a]),   \
-                 (int) ((b) - (a) + 1), dvi_file) */
 #define write_dvi(a, b)                                                 \
   if (fwrite ((char *) &dvi_buf[a], sizeof (dvi_buf[a]),                \
          (int) ((b) - (a) + 1), dvi_file) != (size_t) ((b) - (a) + 1))  \
      FATAL_PERROR ("\n! dvi file")
-#else
-#define writegf(a, b)             \
-/*  (void) fwrite ((char *) &gfbuf[a], sizeof (gfbuf[a]),     \
-                 (int) ((b) - (a) + 1), gffile) */
-  if (fwrite ((char *) &gfbuf[a], sizeof (gfbuf[a]),      \
-         (int) ((b) - (a) + 1), gffile) != (size_t) ((end) - (start) + 1))     \
-     FATAL_PERROR ("\n! gf file")
-#endif /* not TeX */
-
-#else /* unix */
-
-/* #error WE APPEAR TO BE USING SYSTEM CALLS WITH ERROR CHECKING! */
-/* USE fwrite(...) instead of write(fileno (...)) ! */
-
-#ifdef TeX
-#define write_dvi(start, end)            \
-  if (write (fileno (dvi_file), (char *) &dvi_buf[start],     \
-             (int) ((end) - (start) + 1))       \
-      != (int) ((end) - (start) + 1))         \
-    FATAL_PERROR ("\n! dvi file")
-#else
-#define writegf(start, end)           \
-  if (write (fileno (gffile), (char *) &gfbuf[start],     \
-             (int) ((end) - (start) + 1))       \
-      != (int) ((end) - (start) + 1))         \
-    FATAL_PERROR ("\n! gf file")
 #endif /* not TeX */
 #endif /* unix */
 
+extern int do_dump (char *, int, int, FILE *);
+extern int do_undump (char *, int, int, FILE *);
 
 /* Reading and writing the dump files.  `(un)dumpthings' is called from
    the change file.*/
@@ -137,18 +96,14 @@ extern bool input_line (FILE *);
 #define undumpthings(base, len)           \
   do_undump ((char *) &(base), sizeof (base), (int) (len), dump_file)
 
-/* We define the routines to do the actual work in texmf.c.  */
-extern int do_dump (char *, int, int, FILE *);
-extern int do_undump (char *, int, int, FILE *);
-
 /* Use the above for all the other dumping and undumping.  */
-#define generic_dump(x) dumpthings (x, 1)
+#define generic_dump(x)   dumpthings (x, 1)
 #define generic_undump(x) undumpthings (x, 1)
 
-#define dump_wd   generic_dump
-#define undump_wd generic_undump
-#define dump_hh   generic_dump
-#define undump_hh generic_undump
+#define dump_wd     generic_dump
+#define undump_wd   generic_undump
+#define dump_hh     generic_dump
+#define undump_hh   generic_undump
 #define dump_qqqq   generic_dump
 #define undump_qqqq generic_undump
 
@@ -181,13 +136,6 @@ extern int do_undump (char *, int, int, FILE *);
 
 /* If we're running on an ASCII system, there is no need to use the
    `xchr' array to convert characters to the external encoding.  */
-/* #ifdef NONASCII */
-/* #define  Xchr(x)   xchr[x] */
-/* #else */
-/* #define  Xchr(x)   ((char) (x)) */
-/* #endif */
-
-/* Following used in tex0.c - make possible to use non ASCII */
 
 #define Xchr(x) xchr[x]
 
@@ -197,8 +145,4 @@ extern int do_undump (char *, int, int, FILE *);
 /* Declare routines in texmf.c.  */
 extern void get_date_and_time();
 extern void t_open_in();
-// extern void call_edit();
-// extern int call_edit();
 extern bool input_line();
-// extern void do_dump();
-// extern void do_undump();

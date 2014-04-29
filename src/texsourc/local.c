@@ -3098,18 +3098,6 @@ int read_command_line (int ac, char **av)
   return 0;
 }
 
-#ifdef IGNORED
-void uppercase (char *s)
-{
-  int c;
-  while ((c = *s) != '\0') {
-/*    if (islower(c)) *s = toupper (*s); */
-    *s = toupper (*s);
-    s++;
-  }
-}
-#endif
-
 int init_commands (int ac, char **av)
 {
 /*  NOTE: some defaults changed 1993/Nov/18 */
@@ -3485,11 +3473,6 @@ void deslash_all (int ac, char **av)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/* interaction == 0 => batch mode (omit all stops and omit terminal output) */
-/* interaction == 1 => nonstop mode (omit all stops)                        */
-/* interaction == 2 => scroll mode (omit error stops)                       */
-/* interaction == 3 => error_stop mode (stops at every opportunity)         */
-
 /* main entry point follows */
 
 /* this gets called pretty much right away in `main' in texmf.c */
@@ -3648,12 +3631,8 @@ int init (int ac, char **av)
 /* void show_inter_val (clock_t start, clock_t end) { */
 void show_inter_val (clock_t interval)
 {
-/*  clock_t interval; */
-/*  int seconds, tenths; */
-/*  int seconds, tenths, hundredth;  */
   int seconds, tenths, hundredth, thousands;
-/*  interval = end - start; */
-/*  sanity check whether positive ? */
+
   if (interval >= CLK_TCK * 10)
   {
     tenths = (interval * 10 + CLK_TCK / 2) / CLK_TCK; 
@@ -3689,7 +3668,6 @@ void show_inter_val (clock_t interval)
 
 int endit (int flag)
 {
-/*  int msec; */
   finish_time = clock();
 
   if (missing_characters != 0)
@@ -3698,25 +3676,21 @@ int endit (int flag)
   if (missing_characters)
   {
     sprintf(log_line, "! There %s %d missing character%s --- see log file\n",
-		(missing_characters == 1) ? "was" : "were",  missing_characters,
-		(missing_characters == 1) ? "" : "s");
+      (missing_characters == 1) ? "was" : "were",  missing_characters,
+      (missing_characters == 1) ? "" : "s");
     show_line(log_line, 0);
   }
-  if (free_memory() != 0) flag++;
-/*  dumpaccess(); */
-/*  show per page time also ? */
+
+  if (free_memory() != 0)
+    flag++;
+
   if (verbose_flag)
   {
-/*    sprintf(log_line, "start %ld main %ld finish %ld\n",
-      start_time, main_time, finish_time); */
     show_line("Total ", 0);
-/*    show_inter_val(start_time, finish_time); */
     show_inter_val(finish_time - start_time);
     show_line(" sec (", 0);
-/*    show_inter_val(start_time, main_time); */
     show_inter_val(main_time - start_time);
     show_line(" format load + ", 0);
-/*    show_inter_val(main_time, finish_time); */
     show_inter_val(finish_time - main_time);
     show_line(" processing) ", 0);
 
@@ -3725,11 +3699,12 @@ int endit (int flag)
       show_inter_val ((finish_time - main_time) / total_pages);
       show_line(" sec per page", 0);
     }
+
     show_line("\n", 0);
   }
 
   checkpause(flag);
-//  checkpause(1);
+
   return flag;
 }
 
@@ -3777,6 +3752,7 @@ int compare_strn (int, int, int, int); /* in tex9.c */
 int compare_cs (const void *cp1, const void *cp2)
 {
   int c1, c2, l1, l2, k1, k2, textof1, textof2;
+
   c1 = *(int *)cp1;
   c2 = *(int *)cp2;
   textof1 = hash[c1].v.RH;
@@ -3785,12 +3761,11 @@ int compare_cs (const void *cp1, const void *cp2)
   l2 = length(textof2); 
   k1 = str_start[textof1]; 
   k2 = str_start[textof2]; 
-/*  showstring (k1, l1); */
-/*  showstring (k2, l2); */
+
   return compare_strn (k1, l1, k2, l2);
 }
 
-char *csused=NULL;
+char *csused = NULL;
 
 /* Allocate table of indeces to allow sorting on csname */
 /* Allocate flags to remember which ones already listed at start */
@@ -3905,16 +3880,6 @@ void print_cs_names (FILE *output, int pass)
 }
 
 /***************** font info listing moved from TEX9.C ******************/
-
-void showstring (int k, int l)
-{
-  char *s=log_line;
-  while (l-- > 0) *s++ = str_pool[k++];
-  *s++ = ' ';
-  *s = '\0';
-  show_line(log_line, 0);
-}
-
 /* compare two strings in str_pool (not null terminated) */
 /* k1 and k2 are positions in string pool */
 /* l1 and l2 are lengths of strings */
@@ -3922,19 +3887,26 @@ void showstring (int k, int l)
 int compare_strn (int k1, int l1, int k2, int l2)
 {
   int c1, c2;
-/*  while (l1-- > 0 && l2-- > 0) { */
+
   while (l1 > 0 && l2 > 0)
   {
     c1 = str_pool[k1];
     c2 = str_pool[k2];
-/*    sprintf(log_line, "%c%d%c%d ", c1, l1, c2, l2); */
-    if (c1 > c2) return 1;
-    else if (c2 > c1) return -1;
+
+    if (c1 > c2)
+      return 1;
+    else if (c2 > c1)
+      return -1;
+
     l1--; l2--;
     k1++; k2++;
   }
-  if (l1 > 0) return 1;   /* first string longer */
-  else if (l2 > 0) return -1; /* second string longer */
+
+  if (l1 > 0)
+    return 1;   /* first string longer */
+  else if (l2 > 0)
+    return -1; /* second string longer */
+
   return 0;         /* strings match */
 }
 
@@ -3943,19 +3915,24 @@ int compare_strn (int k1, int l1, int k2, int l2)
 int compare_fnt (const void *fp1, const void *fp2)
 {
   int f1, f2, l1, l2, k1, k2, s;
+
   f1 = *(short *)fp1;
   f2 = *(short *)fp2;
   l1 = length(font_name[f1]);
   l2 = length(font_name[f2]);
   k1 = str_start[font_name[f1]]; 
   k2 = str_start[font_name[f2]]; 
-/*  showstring (k1, l1); */
-/*  showstring (k2, l2); */
+
   s = compare_strn (k1, l1, k2, l2);
-/*  sprintf(log_line, "%d\n", s); */
-  if (s != 0) return s;
-  if (font_size[f1]> font_size[f2]) return 1;
-  else if (font_size[f1]< font_size[f2]) return -1;
+
+  if (s != 0)
+    return s;
+
+  if (font_size[f1] > font_size[f2])
+    return 1;
+  else if (font_size[f1] < font_size[f2])
+    return -1;
+
   return 0;         /* should not ever get here */
 }
 
@@ -3964,14 +3941,14 @@ int compare_fnt (const void *fp1, const void *fp2)
 int compare_fnt_name (int f1, int f2)
 {
   int l1, l2, k1, k2, s;
+
   l1 = length(font_name[f1]);
   l2 = length(font_name[f2]); 
   k1 = str_start[font_name[f1]]; 
   k2 = str_start[font_name[f2]]; 
-/*  showstring (k1, l1); */
-/*  showstring (k2, l2); */
+
   s = compare_strn (k1, l1, k2, l2);
-/*  sprintf(log_line, "%d\n", s); */
+
   return s;
 }
 
@@ -4020,8 +3997,10 @@ int decode_fourty (unsigned long checksum, char *codingvector)
 double sclpnt (long x)
 {
   double pt;
+
   pt = (double) x / 65536.0;
   pt = (double) ((int) (pt * 1000.0 + 0.5)) / 1000.0;
+
   return (pt);
 }
 
@@ -4029,43 +4008,48 @@ double sclpnt (long x)
 
 void dvi_font_show(internal_font_number f, int suppressname)
 {
-  int a, l, k, n, for_end;
+  int a, l, k, n;
   unsigned long checksum;
   char checksumvector[8];
   char buffer[32];
 
-/*  fprintf (log_file, "DAMN! %d ", suppressname); */
-/*  fprintf (log_file, "%d ", suppressname); */
-/*  suppressname = 0; */
   putc(' ', log_file);
+
   if (suppressname == 0)
   {
-    a = length(font_area[f]); 
-    l = length(font_name[f]); 
+    a = length(font_area[f]);
+    l = length(font_name[f]);
+
     k = str_start[font_area[f]];
-    for_end = str_start[font_area[f] + 1]- 1;
-    if (k <= for_end) do {
-      putc(str_pool[k], log_file);
-    } while(k++ < for_end, stdout); 
+
+    memcpy(buffer, str_pool + k, length(font_area[f]));
+    fwrite(buffer, sizeof(char), length(font_area[f]), log_file);
+
     k = str_start[font_name[f]];
-    for_end = str_start[font_name[f] + 1]- 1;
-    if (k <= for_end) do {
-      putc(str_pool[k], log_file);
-    } while(k++ < for_end);
+
+    memcpy(buffer, str_pool + k, length(font_name[f]));
+    fwrite(buffer, sizeof(char), length(font_name[f]), log_file);
   }
   else a = l = 0;
-  for (k = a+l; k < 16; k++) putc(' ', log_file);
+
+  for (k = a + l; k < 16; k++)
+    putc(' ', log_file);
+
   sprintf(buffer, "at %lgpt ", sclpnt(font_size[f]));
   fputs(buffer, log_file);
-//  fprintf(log_file, "at %lgpt ", sclpnt(font_size[f]));
-  if (suppressname == 0) {
+
+  if (suppressname == 0)
+  {
     n = strlen(buffer);
-//    n = strlen(log_file);
-    for (k = n; k < 16; k++) putc(' ', log_file);
+
+    for (k = n; k < 16; k++)
+      putc(' ', log_file);
+
     checksum = (((font_check[f].b0) << 8 | font_check[f].b1) << 8 | font_check[f].b2) << 8 | font_check[f].b3;
     decode_fourty(checksum, checksumvector);
     fprintf(log_file, "encoding: %s..", checksumvector);
   }
+
   putc('\n', log_file);
 }
 
@@ -4076,33 +4060,40 @@ void show_font_info (void)
   int k, m, fcount, repeatflag;
   short *fnumtable;
 
-  fcount=0;
-  for (k = 1; k <= font_ptr; k++)
-    if (font_used[k])fcount++;
+  fcount = 0;
 
-  if (fcount == 0) return;  /* don't bother to get into trouble */
+  for (k = 1; k <= font_ptr; k++)
+    if (font_used[k])
+      fcount++;
+
+  if (fcount == 0)
+    return;
 
   fnumtable = (short *) malloc (fcount * sizeof(short));
 
-/*  if (verbose_flag) sprintf(log_line, "\nUsed %d fonts:\n", fcount); */
+  fprintf(log_file, "\nUsed %d font%s:\n", fcount, (fcount == 1) ? "" : "s");
 
-  fprintf(log_file, "\nUsed %d font%s:\n",
-      fcount, (fcount == 1) ? "" : "s");
+  fcount = 0;
 
-  fcount=0;
   for (k = 1; k <= font_ptr; k++) 
-    if (font_used[k])fnumtable[fcount++] = (short) k;
+    if (font_used[k])
+      fnumtable[fcount++] = (short) k;
 
   qsort ((void *)fnumtable, fcount, sizeof (short), &compare_fnt);
 
   repeatflag = 0;
-  for (m = 0; m < fcount; m++) {
-    if (m > 0) {
+
+  for (m = 0; m < fcount; m++)
+  {
+    if (m > 0)
+    {
       if (compare_fnt_name(fnumtable[m-1], fnumtable[m]) == 0)
         repeatflag = 1;
-      else repeatflag = 0;
+      else
+        repeatflag = 0;
     }
-    dvi_font_show(fnumtable[ m], repeatflag);
+
+    dvi_font_show(fnumtable[m], repeatflag);
   }
 
   free((void *)fnumtable);

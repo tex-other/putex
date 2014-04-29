@@ -21,14 +21,23 @@
 
 #include "texd.h"
 
-#ifdef IGNORED
-static void winerror (char * message)
-{
-  (void) MessageBox(NULL, message, "YandYTeX.DLL", MB_ICONSTOP | MB_OK);
-}
-#endif
-
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+void synch_h(void)
+{
+  if (cur_h != dvi_h)
+  {
+    movement(cur_h - dvi_h, right1);
+    dvi_h = cur_h;
+  }
+}
+void synch_v(void)
+{
+  if (cur_v != dvi_v)
+  {
+    movement(cur_v - dvi_v, down1);
+    dvi_v = cur_v;
+  }
+}
 void set_cur_lang(void)
 {
   if (language <= 0)
