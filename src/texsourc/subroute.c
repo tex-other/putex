@@ -331,46 +331,6 @@ void set_paths (int path_bits)
     path_dirs[TEXFORMATPATH] = initialize_path_list (s, t);
   }
 
-  if (path_bits & TEXPOOLPATHBIT)
-  {
-    s = "TEXPOOL";
-    t = TEXPOOL;
-    if (grabenv(s) == NULL)
-    {
-      s = "TEXFORMATS";
-
-      if (grabenv(s) == NULL)
-      {
-        strcpy(buffer, texpath);
-        strcat(buffer, PATH_SEP_STRING); 
-        strcat(buffer, "fmt");
-
-        if (trace_flag)
-        {
-          sprintf(log_line, "Checking `%s' = %s %s %s\n", buffer, texpath, PATH_SEP_STRING, "fmt");
-          show_line(log_line, 0);
-        }
-
-        if (dir_p(buffer))
-          t = xstrdup(buffer);
-        else
-        {
-          s = "TEXFMTS";
-          if (getenv(s) == NULL)
-            s = "TEXFMT";
-        }
-
-        if (trace_flag)
-        {
-          sprintf(log_line, "\nSetting up %s (default %s) ", "TEXPOOL", t);
-          show_line(log_line, 0);
-        }
-      }
-    }
-
-    path_dirs[TEXPOOLPATH] = initialize_path_list (s, t);
-  }
-
   if (path_bits & TFMFILEPATHBIT)
   {
     s = "TEXFONTS";
@@ -467,13 +427,14 @@ void set_paths (int path_bits)
 bool test_read_access (unsigned char *name, int path_index)
 { 
 #ifdef BUILDNAMEDIRECT
-  char buffer[PATH_MAX];      /* for constructing name 1996/Jan/20 */
+  char buffer[PATH_MAX];  /* for constructing name 1996/Jan/20 */
   int foundflag;          /* true if path found */
 #else
   string foundname;
 #endif  
 
-  if (*name == '\0') return FALSE;  /* sanity check */
+  if (*name == '\0')
+    return FALSE;
 
 #ifdef CACHEFILENAME
 /*  If file name and path_index matches - and saved filename exists */
@@ -485,68 +446,65 @@ bool test_read_access (unsigned char *name, int path_index)
     {
       if (open_trace_flag)
       {
-        sprintf(log_line, "\nFOUND `%s' (%d) IN CACHE: `%s' ",
-            name, path_index, last_filename); 
-/*            name+1, path_index, last_filename); */
+        sprintf(log_line, "\nFOUND `%s' (%d) IN CACHE: `%s' ", name, path_index, last_filename); 
         show_line(log_line, 0);
       }
 
       strcpy((char *)name, last_filename); 
       return TRUE;
     }
+
     last_path_index = path_index;
     strcpy(last_name, (const char *)name);
     *last_filename = '\0';          /* in case not found */
   }
 #endif
 
-/* Look for it.  */ /* only call to find_path_filename in pathsrch.c */
 #ifdef BUILDNAMEDIRECT
   foundflag = xfind_path_filename (buffer, (char *)name, path_dirs[path_index]);
 #else
-/*  this returns either a newly allocated string or name */
-/*  will need to free it later again ... */
   foundname = find_path_filename (name, path_dirs[path_index]);
 #endif
-/*  If we didn't find it, and we're looking for a font, maybe it's
-    an alias defined in a mapping file.  */ 
-/*  if (!foundname && path_index == TFMFILEPATH) */
+
 #ifdef BUILDNAMEDIRECT
   if (foundflag == 0 && path_index == TFMFILEPATH)
 #else
-    if (foundname == NULL && path_index == TFMFILEPATH)
+  if (foundname == NULL && path_index == TFMFILEPATH)
 #endif
+  {
+    char *mapped_name;
+    static map_type fontmap = NULL;   /* GLOBAL, so won't recreate */
+
+    if (fontmap == NULL)
     {
-      char *mapped_name;
-      static map_type fontmap = NULL;   /* GLOBAL, so won't recreate */
-
-/*      fault in the mapping if necessary.  */
-      if (fontmap == NULL) {
-        if (trace_flag) {
-          sprintf(log_line, "Loading in texfonts.map file for %s\n", name);
-          show_line(log_line, 0);
-        }
-        fontmap = map_create (path_dirs[path_index]);
+      if (trace_flag)
+      {
+        sprintf(log_line, "Loading in texfonts.map file for %s\n", name);
+        show_line(log_line, 0);
       }
 
-/*      Now look for our filename in the mapping.  */
-      mapped_name = map_lookup (fontmap, (char *) name);
-      if (mapped_name) {
-/*      Found a possibility.  Look for the new name.  */
-#ifdef BUILDNAMEDIRECT
-        foundflag = xfind_path_filename (buffer, mapped_name, path_dirs[path_index]);
-#else
-        foundname = find_path_filename (mapped_name, path_dirs[path_index]);
-#endif
-/*  NOTE: mapped_name is NOT an allocated string to be freed ... */
-      }
+      fontmap = map_create (path_dirs[path_index]);
     }
 
-  if (open_trace_flag) {
-    show_line("\n", 0); /* improve trace format out 94/Jan/8 */
+    mapped_name = map_lookup (fontmap, (char *) name);
+
+    if (mapped_name)
+    {
+#ifdef BUILDNAMEDIRECT
+      foundflag = xfind_path_filename (buffer, mapped_name, path_dirs[path_index]);
+#else
+      foundname = find_path_filename (mapped_name, path_dirs[path_index]);
+#endif
+    }
   }
 
-  if (open_trace_flag) {
+  if (open_trace_flag)
+  {
+    show_line("\n", 0);
+  }
+
+  if (open_trace_flag)
+  {
 #ifdef BUILDNAMEDIRECT
     if (foundflag != 0)
     {
@@ -567,6 +525,7 @@ bool test_read_access (unsigned char *name, int path_index)
   if (foundflag != 0)
   {
     strcpy ((char *)name, buffer); 
+
 #ifdef CACHEFILENAME
     if (cache_file_flag)
     {

@@ -986,11 +986,11 @@ EXTERN bool smallop;
 
 #ifdef INITEX
   #ifdef ALLOCATEINI
-    EXTERN packed_ASCII_code *trie_c;  
-    EXTERN trie_op_code *trie_o; 
-    EXTERN trie_pointer *trie_l; 
-    EXTERN trie_pointer *trie_r; 
-    EXTERN trie_pointer *trie_hash; 
+    EXTERN packed_ASCII_code *trie_c; /* characters to match */
+    EXTERN trie_op_code *trie_o;      /* operations to perform */
+    EXTERN trie_pointer *trie_l;      /* left subtrie links */
+    EXTERN trie_pointer *trie_r;      /* right subtrie links */
+    EXTERN trie_pointer *trie_hash;   /* used to identify equivlent subtries */
   #else /* end ALLOCATEINI */
     EXTERN packed_ASCII_code trie_c[trie_size + 1]; 
     EXTERN trie_op_code trie_o[trie_size + 1]; 
@@ -2550,7 +2550,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 /* sec 79 */
 extern void set_cur_lang(void);
 extern str_number make_string_pool (char *s);
-extern char * md5_file(const char * file_name);
+extern char * md5_file(FILE * in_file);
 extern INLINE void str_room_ (int val);
 #define str_room(a) str_room_((int) a)
 extern INLINE void tail_append_ (pointer val);

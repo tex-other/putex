@@ -1616,8 +1616,6 @@ lab30:
   }
 }
 
-/* added following explanations 96/Jan/10 */
-
 void bad_formator_pool (char *name, char *defaultname, char *envvar)
 {
   if (name == NULL)
@@ -2307,113 +2305,6 @@ void final_cleanup (void)
       print_nl("(\\dump is performed only by INITEX)");
   }
 }
-// debugging code for checking the string pool
-#ifdef CHECKPOOL
-int checkpool (char *task)
-{ 
-  int c, i, k, n, st, flag, bad = 0;
-
-  if (task != NULL)
-  {
-    sprintf(log_line, "Check on string pool start (%s)\n", task);
-    show_line(log_line, 0);
-  }
-  for (k = 0; k < 32; k++)
-  {
-    if (str_start[k] != 3 * k)
-    {
-      sprintf(log_line, "k %d str_start[k] %d\n", k, str_start[k]);
-      show_line(log_line, 0);
-    }
-  }
-  for (k = 32; k < 128; k++)
-  {
-    if (str_start[k] != 96 + (k - 32))
-    {
-      sprintf(log_line, "k %d str_start[k] %d\n", k, str_start[k]);
-      show_line(log_line, 0);
-    }
-  }
-  for (k = 128; k < 256; k++)
-  {
-    if (str_start[k] != 194 + 4 * (k - 128))
-    {
-      sprintf(log_line, "k %d str_start[k] %d\n", k, str_start[k]);
-      show_line(log_line, 0);
-    }
-  }
-  if (task != NULL)
-  {
-    sprintf(log_line, "Check on string pool (%s)\n", task);
-    show_line(log_line, 0);
-  }
-  for (k = 0; k < str_ptr; k++)
-  {
-    if (str_start[k + 1] == 0)
-      break;
-    n = length(k);
-    if (n < 0)
-      break;
-    st = str_start[k];
-    flag = 0;
-    for (i = 0; i < n; i++)
-    {
-      if (str_pool[st + i] == 0)
-      {
-        flag = 1; break;
-      }
-      if (str_pool[st + i] > 255)
-      {
-        flag = 1; break;
-      }
-    }
-    if (flag)
-    {
-      bad++;
-      sprintf(log_line, "BAD %d (start at %d): ", k, st);
-      show_line(log_line, 0);
-      s = log_line;
-      for (i = 0; i < n; i++)
-      {
-        c = str_pool[st + i];
-        if (c > 255)
-        {
-          sprintf(s, "%d ", c);
-          s += strlen(s);
-          continue;
-        }
-        if (c >= 128)
-        {
-          c -= 128;
-          sprintf(s, "M-");
-          s += strlen(s);
-        }
-        if (c < 32)
-        {
-          c += 64;
-          sprintf(s, "C-");
-          s += strlen(s);
-        }
-//        putc(c, stdout);
-        *s++ = c;   // ???
-      }
-      *s++ = '\n';
-      *s++ = '\0';
-      show_line(log_line, stdout);
-    }
-  }
-  sprintf(log_line, "end of check (%s)\n", bad ? "BAD" : "OK");
-  show_line(log_line, 0);
-  if (bad)
-  {
-    if (task == NULL)
-      return bad;
-    else
-      exit(1);
-  }
-  return bad;
-}  /* DEBUGGING ONLY */
-#endif
 
 void show_frozen (void)
 {
@@ -2447,11 +2338,11 @@ void show_frozen (void)
 
 #pragma warning(disable:4127)   // conditional expression is constant
 
-int texbody (void)          /* now returns a value --- bkph */
+int texbody (void)
 {
   history = 3;
 
-  set_paths(TEXFORMATPATHBIT + TEXINPUTPATHBIT + TEXPOOLPATHBIT + TFMFILEPATHBIT);
+  set_paths(TEXFORMATPATHBIT + TEXINPUTPATHBIT + TFMFILEPATHBIT);
 
   if (ready_already == 314159L) /* magic number */
     goto lab1;
@@ -2478,14 +2369,14 @@ int texbody (void)          /* now returns a value --- bkph */
 
   if (mem_top < 267)
     bad = 7;    /* where from ? *//* not compile time */
+
 #ifdef INITEX
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
   if (is_initex)
   {
     if ((mem_min != 0) || (mem_max != mem_top))
       bad = 10;
   }
-#endif /* INITEX */
+#endif
 
   if ((mem_min > mem_bot) || (mem_max < mem_top))
     bad = 10;
@@ -2557,7 +2448,7 @@ int texbody (void)          /* now returns a value --- bkph */
     init_prim();
     init_str_ptr = str_ptr;
     init_pool_ptr = pool_ptr;
-    fix_date_and_time(tex_time, day, month, year);
+    fix_date_and_time();
   }
 #endif /* INITEX */
   ready_already = 314159L;      /* magic number */
@@ -2657,7 +2548,7 @@ lab1:     /* get here directly if ready_already already set ... */
     else
       buffer[cur_input.limit_field] = end_line_char;
 
-    fix_date_and_time(tex_time, day, month, year);
+    fix_date_and_time();
 
     magic_offset = str_start[886] - 9 * ord_noad;  /* following: */
 /*  "0234000122*4000133**3**344*0400400*000000234000111*1111112341011" */
@@ -2685,25 +2576,21 @@ lab1:     /* get here directly if ready_already already set ... */
 
   main_control();     /* read-eval-print loop :-) in tex8.c */
 
-//  what if abort_flag is set now ?
-
   if (show_cs_names)
     print_cs_names(stdout, 1);    /* 98/Mar/31 */
 
-//  what if abort_flag is set now ?
-
   final_cleanup();
-
-//  if (abort_flag) return -1;
 
   close_files_and_terminate();
 
 lab9999:
   {
     int code;
+
 #ifndef _WINDOWS
     fflush(stdout);
 #endif
+
     ready_already = 0;
 
     if ((history != 0) && (history != 1))
@@ -2738,6 +2625,7 @@ void add_variable_space(int size)
       show_line("WARNING: mem_min < mem_start!\n", 0);
     mem_min = mem_start;
   }
+
   p = mem[rover + 1].hh.v.LH;
   q = mem_min + 1;
   mem[mem_min].hh.v.RH = 0; /* insert blank word below ??? */
@@ -2753,11 +2641,6 @@ void add_variable_space(int size)
 #endif
 
 /**************************************************************************/
-/* All ini TeX code is here at end so can use same pragma optimize for it */
-/* Ini-TeX code is rarely needed/used so make it small rather than fast   */
-
-//#pragma optimize("t", off)
-//#pragma optimize("s", on)
 
 #ifdef INITEX
 /* split out to allow sharing of code from do_initex and newpattern */
@@ -2846,10 +2729,10 @@ void do_initex (void)
   type(page_head) = glue_node;
   subtype(page_head) = normal;
   avail = 0;                   /* avail <- null p.164 */
-  mem_end = mem_top;           /* mem_end <- mem_top */
+  mem_end = mem_top;
   hi_mem_min = hi_mem_stat_min;
-  var_used = 20;               /* var_used <- lo_mem_stat_max */
-  dyn_used = 14;               /* dyn_used <- hi_mem_stat_usage */
+  var_used = lo_mem_stat_max + 1 - mem_bot;
+  dyn_used = hi_mem_stat_usage;
   eq_type(undefined_control_sequence) = undefined_cs;
   equiv(undefined_control_sequence) = 0;
   eq_level(undefined_control_sequence) = level_zero;
@@ -2946,7 +2829,7 @@ void do_initex (void)
   cs_count = 0;
 
   if (trace_flag)
-    show_line("initex cs_count = 0 ", 0); /* debugging */
+    show_line("initex cs_count = 0 ", 0);
 
   eq_type(frozen_dont_expand) = dont_expand;
   text(frozen_dont_expand) = 499;  /* notexpanded */
@@ -2989,197 +2872,54 @@ void do_initex (void)
 #endif /* INITEX */
 
 #ifdef INITEX
-/* starts string pool with strings for 256 chars and then reads tex.pool */
-/* adjusted to try both "tex.pool" and "tex.poo" 95/Feb/19               */
-/* I have added a texpool file, but I need merge the pool to the binary  */
-/* lots of things updates the kpathsea sources -- Clerk Ma               */
-
+/* sec 0047 */
 bool get_strings_started (void)
 {
-  register bool Result;
-  unsigned char k/*, l*/;
-  /* ASCII_code m, n;*/
+  integer k;
   str_number g;
-  /* integer a; */ /* not used */
-  /*bool c;*/
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-  /*int flag;*/ /* 95/Feb/19 */
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
+
   pool_ptr = 0;
   str_ptr = 0;
   str_start[0] = 0;
 
+  for (k = 0; k <= 255; k++)
   {
-    register integer for_end;
-    k = 0;
-    for_end = 255;
-    if (k <= for_end)
-      do {
-        if (((k < ' ') || (k > '~')))
-        {
-          append_char('^');
-          append_char('^');
-          if (k < 64)
-            append_char(k + 64);
-          else
-            if (k < 128)
-              append_char(k - 64);
-            else
-            {
-              append_lc_hex(k / 16);
-              append_lc_hex(k % 16);
-            }
-        }
-        else
-          append_char(k);
-        g = make_string();
-      } while(k++ < for_end);
-  }
-#ifdef STDPOOL
-  vstrcpy((char *) name_of_file + 1, pool_name);
-  name_of_file[0] = ' ';
-  name_of_file[strlen(pool_name) + 1] = ' '; 
-  name_length = strlen(pool_name);
-/*  if (a_open_in(pool_file, TEXPOOLPATH))  */
-  flag = a_open_in(pool_file, TEXPOOLPATH);
-  if (flag == 0) /* 95/Feb/19 */
-  {
-    pool_name [name_length - 1] = '\0'; /* `tex.pool' => `tex.poo' */
-    vstrcpy((char *) name_of_file + 1, pool_name);
-    name_of_file[0] = ' ';
-    name_of_file[strlen(pool_name) + 1] = ' ';
-    name_length = strlen(pool_name);
-    flag = a_open_in(pool_file, TEXPOOLPATH);
-  }
-  if (flag)
-  {
-    c = false;
-    do {
-      {
-        if (test_eof(pool_file))
-        {
-          show_line("! string pool file has no check sum.\n", 1);
-          if (! knuth_flag)
-            bad_formator_pool(string_file, "the pool file", "TEXPOOL");
-          (void) a_close(pool_file);
-          Result = false;
-          return(Result);
-        }
-        read(pool_file, m);
-        read(pool_file, n);
-        if (m == '*') /* last line starts with * */
-        {
-          a = 0;
-          k = 1;
-          while (true) {
-            if ((xord[n]< 48) || (xord[n]> 57))
-            {
-              show_line("! string pool file check sum doesn't have nine digits.\n", 1);
-              if (!knuth_flag)
-                bad_formator_pool(string_file, "the pool file", "TEXPOOL");
-              (void) a_close(pool_file);
-              Result = false;
-              return(Result);
-            }
-            a = 10 * a + xord[n] - 48;
-            if (k == 9)
-              goto lab30;
-            incr(k);
-            read(pool_file, n);
-          }
-/* tex.pool file check sum *367403084 */
-lab30:
-          if (a != BEGINFMTCHECKSUM)
-          {
-            show_line("! string pool check sum doesn't match; tangle me again.\n", 1);
-            if (!knuth_flag)
-              bad_formator_pool(string_file, "the pool file", "TEXPOOL");
-            (void) a_close(pool_file);
-            Result = false;
-            return(Result);
-          }
-          c = true;
-        }
+    if (((k < ' ') || (k > '~')))
+    {
+      append_char('^');
+      append_char('^');
+
+      if (k < 64)
+        append_char(k + 64);
+      else
+        if (k < 128)
+          append_char(k - 64);
         else
         {
-          if ((xord[m] < 48) || (xord[m] > 57) || (xord[n] < 48) || (xord[n] > 57))
-          {
-            show_line("! string pool line doesn't begin with two digits.\n", 1);
-            if (! knuth_flag)
-              bad_formator_pool(string_file, "the pool file", "TEXPOOL");
-            (void) a_close(pool_file);
-            Result = false;
-            return(Result);
-          }
-          l = xord[m] * 10 + xord[n] - 48 * 11;
-#ifdef ALLOCATESTRING
-/* can freely extend memory, so we need not be paranoid - stringvacancies */
-/* if (pool_ptr + l + stringvacancies > current_pool_size)*/
-          if (pool_ptr + l + stringmargin > current_pool_size)
-          {
-            if (trace_flag)
-              show_line("String margin reallocation\n", 0);
-/* str_pool =  realloc_str_pool (pool_ptr + l + stringvacancies */
-            str_pool =  realloc_str_pool (pool_ptr + l + stringmargin - current_pool_size + increment_pool_size);
-          }
-          if (pool_ptr + l + stringmargin > current_pool_size) /* 94/Jan/24 */
-#else
-          if (pool_ptr + l + stringvacancies > pool_size)
-#endif
-          {
-            show_line("! You have to increase POOLSIZE.\n", 1);
-            (void) a_close(pool_file);
-            Result = false;
-            return(Result);
-          }
-          {
-            register integer for_end;
-            k = 1;
-            for_end = l;
-            if (k <= for_end) 
-              do {
-                if (eoln(pool_file))
-                  m = ' ';
-                else read(pool_file, m);
-                {
-                  str_pool[pool_ptr] = xord[m];
-                  incr(pool_ptr);
-                }
-              } while(k++ < for_end);
-          }
-          readln(pool_file); /* flush rest to end of file / end of line */
-          g = make_string();
+          append_lc_hex(k / 16);
+          append_lc_hex(k % 16);
         }
-      }
-    } while (!(c));
-    (void) a_close(pool_file);
-    Result = true;
+    }
+    else
+      append_char(k);
+
+    g = make_string();
   }
-  else
-  {
-    sprintf(log_line, "! I can't read %s.\n", pool_name);
-    show_line(log_line, 1);
-    if (!knuth_flag)
-      show_line("  (Was unable to find tex.poo or tex.pool)\n", 0); /* extra explain */
-    Result = false;
-    return(Result);
-  }
-#endif
+
   g = load_pool_strings(pool_size - stringvacancies);
 
   if (g == 0)
   {
     fprintf(stdout , "%s\n",  "! You have to increase POOLSIZE." );
-    Result = false;
-    return Result;
+    return false;
   }
 
-  Result = true;
-  return Result;
+  return true;
 }
 #endif /* INITEX */
 
 #ifdef INITEX
+/* sec 0131 */
 void sort_avail (void)
 {
   halfword p, q, r;
@@ -3221,7 +2961,7 @@ void sort_avail (void)
     p = rlink(p);
   }
 
-  mem[p + 1].hh.v.RH = rover;
+  rlink(p) = rover;
   llink(rover) = p;
 }
 #endif /* INITEX */
@@ -3242,7 +2982,7 @@ str_number make_string_pool (char *s)
     return (make_string());
   }
 }
-
+/* sec 0264 */
 void primitive_ (str_number s, quarterword c, halfword o)
 { 
   pool_pointer k;
@@ -3258,45 +2998,45 @@ void primitive_ (str_number s, quarterword c, halfword o)
     l = str_start[s + 1] - k; /* small_number l */
 
     for (j = 0; j <= l - 1; j++)
-    {
       buffer[j] = str_pool[k + j];
-    }
 
     cur_val = id_lookup(0, l);
     flush_string();
-/* **********************  debugging only  96/Jan/20 should not happen */
+
 #ifdef SHORTHASH
     if (s > 65535L)
       show_line("ERROR: hash entry too large\n", 1);
 #endif
-    hash[cur_val].v.RH = s;
+
+    text(cur_val) = s;
   }
 
-  eqtb[cur_val].hh.b1 = 1;
-  eqtb[cur_val].hh.b0 = c;
-  eqtb[cur_val].hh.v.RH = o;
+  eq_level(cur_val) = level_one;
+  eq_type(cur_val) = c;
+  equiv(cur_val) = o;
 }
 #endif /* INITEX */
 
 /* more weird constants ? page 394 */
 
 #ifdef INITEX
+/* sec 0944 */
 trie_op_code new_trie_op_ (small_number d, small_number n, trie_op_code v)
 {
-  register trie_op_code Result;
   integer h;
   trie_op_code u;
   integer l;
-/* the 313, 361 and 1009 are hard-wired constants here p.944 */
-/* begin h:=abs(n+313*d+361*v+1009*cur_lang) mod (trie_op_size+trie_op_size) */
-  h = abs(toint(n) + 313 * toint(d) + 361 * toint(v) + 1009 * toint(cur_lang)) % (trie_op_size - neg_trie_op_size) + neg_trie_op_size;
-  while (true) {
+
+  h = abs(n + 313 * d + 361 * v + 1009 * cur_lang) % (trie_op_size + trie_op_size) + neg_trie_op_size;
+
+  while (true)
+  {
     l = trie_op_hash[h];
+
     if (l == 0)
     {
       if (trie_op_ptr == trie_op_size)
       {
-        /* pattern memory ops  - NOT DYNAMIC */
         overflow("pattern memory ops", trie_op_size);
         return 0;     // abort_flag set
       }
@@ -3305,7 +3045,6 @@ trie_op_code new_trie_op_ (small_number d, small_number n, trie_op_code v)
 
       if (u == max_trie_op)
       {
-        /* pattern memory ops per language */
         overflow("pattern memory ops per language", max_trie_op - min_trie_op);
         return 0;     // abort_flag set
       }
@@ -3323,14 +3062,12 @@ trie_op_code new_trie_op_ (small_number d, small_number n, trie_op_code v)
       trie_op_lang[trie_op_ptr] = cur_lang;
       trie_op_hash[h] = trie_op_ptr;
       trie_op_val[trie_op_ptr] = u;
-      Result = u;
-      return(Result);
+      return u;
     }
 
     if ((hyf_distance[l]== d) && (hyf_num[l]== n) && (hyf_next[l]== v) && (trie_op_lang[l]== cur_lang))
     {
-      Result = trie_op_val[l];
-      return(Result);
+      return trie_op_val[l];
     }
 
     if (h > - (integer) trie_op_size)
@@ -3338,17 +3075,16 @@ trie_op_code new_trie_op_ (small_number d, small_number n, trie_op_code v)
     else
       h = trie_op_size;
   }
-/* return Result;  */ /* unreachable code */
 }
-/* what are those horrible constants there ? page 395 */
+/* sec 0948 */
 trie_pointer trie_node_ (trie_pointer p)
 {
-  register trie_pointer Result;
   trie_pointer h;
   trie_pointer q;
-/* the 1009, 2718, 3142 are hard-wired constants here (not hyphen_prime) */
-  h = abs(toint(trie_c[p]) + 1009 * toint(trie_o[p]) +
-      2718 * toint(trie_l[p]) + 3142 * toint(trie_r[p])) % trie_size;
+
+  /* the 1009, 2718, 3142 are hard-wired constants here (not hyphen_prime) */
+  /* compute hash value */
+  h = abs(trie_c[p] + 1009 * trie_o[p] + 2718 * trie_l[p] + 3142 * trie_r[p]) % trie_size;
 
   while (true)
   {
@@ -3357,15 +3093,13 @@ trie_pointer trie_node_ (trie_pointer p)
     if (q == 0)
     {
       trie_hash[h] = p;
-      Result = p;
-      return(Result);
+      return p;
     }
 
     if ((trie_c[q] == trie_c[p]) && (trie_o[q] == trie_o[p]) &&
-      (trie_l[q]== trie_l[p]) && (trie_r[q]== trie_r[p]))
+      (trie_l[q] == trie_l[p]) && (trie_r[q] == trie_r[p]))
     {
-      Result = q;
-      return(Result);
+      return q;
     }
 
     if (h > 0)
@@ -3373,22 +3107,20 @@ trie_pointer trie_node_ (trie_pointer p)
     else
       h = trie_size;
   }
-/* return Result;  */ /* unreachable code */
 }
+/* sec 0949 */
 trie_pointer compress_trie_ (trie_pointer p)
 {
-  register trie_pointer Result;
-
   if (p == 0)
-    Result = 0;
+    return 0;
   else
   {
     trie_l[p] = compress_trie(trie_l[p]);
     trie_r[p] = compress_trie(trie_r[p]);
-    Result = trie_node(p);
+    return trie_node(p);
   }
-  return Result;
 }
+/* sec 0953 */
 void first_fit_ (trie_pointer p)
 {
   trie_pointer h;
@@ -3446,6 +3178,7 @@ lab40:
   trie_taken[h] = true; /* h may be used without ... */
   trie_hash[p] = h;
   q = p;
+
   do {
     z = h + trie_c[q];
     l = trie_tro[z];
@@ -3453,12 +3186,14 @@ lab40:
     trie_tro[r] = l;
     trie_trl[l] = r;
     trie_trl[z] = 0;
+
     if (l < 256)
     {
       if (z < 256)
         ll = z;         /* short ll */
       else
         ll = 256;
+
       do {
         trie_min[l] = r;
         incr(l);
@@ -3467,22 +3202,26 @@ lab40:
     q = trie_r[q];
   } while (!(q == 0));
 }
+/* sec 0957 */
 void trie_pack_ (trie_pointer p)
 {
   trie_pointer q;
 
-  do {
-    q = trie_l[p];
-
-    if ((q > 0) && (trie_hash[q]== 0))
+  do
     {
-      first_fit(q);
-      trie_pack(q);
-    }
+      q = trie_l[p];
 
-    p = trie_r[p];
-  } while(!(p == 0));
+      if ((q > 0) && (trie_hash[q]== 0))
+      {
+        first_fit(q);
+        trie_pack(q);
+      }
+
+      p = trie_r[p];
+    }
+  while(!(p == 0));
 }
+/* sec 0959 */
 void trie_fix_ (trie_pointer p)
 {
   trie_pointer q;
@@ -3491,18 +3230,20 @@ void trie_fix_ (trie_pointer p)
 
   z = trie_hash[p];
 
-  do {
-    q = trie_l[p];
-    c = trie_c[p];
-    trie_trl[z + c] = trie_hash[q];
-    trie_trc[z + c] = c;
-    trie_tro[z + c] = trie_o[p];
+  do
+    {
+      q = trie_l[p];
+      c = trie_c[p];
+      trie_trl[z + c] = trie_hash[q];
+      trie_trc[z + c] = c;
+      trie_tro[z + c] = trie_o[p];
 
-    if (q > 0)
-      trie_fix(q);
+      if (q > 0)
+        trie_fix(q);
 
-    p = trie_r[p];
-  } while(!(p == 0));
+      p = trie_r[p];
+    }
+  while(!(p == 0));
 }
 /* sec 0960 */
 void new_patterns (void)
@@ -3767,15 +3508,19 @@ void init_trie (void)
   {
     trie_fix(trie_l[0]);
     r = 0;
-    do {
-      s = trie_trl[r];
+
+    do
       {
-        trie_trl[r] = 0;
-        trie_tro[r] = min_trie_op;
-        trie_trc[r] = 0;
+        s = trie_trl[r];
+        {
+          trie_trl[r] = 0;
+          trie_tro[r] = min_trie_op;
+          trie_trc[r] = 0;
+        }
+
+        r = s;
       }
-      r = s;
-    } while(!(r > trie_max));
+    while(!(r > trie_max));
   }
   trie_trc[0] = 63;
   trie_not_ready = false;
@@ -3783,6 +3528,7 @@ void init_trie (void)
 #endif /* INITEX */
 
 #ifdef INITEX
+/* sec 1302 */
 void store_fmt_file (void)
 {
   integer j, k, l;
@@ -4547,7 +4293,4 @@ void init_prim (void)
   primitive("setlanguage", extension, 5);
   no_new_control_sequence = true; 
 }
-#endif /* INITEX */
-
-//#pragma optimize("s", off) /* 96/Sep/12 */
-//#pragma optimize("t", on)  /* 96/Sep/12 */
+#endif

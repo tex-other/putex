@@ -3566,8 +3566,9 @@ int init (int ac, char **av)
   font_dimen_zero = true;     /* \fontdimen0 for checksum 98/Oct/5 */
   ignore_frozen = false;     /* default is not to ignore 98/Oct/5 */
   suppress_f_ligs = false;      /* default is not to ignore f-ligs */
-/*  if (*av[1] == '-Y') reorder_arg_flag = false; */  /* 94/April/14 */
-  if (ac > 1 && *av[1] == '-Y') reorder_arg_flag = false;
+
+  if (ac > 1 && !strncmp(av[1], "-Y", 2))
+    reorder_arg_flag = false;
 
   if (reorder_arg_flag) reorderargs(ac, av);  
 

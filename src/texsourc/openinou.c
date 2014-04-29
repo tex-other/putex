@@ -217,17 +217,9 @@ void retwiddle (unsigned char *s)
   }
 }
 
-/* #endif */ /* ??? */
-
-/* Open an input file F, using the path PATHSPEC and passing
-   FOPEN_MODE to fopen.  The filename is in `name_of_file', as a Pascal
-   string. We return whether or not the open succeeded.  If it did, we
-   also set `name_length' to the length of the full pathname that we
-   opened.  */
 /* in lib/openclose.c */
 bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 {
-  char * fname;
   bool openable = false;
 
 #if defined (FUNNY_CORE_DUMP) && !defined (BibTeX)
@@ -272,28 +264,24 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 #ifdef MSDOS
     if (name_of_file[1] == '.' && (name_of_file[2] == PATH_SEP || name_of_file[2] == '\\'))
 #else
-    if (name_of_file[1] == '.' && name_of_file[2] == PATH_SEP) 
+    if (name_of_file[1] == '.' && name_of_file[2] == PATH_SEP)
 #endif
     {
       unsigned i = 1;
-/*        while (name_of_file[i + 2] != ' ') */
+
       while (name_of_file[i + 2] != '\0')
       {
         name_of_file[i] = name_of_file[i + 2];
         i++;
       }
-/*      name_of_file[i] = ' '; */
+
       name_of_file[i] = '\0';
       name_length = i - 1;
     }
     else
-/*      name_length = strchr(name_of_file + 1, ' ') - (name_of_file + 1); */
       name_length = strlen((char *) name_of_file + 1);
       
 #ifdef TeX
-/*    If we just opened a TFM file, we have to read the first byte,
-        since TeX wants to look at it.  What a kludge.  */
-/*    See comments in ctex.ch for why we need this.  */
     if (path_index == TFMFILEPATH)
     {
       tfm_temp = getc (*f);
@@ -301,21 +289,20 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 #endif /* TeX */  
 
 #ifdef MSDOS
-/*    code added 94/June/21 to show 'fmt' file opening in log */
     if (strstr((char *) name_of_file + 1, ".fmt") != NULL)
     {
       if (format_file == NULL)
       {
         format_file = xstrdup((char *) name_of_file + 1);
       }
-    } /* remember full format file name with path */
-    else if (strstr((char *)name_of_file+1, ".poo") != NULL)
+    }
+    else if (strstr((char *)name_of_file + 1, ".poo") != NULL)
     {
       if (string_file == NULL)
       {
         string_file = xstrdup((char *) name_of_file + 1);
       }
-    } /* remember full pool file name with path */
+    }
     else if (strstr((char *)name_of_file+1, ".tfm") != NULL)
     {
       if (show_tfm_flag && log_opened)
@@ -340,7 +327,7 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
         {
           putc('\n', log_file);
           file_offset = 0;
-        } /* somewhat risky ? */
+        }
         else
           putc(' ', log_file);
 

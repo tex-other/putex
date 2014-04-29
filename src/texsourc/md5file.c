@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include "libmd5/md5.h"
 
-char * md5_file(const char * file_name)
+char * md5_file_name(const char * file_name)
 {
   md5_state_t md5_ship;
   md5_byte_t  md5_data[1024];
@@ -40,6 +40,30 @@ char * md5_file(const char * file_name)
   md5_finish(&md5_ship, md5_digest);
 
   fclose(ship_file);
+
+  for (i = 0; i < 16; ++i)
+    sprintf(md5_hex + i * 2, "%02X", md5_digest[i]);
+
+  return md5_hex;
+}
+
+char * md5_file(FILE * in_file)
+{
+  md5_state_t md5_ship;
+  md5_byte_t  md5_data[1024];
+  md5_byte_t  md5_digest[16];
+  static char md5_hex[33];
+  int         md5_len;
+  int i;
+
+  md5_init(&md5_ship);
+
+  while ((md5_len = fread(md5_data, 1, 1024, in_file)) != 0)
+    md5_append(&md5_ship, md5_data, md5_len);
+
+  md5_finish(&md5_ship, md5_digest);
+
+  fclose(in_file);
 
   for (i = 0; i < 16; ++i)
     sprintf(md5_hex + i * 2, "%02X", md5_digest[i]);

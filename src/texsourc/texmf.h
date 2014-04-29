@@ -76,7 +76,7 @@ extern bool input_line (FILE *);
 #define w_close       a_close
 
 /* sec 0241 */
-#define fix_date_and_time(i, j, k, l) get_date_and_time (&(i), &(j), &(k), &(l))
+#define fix_date_and_time() get_date_and_time (&(tex_time), &(day), &(month), &(year))
 
 /* If we're running under Unix, use system calls instead of standard I/O
    to read and write the output files; also, be able to make a core dump. */ 

@@ -839,6 +839,7 @@ bool init_terminal (void)
 {
   register bool Result;
   int flag;
+
   t_open_in();
 
   if (last > first)

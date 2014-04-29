@@ -407,11 +407,9 @@ void close_files_and_terminate (void)
     print_string(" bytes).");
     b_close(dvi_file);
     /* BEGIN-MD5 */
-    print_nl("The MD5 checksum on ");
-    print_char_string((unsigned char *) dvi_file_name);
-    print_string(": ");
-    print_char_string((unsigned char *) md5_file(dvi_file_name));
-    print_string(".");
+    //print_nl("  MD5 checksum on :");
+    //print_char_string((unsigned char *) md5_file(dvi_file));
+    //print_string(".");
     /* END  -MD5 */
   }
 
