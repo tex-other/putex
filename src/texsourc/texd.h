@@ -1,3 +1,4 @@
+//#include "hpdf.h"
 #define show_line(str,flag) fputs(str,stdout)
 #define show_char(chr) putc(chr, stdout)
 extern char log_line[];

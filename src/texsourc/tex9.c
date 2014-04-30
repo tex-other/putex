@@ -410,8 +410,10 @@ void close_files_and_terminate (void)
     b_close(dvi_file);
   }
 
-//  HPDF_SaveToFile (yandy_pdf, "texput.pdf");
-//  HPDF_Free(yandy_pdf);
+/*
+  HPDF_SaveToFile (yandy_pdf, "texput.pdf");
+  HPDF_Free(yandy_pdf);
+*/
 
   if (log_opened)
   {

@@ -27,8 +27,9 @@
 #include "c-auto.h"
 
 /* ``Standard'' headers.  */
-#include "c-std.h"
-//#include <kpathsea/c-std.h>
+//#include "c-std.h"
+#include <kpathsea/c-auto.h>
+#include <kpathsea/c-std.h>
 
 /* Everybody uses PATH_MAX.  */
 #include <kpathsea/c-pathmx.h>

@@ -33,8 +33,6 @@
 #include <setjmp.h>
 #include <assert.h>
 
-#pragma hdrstop
-
 #define EXTERN extern
 
 #include "texd.h"
@@ -123,8 +121,6 @@ void uexit (int unix_code)
   jump_used++;
   exit(final_code);
 }
-// round a double being careful about very large and very small values
-// used only in tex0.c, a Pascal function
 /* texk/web2c/lib/zround.c */
 integer zround (double r)
 {
@@ -141,12 +137,6 @@ integer zround (double r)
 
   return i;
 }
-/***********************************************************************/
-// following used only in itex.c on pool file
-/* Return true if we're at the end of FILE, else false.  This implements */
-/*  Pascal's `eof' builtin.                                              */
-/* It differs from C feof in that the latter is not true at end of file
-   unless an attempt has actually been made to read past EOF             */
 /* texk/web2c/lib/eofeoln.c */
 bool test_eof (FILE * file)
 {
@@ -165,7 +155,6 @@ bool test_eof (FILE * file)
 
   return false;
 }
-/* Return true on end-of-line in FILE or at the end of FILE, else false.  */
 /* texk/web2c/lib/eofeoln.c */
 bool eoln (FILE * file)
 {
@@ -182,59 +171,7 @@ bool eoln (FILE * file)
   return c == '\n' || c == '\r' || c == EOF; // ???
 /* Type mismatch (return) (int/enum) ? */
 }
-/***********************************************************************/
 
-/****************************************************************************************/
-#ifdef MALLOCLINE
-
-#define BLOCK_SIZE 64
-
-// this returns newly allocated character string
-/* kpathsea/line.c */
-char *read_line (FILE * f)
-{
-  int c;
-  unsigned int limit = BLOCK_SIZE;
-  unsigned int loc = 0;
-  char * line = (char *) xmalloc (limit);
-
-/*  while ((c = getc (f)) != EOF && c != '\n')  */
-  while ((c = getc (f)) != EOF && c != '\n' && c != '\r')
-  {
-    line[loc] = (char) c;
-    loc++;
-/* By testing after the assignment, we guarantee that we'll always
-   have space for the null we append below.  We know we always
-   have room for the first char, since we start with BLOCK_SIZE.  */
-    if (loc == limit)
-    {
-      limit += BLOCK_SIZE;
-      line = (char *) xrealloc (line, limit);
-    }
-  }
-
-/* If we read anything, return it.  This can't represent a last
-   ``line'' which doesn't end in a newline, but so what.  */
-/* This is Tom Rokicki's mistake -- lets fix it ! 1994/March/18 */
-  if (c != EOF)
-  {
-/* Terminate the string.  We can't represent nulls in the file,
-   either.  Again, it doesn't matter.  */
-    line[loc] = 0;
-  }
-  else if (loc > 0)
-  { /* c == EOF, but line not empty 1994/March/18 */
-    line[loc] = 0;
-  }
-  else
-  { /* Real EOF --- at end of file.  */
-    free (line);
-    line = NULL;
-  }
-
-  return line;
-}
-#endif
 
 /* Modified version 97/May/17 to avoid malloc for every line read ... */
 char * read_a_line (FILE *f,  char *line, int limit)
@@ -242,7 +179,6 @@ char * read_a_line (FILE *f,  char *line, int limit)
   int c;
   int loc = 0;
 
-/*  while ((c = getc (f)) != EOF && c != '\n')  */
   while ((c = getc (f)) != EOF)
   {
     if (c == '\n' || c == '\r')
@@ -250,10 +186,12 @@ char * read_a_line (FILE *f,  char *line, int limit)
       if (loc > 0) break;
       else continue;        /* ignore \r\n and blank lines */
     }
+
     line[loc] = (char) c;
     loc++;
+
     if (loc == limit - 1)
-    {     /* very unlikely */
+    {
       sprintf(log_line, " ERROR: line too long\n");
       show_line(log_line, 1);
       show_line(line, 0);
@@ -267,7 +205,8 @@ char * read_a_line (FILE *f,  char *line, int limit)
     line[loc] = '\0';       /* terminate */
     return line;          /* and return */
   }
-  else return(NULL);          /* true EOF */
+  else
+    return(NULL);          /* true EOF */
 }
 /****************************************************************************************/
 
@@ -870,39 +809,47 @@ int xfind_path_filename (string buffer, string filename, string * dir_list)
 {
   string found_name = NULL;
 
-  if (buffer == filename) {
+  if (buffer == filename)
+  {
     show_line("buffer == filename\n", 1);
   }
 
   *buffer = '\0';       /* "" in case we fail */
 
-  if (open_trace_flag) {
+  if (open_trace_flag)
+  {
     sprintf(log_line, "Find path for `%s' ", filename);
     show_line(log_line, 0);
   }
 
 /*  ignore current directory for TFM files ? */ /* 1994/Jan/24 */
-  if (!current_tfm &&  strstr(filename, ".tfm") != NULL &&
-      strcmp(*dir_list, "./") == 0) {
-    if (open_trace_flag) {
+  if (!current_tfm &&  strstr(filename, ".tfm") != NULL && strcmp(*dir_list, "./") == 0)
+  {
+    if (open_trace_flag)
+    {
       sprintf(log_line, "Ignoring `.' for %s ", filename);
       show_line(log_line, 0);
     }
+
     dir_list++;           /* step over first entry in dir list */
   }
 
-  if (trace_flag && open_trace_flag) {    /* debugging trace 1994/Jan/8 */
+  if (trace_flag && open_trace_flag)
+  {
     char **pstrs;
     pstrs = dir_list;
     show_line("\n", 0);
     sprintf(log_line, "Find path for `%s' ", filename);
     show_line(log_line, 0);
     show_line("- IN: ", 0);
-    while (*pstrs != NULL) {
+
+    while (*pstrs != NULL)
+    {
       sprintf(log_line, "%s ", *pstrs);
       show_line(log_line, 0);
       pstrs++;
     }
+
     show_line("\n", 0);
   }
 
@@ -922,42 +869,61 @@ int xfind_path_filename (string buffer, string filename, string * dir_list)
 /*  could also try and catch `nul.tex' first - but who cares about speed ? */
 /*  needed to add this since `access' gets the wrong answer */
 /*  that is, `nul' is a file that can be opened, but `access' says not so */
-  if (strcmp(filename, "nul") == 0) strcpy(buffer, filename); 
+  if (strcmp(filename, "nul") == 0)
+    strcpy(buffer, filename); 
 /*  If FILENAME is absolute or explicitly relative, or if DIR_LIST is
     null, only check if FILENAME is readable.  */
 /*  if (absolute_p (filename) || dir_list == NULL) */ /* 94/Jan/6 */
-  else if (absolute_p (filename) || dir_list == NULL) {
-    if (file_method)  found_name = file_p (filename);
-    else found_name = readable (filename);
-    if (found_name != NULL) strcpy(buffer, found_name);
-    else *buffer = '\0';
+  else if (absolute_p (filename) || dir_list == NULL)
+  {
+    if (file_method)
+      found_name = file_p (filename);
+    else
+      found_name = readable (filename);
+
+    if (found_name != NULL)
+      strcpy(buffer, found_name);
+    else
+      *buffer = '\0';
   }
-  else { /* Test if FILENAME is in any of the directories in DIR_LIST.  */
+  else  /* Test if FILENAME is in any of the directories in DIR_LIST.  */
+  {
     char *s;
     int sourceflag;
     int firsttime=1;
-    while (*dir_list != NULL)  {
+
+    while (*dir_list != NULL) 
+    {
 /* if item is current directory, look in source file directory first */
 /* provided usesourcedirectory flag is set and workingdirectory in use */
       s = *dir_list;
       sourceflag = 0;
-      if (strcmp(s, "./") == 0) {
+
+      if (strcmp(s, "./") == 0)
+      {
         if (firsttime && usesourcedirectory && workingdirectory &&
-            source_direct != NULL && *source_direct != '\0') {
+            source_direct != NULL && *source_direct != '\0')
+        {
           s = source_direct;
-          if (trace_flag) {
+
+          if (trace_flag)
+          {
             sprintf(log_line, "Using %s dir %s %s\n", "source", s, "X");
             show_line(log_line, 0);
           }
+
           sourceflag = 1;     /* avoid increment of list below */
           firsttime = 0;      /* special stuff only first time */
         }
-        else if (trace_flag) {
+        else if (trace_flag)
+        {
           sprintf(log_line, "Using %s dir %s %s\n", "current",  s, "X");
           show_line(log_line, 0);
         }
       }
-      if (trace_flag) {
+
+      if (trace_flag)
+      {
         sprintf(log_line, "XCONCAT %s %s in find_path_filename\n",
             s, filename);
         show_line(log_line, 0);

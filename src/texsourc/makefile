@@ -25,8 +25,8 @@ RC = rc
 # Release version
 # CFLAGS=/c /Ge /Gy /Gf /Ox /W4 /DMSDOS /DTeX /DPHARLAP /DNDEBUG /Ilib /YX
 CFLAGS=/nologo /c /MT /GF /Gy /Ox /W4 /DMSDOS /DTeX /DPHARLAP /DNDEBUG \
-	/I"kpathsea"
-# /I"libharu/include" /I"libharu/win32/include"
+	/I"kpathsea" 
+#/I"libharu/include" /I"libharu/win32/include"
 # Debugging version
 # CFLAGS=/c /Ge /Gy /Gf /Od /Zi /W4 /DMSDOS /DTeX /DPHARLAP /Ilib /YX
 
@@ -48,14 +48,12 @@ objs = texmf.obj itex.obj openinou.obj subroute.obj local.obj \
 	yandy_pool.obj yandytex.res md5.obj md5file.obj
 
 # ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
-# # LIBHARU
-# lib/libhpdf/libhpdf.lib lib/zlib/zlib.lib
 
 texmf.exe: $(objs) 
 	$(LINK) $(LFLAGS) texmf itex openinou subroute local \
 	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9 \
-	yandy_pool yandytex.res md5 md5file kpathsea\kpathsea.lib
-#	kpathsea\kpathsea.lib libharu\libhpdf.lib libpng\libpng.lib zlib\zlib.lib
+	yandy_pool yandytex.res md5 md5file kpathsea\kpathsea.lib 
+#	libharu\libhpdf.lib libpng\libpng.lib zlib\zlib.lib
 	copy texmf.exe yandytex.exe
 	del ..\yandy\bin\texmf.exe
 	copy texmf.exe ..\yandy\bin\texmf.exe

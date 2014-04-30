@@ -89,11 +89,6 @@
 /* Default editor command string: `%d' expands to the line number where
    TeX or Metafont found an error and `%s' expands to the name of the
    file.  The environment variables TEXEDIT and MFEDIT override this.  */
-#ifndef EDITOR
-/* #define EDITOR "vi +%d %s" */
-/* #define EDITOR "epsilon +%d %s" */		/* better default for DOS bkph */
-  #define EDITOR "c:\\yandy\\WinEdt\\WinEdt.exe [Open('%s');SelLine(%d,7)]"
-#endif
 
 /* If you don't want to be able to potentially share format/base files
    across architectures, define NO_FMTBASE_SWAP.  Sharable files load

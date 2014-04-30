@@ -56,10 +56,10 @@ extern void xclosedir P1H(DIR *);
 /* #if !defined(DOS) || defined(PHARLAP) */ /* 1999/Jan/9 */
 
 /* Returns true if FN is a directory (or a symlink to a directory).  */
-extern bool dir_p P1H(string fn);
+extern bool dir_p (string fn);
 
 /* Returns true if FN is directory with no subdirectories.  */
-extern bool leaf_dir_p P1H(string fn);
+extern bool leaf_dir_p (string fn);
 
 /* #endif */ /* not DOS, or DOS with PHARLAP */
 

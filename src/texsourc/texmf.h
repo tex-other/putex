@@ -76,14 +76,11 @@ extern bool input_line (FILE *);
   #define dumpcore abort
 #endif
 
-#ifndef unix
-#ifdef TeX
-#define write_dvi(a, b)                                                 \
-  if (fwrite ((char *) &dvi_buf[a], sizeof (dvi_buf[a]),                \
-         (int) ((b) - (a) + 1), dvi_file) != (size_t) ((b) - (a) + 1))  \
+#define write_dvi(a, b)                                           \
+  if ((size_t) fwrite ((char *) &dvi_buf[a], sizeof (dvi_buf[a]), \
+         (size_t) ((size_t)(b) - (size_t)(a) + 1), dvi_file)      \
+         != (size_t) ((size_t)(b) - (size_t)(a) + 1))             \
      FATAL_PERROR ("\n! dvi file")
-#endif /* not TeX */
-#endif /* unix */
 
 extern int do_dump (char *, int, int, FILE *);
 extern int do_undump (char *, int, int, FILE *);
