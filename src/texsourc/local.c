@@ -26,8 +26,6 @@
   #define MYLIBAPI __declspec(dllexport)
 #endif
 
-#include "texwin.h"
-
 #pragma warning(disable:4996)
 #pragma warning(disable:4131) // old style declarator
 #pragma warning(disable:4135) // conversion between different integral types 
@@ -41,24 +39,9 @@
 
 /* Most Y & Y changes are localized here -- init() */
 
-/* Note int main (int ac, char *av[]) is in texmf.c */
-/* and that calls main_program = texbody in itex.c => initialize */
-/* which in turn calls init here in local.c */
-/* which then calls init_commands here in local.c */ 
-
 #define USEOUREALLOC      /* 96/Jan/20 */
 
 #define USEMEMSET       /* 98/Jan/23 */
-
-/* #define PREALLOCHOLE */    /* make hole in heap at bottom debugging */
-
-/* #define CHECKALIGNMENT */  /* reactivated 95/Jan/7 */
-
-/* #define HEAPSHOW */      /* debugging 96/Jan/20 */
-
-/* #ifdef TRYANDOPEN */     /* debugging only */
-
-/* #define SHOWHEAPERROR */   /* debugging 96/Jan/10 */
 
 #ifndef _WINDOWS
 /* #define HEAPWALK */      /* debugging 96/Oct/22 */

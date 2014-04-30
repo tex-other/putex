@@ -24,11 +24,13 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "getopt.h"
+//#include "getopt.h"
+#include <kpathsea/getopt.h>
 #include "lib.h"
 #include "ourpaths.h"
 #include "pascal.h"
-#include "types.h"
+//#include "types.h"
+#include <kpathsea/types.h>
 
 
 /* We never need the `link' system call, which is sometimes declared in
@@ -52,20 +54,6 @@
 /* Some features are only needed in certain programs.  */
 
 #ifdef TeX
-/* The type `glueratio' should be a floating point type which won't
-   unnecessarily increase the size of the memory_word structure.  This is
-   the basic requirement.  On most machines, if you're building a
-   normal-sized TeX, then glueratio must probably meet the following
-   restriction: sizeof(glueratio) <= sizeof(integer).  Usually, then,
-   glueratio must be `float'.  But if you build a big TeX, you can (on
-   most machines) and should make it `double' to avoid loss of precision
-   and conversions to and from double during calculations.  (All this
-   also goes for Metafont.)  Furthermore, if you have enough memory, it
-   won't hurt to have this defined to be `double' for running the
-   trip/trap tests.
-   
-   This type is set automatically to `float' by configure if a small TeX
-   is built.  */
 #ifndef GLUERATIO_TYPE
   #define GLUERATIO_TYPE double
 #endif

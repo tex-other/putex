@@ -8,8 +8,6 @@
   #define MYLIBAPI __declspec(dllexport)
 #endif
 
-#include "texwin.h"
-
 #pragma warning(disable:4996)
 #pragma warning(disable:4131) // old style declarator
 #pragma warning(disable:4135) // conversion between different integral types 
@@ -163,6 +161,11 @@ void zdvipop(integer l)
 }
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
 /* sec 0602 */
+/*
+void pdf_font_def_(internal_font_number f)
+{
+}
+*/
 void dvi_font_def_(internal_font_number f)
 {
   pool_pointer k;

@@ -8,8 +8,6 @@
   #define MYLIBAPI __declspec(dllexport)
 #endif
 
-#include "texwin.h"
-
 #pragma warning(disable:4131) // old style declarator
 #pragma warning(disable:4135) // conversion between different integral types 
 #pragma warning(disable:4127) // conditional expression is constant

@@ -28,15 +28,16 @@
 
 /* ``Standard'' headers.  */
 #include "c-std.h"
+//#include <kpathsea/c-std.h>
 
 /* Everybody uses PATH_MAX.  */
-#include "c-pathmx.h"
+#include <kpathsea/c-pathmx.h>
 
 /* How to open files with fopen.  */
-#include "c-fopen.h"
+#include <kpathsea/c-fopen.h>
 
 /* Macros to discard or keep prototypes.  */
-#include "c-proto.h"
+#include <kpathsea/c-proto.h> 
 
 
 /* The smallest signed type: use `signed char' if ANSI C, `short' if
@@ -71,19 +72,6 @@ typedef INTEGER_TYPE integer;
 /* #ifndef __STDC__ */
 /* #define volatile */
 /* #endif */	/* flushed 1994/March/20 to protect `int interrupt' */
-
-/* System-dependent hacks.  */
-
-/* Hack to get around High C on an IBM RT treating `char' differently
-   than normal compilers, etc.   */
-#if defined (__HIGHC__) && defined (ibm032)
-pragma	Off(Char_default_unsigned);
-pragma	On(Char_is_rep);
-pragma	On(Parm_warnings);
-pragma	On(Pointers_compatible);
-pragma	On(Pointers_compatible_with_ints);
-#endif	/* __HIGHC__ and ibm032 */
-
 
 /* Some definitions of our own.  */
 #include "common.h"

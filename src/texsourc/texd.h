@@ -1,3 +1,6 @@
+#define show_line(str,flag) fputs(str,stdout)
+#define show_char(chr) putc(chr, stdout)
+extern char log_line[];
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef MSDOS
   #define ALLOCATEINI        /* allocate iniTeX (550 k) trie_c, trie_o, trie_l, trie_r, trie_hash, trie_taken */

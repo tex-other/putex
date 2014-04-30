@@ -27,7 +27,7 @@
   #define MYLIBAPI __declspec(dllexport)
 #endif
 
-#include "texwin.h"
+//#include <kpathsea/kpathsea.h>
 
 #pragma warning(disable:4996)
 #pragma warning(disable:4131) // old style declarator
@@ -64,9 +64,6 @@
 #include <ctype.h>        // needed for isascii and isalpha
 
 #define ISSPACE(c) (isascii (c) && isspace(c))
-
-// #include "c-ctype.h"
-// #include "c-pathch.h"
 
 #include <time.h>   // needed for time, struct tm etc.
 #include <signal.h>
@@ -126,6 +123,8 @@ int jump_used = 0;
 
 jmp_buf jumpbuffer;   // for non-local jumps
 
+void kpse_set_program_name (const char * argv0, const char * progname);
+
 int main (int ac, char *av[])
 {
   int flag = 0, ret = 0;
@@ -134,19 +133,12 @@ int main (int ac, char *av[])
   char custom_default[PATH_MAX];
 #endif
 
+  kpse_set_program_name(av[0], NULL);
+
   gargc = ac;         /* make available globally */
   gargv = av;         /* make available globally */
 
-#ifdef MSDOS
   program_name = set_program_name(av[0]);   /* rewritten 1994/Mar/1 - bkph */
-#else
-  program_name = strrchr (av[0], PATH_SEP); 
-
-  if (program_name == NULL)
-    program_name = av[0];
-  else
-    program_name++; 
-#endif
 
 #ifdef MSDOS
   if (init(gargc, gargv))   /* in local.c */
@@ -155,31 +147,6 @@ int main (int ac, char *av[])
 
   dump_default_var = dump_default;
   dump_default_length = strlen (dump_default_var + 1);  /* 93/Nov/20 */
-
-/* The following doesn't make sense on DOS since we can't core dump */
-
-#ifndef INI
-  if (ready_already != 314159)
-  {
-#ifdef MSDOS
-    program_name = set_program_name(av[0]); /* rewritten 1994/Mar/1 - bkph */
-#else
-    program_name = strrchr (av[0], PATH_SEP);
-
-    if (program_name == NULL)
-      program_name = av[0];
-    else
-      program_name++; 
-#endif
-/* TeX or Metafont adds the space at the end of the name.  */
-    if (strcmp (program_name, virgin_program) != 0)
-    {
-      (void) sprintf (custom_default, dump_format, program_name);
-      dump_default_var = custom_default;
-      dump_default_length = strlen (program_name) + dump_ext_length;
-    }
-  }
-#endif /* not INI */
 
 //  call main_program = texbody in itex.c
 //  now creates jump buffer for non-local goto's  99/Nov/7
@@ -283,8 +250,7 @@ void t_open_in (void)
 /* All our interrupt handler has to do is set TeX's or Metafont's global
    variable `interrupt'; then they will do everything needed.  */
 
-static RETSIGTYPE
-catch_interrupt (int err)
+static void catch_interrupt (int err)
 {
   (void) signal (SIGINT, SIG_IGN);
 
@@ -361,7 +327,7 @@ void get_date_and_time (integer *sys_minutes, integer *sys_day, integer *sys_mon
       }
     }
 #else
-    RETSIGTYPE (*old_handler)();
+    void (*old_handler)();
 
     if ((old_handler = signal (SIGINT, catch_interrupt)) != SIG_DFL)
       (void) signal (SIGINT, old_handler);
@@ -689,7 +655,7 @@ bool input_line (FILE *f)
 /* This string specifies what the `e' option does in response to an
    error message.  */ 
 
-static char *edit_value = EDITOR;
+static char *edit_value = "c:\\yandy\\WinEdt\\WinEdt.exe [Open('%s');SelLine(%d,7)]";
 
 void unshroud_string (char *real_var, char *var, int n)
 {
