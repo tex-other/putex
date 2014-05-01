@@ -28,6 +28,7 @@
 #endif
 
 #pragma warning(disable:4996)
+#include <kpathsea/kpathsea.h>
 #pragma warning(disable:4131) // old style declarator
 #pragma warning(disable:4135) // conversion between different integral types
 #pragma warning(disable:4127) // conditional expression is constant
@@ -219,6 +220,7 @@ void retwiddle (unsigned char *s)
 bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 {
   bool openable = false;
+  char * file_name;
 
 #if defined (FUNNY_CORE_DUMP) && !defined (BibTeX)
   if (path_index == TEXINPUTPATH &&
@@ -255,9 +257,28 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
     show_line(log_line, 0);
   }
 
+  switch (path_index)
+  {
+    case TEXINPUTPATH:
+      file_name = kpse_find_file(name_of_file + 1, kpse_tex_format, 0);
+      break;
+    case TEXFORMATPATH:
+      file_name = kpse_find_file(name_of_file + 1, kpse_fmt_format, 0);
+      break;
+    case TFMFILEPATH:
+      file_name = kpse_find_file(name_of_file + 1, kpse_tfm_format, 0);
+      break;
+  }
+
+  //printf("\nFound file: %s.\n", file_name);
+  //strcpy (name_of_file + 1, file_name);
+  //free(file_name);
+
   if (test_read_access(name_of_file + 1, path_index))
   {
     *f = xfopen((char *) name_of_file + 1, fopen_mode);
+    //memcpy(name_of_file + 1, file_name, strlen(file_name));
+    //*f = xfopen((char *) file_name, fopen_mode);
 
 #ifdef MSDOS
     if (name_of_file[1] == '.' && (name_of_file[2] == PATH_SEP || name_of_file[2] == '\\'))
@@ -440,7 +461,6 @@ bool open_output (FILE **f, char *fopen_mode)
 #endif
 
 #ifdef MSDOS
-
   if (prepend_path_if (name_of_file + 1, name_of_file + 1, ".dvi", (unsigned char *) dvi_directory) ||
       prepend_path_if (name_of_file + 1, name_of_file + 1, ".log", (unsigned char *) log_directory) ||
       prepend_path_if (name_of_file + 1, name_of_file + 1, ".aux", (unsigned char *) aux_directory) ||

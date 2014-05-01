@@ -1,7 +1,4 @@
 //#include "hpdf.h"
-#define show_line(str,flag) fputs(str,stdout)
-#define show_char(chr) putc(chr, stdout)
-extern char log_line[];
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef MSDOS
   #define ALLOCATEINI        /* allocate iniTeX (550 k) trie_c, trie_o, trie_l, trie_r, trie_hash, trie_taken */
@@ -109,19 +106,6 @@ extern char log_line[];
   #define mem_min 0
 #endif
 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-
-typedef unsigned char ASCII_code;
-typedef unsigned short KANJI_code;
-typedef unsigned char eight_bits;
-typedef unsigned short sixteen_bits;
-typedef integer pool_pointer;
-typedef integer str_number;
-typedef unsigned char packed_ASCII_code;
-typedef integer scaled;
-typedef integer nonnegative_integer;
-typedef char small_number;
-
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* buf_size is max size of input line and max size of csname               */
 /* make sure its multiple of four bytes long                               */
@@ -216,7 +200,7 @@ EXTERN integer max_buf_stack;
 #define max_strings 16384
 #define pool_size 124000L
 #endif
-#define stringvacancies 100000L
+#define string_vacancies 100000L
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 /* #if defined (ALLOCATEINITRIE) && defined (ALLOCATEHYPHEN) */
@@ -801,14 +785,17 @@ EXTERN integer lq, lr;
 EXTERN dvi_index half_buf; 
 EXTERN dvi_index dvi_limit; 
 EXTERN dvi_index dvi_ptr; 
-EXTERN integer dvi_offset; 
+EXTERN integer dvi_offset;
+EXTERN integer pdf_offset;
 EXTERN integer dvi_gone; 
 EXTERN halfword down_ptr, right_ptr; 
 EXTERN scaled dvi_h, dvi_v;
 EXTERN scaled pdf_h, pdf_v;
 EXTERN scaled pdf_x, pdf_y;
+EXTERN scaled pdf_delta_h, pdf_delta_v;
 EXTERN scaled cur_h, cur_v; 
 EXTERN internal_font_number dvi_f; 
+EXTERN internal_font_number pdf_f;
 EXTERN integer cur_s; 
 EXTERN scaled total_stretch[4], total_shrink[4]; /* padded already */
 EXTERN integer last_badness; 
@@ -1227,12 +1214,6 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
             integer *month, integer *year);   /* in lib/texmf.c - bkph */
 
   char *unixify (char *);       /* in pathsrch.c bkph */
-
-#ifdef _WINDOWS
-  void show_line (char *, int); /* in local.c */
-  void show_char (int);         /* in local.c */
-  int main(int, char *[]);      /* in lib\texmf.c */
-#endif
 
 #endif /* ifdef MSDOS */
 
@@ -1860,7 +1841,6 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 #define v_offset                      dimen_par(v_offset_code)
 #define emergency_stretch             dimen_par(emergency_stretch_code)
 /* sec 0256 */
-//#define next
 #define text(a)         hash[a].v.RH
 #define next(a)         hash[a].v.LH
 #define hash_is_full    (hash_used == hash_base)
@@ -2553,9 +2533,9 @@ extern int load_pool_strings (integer spare_size);
 #define help5(...)  tex_help(5, __VA_ARGS__)
 #define help6(...)  tex_help(6, __VA_ARGS__)
 /********BINDING WITH LIBHARU*********/
-/*
+
 EXTERN HPDF_Doc  yandy_pdf;
 EXTERN HPDF_Page yandy_page;
 EXTERN HPDF_Font yandy_font;
-*/
+
 /********BINDING WITH LIBHARU*********/

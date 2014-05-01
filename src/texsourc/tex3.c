@@ -2121,7 +2121,7 @@ void open_log_file (void)
   char old_setting;
   integer k;
   integer l;
-  ccharpointer months;
+  char * months;
 
   old_setting = selector;
 

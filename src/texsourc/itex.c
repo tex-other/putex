@@ -2901,7 +2901,7 @@ bool get_strings_started (void)
     g = make_string();
   }
 
-  g = load_pool_strings(pool_size - stringvacancies);
+  g = load_pool_strings(pool_size - string_vacancies);
 
   if (g == 0)
   {
