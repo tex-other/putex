@@ -26,10 +26,15 @@
   #include <windows.h>
   #define MYLIBAPI __declspec(dllexport)
 #endif
-
-#include <kpathsea/kpathsea.h>
-
 #pragma warning(disable:4996)
+#include <kpathsea/config.h>
+#include <kpathsea/c-ctype.h>
+#include <kpathsea/line.h>
+#include <kpathsea/readable.h>
+#include <kpathsea/variable.h>
+#include <kpathsea/absolute.h>
+
+
 #pragma warning(disable:4131) // old style declarator
 #pragma warning(disable:4135) // conversion between different integral types
 #pragma warning(disable:4127) // conditional expression is constant
@@ -84,11 +89,6 @@ extern char * replacement[];    /* pointers to replacement strings */
   void funny_core_dump (void);
 #endif
 
-/* ridderbusch.pad@nixdorf.com says this is necessary.  */
-#ifdef ATARI_ST
-  int _stksize = -1L;
-#endif
-
 /* The main program, etc.  */
 
 /* What we were invoked as and with.  */
@@ -100,30 +100,12 @@ char **gargv;   /* char *gargv[] -- bkph ? */
    happen in `t_open_in', then call the main body.  */
 
 #ifdef MSDOS
-  int init(int, char **);     /* in local.c */
-#endif /* INIVIR */ 
-
-/* bkph */
-char * set_program_name (char *comm)
-{
-  char *s;
-  if ((s = strrchr (comm, '\\')) != NULL)
-    s++;
-  else if ((s = strrchr (comm, '/')) != NULL)
-    s++;
-  else if ((s = strrchr (comm, ':')) != NULL)
-    s++;
-  else
-    s = comm;
-
-  return s;
-}
+  int main_init(int, char **);     /* in local.c */
+#endif /* INIVIR */
 
 int jump_used = 0;
 
 jmp_buf jumpbuffer;   // for non-local jumps
-
-void kpse_set_program_name (const char * argv0, const char * progname);
 
 int main (int ac, char *av[])
 {
@@ -133,23 +115,19 @@ int main (int ac, char *av[])
   char custom_default[PATH_MAX];
 #endif
 
-  kpse_set_program_name(av[0], NULL);
+#ifdef WIN32
+  _setmaxstdio(2048);
+#endif
 
   gargc = ac;         /* make available globally */
   gargv = av;         /* make available globally */
 
-  program_name = set_program_name(av[0]);   /* rewritten 1994/Mar/1 - bkph */
 
-#ifdef MSDOS
-  if (init(gargc, gargv))   /* in local.c */
+  if (main_init(gargc, gargv))   /* in local.c */
     return -1;        // failure
-#endif /* INIVIR */
 
   dump_default_var = dump_default;
   dump_default_length = strlen (dump_default_var + 1);  /* 93/Nov/20 */
-
-//  call main_program = texbody in itex.c
-//  now creates jump buffer for non-local goto's  99/Nov/7
 
   jump_used = 0;
 
@@ -220,9 +198,11 @@ void t_open_in (void)
       }
       else
         (void) strcat ((char *) &buffer[first], gargv[i]);
+
       (void) strcat ((char *) &buffer[first], " ");
     }
-    gargc = 0;  /* Don't do this again.  */
+
+      gargc = 0;  /* Don't do this again.  */
   }
 
   /* Find the end of the buffer.  */
@@ -266,7 +246,10 @@ static void catch_interrupt (int err)
    ``Get the first line of input and prepare to start''), this is as
    good a place as any.  */
 
-void get_date_and_time (integer *sys_minutes, integer *sys_day, integer *sys_month, integer *sys_year)
+void get_date_and_time (integer *sys_minutes,
+                        integer *sys_day,
+                        integer *sys_month,
+                        integer *sys_year)
 {
   time_t clock;
   struct tm *tmptr;
@@ -994,6 +977,7 @@ int do_dump (char *p, int item_size, int nitems, FILE *out_file)
 #if !defined (WORDS_BIGENDIAN) && !defined (NO_FMTBASE_SWAP)
   swap_items (p, nitems, item_size);
 #endif
+
   return 0;
 }
 

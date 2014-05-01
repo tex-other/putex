@@ -804,7 +804,9 @@ EXTERN dvi_index dvi_ptr;
 EXTERN integer dvi_offset; 
 EXTERN integer dvi_gone; 
 EXTERN halfword down_ptr, right_ptr; 
-EXTERN scaled dvi_h, dvi_v; 
+EXTERN scaled dvi_h, dvi_v;
+EXTERN scaled pdf_h, pdf_v;
+EXTERN scaled pdf_x, pdf_y;
 EXTERN scaled cur_h, cur_v; 
 EXTERN internal_font_number dvi_f; 
 EXTERN integer cur_s; 
@@ -2050,6 +2052,7 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
 /* sec 0554 */
 #define char_info(a, b)   font_info[char_base[a] + b].qqqq
 #define char_width(a, b)  font_info[width_base[a] + b.b0].cint
+#define char_exists(a)    (a.b0 > min_quarterword)
 #define char_italic(a, b) font_info[italic_base[a] + (b.b2) / 4].cint
 #define height_depth(a)   (a.b1)
 #define char_height(a, b) font_info[height_base[a] + (b) / 16].cint

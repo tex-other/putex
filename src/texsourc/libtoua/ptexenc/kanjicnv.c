@@ -2,18 +2,6 @@
  *  KANJI Code conversion routines.
  */
 
-/*
-     enccode     byte1       byte2
-   1 EUC-JP 0208 0xA1 - 0xFE 0xA1 - 0xFE
-   2 EUC-CN      0xA1 - 0xF7 0xA1 - 0xFE
-   3 EUC-KR      0xA1 - 0xFE 0xA1 - 0xFE
-   4 EUC-TW      0xA1 - 0xFE 0xA1 - 0xFE
-   5 big-5       0x80 - 0xFE 0x40 - 0x7E
-                             0xA1 - 0xFE
-   6 SJIS        
- 
- */
-
 #include <ptexenc/c-auto.h>
 #include <ptexenc/kanjicnv.h>
 

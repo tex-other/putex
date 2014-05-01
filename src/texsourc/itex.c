@@ -51,7 +51,7 @@ extern clock_t start_time, main_time, finish_time; /* in local.c */
 /* localized here to avoid conflict with io.h in other code */
 
 #define read(f, b) ((b) = getc (f))
-#define readln(f) { register int c; while ((c = getc (f)) != '\n' && c != EOF); }
+
 
 #ifdef INITEX
   void do_initex (void); /* later in this file */
@@ -2450,10 +2450,11 @@ int texbody (void)
     init_pool_ptr = pool_ptr;
     fix_date_and_time();
   }
-#endif /* INITEX */
+#endif
+
   ready_already = 314159L;      /* magic number */
 
-lab1:     /* get here directly if ready_already already set ... */
+lab1:
   selector = term_only;
   tally = 0;
   term_offset = 0;
@@ -2489,14 +2490,12 @@ lab1:     /* get here directly if ready_already already set ... */
       max_param_stack = 0;
 
 #ifdef ALLOCATEBUFFER
-/*    first = current_buf_size; */
-      memset (buffer, 0, current_buf_size); /* redundant */
+      memset (buffer, 0, current_buf_size);
 #else
-/*    first = buf_size; */
-      memset (buffer, 0, buf_size);     /* redundant ? */
+      memset (buffer, 0, buf_size);
 #endif
-      first = 0;              /* 1999/Jan/22 */
 
+      first = 0;              /* 1999/Jan/22 */
       scanner_status = 0;
       warning_index = 0; /* warning_index:=null; l.7068 */
       first = 1;
@@ -2514,7 +2513,7 @@ lab1:     /* get here directly if ready_already already set ... */
       cur_input.limit_field = last;
       first = last + 1;
     }
-/*    if ((format_ident == 0)||(buffer[cur_input.loc_field]== 38)) */
+
 /*    For Windows NT, lets allow + instead of & for format specification */
     if ((format_ident == 0) ||
         (buffer[cur_input.loc_field] == '&') ||
@@ -2539,10 +2538,6 @@ lab1:     /* get here directly if ready_already already set ... */
         incr(cur_input.loc_field);
     }
 
-#ifdef CHECKEQTB
-    if (debug_flag)
-      check_eqtb("after format"); /* debugging 94/Apr/5 */
-#endif
     if ((end_line_char < 0) || (end_line_char > 255))
       decr(cur_input.limit_field);
     else
@@ -2597,11 +2592,10 @@ lab9999:
       code = 1;
     else
       code = 0;
-//    now return instead of exit to allow cleanup in local.c
+
     return code;
-//    uexit(code);
   }
-} /* end of texbody */
+}
 
 #ifdef ALLOCATEMAIN
 /* add a block of variable size node space below mem_bot */
@@ -2618,11 +2612,12 @@ void add_variable_space(int size)
     t = mem_min + 1;
 
   mem_min = t - (size + 1);     /* first word in new block - 1 */
-/*  mem_min = mem_start; */     /* allocate all of it at once */
+
   if (mem_min < mem_start)      /* sanity test */
   {
     if (trace_flag)
       show_line("WARNING: mem_min < mem_start!\n", 0);
+
     mem_min = mem_start;
   }
 

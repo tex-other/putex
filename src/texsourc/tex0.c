@@ -844,7 +844,6 @@ void confusion_(char * s)
 /* sec 0037 */
 bool init_terminal (void)
 {
-  register bool Result;
   int flag;
 
   t_open_in();
@@ -857,10 +856,7 @@ bool init_terminal (void)
       incr(cur_input.loc_field);    // step over initial white space
 
     if (cur_input.loc_field < last)
-    {
-      Result = true;
-      return Result;    // there is an input file name
-    }
+      return true;
   }
 
 // failed to find input file name
@@ -880,8 +876,7 @@ bool init_terminal (void)
     {
       show_char('\n');
       show_line("! End of file on the terminal... why?\n", 1);
-      Result = false;
-      return Result;
+      return false;
     }
 
     cur_input.loc_field = first;
@@ -890,10 +885,7 @@ bool init_terminal (void)
       incr(cur_input.loc_field);    // step over intial white space
 
     if (cur_input.loc_field < last)
-    {
-      Result = true;
-      return Result;    // there is an input file name
-    }
+      return true;
 
     sprintf(log_line, "%s\n", "Please type the name of your input file.");
     show_line(log_line, 1);

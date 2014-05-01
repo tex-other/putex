@@ -50,9 +50,8 @@ bool open_fmt_file (void)
     pack_buffered_name(0, cur_input.loc_field, j - 1);
 
     if (w_open_in(fmt_file))
-      goto lab40;  /* format file opened OK */
+      goto lab40;
   
-/* format file open failed */
     if (knuth_flag)
     {
       (void) sprintf(log_line, "%s;%s\n", "Sorry, I can't find that format",

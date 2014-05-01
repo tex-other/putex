@@ -31,6 +31,13 @@
 #pragma warning(disable:4135) // conversion between different integral types 
 #pragma warning(disable:4127) // conditional expression is constant
 
+#include <kpathsea/config.h>
+#include <kpathsea/c-ctype.h>
+#include <kpathsea/line.h>
+#include <kpathsea/readable.h>
+#include <kpathsea/variable.h>
+#include <kpathsea/absolute.h>
+
 #include <setjmp.h>
 
 #define EXTERN extern
@@ -2016,21 +2023,16 @@ int free_memory (void)
 
   if (trace_flag) show_line("free_memory ", 0);
 
-#ifdef CHECKEQTB
-  if (debug_flag) check_eqtb("free_memory");
-#endif
-  if (verbose_flag || trace_flag) show_maximums(stdout); 
-#ifdef HEAPWALK
-  if (heap_flag) (void) heap_dump(stdout, 1);
-#endif
-  if (trace_flag) {
-#ifdef HEAPWALK
-    heaptotal = (void) heap_dump(stdout, 0);
-#endif
+  if (verbose_flag || trace_flag)
+    show_maximums(stdout); 
+
+  if (trace_flag)
+  {
     sprintf(log_line, "Heap total: %u bytes --- max address %u\n", 
         heaptotal, max_address);
     show_line(log_line, 0);
   }
+
   if (trace_flag) {
     sprintf(log_line, "Main Memory: variable node %d (%d - %d) one word %d (%d - %d)\n",
       lo_mem_max - mem_min, mem_min, lo_mem_max, mem_end  - hi_mem_min, hi_mem_min, mem_end);
@@ -2058,7 +2060,8 @@ int free_memory (void)
 #endif
 /*  only free memory if safe ... additional check */
 #ifdef ALLOCATEINI
-  if (is_initex) {
+  if (is_initex)
+  {
     if (trie_taken != NULL) free(trie_taken);
     if (trie_hash  != NULL) free(trie_hash);
     if (trie_r     != NULL) free(trie_r);
@@ -3154,23 +3157,18 @@ int init_commands (int ac, char **av)
   programpath = xstrdup(av[0]); /* extract path executable */
   strip_name(programpath); /* strip off yandytex.exe */
 
-  //format_name = "yandytex";
   format_name = "plain"; /* format name if specified on command line */
 
   encoding_name = "";
 
-  if (read_commands(yytexcmd) < 0)   /* read yandytex.cmd 1994/July/12 */
-    return -1;            // in case of error
-
   if (read_command_line(ac, av) < 0)  /* move out to subr 94/Apr/10 */
     return -1;            // in case of error
 
-  if (optind == 0) optind = ac;   /* no arg case paranoia 94/Apr/10 */
+  if (optind == 0)
+    optind = ac;
 
-/*  Print version *after* banner ? */ /* does this get in log file ? */
-  if (want_version) {
-//  showversion (stdout);
-//  showversion (log_line);
+  if (want_version)
+  {
     stamp_it(log_line);
     strcat(log_line, "\n");
     show_line(log_line, 0);
@@ -3178,14 +3176,14 @@ int init_commands (int ac, char **av)
     strcat(log_line, "\n");
     show_line(log_line, 0);
   }
-/*  if (show_use) show_usage();   */  /* show usage and quit */
 
 /*  if we aren't including current directory in any directory lists */
 /*  then makes no sense to avoid them separately for TFM files ... */
 /*  (that is, the ./ is already omitted from the dir list in that case */
   if (!current_flag && !current_tfm)
     current_tfm = true; /* 94/Jan/24 */
-  return 0;               // success
+
+  return 0;
 }
 
 /* E sets environment variable ? */
@@ -3195,10 +3193,13 @@ void initial_memory (void)
   /* set initial memory allocations */
   if (mem_extra_high < 0)
     mem_extra_high = 0;
+
   if (mem_extra_low < 0)
     mem_extra_low = 0;
+
   if (mem_initex < 0)
     mem_initex = 0;
+
   if (is_initex)
   {
  #if defined(ALLOCATEHIGH) || defined(ALLOCATELOW)
@@ -3216,6 +3217,7 @@ void initial_memory (void)
       show_line("ERROR: Can only set initial main memory size in iniTeX\n", 1);
       mem_initex = 0;
     }
+
     if (trie_size != 0)
     {
       show_line("ERROR: Need only set hyphenation trie size in iniTeX\n", 1);
@@ -3310,29 +3312,6 @@ void checkpause (int flag)
   }
 }
 
-void check_enter (int argc, char *argv[])
-{/* 95/Oct/28 */
-  int m;
-  char current[FILENAME_MAX];
-  if (grabenv("DEBUGPAUSE") != NULL) {
-    (void) _getcwd(current, sizeof(current));
-    sprintf(log_line, "Current directory: `%s'\n", current);
-    show_line(log_line, 0);
-    for (m = 0; m < argc; m++) {
-      sprintf(log_line, "%2d: `%s'\n", m, argv[m]); 
-      show_line(log_line, 0);
-    }
-    checkpause(-1);
-  }
-}
-
-#ifdef IGNORED
-void checkexit (int n)
-{              /* 95/Oct/28 */
-  checkpause(1);
-  exit(n);
-}
-#endif
 
 /*************************************************************************/
 
@@ -3344,15 +3323,18 @@ void checkexit (int n)
 
 void hidetwiddle (char *name)
 {
-  char *s=name;
+  char *s = name;
+
 #ifdef DEBUGTWIDDLE
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "Hidetwiddle %s", name);
     show_line(log_line, 0);
   }
 #endif
 /*  while (*s != '\0' && *s != ' ') { */
-  while (*s != '\0')  {
+  while (*s != '\0')
+  {
     if (*s == '~' && pseudo_tilde != 0)
       *s = (char) pseudo_tilde;  /* typically 254 */
     else if (*s == ' ' && pseudo_space != 0)
@@ -3360,7 +3342,8 @@ void hidetwiddle (char *name)
     s++;
   }
 #ifdef DEBUGTWIDDLE
-  if (trace_flag) {
+  if (trace_flag)
+  {
     sprintf(log_line, "=> %s\n", name);
     show_line(log_line, 0);
   }
@@ -3372,11 +3355,6 @@ void deslash_all (int ac, char **av)
   char buffer[PATH_MAX];  
   char *s;
 
-  if ((s = getenv("USEDVIWINDOINI")) != NULL) 
-    sscanf(s, "%d", &usedviwindo);      /* 94/June/14 */
-
-  check_enter(ac, av);           /* 95/Oct/28 */
-
 /* environment variables for output directories (as in PC TeX) */
 
   if ((s = grabenv("TEXDVI")) != NULL) dvi_directory = s;
@@ -3386,6 +3364,7 @@ void deslash_all (int ac, char **av)
   if ((s = grabenv("TEXPDF")) != NULL) pdf_directory = s;
 
   strcpy(buffer, av[0]);            /* get path to executable */
+
   if ((s = strrchr(buffer, '\\')) != NULL) *(s+1) = '\0';
   else if ((s = strrchr(buffer, '/')) != NULL) *(s+1) = '\0';
   else if ((s = strrchr(buffer, ':')) != NULL) *(s+1) = '\0';
@@ -3463,23 +3442,12 @@ void deslash_all (int ac, char **av)
 /* note: those optarg == 0 test don't really work ... */
 /* note: optarg starts at = in case of x=... */
 
-int init (int ac, char **av)
+int main_init (int ac, char **av)
 {
   char initbuffer[PATH_MAX];
   int k;
-  
-  debugfile = getenv("TEXDEBUG");     /* 94/March/28 */
 
-  if (debugfile)
-    debug_flag = 1;
-  else
-    debug_flag = 0;
-
-  if (debug_flag)
-  {
-    show_line("TEXDEBUG\n", 0);
-    trace_flag = 1;            /* 94/April/14 */
-  }
+  kpse_set_program_name(av[0], NULL);
 
   if (sizeof(memory_word) != 8) /* compile time test */
   {
@@ -3497,26 +3465,21 @@ int init (int ac, char **av)
   font_info = NULL;
   str_pool = NULL;
   str_start = NULL;
-#ifdef ALLOCATEZEQTB
-  zeqtb = NULL;
-#endif
-#ifdef ALLOCATEHASH
-  zzzae = NULL;
-#endif
+
 #ifdef ALLOCATESAVESTACK
   save_stack = NULL; 
 #endif
-#ifdef ALLOCATEDVIBUF
-  zdvibuf = NULL; 
-#endif
+
 #ifdef ALLOCATEBUFFER
   buffer = NULL;        /* new 1999/Jan/7 need to do early */
   current_buf_size = 0;
   buffer = realloc_buffer (initial_buf_size);
-/*  sprintf(log_line, "buffer %x, current_buf_size %d\n", buffer, current_buf_size); */
 #endif
-  hyph_list = NULL; hyph_word = NULL;
-  trie_taken = NULL; trie_hash = NULL;
+
+  hyph_list = NULL;
+  hyph_word = NULL;
+  trie_taken = NULL;
+  trie_hash = NULL;
   trie_r = NULL;
   trie_c = NULL;
   trie_o = NULL;
@@ -3526,17 +3489,18 @@ int init (int ac, char **av)
   trie_trl = NULL;
 
   log_opened = false;       /* so can tell whether opened */
-  interaction = -1;       /* default state => 3 */
-  missing_characters = 0;      /* none yet! */
-  workingdirectory = false;   /* set from dviwindo.ini & command line */
-  font_dimen_zero = true;     /* \fontdimen0 for checksum 98/Oct/5 */
-  ignore_frozen = false;     /* default is not to ignore 98/Oct/5 */
-  suppress_f_ligs = false;      /* default is not to ignore f-ligs */
+  interaction = -1;         /* default state => 3 */
+  missing_characters = 0;   /* none yet! */
+  workingdirectory = false; /* set from dviwindo.ini & command line */
+  font_dimen_zero = true;   /* \fontdimen0 for checksum 98/Oct/5 */
+  ignore_frozen = false;    /* default is not to ignore 98/Oct/5 */
+  suppress_f_ligs = false;  /* default is not to ignore f-ligs */
 
   if (ac > 1 && !strncmp(av[1], "-Y", 2))
     reorder_arg_flag = false;
 
-  if (reorder_arg_flag) reorderargs(ac, av);  
+  if (reorder_arg_flag)
+    reorderargs(ac, av);  
 
   if (init_commands(ac, av))
     return -1;          // failure
@@ -3572,16 +3536,9 @@ int init (int ac, char **av)
   if (trace_flag)
     show_maximums(stdout);
 
-#ifdef HEAPWALK
-  if (heap_flag)
-    (void) heap_dump(stdout, 1);
-#endif
-
   initial_memory();
 
   deslash_all(ac, av);    /* deslash and note if format specified */
-
-/*  sprintf(log_line, "%s\n", initbuffer); */    /* debugging, remove later */
 
   no_interrupts = 0;
 
@@ -3590,26 +3547,20 @@ int init (int ac, char **av)
     show_line("WARNING: Cannot change initial main memory size when format specified", 1);
   }
 
-   if (allocate_memory() != 0)   /* NOW, try and ALLOCATE MEMORY if needed */
-     return -1;         // if failed to allocate
+  if (allocate_memory() != 0)   /* NOW, try and ALLOCATE MEMORY if needed */
+    return -1;         // if failed to allocate
 
 /*   following is more or less useless since most all things not yet alloc */
    check_alloc_align(trace_flag);    /* sanity check 1994/Jan/8 */
 
-#ifdef HEAPSHOW
-   if (trace_flag) showaddresses();  /* debugging only 1996/Jan/20 */
-#endif
+  if (trace_flag)
+    show_line("Leaving init (local)\n", 0);
 
-#ifdef HEAPWALK
-/*   if (heap_flag) heap_dump(stdout, 1); */  /* redundant ? */
-#endif
-
-   if (trace_flag)
-     show_line("Leaving init (local)\n", 0);
-   return 0;         // success
+  return 0;         // success
 }
 
-/* #define CLOCKS_PER_SEC 1000 */ /* #define CLK_TCK  CLOCKS_PER_SEC */
+/* #define CLOCKS_PER_SEC 1000 */
+#define CLK_TCK  CLOCKS_PER_SEC
 
 /* void show_inter_val (clock_t start, clock_t end) { */
 void show_inter_val (clock_t interval)
@@ -4081,300 +4032,6 @@ void show_font_info (void)
 
   free((void *)fnumtable);
 }
-
-////////////////////////////////////////////////////////////////////////////
-
-// Here follows the new stuff for the DLL version
-
-#ifdef _WINDOWS
-
-int showlineinx=0;
-
-#define SHOWLINEBUFLEN 256
-
-char showlinebuf[SHOWLINEBUFLEN];
-
-// char log_line[MAXLINE];
-
-#define WHITESPACE " \t\n\r"
-
-HINSTANCE hInstanceDLL=NULL;    /* remember for this DLL */
-
-/* This is the callback function for the EDITTEXT Control in CONSOLETEXT */
-
-#define GET_WM_COMMAND_CMD(wParam, lParam)  (HIWORD(wParam))
-#define GET_WM_COMMAND_ID(wParam, lParam) (LOWORD(wParam))
-#define GET_WM_COMMAND_HWND(wParam, lParam) ((HWND)lParam)
-
-HWND hConsoleWnd=NULL;    /* Console Text Window Handle passed from DVIWindo */
-
-void ClearShowBuffer (void)
-{
-  showlinebuf[showlineinx++] = '\0';    // clear out accumulated stuff
-  if (hConsoleWnd != NULL)
-    SendMessage(hConsoleWnd, ICN_ADDTEXT, (WPARAM) showlinebuf, 0L);
-  showlineinx = 0;
-}
-
-// communicate with DVIWindo (for yandytex.dll)
-
-void show_line (char *line, int errflag) {     /* 99/June/11 */
-  int ret;
-
-  if (IsWindow(hConsoleWnd) == 0) {   // in case the other end died
-    sprintf(line, "NO CONSOLE WINDOW? %08X %s", hConsoleWnd, line);
-    ret = MessageBox(NULL, line, "YandYTeX", MB_ICONSTOP | MB_OKCANCEL | MB_TASKMODAL);
-    hConsoleWnd = NULL;
-//    abort_flag++;            // kill job in this case ???
-    return;
-  }
-
-  if (showlineinx > 0) ClearShowBuffer();
-
-  if (hConsoleWnd != NULL)
-    SendMessage(hConsoleWnd, ICN_ADDTEXT, (WPARAM) line, 0L);
-
-  if (errflag) {
-    err_level++;
-    ret =  MessageBox(NULL, line, "YandYTeX", MB_ICONSTOP | MB_OKCANCEL | MB_TASKMODAL);
-    if (ret == IDCANCEL) {
-//      abort_flag++;
-      uexit(1);   // dangerous reentry possibility ?
-    }
-  }
-}
-
-//  Provide means for buffering up individual characters
-
-void show_char (int chr) {
-  if (showlineinx +2 >= SHOWLINEBUFLEN) ClearShowBuffer();
-  showlinebuf[showlineinx++] = (char) chr;
-  if (chr == '\n') ClearShowBuffer();
-}
-
-void winshow(char *line) {
-  (void) MessageBox(NULL, line, "YandYTeX", MB_ICONINFORMATION | MB_OK | MB_TASKMODAL);
-}
-
-void winerror (char *line) {
-  int ret;
-  ret = MessageBox(NULL, line, "YandYTeX", MB_ICONSTOP | MB_OKCANCEL | MB_TASKMODAL);
-  if (ret == IDCANCEL) abort_flag++;
-}
-
-// argument info constructed from command line 
-
-int xargc;
-
-char **xargv=NULL;
-
-// need to be careful here because of quoted args with spaces in them
-// e.g. -d="G:\Program Files\Adobe\Acrobat\*.pdf"
-
-int makecommandargs (char *line)
-{
-  int xargc;
-//  char *s, *t;
-  unsigned char *s, *t;       // fix 2000 June 18
-
-  if (line == NULL) return -1;    /* sanity check */
-
-//  winerror(line);           // debugging only
-
-//  s = strtok(line, WHITESPACE);
-//  while (s != NULL) {         /* count arguments */
-//    xargc++;
-//    s = strtok(NULL, WHITESPACE);
-//  }
-
-  xargc = 0;
-  s = line;
-  while (*s != '\0') {
-    while (*s <= 32 && *s > 0) s++;
-    if (*s == '\0') break;
-    t = s;
-    while (*t > 32 && *t != '\"') t++;
-    if (*t == '\"') {
-      t++;
-      while (*t > 0 && *t != '\"') t++;
-      if (*t == '\0') break;
-      t++;
-    }
-//    xargv[xargc] = s;
-    xargc++;
-    if (*t == '\0') break;
-//    *t = '\0';
-    s = t+1;
-  }
-
-  if (xargc == 0) return -1;      /* nothing to do */
-
-  xargv = (char **) malloc(xargc * sizeof(char *));
-  if (xargv == NULL) {
-    sprintf(log_line, "ERROR: Unable to allocate memory for %s\n", "arguments");
-    winerror(log_line);
-    return -1;
-  }
-
-  xargc = 0;
-  s = line;
-  while (*s != '\0') {
-    while (*s <= ' ' && *s > '\0') s++; /* eat white space */
-    if (*s == '\0') break;
-    t = s;
-    while (*t > ' ' && *t != '\"') t++;
-    if (*t == '\"') {
-      t++;
-      while (*t > 0 && *t != '\"') t++;
-      if (*t == '\0') break;
-      t++;
-    }
-//    winerror(s);    // debugging only
-    xargv[xargc] = s;
-    xargc++;
-    if (*t == '\0') break;
-    *t = '\0';
-    s = t+1;
-  }
-
-//  s = line;
-//  for (k = 0; k < xargc; k++) { /* create pointers to args */
-//    while (*s > '\0' && *s <= ' ') s++; /* eat white space */
-//    xargv[k] = s;
-//    s += strlen(s) +1;
-//  }
-
-#ifdef DEBUGGING
-  s = log_line;
-  *s = '\0';
-  for (k = 0; k < xargc; k++) {
-    sprintf(s, "%d\t%s\n", k, xargv[k]);
-    s += strlen(s);
-  }
-  winshow(log_line);
-#endif
-  return xargc;
-}
-
-// refers to TeXAsk in dviwindo.c
-
-// int (* AskUserCall) (char *, char *) = NULL; // callback for user questions
-int (* AskUserCall) (char *, char *, char *) = NULL;  // callback for user questions
-
-// called from tex0.c only  ---  by initterm and term_input
-
-//int ConsoleInput (char *question, char *buffer) 
-int ConsoleInput (char *question, char *help, char *buffer)
-{
-  int ret=0;
-//  char *s;
-  if (AskUserCall == NULL) return 0;
-//  sprintf(log_line, "str_start %x %x\n", str_start, str_start [831]);
-//  show_line(log_line, 1);
-
-  *buffer = '\0';
-  ret = AskUserCall (question, help, buffer);   // value returned by dialogbox
-//  strcpy(buffer, "x");
-//  strcat(buffer, " ");      // ???
-//  sprintf(log_line, "str_start %x %x\n", str_start, str_start[831]);
-//  show_line(log_line, 1);
-//  input_line_finish();      // ???
-//  s = buffer + strlen(buffer);
-//  *s++ = ' ';           // space terminate
-//  *s++ = '\0';          // and null terminate
-//  returning != 0 means EOF or ^Z
-  return ret;
-}
-
-//  This is the new entry point of DLL called from DVIWindo 
-//  ARGS: console window to send messages to, command line, callback fun
-//  no console window output if hConsole is NULL
-//  returns -1 if it fails --- returns 0 if it succeeds
-
-// MYLIBAPI int yandytex (HWND hConsole, char *line, int (* AskUser) (char *, char *)) {
-MYLIBAPI int yandytex (HWND hConsole, char *line, int (* AskUser) (char *, char *, char *))
-{
-  int flag;
-
-  abort_flag = 0;            // redundant
-  hConsoleWnd = NULL;         // redundant
-
-  AskUserCall = AskUser;        // remember callback
-
-  hConsoleWnd = hConsole;       // remember console window handle
-
-//  can't getenv("DEBUGPAUSE") cause setupdviwindo not called yet
-//  if (grabenv("DEBUGPAUSE") != NULL) {
-//    show_line(line, 0);          // debugging - show command line
-//    show_line("\n", 0);
-//  }
-
-  xargc = makecommandargs(line);      // sets up global *xargv[]
-
-  if (xargc < 0) return -1;       // sanity check
-
-  if (hConsoleWnd != NULL) 
-    SendMessage(hConsoleWnd, ICN_SETTITLE, (WPARAM) "YandYTeX", 0L);
-//  SendMessage(hConsoleWnd, ICN_RESET, 0, 0L); // if want to clear window
-
-
-  (void) main(xargc, xargv);  // now run YandYTeX proper in texmf.c 
-
-  if (err_level > 0 || abort_flag > 0) {
-//    sprintf(log_line, "ERRORS in Processing (err %d abort %d)\n",
-//        err_level, abort_flag);
-//    winerror(log_line);
-  }
-
-//  if (psbufpos > 0) sendpsbuffer(output);   // empty out PS buffer
-//  if (psbufpos > 0) PSputs("", output);   // output already closed
-
-  if (hConsoleWnd != NULL) {
-    if (err_level > 0 || abort_flag > 0) flag = 1;
-    else flag = 0;              // pass along error indication
-    SendMessage(hConsoleWnd, ICN_DONE, flag, 0);  // flush out console buffer
-  }
-//  PScallback = NULL;
-  hConsoleWnd = NULL;
-
-  if (xargv != NULL) free(xargv);
-  if (abort_flag) return -1;
-  else return 0;
-}
-
-BOOL WINAPI DllMain (HINSTANCE hInstDll, DWORD fdwReason, LPVOID fImpLoad)
-{
-
-  switch (fdwReason) {
-    case DLL_PROCESS_ATTACH:
-      // The DLL is being mapped into the process's address space
-      // place to allocate memory ???
-      // return FALSE if this fails
-      hInstanceDLL = hInstDll;    /* remember it */
-      break;
-
-    case DLL_THREAD_ATTACH:
-      // A thread is being created
-      break;
-
-    case DLL_THREAD_DETACH:
-      // A thread is exiting cleanly
-      break;
-
-    case DLL_PROCESS_DETACH:
-      // The DLL is being unmapped from the process's address space
-      // place to free any memory allocated
-      // but make sure it in fact *was* allocated
-      hInstanceDLL = NULL;    /* forget it */
-      break;
-  }
-  return(TRUE); // used only for DLL_PROCESS_ATTACH
-}
-#endif  // end of new stuff for DLL version
-
-//////////////////////////////////////////////////////////////////////////////
-
-
 
 /*  NOTE: current_tfm = false (-c)
   not checking for TFM in current directory saves 0.1 sec

@@ -87,7 +87,7 @@ halfword new_character_(internal_font_number f, eight_bits c)
 
   if (font_bc[f] <= c)
     if (font_ec[f] >= c)
-      if ((font_info[char_base[f] + c].qqqq.b0 > 0))
+      if (char_exists(char_info(f, c)))
       {
         p = get_avail();
         font(p) = f;
@@ -95,10 +95,9 @@ halfword new_character_(internal_font_number f, eight_bits c)
         return p;
       }
 
-  char_warning(f, c); /* char_warning(f,c); l.11283 */
+  char_warning(f, c);
   return 0;
 }
-/* following needs access to dvi_buf=zdvibuf see coerce.h */
 /* sec 0598 */
 void dvi_swap (void)
 { 
@@ -124,31 +123,24 @@ void dvi_swap (void)
 
   dvi_gone = dvi_gone + half_buf;
 }
-/* following needs access to dvi_buf=zdvibuf see coerce.h */
 /* attempt at speeding up bkph - is compiler smart ? */
 /* sec 0600 */
 void dvi_four_(integer x)
 { 
   if (x >= 0)
-    // dvi_out(x % 16777216L);
-    dvi_out((x >> 24));
+    dvi_out(x / 0100000000); // dvi_out((x >> 24));
   else
   {
-    x = x + 1073741824L;    /* 2^30 40000000 hex */
-    x = x + 1073741824L;
-    //dvi_out((x / 16777216L) + 128);
-    dvi_out((x >> 24) + 128);
+    x = x + 010000000000;
+    x = x + 010000000000;
+    dvi_out((x / 0100000000) + 128); // dvi_out((x >> 24) + 128);
   }
-/*  x = x % 16777216L;  */  /* % 2^24 */
-  x = x & 16777215L;
-  //dvi_out(x / 65536L);
-  dvi_out((x >> 16));
-/*  x = x % 65536L;  */ /* % 2^16 */
-  x = x & 65535L;
-  //dvi_out(x / 256);
-  dvi_out((x >> 8));
-  //dvi_out(x % 256);
-  dvi_out(x & 255);
+
+  x = x % 0100000000; // x = x & 16777215L;
+  dvi_out(x / 0200000); // dvi_out((x >> 16));
+  x = x % 0200000; // x = x & 65535L;
+  dvi_out(x / 0400); // dvi_out((x >> 8));
+  dvi_out(x % 0400); // dvi_out(x & 255);
 }
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
 /* sec 0601 */
@@ -161,11 +153,6 @@ void zdvipop(integer l)
 }
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
 /* sec 0602 */
-/*
-void pdf_font_def_(internal_font_number f)
-{
-}
-*/
 void dvi_font_def_(internal_font_number f)
 {
   pool_pointer k;
@@ -186,8 +173,7 @@ void dvi_font_def_(internal_font_number f)
   dvi_out(fnt_def1);
   dvi_out(f - 1);
 #endif
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-/* spit out the font checksum now */
+
   dvi_out(font_check[f].b0);
   dvi_out(font_check[f].b1);
   dvi_out(font_check[f].b2);
@@ -203,7 +189,6 @@ void dvi_font_def_(internal_font_number f)
   for (k = str_start[font_name[f]]; k <= str_start[font_name[f] + 1] - 1; k++)
     dvi_out(str_pool[k]);
 }
-/* following needs access to dvi_buf=zdvibuf see coerce.h */
 /* sec 0607 */
 void zmovement(scaled w, eight_bits o)
 {
@@ -412,6 +397,7 @@ void prune_movements_(integer l)
     down_ptr = link(p);
     free_node(p, movement_node_size);
   }
+
 lab30:
   while (right_ptr != 0)
   {
@@ -476,46 +462,6 @@ void special_out_(halfword p)
     dvi_four(cur_length); 
   } 
 
-#ifdef IGNORED
-/*  debugging code for \special{src: ... } 98/Nov/11 */
-  {
-    int k = str_start[str_ptr];
-    int kend = pool_ptr;
-    /* \special{src: ... } */
-    if (kend > k + 4)
-    {
-      if (str_pool [k] == 's' && str_pool [k + 1] == 'r' && str_pool [k + 2] == 'c' && str_pool [k + 3] == ':')
-      {
-        show_char('\n');
-        s = log_line;
-
-        while (k < kend)
-        {
-          *s++ = str_pool[k++];
-        }
-
-        *s++ = ' ';
-        *s++ = '\0';
-        show_line(log_line, 0)
-#ifndef _WINDOWS
-        fflush(stdout);
-#endif
-        if (cur_input.name_field > 17) /* redundant ? */
-        {
-          print(cur_input.name_field);          
-          print_char('(');
-          print_int(line);      /* line number */
-          print_char(')');
-          print_char(' ');
-          print_char(':');
-        }
-#ifndef _WINDOWS
-        fflush(stdout);
-#endif
-      }
-    }
-  }
-#endif
   for (k = str_start[str_ptr]; k <= pool_ptr - 1; k++)
     dvi_out(str_pool[k]);
 
@@ -1201,7 +1147,7 @@ lab15:
 /*
 void error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void * user_data)
 {
-  printf ("ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no, (HPDF_UINT)detail_no);
+  printf ("YANDYTEX ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no, (HPDF_UINT)detail_no);
   longjmp(jumpbuffer, 1);
 }
 */

@@ -76,7 +76,6 @@ bool absolute_p (string filename);
 string readable (string name);
 string truncate_pathname (string name);
 char * file_p(string fn);
-bool dir_p(string fn);
 string *find_dir_list (string path);
 void add_directory (string **dir_list_ptr, unsigned *dir_count_ptr, string dir);
 void expand_subdir (string **dir_list_ptr, unsigned *dir_count_ptr, string dirname, struct _finddata_t findt, integer recurseflag);
@@ -131,29 +130,11 @@ integer zround (double r)
   else if (r < -2147483647.0)
     i = -2147483647;
   else if (r >= 0.0)
-    i = (integer)(r + 0.5);
+    i = (integer) (r + 0.5);
   else
-    i = (integer)(r - 0.5);
+    i = (integer) (r - 0.5);
 
   return i;
-}
-/* texk/web2c/lib/eofeoln.c */
-bool test_eof (FILE * file)
-{
-  int c;
-/* Maybe we're already at the end?  */
-  if (!file)
-    return true;
-
-  if (feof (file))
-    return true;
-
-  if ((c = getc (file)) == EOF)
-    return true;
-/* We weren't at the end.  Back up.  */
-  (void) ungetc (c, file);
-
-  return false;
 }
 /* texk/web2c/lib/eofeoln.c */
 bool eoln (FILE * file)
@@ -168,8 +149,7 @@ bool eoln (FILE * file)
   if (c != EOF)
     (void) ungetc (c, file);
 
-  return c == '\n' || c == '\r' || c == EOF; // ???
-/* Type mismatch (return) (int/enum) ? */
+  return c == '\n' || c == '\r' || c == EOF;
 }
 
 char * read_a_line (FILE *f,  char *line, int limit)
