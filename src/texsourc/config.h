@@ -23,21 +23,13 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-/* System dependencies that are figured out by `configure'.  */
-#include "c-auto.h"
+#define WORDS_BIGENDIAN 0
 
 /* ``Standard'' headers.  */
-//#include "c-std.h"
 #include <kpathsea/c-auto.h>
 #include <kpathsea/c-std.h>
-
-/* Everybody uses PATH_MAX.  */
 #include <kpathsea/c-pathmx.h>
-
-/* How to open files with fopen.  */
 #include <kpathsea/c-fopen.h>
-
-/* Macros to discard or keep prototypes.  */
 #include <kpathsea/c-proto.h> 
 
 
@@ -66,13 +58,6 @@ typedef SCHAR_TYPE schar;
 #define INTEGER_TYPE long
 #endif
 typedef INTEGER_TYPE integer;
-
-/* `volatile' is only used in Metafont to avoid bugs in the MIPS C
-   compiler.  If this definition goes wrong somehow, just get rid of it
-   and the two corresponding substitutions in mf/convert.  */
-/* #ifndef __STDC__ */
-/* #define volatile */
-/* #endif */	/* flushed 1994/March/20 to protect `int interrupt' */
 
 /* Some definitions of our own.  */
 #include "common.h"

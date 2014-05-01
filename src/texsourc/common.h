@@ -24,13 +24,12 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-//#include "getopt.h"
 #include <kpathsea/getopt.h>
-#include "lib.h"
+#include <kpathsea/lib.h>
 #include "ourpaths.h"
 #include "pascal.h"
-//#include "types.h"
 #include <kpathsea/types.h>
+typedef boolean bool;
 
 
 /* We never need the `link' system call, which is sometimes declared in

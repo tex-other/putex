@@ -25,8 +25,7 @@ RC = rc
 # Release version
 # CFLAGS=/c /Ge /Gy /Gf /Ox /W4 /DMSDOS /DTeX /DPHARLAP /DNDEBUG /Ilib /YX
 CFLAGS=/nologo /c /MT /GF /Gy /Ox /W4 /DMSDOS /DTeX /DPHARLAP /DNDEBUG \
-	/I"kpathsea" 
-#/I"libharu/include" /I"libharu/win32/include"
+	/I"kpathsea" /I"libharu/include" /I"libharu/win32/include"
 # Debugging version
 # CFLAGS=/c /Ge /Gy /Gf /Od /Zi /W4 /DMSDOS /DTeX /DPHARLAP /Ilib /YX
 
@@ -52,8 +51,8 @@ objs = texmf.obj itex.obj openinou.obj subroute.obj local.obj \
 texmf.exe: $(objs) 
 	$(LINK) $(LFLAGS) texmf itex openinou subroute local \
 	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9 \
-	yandy_pool yandytex.res md5 md5file kpathsea\kpathsea.lib 
-#	libharu\libhpdf.lib libpng\libpng.lib zlib\zlib.lib
+	yandy_pool yandytex.res md5 md5file kpathsea\kpathsea.lib \
+	libharu\libhpdf.lib libpng\libpng.lib zlib\zlib.lib
 	copy texmf.exe yandytex.exe
 	del ..\yandy\bin\texmf.exe
 	copy texmf.exe ..\yandy\bin\texmf.exe
@@ -68,59 +67,59 @@ yandytex.res: yandytex.rc
 	rc yandytex.rc
 
 texmf.obj: texmf.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 	$(CC) /DINITEX /DINI $(CFLAGS) texmf.c
 
 itex.obj: itex.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 	$(CC) /DINITEX $(CFLAGS) itex.c
 
 openinou.obj: openinou.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 	$(CC) $(CFLAGS) openinou.c
 
 subroute.obj: subroute.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 	$(CC) $(CFLAGS) subroute.c	
 
 local.obj: local.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 	$(CC) /DINITEX $(CFLAGS) local.c
 
 # NOTE: cannot compile tex5.c and tex6.c with full optimizations ...
 
 tex0.obj: tex0.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 
 tex1.obj: tex1.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 
 tex2.obj: tex2.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 
 tex3.obj: tex3.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 
 tex4.obj: tex4.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 
 tex5.obj: tex5.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 
 tex6.obj: tex6.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 
 tex7.obj: tex7.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 
 tex8.obj: tex8.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 
 tex9.obj: tex9.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 
 yandy_pool.obj: yandy_pool.c \
-	texd.h texmf.h texmfmem.h coerce.h lib.h config.h common.h
+	texd.h texmf.h texmfmem.h coerce.h config.h common.h
 
 .SUFFIXES:
 .SUFFIXES: .obj .c

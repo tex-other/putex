@@ -46,7 +46,7 @@
 /* openinout.c: open input and output files. */
 
 #define BUILDNAMEDIRECT         /* avoid malloc for string concat */
-
+ 
 bool test_read_access (unsigned char *, int);   /* in ourpaths.c - bkph */
 
 extern char *unixify (char *);      /* in pathsrch.c bkph */
@@ -72,7 +72,7 @@ char *xconcat (char *buffer, char *s1, char *s2)
   int n2 = strlen(s2);
 
   if (buffer == s2)
-  {     /* treat special case of overlap */
+  {
     memmove (buffer + n1, buffer, n2 + 1); /* trailing null ! */
     strncpy (buffer, s1, n1);
   }

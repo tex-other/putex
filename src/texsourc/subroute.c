@@ -37,7 +37,7 @@
 
 #include "texd.h"
 
-#include <io.h>    // needed for _finddata_t 
+#include <io.h>    // needed for _finddata_t
 #include <ctype.h> // needed for isascii and isalpha
 
 #define NAME_MAX 255      // max size of name component
@@ -172,8 +172,6 @@ bool eoln (FILE * file)
 /* Type mismatch (return) (int/enum) ? */
 }
 
-
-/* Modified version 97/May/17 to avoid malloc for every line read ... */
 char * read_a_line (FILE *f,  char *line, int limit)
 {
   int c;

@@ -1300,7 +1300,6 @@ void dvi_ship_out_(halfword p)
   if (total_pages == 0)
   {
     /* HPDF init.*/
-
 /*
     yandy_pdf = HPDF_New(error_handler, NULL);
     yandy_pdf->pdf_version = HPDF_VER_17;

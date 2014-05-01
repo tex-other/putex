@@ -128,7 +128,7 @@ INLINE void str_room_ (int val)
 #else
   if (pool_ptr + val > pool_size)
   {
-    overflow("pool size", pool_size - init_pool_ptr); /* pool size */
+    overflow("pool size", pool_size - init_pool_ptr);
   }
 #endif
 }

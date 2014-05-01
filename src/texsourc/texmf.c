@@ -27,7 +27,7 @@
   #define MYLIBAPI __declspec(dllexport)
 #endif
 
-//#include <kpathsea/kpathsea.h>
+#include <kpathsea/kpathsea.h>
 
 #pragma warning(disable:4996)
 #pragma warning(disable:4131) // old style declarator
