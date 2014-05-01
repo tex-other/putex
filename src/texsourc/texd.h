@@ -1,4 +1,4 @@
-#include "hpdf.h"
+//#include "hpdf.h"
 #define show_line(str,flag) fputs(str,stdout)
 #define show_char(chr) putc(chr, stdout)
 extern char log_line[];
@@ -2553,9 +2553,9 @@ extern int load_pool_strings (integer spare_size);
 #define help5(...)  tex_help(5, __VA_ARGS__)
 #define help6(...)  tex_help(6, __VA_ARGS__)
 /********BINDING WITH LIBHARU*********/
-
+/*
 EXTERN HPDF_Doc  yandy_pdf;
 EXTERN HPDF_Page yandy_page;
 EXTERN HPDF_Font yandy_font;
-
+*/
 /********BINDING WITH LIBHARU*********/
