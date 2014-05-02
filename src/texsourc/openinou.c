@@ -52,8 +52,6 @@ bool test_read_access (unsigned char *, int);   /* in ourpaths.c - bkph */
 
 extern char *unixify (char *);      /* in pathsrch.c bkph */
 
-extern void try_and_open (char *);    /* in local.c bkph */
-
 extern int shorten_file_name;       /* in local.c bkph */
 
 #ifdef FUNNY_CORE_DUMP
@@ -270,15 +268,16 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
       break;
   }
 
-  //printf("\nFound file: %s.\n", file_name);
-  //strcpy (name_of_file + 1, file_name);
+  //printf("Found file: %s.\n", name_of_file + 1);
   //free(file_name);
 
-  if (test_read_access(name_of_file + 1, path_index))
+  if (file_name != NULL)
+  //if (test_read_access(name_of_file + 1, path_index))
   {
-    *f = xfopen((char *) name_of_file + 1, fopen_mode);
+    //*f = xfopen((char *) name_of_file + 1, fopen_mode);
     //memcpy(name_of_file + 1, file_name, strlen(file_name));
-    //*f = xfopen((char *) file_name, fopen_mode);
+    strcpy (name_of_file + 1, file_name);
+    *f = xfopen((char *) file_name, fopen_mode);
 
 #ifdef MSDOS
     if (name_of_file[1] == '.' && (name_of_file[2] == PATH_SEP || name_of_file[2] == '\\'))

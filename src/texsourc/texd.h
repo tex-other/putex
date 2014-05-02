@@ -1172,7 +1172,6 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   extern char *application;            /* in local.c - bkph */
   extern char *yandyversion;           /* in local.c - bkph */
   extern unsigned char wintodos[128];  /* in local.c - bkph */
-  extern char last_filename[PATH_MAX]; /* in ourpaths.c */
   extern char log_line[MAXLINE];       /* in local.c */
   extern char *texpath;           /* in local.c */
 
@@ -1190,7 +1189,6 @@ EXTERN int tfm_temp;        /* only used in tex3.c 95/Jan/7 */
   int realloc_hyphen (int);         /* in local.c - bkph */
   int allocate_tries (int);         /* in local.c - bkph */
 
-  void try_and_open (char *);        /* in local.c - bkph */
   void check_eqtb (char *);          /* in local.c - bkph */
   void probe_memory (void);          /* in local.c - bkph */
   void print_cs_names (FILE *, int); /* in local.c - bkph */

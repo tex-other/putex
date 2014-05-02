@@ -2342,7 +2342,7 @@ int texbody (void)
 {
   history = 3;
 
-  set_paths(TEXFORMATPATHBIT + TEXINPUTPATHBIT + TFMFILEPATHBIT);
+  //set_paths(TEXFORMATPATHBIT + TEXINPUTPATHBIT + TFMFILEPATHBIT);
 
   if (ready_already == 314159L) /* magic number */
     goto lab1;
@@ -2460,7 +2460,11 @@ lab1:
   term_offset = 0;
   file_offset = 0;
   show_line(tex_version, 0);
-  sprintf(log_line, " (%s %s)", application, yandyversion);
+#ifdef _M_AMD64
+  sprintf(log_line, " (%s %s/x64)", application, yandyversion);
+#else
+  sprintf(log_line, " (%s %s/x86)", application, yandyversion);
+#endif
   show_line(log_line, 0);
 
   if (format_ident > 0)
