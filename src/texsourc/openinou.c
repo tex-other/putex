@@ -48,23 +48,18 @@
 
 #define BUILDNAMEDIRECT         /* avoid malloc for string concat */
  
-bool test_read_access (unsigned char *, int);   /* in ourpaths.c - bkph */
-
 extern char *unixify (char *);      /* in pathsrch.c bkph */
 
 extern int shorten_file_name;       /* in local.c bkph */
 
 #ifdef FUNNY_CORE_DUMP
-/* This is defined in ./texmf.c.  */
-extern void funny_core_dump();
-#endif /* FUNNY_CORE_DUMP */
+  extern void funny_core_dump();
+#endif
 
 #ifdef MSDOS
 
 #ifdef BUILDNAMEDIRECT
-/* kpathsea/concat.c */
-/* kpathsea/concat3.c */
-/* similar to concat, but AVOIDS using malloc, pass in place to put result */
+// similar to concat, but AVOIDS using malloc, pass in place to put result
 char *xconcat (char *buffer, char *s1, char *s2)
 {
   int n1 = strlen(s1);
@@ -72,7 +67,7 @@ char *xconcat (char *buffer, char *s1, char *s2)
 
   if (buffer == s2)
   {
-    memmove (buffer + n1, buffer, n2 + 1); /* trailing null ! */
+    memmove (buffer + n1, buffer, n2 + 1);
     strncpy (buffer, s1, n1);
   }
   else
@@ -83,7 +78,7 @@ char *xconcat (char *buffer, char *s1, char *s2)
 
   return buffer;
 }
-/* similar to concat3, but avoids using malloc, pass in place to put result */
+// similar to concat3, but avoids using malloc, pass in place to put result
 char *xconcat3 (char *buffer, char *s1, char *s2, char *s3)
 {
   int n1 = strlen(s1);
@@ -91,8 +86,8 @@ char *xconcat3 (char *buffer, char *s1, char *s2, char *s3)
   int n3 = strlen(s3);
 
   if (buffer == s3)
-  {     /* treat special case of overlap */
-    memmove (buffer + n1 + n2, buffer, n3 + 1); /* trailing null ! */
+  {
+    memmove (buffer + n1 + n2, buffer, n3 + 1);
     strncpy (buffer, s1, n1);
     strncpy (buffer + n1, s2, n2);
   }
@@ -102,15 +97,16 @@ char *xconcat3 (char *buffer, char *s1, char *s2, char *s3)
     strcat(buffer + n1, s2);
     strcat(buffer + n1 + n2, s3);
   }
+
   return buffer;
 }
-#endif /* end of BUILDNAMEDIRECT  */
+#endif
 
-#endif  /* end of ifdef MSDOS ??? */
+#endif
 
 #ifdef MSDOS
-/* separated out 1996/Jan/20 to make easier to read */
-/* assumes path does not end in PATH_SEP */
+// separated out 1996/Jan/20 to make easier to read
+// assumes path does not end in PATH_SEP
 void patch_in_path (unsigned char *buffer, unsigned char *name, unsigned char *path)
 {
 #ifdef BUILDNAMEDIRECT
@@ -120,7 +116,7 @@ void patch_in_path (unsigned char *buffer, unsigned char *name, unsigned char *p
     xconcat3((char *) buffer, (char *) path, PATH_SEP_STRING, (char *) name);
 #else
   string temp_name;
-  temp_name = concat3 (path, PATH_SEP_STRING, name);
+  temp_name = concat3(path, PATH_SEP_STRING, name);
   strcpy (buffer, temp_name);
   free (temp_name);
 #endif
@@ -160,8 +156,7 @@ int prepend_path_if (unsigned char *buffer, unsigned char *name, char *ext, unsi
 }
 #endif      /* end of MSDOS */
 
-/*  Following works on null-terminated strings */
-
+//  Following works on null-terminated strings
 void check_short_name (unsigned char *s)
 {
   unsigned char *star, *sdot;
@@ -218,11 +213,11 @@ void retwiddle (unsigned char *s)
 bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 {
   bool openable = false;
-  char * file_name;
+  char * file_name = NULL;
 
 #if defined (FUNNY_CORE_DUMP) && !defined (BibTeX)
   if (path_index == TEXINPUTPATH &&
-      strncmp (name_of_file + 1, "HackyInputFileNameForCoreDump.tex", 33) == 0)
+    strncmp (name_of_file + 1, "HackyInputFileNameForCoreDump.tex", 33) == 0)
     funny_core_dump();
 #endif /* FUNNY_CORE_DUMP and not BibTeX */
 
@@ -258,25 +253,19 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
   switch (path_index)
   {
     case TEXINPUTPATH:
-      file_name = kpse_find_file(name_of_file + 1, kpse_tex_format, 0);
+      file_name = kpse_find_file((const_string)name_of_file + 1, kpse_tex_format, 0);
       break;
     case TEXFORMATPATH:
-      file_name = kpse_find_file(name_of_file + 1, kpse_fmt_format, 0);
+      file_name = kpse_find_file((const_string)name_of_file + 1, kpse_fmt_format, 0);
       break;
     case TFMFILEPATH:
-      file_name = kpse_find_file(name_of_file + 1, kpse_tfm_format, 0);
+      file_name = kpse_find_file((const_string)name_of_file + 1, kpse_tfm_format, 0);
       break;
   }
 
-  //printf("Found file: %s.\n", name_of_file + 1);
-  //free(file_name);
-
   if (file_name != NULL)
-  //if (test_read_access(name_of_file + 1, path_index))
   {
-    //*f = xfopen((char *) name_of_file + 1, fopen_mode);
-    //memcpy(name_of_file + 1, file_name, strlen(file_name));
-    strcpy (name_of_file + 1, file_name);
+    strcpy ((char *)name_of_file + 1, file_name);
     *f = xfopen((char *) file_name, fopen_mode);
 
 #ifdef MSDOS
@@ -299,12 +288,10 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
     else
       name_length = strlen((char *) name_of_file + 1);
       
-#ifdef TeX
     if (path_index == TFMFILEPATH)
     {
       tfm_temp = getc (*f);
-    }
-#endif /* TeX */  
+    } 
 
 #ifdef MSDOS
     if (strstr((char *) name_of_file + 1, ".fmt") != NULL)
@@ -312,13 +299,6 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
       if (format_file == NULL)
       {
         format_file = xstrdup((char *) name_of_file + 1);
-      }
-    }
-    else if (strstr((char *)name_of_file + 1, ".poo") != NULL)
-    {
-      if (string_file == NULL)
-      {
-        string_file = xstrdup((char *) name_of_file + 1);
       }
     }
     else if (strstr((char *)name_of_file+1, ".tfm") != NULL)
@@ -351,7 +331,6 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 
         fprintf(log_file, "(%s)", name_of_file + 1);
         file_offset += n+3;
-/*        space_terminate (name_of_file + 1);  */
 #endif  /*  end of WRAPLINES */
       }
     }
@@ -383,11 +362,10 @@ bool open_input (FILE **f, path_constant_type path_index, char *fopen_mode)
 #endif  /* end of MSDOS */
     openable = true;
   }
-/*  space_terminate (name_of_file + 1); */
+
   {
     unsigned temp_length = strlen((char *) name_of_file + 1);
     name_of_file[temp_length + 1] = ' ';  /* space terminate */
-/*    set up name_length ??? */
   }
 
   return openable;
@@ -444,7 +422,7 @@ bool open_output (FILE **f, char *fopen_mode)
 {
   unsigned temp_length;
 
-  name_of_file[name_length + 1] = '\0'; /* null terminate */
+  name_of_file[name_length + 1] = '\0';
 
   if (pseudo_tilde != 0 || pseudo_space !=  0)
   {
