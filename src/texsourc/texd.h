@@ -2521,10 +2521,12 @@ extern int load_pool_strings (integer spare_size);
 #define help4(...)  tex_help(4, __VA_ARGS__)
 #define help5(...)  tex_help(5, __VA_ARGS__)
 #define help6(...)  tex_help(6, __VA_ARGS__)
+
 /********BINDING WITH LIBHARU*********/
 
 EXTERN HPDF_Doc  yandy_pdf;
 EXTERN HPDF_Page yandy_page;
 EXTERN HPDF_Font yandy_font;
+bool pdf_doing_string;
 
 /********BINDING WITH LIBHARU*********/
