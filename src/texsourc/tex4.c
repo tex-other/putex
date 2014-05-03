@@ -1144,13 +1144,6 @@ lab15:
 }
 /* sec 0638 */
 /* following needs access to dvi_buf=zdvibuf see coerce.h */
-/*
-void error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void * user_data)
-{
-  printf ("YANDYTEX ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no, (HPDF_UINT)detail_no);
-  longjmp(jumpbuffer, 1);
-}
-*/
 /* sec 0638 */
 void dvi_ship_out_(halfword p)
 {
@@ -1245,12 +1238,6 @@ void dvi_ship_out_(halfword p)
 
   if (total_pages == 0)
   {
-    /* HPDF init.*/
-/*
-    yandy_pdf = HPDF_New(error_handler, NULL);
-    yandy_pdf->pdf_version = HPDF_VER_17;
-    HPDF_SetCompressionMode(yandy_pdf, HPDF_COMP_ALL);
-*/
     dvi_out(pre);
     dvi_out(id_byte);
     dvi_four(25400000L);  /* magic DVI scale factor */

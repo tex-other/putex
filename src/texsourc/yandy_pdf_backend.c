@@ -169,3 +169,128 @@ void pdf_begin_string(void)
 
   pdf_doing_string = true;
 }
+
+void pdf_error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void * user_data)
+{
+  printf ("YANDYTEX ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no, (HPDF_UINT)detail_no);
+  longjmp(jumpbuffer, 1);
+}
+
+void pdf_ship_out(pointer p)
+{
+  integer i, j, k;
+
+  if (tracing_output > 0)
+  {
+    print_nl("");
+    print_ln();
+    print_string("Completed box being shipped out");
+  }
+
+  if (term_offset > max_print_line - 9)
+    print_ln();
+  else if ((term_offset > 0) || (file_offset > 0))
+    print_char(' ');
+
+  print_char('[');
+  j = 9;
+
+  while((count(j) == 0) && (j > 0))
+    decr(j);
+
+  for (k = 0; k <= j; k++)
+  {
+    print_int(count(k));
+
+    if (k < j)
+      print_char('.');
+  }
+
+#ifndef _WINDOWS
+  fflush(stdout);
+#endif
+
+  if (tracing_output > 0)
+  {
+    print_char(']');
+    begin_diagnostic();
+    show_box(p);
+    end_diagnostic(true);
+  }
+
+  if ((height(p) > max_dimen) || (depth(p) > max_dimen) ||
+      (height(p) + depth(p) + v_offset > max_dimen) ||
+      (width(p) + h_offset > max_dimen))
+  {
+    print_err("Huge page cannot be shipped out");
+    help2("The page just created is more than 18 feet tall or",
+        "more than 18 feet wide, so I suspect something went wrong.");
+    error();
+
+    if (tracing_output <= 0)
+    {
+      begin_diagnostic();
+      print_nl("The following box has been deleted:");
+      show_box(p);
+      end_diagnostic(true);
+    }
+
+    goto lab30;
+  }
+
+  if (height(p) + depth(p) + v_offset > max_v)
+    max_v = height(p) + depth(p) + v_offset;
+
+  if (width(p) + h_offset > max_h)
+    max_h = width(p) + h_offset;
+
+  pdf_h = 0;
+  pdf_v = 0;
+  cur_h = h_offset;
+  pdf_f = null_font;
+
+ if (output_file_name == 0)
+  {
+    if (job_name == 0)
+      open_log_file();
+
+    pack_job_name(".pdf");
+
+    while(!b_open_out(dvi_file))
+    {
+      prompt_file_name("file name for output", ".pdf");
+    }
+
+    output_file_name = b_make_name_string(dvi_file);
+  }
+
+  if (total_pages == 0)
+  {
+    yandy_pdf = HPDF_New(pdf_error_handler, NULL);
+    yandy_pdf->pdf_version = HPDF_VER_17;
+    HPDF_SetCompressionMode(yandy_pdf, HPDF_COMP_ALL);
+  }
+
+  yandy_page = HPDF_AddPage (yandy_pdf);
+  HPDF_Page_SetWidth (yandy_page, (HPDF_REAL)hsize / 65536);
+  HPDF_Page_SetHeight (yandy_page, (HPDF_REAL)vsize / 65536);
+
+  cur_v = height(p) + v_offset;
+  temp_ptr = p;
+
+  if (type(p) == vlist_node)
+    vlist_out();
+  else
+    hlist_out();
+
+  cur_s = -1;
+lab30:;
+  if (tracing_output <= 0)
+    print_char(']');
+
+  dead_cycles = 0;
+
+#ifndef _WINDOWS
+  fflush(stdout);
+#endif
+}
