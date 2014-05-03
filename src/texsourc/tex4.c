@@ -1267,18 +1267,6 @@ void dvi_ship_out_(halfword p)
   page_loc = dvi_offset + dvi_ptr;
   dvi_out(bop);
 
-/*
-  yandy_font = HPDF_GetFont (yandy_pdf, "Helvetica", NULL);
-  yandy_page = HPDF_AddPage (yandy_pdf);
-  HPDF_Page_SetWidth (yandy_page, hsize / 65536);
-  HPDF_Page_SetHeight (yandy_page, vsize / 65536);
-  HPDF_Page_SetFontAndSize (yandy_page, yandy_font, 10);
-  HPDF_Page_BeginText (yandy_page);
-  HPDF_Page_MoveTextPos(yandy_page, 10, 190);
-  HPDF_Page_ShowText (yandy_page, "The page");
-  HPDF_Page_EndText (yandy_page);
-*/
-
   for (k = 0; k <= 9; k++)
     dvi_four(count(k));
 
@@ -1333,7 +1321,10 @@ lab30:;
 }
 void ship_out_(halfword p)
 {
-  dvi_ship_out_(p);
+  if (pdf_output_flag)
+    pdf_ship_out(p);
+  else
+    dvi_ship_out_(p);
 }
 /* sec 0645 */
 void scan_spec_(group_code c, bool three_codes)
