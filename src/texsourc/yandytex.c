@@ -17,31 +17,6 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
    02110-1301 USA.  */
 
-#ifdef _WINDOWS
-  #define NOCOMM
-  #define NOSOUND
-  #define NODRIVERS
-  #define STRICT
-  #pragma warning(disable:4115) // kill rpcasync.h complaint
-  #include <windows.h>
-  #define MYLIBAPI __declspec(dllexport)
-#endif
-
-#pragma warning(disable:4996)
-#include <kpathsea/config.h>
-#include <kpathsea/c-ctype.h>
-#include <kpathsea/line.h>
-#include <kpathsea/readable.h>
-#include <kpathsea/variable.h>
-#include <kpathsea/absolute.h>
-
-
-#pragma warning(disable:4131) // old style declarator
-#pragma warning(disable:4135) // conversion between different integral types
-#pragma warning(disable:4127) // conditional expression is constant
-
-#include <setjmp.h>
-
 #define EXTERN /* Instantiate data in `texd.h' or `mfd.h' here ! */
 
 #include "texd.h"
@@ -67,24 +42,10 @@
   #define edit_var            "UFYFEJU" /* shrouded 93/Nov/20 */
 #endif
 
-#include <ctype.h>        // needed for isascii and isalpha
-
-#define ISSPACE(c) (isascii (c) && isspace(c))
-
-#include <time.h>   // needed for time, struct tm etc.
-#include <signal.h>
-
-extern struct tm * localtime();
 
 /* following may be found in local.c --- used for key replacement */
 
 extern char * replacement[];    /* pointers to replacement strings */
-
-/* extern char *buffercopy; */  /* pointer to allocated copy of buffer */
-
-// extern char *grabenv(char *);        /* in local.c - bkph */
-
-/* extern void try_and_open(char *); */ /* inb local.c */
 
 #ifdef FUNNY_CORE_DUMP
   void funny_core_dump (void);
