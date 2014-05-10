@@ -458,35 +458,6 @@ int version=2;
 int revision=2;       /* now obtained from progversion string */
 int subrevision=4;
 
-/* int version=1, revision=3, subrevision=0; */   /* 1995/Nov/17 */
-/* int version=2, revision=0, subrevision=0; */   /* 1996/Sep/10 */
-/* int version=2, revision=0, subrevision=1; */   /* 1996/Oct/12 */
-/* int version=2, revision=0, subrevision=2; */   /* 1996/Nov/17 */
-/* int version=2, revision=0, subrevision=3; */   /* 1996/Dec/20 */
-/* int version=2, revision=0, subrevision=4; */   /* 1997/Jan/30 */
-/* int version=2, revision=0, subrevision=5; */   /* 1997/Mar/9 */
-/* int version=2, revision=0, subrevision=6; */   /* 1997/Apr/23 */
-/* int version=2, revision=0, subrevision=7; */   /* 1997/May/24 */
-/* int version=2, revision=0, subrevision=8; */   /* 1997/Sep/13 */
-/* int version=2, revision=0, subrevision=9; */   /* 1997/Oct/28 */
-/* int version=2, revision=0, subrevision=10; */  /* 1997/Nov/28 */
-/* int version=2, revision=0, subrevision=11; */  /* 1997/Dec/26 */
-/* int version=2, revision=0, subrevision=12; */  /* 1998/Jan/09 */
-/* int version=2, revision=0, subrevision=13; */  /* 1998/Apr/4 */
-/* int version=2, revision=0, subrevision=14; */  /* 1998/May/28 */
-/* int version=2, revision=1, subrevision=0; */   /* 1998/Jun/10 */
-/* int version=2, revision=1, subrevision=1; */   /* 1998/Sep/12 */
-/* int version=2, revision=1, subrevision=2; */   /* 1998/Oct/26 */
-/* int version=2, revision=1, subrevision=3; */   /* 1998/Dec/8 */
-/* int version=2, revision=1, subrevision=4; */   /* 1999/Feb/22 back color */
-/* int version=2, revision=1, subrevision=5; */   /* 1999/Apr/5 landscape */
-/* char *progversion="2.1.6"; */  /* 1999/Apr/23 bop-hook */
-/* char *progversion="2.1.7"; */  /* 1999/May/10 ExtraSamples in TIFF */
-/* char *progversion="2.1.9"; */  /* 1999/July/10 DVIPSONE.DLL code */
-/* char *progversion="2.2.0"; */  /* 1999/Dec/26 */
-/* char *progversion="2.2.1"; */  /* 2000/Feb/12 */
-/* char *progversion="2.2.2"; */  /* 2000/Apr/8 */
-/* char *progversion="2.2.3"; */  /* 2000/May/24 */
 char *progversion="2.2.4";      /* 2000/May/24 */
 
 /* WARNING: remember to *also* change version number in DVIPREAM.PS !!! */
@@ -856,7 +827,10 @@ void checkexit (int n) /* 95/Oct/28 */
 char *zstrdup (char *s)    /* new central location 1996/Aug/28 */
 {
   char *new = _strdup(s);
-  if (new != NULL) return new;
+
+  if (new != NULL)
+    return new;
+
   sprintf(logline, " ERROR: Unable to allocate memory for %s\n", s);
   showline(logline, 1);
 #ifdef _WINDOWS
@@ -5763,6 +5737,7 @@ int uexit (int code)
 int main (int argc, char *argv[]) /* main program entry point */
 {
   int flag = 0, ret;
+
   errout = stdout;
 //  now creates jump buffer for non-local goto's  99/Nov/7
   jumpused = 0;
@@ -5771,6 +5746,7 @@ int main (int argc, char *argv[]) /* main program entry point */
   if (ret == 0) // get here when setting up jumpbuffer
   {
     flag = dvibody(argc, argv);
+
     if (traceflag)
     {
       sprintf(logline, "EXITING at %s flag %d ret %d jumpused %d\n",
