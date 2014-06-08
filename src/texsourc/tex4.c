@@ -1192,21 +1192,7 @@ void dvi_ship_out_(halfword p)
   dvi_v = 0;
   cur_h = h_offset;
   dvi_f = null_font;
-
-  if (output_file_name == 0)
-  {
-    if (job_name == 0)
-      open_log_file();
-
-    pack_job_name(".dvi");
-
-    while(!b_open_out(dvi_file))
-    {
-      prompt_file_name("file name for output", ".dvi");
-    }
-
-    output_file_name = b_make_name_string(dvi_file);
-  }
+  ensure_dvi();
 
   if (total_pages == 0)
   {

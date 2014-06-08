@@ -52,8 +52,6 @@
 #include <signal.h>
 #ifdef _WIN32
   #include <kpathsea/win32lib.h>
-#else
-  #include <unistd.h>
 #endif
 #include "zlib.h"
 #include "md5.h"

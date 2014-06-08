@@ -185,6 +185,7 @@ void show_cur_cmd_chr (void)
 void show_context (void)
 {
   char old_setting;
+  pointer s;
   integer nn;
   boolean bottomline;
   integer i;
@@ -211,7 +212,7 @@ void show_context (void)
     if ((base_ptr == input_ptr) || bottomline || (nn < error_context_lines))
     {
       if ((base_ptr == input_ptr) || (cur_input.state_field != token_list) ||
-          (cur_input.index_field != backed_up) || (cur_input.loc_field != 0))
+          (cur_input.index_field != backed_up) || (loc != 0))
       {
         tally = 0;
         old_setting = selector;
@@ -256,30 +257,19 @@ void show_context (void)
           }
 
           print_char(' ');
+          begin_pseudoprint();
 
-          {
-            l = tally;
-            tally = 0;
-            selector = pseudo;
-            trick_count = 1000000L;
-          }
-
-          if (buffer[cur_input.limit_field] == end_line_char)
-            j = cur_input.limit_field;
+          if (buffer[limit] == end_line_char)
+            j = limit;
           else
-            j = cur_input.limit_field + 1;
+            j = limit + 1;
 
           if (j > 0)
             for (i = cur_input.start_field; i <= j - 1; i++)
             {
-              if (i == cur_input.loc_field)
-              {
-                first_count = tally;
-                trick_count = tally + 1 + error_line - half_error_line;
+              if (i == loc)
+                set_trick_count();
 
-                if (trick_count < error_line)
-                  trick_count = error_line;
-              }
               print(buffer[i]);
             }
         }
@@ -297,7 +287,7 @@ void show_context (void)
               break;
 
             case backed_up:
-              if (cur_input.loc_field == 0)
+              if (loc == 0)
                 print_nl("<recently read> ");
               else
                 print_nl("<to be read again> ");
@@ -357,29 +347,37 @@ void show_context (void)
               break;
           }
 
-          {
-            l = tally;
-            tally = 0;
-            selector = pseudo;
-            trick_count = 1000000L;
-          }
+          begin_pseudoprint();
 
           if (cur_input.index_field < macro)
-            show_token_list(cur_input.start_field, cur_input.loc_field, 100000L);
+          {
+            if ((token_type == backed_up) && (loc != 0))
+            {
+              if ((link(cur_input.start_field) == 0) && (check_kanji(info(cur_input.start_field))))
+              {
+                cur_input = input_stack[base_ptr - 1];
+                s = get_avail();
+                info(s) = Lo(info(loc));
+                cur_input = input_stack[base_ptr];
+                link(cur_input.start_field) = s;
+                show_token_list(cur_input.start_field, loc, 100000);
+                free_avail(s);
+                link(cur_input.start_field) = 0;
+                goto done1;
+              }
+            }
+
+            show_token_list(cur_input.start_field, loc, 100000L);
+          }
           else
-            show_token_list(link(cur_input.start_field), cur_input.loc_field, 100000L);
+            show_token_list(link(cur_input.start_field), loc, 100000L);
+done1:;
         }
 
         selector = old_setting;
 
         if (trick_count == 1000000L)
-        {
-          first_count = tally;
-          trick_count = tally + 1 + error_line - half_error_line;
-
-          if (trick_count < error_line)
-            trick_count = error_line;
-        }
+          set_trick_count();
         
         if (tally < trick_count)
           m = tally - first_count;
@@ -398,6 +396,12 @@ void show_context (void)
           n = half_error_line;
         }
 
+        if (trick_buf2[p % error_line] == 2)
+        {
+          p = p + 1;
+          n = n - 1;
+        }
+
         for (q = p; q <= first_count - 1; q++)
           print_char(trick_buf[q % error_line]);
         
@@ -410,6 +414,9 @@ void show_context (void)
           p = first_count + m;
         else
           p = first_count +(error_line - n - 3);
+
+        if (trick_buf2[(p - 1) % error_line] == 1)
+          p = p - 1;
 
         for (q = first_count; q <= p - 1; q++)
           print_char(trick_buf[q % error_line]);
@@ -433,7 +440,6 @@ void show_context (void)
 lab30:
   cur_input = input_stack[input_ptr];
 }
-//#pragma optimize("g", off)          /* 98/Dec/10 experiment */
 /* sec 0323 */
 void begin_token_list_ (halfword p, quarterword t)
 {
@@ -473,10 +479,10 @@ void begin_token_list_ (halfword p, quarterword t)
     add_token_ref(p);
 
     if (t == macro)
-      cur_input.limit_field = param_ptr;
+      limit = param_ptr;
     else
     {
-      cur_input.loc_field = link(p);
+      loc = link(p);
 
       if (tracing_macros > 1)
       {
@@ -505,7 +511,7 @@ void begin_token_list_ (halfword p, quarterword t)
     }
   }
   else
-    cur_input.loc_field = p;
+    loc = p;
 }
 //#pragma optimize("", on)          /* 98/Dec/10 experiment */
 /* sec 0324 */
@@ -519,7 +525,7 @@ void end_token_list (void)
     {
       delete_token_ref(cur_input.start_field);
       if (cur_input.index_field == macro)
-        while (param_ptr > cur_input.limit_field)
+        while (param_ptr > limit)
         {
           decr(param_ptr);
           flush_list(param_stack[param_ptr]);
@@ -552,7 +558,7 @@ void back_input (void)
 {
   halfword p;
 
-  while ((cur_input.state_field == 0) && (cur_input.loc_field == 0) &&
+  while ((cur_input.state_field == 0) && (loc == 0) &&
       (cur_input.index_field != v_template))
   {
     end_token_list();
@@ -595,7 +601,7 @@ void back_input (void)
   cur_input.state_field = token_list;
   cur_input.start_field = p;
   cur_input.index_field = backed_up;
-  cur_input.loc_field = p;
+  loc = p;
 }
 /* sec 0327 */
 void back_error (void)
@@ -691,7 +697,7 @@ void clear_for_error_prompt (void)
 {
   while ((cur_input.state_field != 0) &&
       (cur_input.name_field == 0) && (input_ptr > 0) &&
-      (cur_input.loc_field > cur_input.limit_field))
+      (loc > limit))
     end_file_reading();
 
   print_ln();
@@ -801,7 +807,7 @@ void firm_up_the_line (void)
 {
   integer k;
 
-  cur_input.limit_field = last;
+  limit = last;
 
   if (pausing > 0)
     if (interaction > nonstop_mode)
@@ -809,11 +815,11 @@ void firm_up_the_line (void)
       ;
       print_ln();
 
-      if (cur_input.start_field < cur_input.limit_field)
-        for (k = cur_input.start_field; k <= cur_input.limit_field - 1; k++)
+      if (cur_input.start_field < limit)
+        for (k = cur_input.start_field; k <= limit - 1; k++)
           print(buffer[k]);
 
-      first = cur_input.limit_field;
+      first = limit;
       prompt_input("=>");
 
       if (last > first)
@@ -821,7 +827,7 @@ void firm_up_the_line (void)
         for (k = first; k <= last - 1; k++)
           buffer[k + cur_input.start_field - first] = buffer[k];
 
-        cur_input.limit_field = cur_input.start_field + last - first;
+        limit = cur_input.start_field + last - first;
       }
     }
 }
@@ -833,7 +839,10 @@ void get_token (void)
   no_new_control_sequence = true;
 
   if (cur_cs == 0)
-    cur_tok = (cur_cmd * 256) + cur_chr;
+    if ((cur_cmd == kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
+      cur_tok = cur_chr;
+    else
+      cur_tok = (cur_cmd * 256) + cur_chr;
   else
     cur_tok = cs_token_flag + cur_cs;
 }
@@ -851,11 +860,11 @@ void macro_call (void)
   halfword unbalance;
   halfword m;
   halfword refcount;
-  small_number savescannerstatus;
+  small_number save_scanner_status;
   halfword savewarningindex;
   ASCII_code match_chr;
 
-  savescannerstatus = scanner_status;
+  save_scanner_status = scanner_status;
   savewarningindex = warning_index;
   warning_index = cur_cs;
   refcount = cur_chr;
@@ -1098,13 +1107,13 @@ lab40:
     while(!(info(r) == end_match_token));
   }
 
-  while((cur_input.state_field == token_list) && (cur_input.loc_field == 0) &&
+  while((cur_input.state_field == token_list) && (loc == 0) &&
       (cur_input.index_field != v_template))
     end_token_list();
 
   begin_token_list(refcount, macro);
   cur_input.name_field = warning_index;
-  cur_input.loc_field = link(r);
+  loc = link(r);
 
   if (n > 0)
   {
@@ -1136,7 +1145,7 @@ lab40:
     param_ptr = param_ptr + n;
   }
 lab10:
-  scanner_status = savescannerstatus;
+  scanner_status = save_scanner_status;
   warning_index = savewarningindex;
 }
 /* sec 0379 */
@@ -1157,7 +1166,7 @@ void expand (void)
   integer cvbackup;
   small_number cvlbackup, radixbackup, cobackup;
   halfword backupbackup;
-  small_number savescannerstatus;
+  small_number save_scanner_status;
 
   cvbackup = cur_val;
   cvlbackup = cur_val_level;
@@ -1192,10 +1201,10 @@ void expand (void)
         break;
 
       case no_expand:
-        savescannerstatus = scanner_status;
+        save_scanner_status = scanner_status;
         scanner_status = normal;
         get_token();
-        scanner_status = savescannerstatus;
+        scanner_status = save_scanner_status;
         t = cur_tok;
         back_input();
 
@@ -1203,9 +1212,9 @@ void expand (void)
         {
           p = get_avail();
           info(p) = cs_token_flag + frozen_dont_expand; /*96/Jan/10*/
-          link(p) = cur_input.loc_field;
+          link(p) = loc;
           cur_input.start_field = p;
-          cur_input.loc_field = p;
+          loc = p;
         }
         break;
 
@@ -1244,7 +1253,7 @@ void expand (void)
             if (max_buf_stack == current_buf_size)
               buffer = realloc_buffer (increment_buf_size);
 
-            if (max_buf_stack == current_buf_size) /* check again after allocation */
+            if (max_buf_stack == current_buf_size)
             {
               overflow("buffer size", current_buf_size);
               return;     // abort_flag set
@@ -1256,6 +1265,12 @@ void expand (void)
               return;     // abort_flag set
             }
 #endif
+          }
+          
+          if (check_kanji(info(p)))
+          {
+            buffer[j] = Hi(info(p));
+            incr(j);
           }
 
           buffer[j] = info(p) % 256;
@@ -1373,7 +1388,7 @@ lab20:
       macro_call();
     else
     {
-      cur_cs = frozen_endv;  /* 96/Jan/10 */
+      cur_cs = frozen_endv;
       cur_cmd = endv;
       goto lab30;
     }
@@ -1383,7 +1398,10 @@ lab20:
   goto lab20;
 lab30:
   if (cur_cs == 0)
-    cur_tok = (cur_cmd * 256) + cur_chr;
+    if ((cur_cmd == kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
+      cur_tok = cur_chr;
+    else
+      cur_tok = (cur_cmd * 256) + cur_chr;
   else
     cur_tok = cs_token_flag + cur_cs;
 }
@@ -1397,7 +1415,10 @@ void x_token (void)
   }
 
   if (cur_cs == 0)
-    cur_tok = (cur_cmd * 256) + cur_chr;
+    if ((cur_cmd == kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
+      cur_tok = cur_chr;
+    else
+      cur_tok = (cur_cmd * 256) + cur_chr;
   else
     cur_tok = cs_token_flag + cur_cs;
 }
@@ -1497,10 +1518,10 @@ void scan_char_num (void)
 {
   scan_int();
 
-  if ((cur_val < 0) || (cur_val > 255))
+  if (!is_char_ascii(cur_val) && !is_char_kanji(cur_val))
   {
     print_err("Bad character code");
-    help2("A character number must be between 0 and 255.",
+    help2("A character number must be between 0 and 255, or KANJI code.",
         "I changed this one to zero.");
     int_error(cur_val);
     cur_val = 0;
@@ -1655,29 +1676,59 @@ void scan_something_internal_(small_number level, boolean negative)
 {
   halfword m;
   integer p;
+  pointer tx;
+  halfword qx;
+  pointer q, r;
 
   m = cur_chr;
 
   switch (cur_cmd)
   {
+    case assign_kinsoku:
+      {
+        scan_int();
+        q = get_kinsoku_pos(cur_val, cur_pos);
+        cur_val_level = int_val;
+        cur_val = 0;
+
+        if ((q != no_entry) && (m == kinsoku_type(q)))
+          scanned_result(kinsoku_penalty(q), int_val);
+      }
+      break;
+
+    case assign_inhibit_xsp_code:
+      {
+        scan_int();
+        q = get_inhibit_pos((cur_val), cur_pos);
+        cur_val_level = int_val;
+        cur_val = 3;
+        
+        if (q != no_entry)
+          cur_val = inhibit_xsp_type(q);
+      }
+      break;
+
     case def_code:
       {
         scan_char_num();
 
         if (m == math_code_base)
-        {
-          cur_val = math_code(cur_val);
-          cur_val_level = int_val;
-        }
+          scanned_result(math_code(cur_val), int_val);
+        else if (m == kcat_code_base)
+          scanned_result(equiv(m + kcatcodekey(cur_val)), int_val);
         else if (m < math_code_base)
         {
-          cur_val = equiv(m + cur_val);
-          cur_val_level = int_val;
+          if (!is_char_ascii(cur_val))
+            scanned_result(equiv(m + Hi(cur_val)), int_val);
+          else
+            scanned_result(equiv(m + cur_val), int_val);
         }
         else
         {
-          cur_val = eqtb[m + cur_val].cint;
-          cur_val_level = int_val;
+          if (!is_char_ascii(cur_val))
+            scanned_result(eqtb[m + Hi(cur_val)].cint, int_val);
+          else
+            scanned_result(eqtb[m + cur_val].cint, int_val);
         }
       }
       break;
@@ -1822,7 +1873,7 @@ void scan_something_internal_(small_number level, boolean negative)
       {
         if ((page_contents == 0) && (! output_active))
           if (m == 0)
-            cur_val = 1073741823L;  /* 2^30 - 1 */
+            cur_val = 1073741823L;
           else
             cur_val = 0;
         else
@@ -1846,11 +1897,31 @@ void scan_something_internal_(small_number level, boolean negative)
     case set_box_dimen:
       {
         scan_eight_bit_int();
+        q = box(cur_val);
 
-        if (box(cur_val) == 0)
+        if (q == 0)
           cur_val = 0;
         else
-          cur_val = mem[box(cur_val) + m].cint;
+        {
+          qx = q;
+          
+          while ((q != null) && (box_dir(q) != abs(direction)))
+            q = link(q);
+          
+          if (q == null)
+          {
+            r = link(qx);
+            link(qx) = 0;
+            q = new_dir_node(qx, abs(direction));
+            link(qx) = r;
+            cur_val = mem[q + m].cint;
+            delete_glue_ref(space_ptr(q));
+            delete_glue_ref(xspace_ptr(q));
+            free_node(q, box_node_size);
+          }
+          else
+            cur_val = mem[q + m].cint;
+        }
 
         cur_val_level = dimen_val;
       }
@@ -1936,32 +2007,56 @@ void scan_something_internal_(small_number level, boolean negative)
         else
           cur_val = 0;
 
+        // find_effective_tail
+        tx = tail;
+
+        if (!is_char_node(tx))
+          if (type(tx) == disp_node)
+          {
+            tx = prev_node;
+            
+            if (!is_char_node(tx))
+              if (type(tx) == disp_node)
+              {
+                tx = head;
+                q = link(head);
+                while (q != prev_node)
+                {
+                  if (is_char_node(q))
+                    tx = q;
+                  else if (type(q) != disp_node)
+                    tx = q;
+                }
+                q = link(q);
+              }
+          }
+
         cur_val_level = cur_chr;
 
-        if (!(tail >= hi_mem_min) && (mode != 0))
+        if (!(tx >= hi_mem_min) && (tx != head)&& (mode != 0))
           switch(cur_chr)
           {
             case int_val:
-              if (type(tail) == penalty_node)
-                cur_val = penalty(tail);
+              if (type(tx) == penalty_node)
+                cur_val = penalty(tx);
               break;
 
             case dimen_val:
-              if (type(tail) == kern_node)
-                cur_val = width(tail);
+              if (type(tx) == kern_node)
+                cur_val = width(tx);
               break;
 
             case glue_val:
-              if (type(tail) == glue_node)
+              if (type(tx) == glue_node)
               {
-                cur_val = glue_ptr(tail);
+                cur_val = glue_ptr(tx);
 
-                if (subtype(tail) == mu_glue)
+                if (subtype(tx) == mu_glue)
                   cur_val_level = mu_val;
               }
               break;
           }
-        else if ((mode == 1) && (tail == cur_list.head_field))
+        else if ((mode == vmode) && (tx == cur_list.head_field))
           switch (cur_chr)
           {
             case int_val:
@@ -2036,6 +2131,7 @@ void get_next (void)
   halfword t;
 /*  char cat; */    /* make this an int ? */
   int cat;      /* make this an int ? 95/Jan/7 */
+  int l; // for pTeX
   ASCII_code c, cc;
   char d;
 
@@ -2045,10 +2141,18 @@ lab20:
   if (cur_input.state_field != token_list)
   {
 lab25:
-    if (cur_input.loc_field <= cur_input.limit_field)
+    if (loc <= limit)
     {
-      cur_chr = buffer[cur_input.loc_field];
-      incr(cur_input.loc_field);
+      cur_chr = buffer[loc];
+      incr(loc);
+
+      if (multistrlen(buffer, limit + 1, loc - 1) == 2)
+      {
+        cur_chr = fromBUFF(buffer, limit + 1, loc - 1);
+        cur_cmd = kcat_code(kcatcodekey(cur_chr));
+        incr(loc);
+      }
+      else
 lab21:
       cur_cmd = cat_code(cur_chr);
 
@@ -2062,92 +2166,105 @@ lab21:
 
         case any_state_plus(escape):
           {
-            if (cur_input.loc_field > cur_input.limit_field)
+            if (loc > limit)
               cur_cs = null_cs;
             else
             {
-lab26:
-              k = cur_input.loc_field;
+              k = loc;
               cur_chr = buffer[k];
-              cat = cat_code(cur_chr);
               incr(k);
 
-              if (cat == letter)
+              if (multistrlen(buffer, limit + 1, k - 1) == 2)
+              {
+                cat = kcat_code(kcatcodekey(fromBUFF(buffer, limit + 1, k-1)));
+                incr(k);
+              }
+              else
+                cat = cat_code(cur_chr);
+lab26:
+              if (cat == letter || cat == kanji || cat == kana)
                 cur_input.state_field = skip_blanks;
               else if (cat == spacer)
                 cur_input.state_field = skip_blanks;
               else
                 cur_input.state_field = mid_line;
 
-              if ((cat == letter) && (k <= cur_input.limit_field))
+              if (cat == other_kchar)
+              {
+                cur_cs = id_lookup(loc, k - loc);
+                loc = k;
+                goto lab40;
+              }
+
+              if ((cat == letter || cat == kanji || cat == kana) && (k <= limit))
               {
                 do
                   {
                     cur_chr = buffer[k];
-                    cat = cat_code(cur_chr);
                     incr(k);
-                  }
-                while(!((cat != letter) || (k > cur_input.limit_field)));
-
-                {
-                  if (buffer[k]== cur_chr)
-                    if (cat == sup_mark)
-                      if (k < cur_input.limit_field)
+                    
+                    if (multistrlen((buffer), limit + 1, k-1) == 2)
+                    {
+                      cat = kcat_code(kcatcodekey(fromBUFF((buffer), limit + 1, k - 1)));
+                      incr(k);
+                    }
+                    else
+                      cat = cat_code(cur_chr);
+                    
+                    while ((buffer[k] == cur_chr) && (cat == sup_mark) && ( k < cur_input .limit_field))
+                    {
+                      c = buffer[k + 1];
+                      
+                      if (c < 128)
                       {
-                        c = buffer[k + 1];
+                        d = 2;
+                        
+                        if (is_hex(c))
+                          if (k + 2 <= limit)
+                          {
+                            cc = buffer[k + 2];
+                            
+                            if (is_hex(cc))
+                              incr(d);
+                          }
 
-                        if (c < 128)
+                        if (d > 2)
+                          hex_to_cur_chr();
+                        else if (c < 64)
+                          buffer[k - 1] = c + 64;
+                        else
+                          buffer[k - 1] = c - 64;
+
+                        cat = cat_code(cur_chr);
+
+                        if ((cat == letter) || (cat == sup_mark))
                         {
-                          d = 2;
-                          if ((((c >= 48) && (c <= 57)) || ((c >= 97) && (c <= 102))))
-                            if (k + 2 <= cur_input.limit_field)
-                            {
-                              cc = buffer[k + 2];
-
-                              if ((((cc >= 48) && (cc <= 57)) || ((cc >= 97) && (cc <= 102))))
-                                incr(d);
-                            }
-
-                          if (d > 2)
-                          {
-                            if (c <= 57)
-                              cur_chr = c - 48;
-                            else
-                              cur_chr = c - 87;
-
-                            if (cc <= 57)
-                              cur_chr = 16 * cur_chr + cc - 48;
-                            else
-                              cur_chr = 16 * cur_chr + cc - 87;
-
-                            buffer[k - 1] = cur_chr;
-                          }
-                          else if (c < 64)
-                            buffer[k - 1] = c + 64;
-                          else
-                            buffer[k - 1] = c - 64;
-
-                          cur_input.limit_field = cur_input.limit_field - d;
+                          buffer[k - 1] = cur_chr;
+                          limit = limit - d;
                           first = first - d;
-
-                          while (k <= cur_input.limit_field)
+                          l = k;
+                          
+                          while (k <= limit)
                           {
-                            buffer[k] = buffer[k + d];
-                            incr(k);
+                            buffer[l] = buffer[l + d];
+                            incr(l);
                           }
-
-                          goto lab26;
                         }
                       }
-                }
+                    }
+                  }
+                while(!(!((cat == letter) || (cat == kanji) || (cat == kana)) || (k > limit)));
 
-                if (cat != letter)
+                if (!((cat == letter) || (cat == kanji) || (cat == kana)))
                   decr(k);
 
-                if (k > cur_input.loc_field + 1)
+                if (cat == other_kchar)
+                  decr(k);
+
+                if (k > loc + 1)
                 {
-                  cur_cs = id_lookup(cur_input.loc_field, k - cur_input.loc_field);
-                  cur_input.loc_field = k;
+                  cur_cs = id_lookup(loc, k - loc);
+                  loc = k;
                   goto lab40;
                 }
               }
@@ -2155,7 +2272,7 @@ lab26:
               {
                 if (buffer[k] == cur_chr)
                   if (cat == sup_mark)
-                    if (k < cur_input.limit_field)
+                    if (k < limit)
                     {
                       c = buffer[k + 1];
 
@@ -2163,7 +2280,7 @@ lab26:
                       {
                         d = 2;
                         if ((((c >= 48) && (c <= 57)) || ((c >= 97) && (c <= 102))))
-                          if (k + 2 <= cur_input.limit_field)
+                          if (k + 2 <= limit)
                           {
                             cc = buffer[k + 2];
 
@@ -2190,10 +2307,10 @@ lab26:
                         else
                           buffer[k - 1] = c - 64;
 
-                        cur_input.limit_field = cur_input.limit_field - d;
+                        limit = limit - d;
                         first = first - d;
 
-                        while (k <= cur_input.limit_field)
+                        while (k <= limit)
                         {
                           buffer[k] = buffer[k + d];
                           incr(k);
@@ -2202,8 +2319,8 @@ lab26:
                       }
                     }
               }
-              cur_cs = single_base + buffer[cur_input.loc_field];
-              incr(cur_input.loc_field);
+              cur_cs = single_base + buffer[loc];
+              incr(loc);
             }
 lab40:
             cur_cmd = eq_type(cur_cs);
@@ -2228,23 +2345,23 @@ lab40:
 
         case any_state_plus(sup_mark):
           {
-            if (cur_chr == buffer[cur_input.loc_field])
-              if (cur_input.loc_field < cur_input.limit_field)
+            if (cur_chr == buffer[loc])
+              if (loc < limit)
               {
-                c = buffer[cur_input.loc_field + 1];
+                c = buffer[loc + 1];
 
                 if (c < 128)
                 {
-                  cur_input.loc_field = cur_input.loc_field + 2;
+                  loc = loc + 2;
 
                   if ((((c >= 48) && (c <= 57)) || ((c >= 97) && (c <= 102))))
-                    if (cur_input.loc_field <= cur_input.limit_field)
+                    if (loc <= limit)
                     {
-                      cc = buffer[cur_input.loc_field];
+                      cc = buffer[loc];
 
                       if ((((cc >= 48) && (cc <= 57)) || ((cc >= 97) && (cc <= 102))))
                       {
-                        incr(cur_input.loc_field);
+                        incr(loc);
 
                         if (c <= 57)
                           cur_chr = c - 48;
@@ -2285,6 +2402,7 @@ lab40:
           }
           break;
 
+        case mid_kanji + spacer:
         case mid_line + spacer:
           {
             cur_input.state_field = skip_blanks;
@@ -2294,7 +2412,21 @@ lab40:
 
         case mid_line + car_ret:
           {
-            cur_input.loc_field = cur_input.limit_field + 1;
+            loc = limit + 1;
+            cur_cmd = spacer;
+            cur_chr = ' ';
+          }
+          break;
+
+        case mid_kanji + car_ret:
+          if (skip_mode)
+          {
+            loc = limit + 1;
+            goto lab25;
+          }
+          else
+          {
+            loc = limit + 1;
             cur_cmd = spacer;
             cur_chr = ' ';
           }
@@ -2303,14 +2435,14 @@ lab40:
         case skip_blanks + car_ret:
         case any_state_plus(comment):
           {
-            cur_input.loc_field = cur_input.limit_field + 1;
+            loc = limit + 1;
             goto lab25;
           }
           break;
 
         case new_line + car_ret:
           {
-            cur_input.loc_field = cur_input.limit_field + 1;
+            loc = limit + 1;
             cur_cs = par_loc;
             cur_cmd = eq_type(cur_cs);
             cur_chr = equiv(cur_cs);
@@ -2321,6 +2453,7 @@ lab40:
           break;
 
         case mid_line + left_brace:
+        case mid_kanji + left_brace:
           incr(align_state);
           break;
 
@@ -2333,20 +2466,28 @@ lab40:
           break;
 
         case mid_line + right_brace:
+        case mid_kanji + right_brace:
           decr(align_state);
           break;
 
         case skip_blanks + right_brace:
         case new_line + right_brace:
           {
-            cur_input.state_field = 1;
+            cur_input.state_field = mid_line;
             decr(align_state);
           }
           break;
 
         case add_delims_to(skip_blanks):
         case add_delims_to(new_line):
-          cur_input.state_field = 1;
+        case add_delims_to(mid_kanji):
+          cur_input.state_field = mid_line;
+          break;
+
+        case all_jcode(skip_blanks):
+        case all_jcode(new_line):
+        case all_jcode(mid_line):
+          cur_input.state_field = mid_line;
           break;
 
         default:
@@ -2384,12 +2525,12 @@ lab40:
         }
 
         if ((end_line_char < 0) || (end_line_char > 255))
-          decr(cur_input.limit_field);
+          decr(limit);
         else
-          buffer[cur_input.limit_field] = end_line_char;
+          buffer[limit] = end_line_char;
 
-        first = cur_input.limit_field + 1;
-        cur_input.loc_field = cur_input.start_field;
+        first = limit + 1;
+        loc = cur_input.start_field;
       }
       else
       {
@@ -2412,23 +2553,23 @@ lab40:
         if (interaction > nonstop_mode)
         {
           if ((end_line_char < 0) || (end_line_char > 255))
-            incr(cur_input.limit_field);
+            incr(limit);
 
-          if (cur_input.limit_field == cur_input.start_field)
+          if (limit == cur_input.start_field)
             print_nl("(Please type a command or say `\\end')");
 
           print_ln();
           first = cur_input.start_field;
           prompt_input("*");
-          cur_input.limit_field = last;
+          limit = last;
 
           if ((end_line_char < 0) || (end_line_char > 255))
-            decr(cur_input.limit_field);
+            decr(limit);
           else
-            buffer[cur_input.limit_field]= end_line_char;
+            buffer[limit]= end_line_char;
 
-          first = cur_input.limit_field + 1;
-          cur_input.loc_field = cur_input.start_field;
+          first = limit + 1;
+          loc = cur_input.start_field;
         }
         else
         {
@@ -2447,10 +2588,10 @@ lab40:
       goto lab25;
     }
   }
-  else if (cur_input.loc_field != 0)
+  else if (loc != 0)
   {
-    t = info(cur_input.loc_field);
-    cur_input.loc_field = link(cur_input.loc_field);
+    t = info(loc);
+    loc = link(loc);
 
     if (t >= cs_token_flag)
     {
@@ -2461,8 +2602,8 @@ lab40:
       if (cur_cmd >= outer_call)
         if (cur_cmd == dont_expand)
         {
-          cur_cs = info(cur_input.loc_field) - cs_token_flag;
-          cur_input.loc_field = 0;
+          cur_cs = info(loc) - cs_token_flag;
+          loc = 0;
           cur_cmd = eq_type(cur_cs);
           cur_chr = equiv(cur_cs);
 
@@ -2476,6 +2617,11 @@ lab40:
         {
           check_outer_validity();
         }
+    }
+    else if (check_kanji(t))
+    {
+      cur_chr = t;
+      cur_cmd = kcat_code(kcatcodekey(t));
     }
     else
     {
@@ -2494,7 +2640,7 @@ lab40:
 
         case out_param:
           {
-            begin_token_list(param_stack[cur_input.limit_field + cur_chr - 1], parameter);
+            begin_token_list(param_stack[limit + cur_chr - 1], parameter);
             goto lab20;
           }
           break;

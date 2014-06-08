@@ -142,9 +142,14 @@ void initialize (void)
 
   nest_ptr = 0;
   max_nest_stack = 0;
-  mode = 1;
+  mode = vmode;
   head = contrib_head;
   tail = contrib_head;
+  prev_node = tail;
+  direction = dir_yoko;
+  adjust_dir = direction;
+  prev_disp = 0;
+  last_jchr = 0;
   cur_list.aux_field.cint = ignore_depth;
   mode_line = 0;
   prev_graf = 0;
@@ -179,6 +184,7 @@ void initialize (void)
   cur_boundary = 0;
   max_save_stack = 0;
   mag_set = 0;
+  skip_mode = true;
   cur_mark[0] = 0;
   cur_mark[1] = 0;
   cur_mark[2] = 0;
@@ -604,9 +610,9 @@ lab32:
                     if (font(s) != hf)
                       goto lab33;
 
-                    hyfbchar = character(s);
+                    hyf_bchar = character(s);
 
-                    c = hyfbchar;     /*  unsigned char c;  */
+                    c = hyf_bchar;     /*  unsigned char c;  */
 
                     if (lc_code(c) == 0)
                       goto lab33;
@@ -618,7 +624,7 @@ lab32:
                     incr(hn);
                     hu[hn] = c;
                     hc[hn]= lc_code(c);
-                    hyfbchar = non_char;
+                    hyf_bchar = non_char;
                   }
                   else if (type(s) == ligature_node)
                   {
@@ -629,7 +635,7 @@ lab32:
                     q = lig_ptr(s);
 
                     if (q != 0) /* 94/Mar/23 BUG FIX */
-                      hyfbchar = character(q);
+                      hyf_bchar = character(q);
 
                     while (q != 0) /* 94/Mar/23 BUG FIX */
                     {
@@ -651,14 +657,14 @@ lab32:
                     hn = j;
 
                     if (odd(subtype(s)))
-                      hyfbchar = font_bchar[hf];
+                      hyf_bchar = font_bchar[hf];
                     else
-                      hyfbchar = non_char;
+                      hyf_bchar = non_char;
                   }
                   else if ((type(s) == kern_node) && (subtype(s) == normal))
                   {
                     hb = s;
-                    hyfbchar = font_bchar[hf];
+                    hyf_bchar = font_bchar[hf];
                   }
                   else
                     goto lab33;
@@ -2480,6 +2486,7 @@ lab1:
   tally = 0;
   term_offset = 0;
   file_offset = 0;
+  kcode_pos = 0;
   show_line(tex_version, 0);
 
   {
@@ -2543,13 +2550,13 @@ lab1:
       if (!init_terminal())
         goto lab9999;
 
-      cur_input.limit_field = last;
+      limit = last;
       first = last + 1;
     }
     
     if ((format_ident == 0) ||
-        (buffer[cur_input.loc_field] == '&') ||
-        (buffer[cur_input.loc_field] == '+'))
+        (buffer[loc] == '&') ||
+        (buffer[loc] == '+'))
     {
       if (format_ident != 0)
         initialize();
@@ -2573,15 +2580,15 @@ lab1:
       w_close(fmt_file);
 #endif
 
-      while ((cur_input.loc_field < cur_input.limit_field) &&
-          (buffer[cur_input.loc_field] == ' '))
-        incr(cur_input.loc_field);
+      while ((loc < limit) &&
+          (buffer[loc] == ' '))
+        incr(loc);
     }
 
     if ((end_line_char < 0) || (end_line_char > 255))
-      decr(cur_input.limit_field);
+      decr(limit);
     else
-      buffer[cur_input.limit_field] = end_line_char;
+      buffer[limit] = end_line_char;
 
     fix_date_and_time();
     magic_offset = str_start[886] - 9 * ord_noad;
@@ -2591,8 +2598,8 @@ lab1:
     else
       selector = term_only;
 
-    if ((cur_input.loc_field < cur_input.limit_field) &&
-      (cat_code(buffer[cur_input.loc_field]) != escape))
+    if ((loc < limit) &&
+      (cat_code(buffer[loc]) != escape))
       start_input();
   }
 
@@ -2818,7 +2825,7 @@ void do_initex (void)
   for (k = 0; k <= 255; k++)
   {
     cat_code(k) = other_char;
-    kcat_code(k) = other_char;
+    kcat_code(k) = other_kchar;
     math_code(k) = k;
     sf_code(k) = 1000;
     auto_xsp_code(k) = 0;
@@ -2836,7 +2843,21 @@ void do_initex (void)
   cat_code(null_code) = ignore;
 
   for (k = '0'; k <= '9'; k++)
+  {
     math_code(k) = k + var_code;
+    auto_xsp_code(k) = 3;
+  }
+
+  kansuji_char(0) = toDVI(fromJIS(0x213B));
+  kansuji_char(1) = toDVI(fromJIS(0x306C));
+  kansuji_char(2) = toDVI(fromJIS(0x4673));
+  kansuji_char(3) = toDVI(fromJIS(0x3B30));
+  kansuji_char(4) = toDVI(fromJIS(0x3B4D));
+  kansuji_char(5) = toDVI(fromJIS(0x385E));
+  kansuji_char(6) = toDVI(fromJIS(0x4F3B));
+  kansuji_char(7) = toDVI(fromJIS(0x3C37));
+  kansuji_char(8) = toDVI(fromJIS(0x482C));
+  kansuji_char(9) = toDVI(fromJIS(0x3665));
 
   for (k = 'A'; k <= 'Z'; k++)
   {
@@ -2848,8 +2869,22 @@ void do_initex (void)
     lc_code(k + 'a' - 'A') = k + 'a' - 'A';
     uc_code(k) = k;
     uc_code(k + 'a' - 'A') = k;
+    auto_xsp_code(k) = 3;
+    auto_xsp_code(k + "a" - "A") = 3;
     sf_code(k) = 999;
   }
+  
+  kcat_code(0x20 + 1) = other_kchar; // {1 ku}
+  kcat_code(0x20 + 2) = other_kchar; // {2 ku}
+
+  for (k = 3; k <= 6; k++)
+    kcat_code(0x20 + k) = kana; // {3 ku ... 6 ku}
+
+  for (k = 7; k <= 8; k++)
+    kcat_code(0x20 + k) = other_kchar; // {7 ku ... 8 ku}
+
+  for (k = 16; k <= 84; k++)
+    kcat_code(0x20 + k) = kanji; // {16 ku ... 84 ku}
 
   for (k = int_base; k <= del_code_base - 1; k++)
     eqtb[k].cint = 0;
@@ -2930,7 +2965,7 @@ boolean get_strings_started (void)
 
   for (k = 0; k <= 255; k++)
   {
-    if (((k < ' ') || (k > '~')))
+    if ((k < ' ') || (k > '~') || !ismultiprn(k))
     {
       append_char('^');
       append_char('^');
@@ -4119,8 +4154,8 @@ void init_prim (void)
   eqtb[frozen_end_group] = eqtb[cur_val]; 
   primitive("expandafter", expand_after, 0);
   primitive("font", def_font, 0);
-  //primitive("jfont", def_jfont, 0);
-  //primitive("tfont", def_tfont, 0);
+  primitive("jfont", def_jfont, 0);
+  primitive("tfont", def_tfont, 0);
   primitive("fontdimen", assign_font_dimen, 0);
   primitive("halign", halign, 0);
   primitive("hrule", hrule, 0);
@@ -4177,29 +4212,41 @@ void init_prim (void)
   primitive("lastskip", last_item, 2);
   primitive("inputlineno", last_item, 3);
   primitive("badness", last_item, 4);
-  primitive("number", convert, 0);
-  primitive("romannumeral", convert, 1);
-  primitive("string", convert, 2);
-  primitive("meaning", convert, 3);
-  primitive("fontname", convert, 4);
-  primitive("jobname", convert, 5);
-  primitive("if", if_test, 0);
-  primitive("ifcat", if_test, 1);
-  primitive("ifnum", if_test, 2);
-  primitive("ifdim", if_test, 3);
-  primitive("ifodd", if_test, 4);
-  primitive("ifvmode", if_test, 5);
-  primitive("ifhmode", if_test, 6);
-  primitive("ifmmode", if_test, 7);
-  primitive("ifinner", if_test, 8);
-  primitive("ifvoid", if_test, 9);
-  primitive("ifhbox", if_test, 10);
-  primitive("ifvbox", if_test, 11);
-  primitive("ifx", if_test, 12);
-  primitive("ifeof", if_test, 13);
-  primitive("iftrue", if_test, 14);
-  primitive("iffalse", if_test, 15);
-  primitive("ifcase", if_test, 16);
+  primitive("number", convert, number_code);
+  primitive("romannumeral", convert, roman_numeral_code);
+  primitive("string", convert, string_code);
+  primitive("meaning", convert, meaning_code);
+  primitive("fontname", convert, font_name_code);
+  primitive("jobname", convert, job_name_code);
+  primitive("kansuji", convert, kansuji_code);
+  primitive("euc", convert, euc_code);
+  primitive("sjis", convert, sjis_code);
+  primitive("jis", convert, jis_code);
+  primitive("kuten", convert, kuten_code);
+  primitive("if", if_test, if_char_code);
+  primitive("ifcat", if_test, if_cat_code);
+  primitive("ifnum", if_test, if_int_code);
+  primitive("ifdim", if_test, if_dim_code);
+  primitive("ifodd", if_test, if_odd_code);
+  primitive("ifvmode", if_test, if_vmode_code);
+  primitive("ifhmode", if_test, if_hmode_code);
+  primitive("ifmmode", if_test, if_mmode_code);
+  primitive("ifinner", if_test, if_inner_code);
+  primitive("ifvoid", if_test, if_void_code);
+  primitive("ifhbox", if_test, if_hbox_code);
+  primitive("ifvbox", if_test, if_vbox_code);
+  primitive("ifx", if_test, ifx_code);
+  primitive("ifeof", if_test, if_eof_code);
+  primitive("iftrue", if_test, if_true_code);
+  primitive("iffalse", if_test, if_false_code);
+  primitive("ifcase", if_test, if_case_code);
+  primitive("iftdir", if_test, if_tdir_code);
+  primitive("ifydir", if_test, if_ydir_code);
+  primitive("ifddir", if_test, if_ddir_code);
+  primitive("ifmdir", if_test, if_mdir_code);
+  primitive("iftbox", if_test, if_tbox_code);
+  primitive("ifybox", if_test, if_ybox_code);
+  primitive("ifdbox", if_test, if_dbox_code);
   primitive("fi", fi_or_else, 2);
   text(frozen_fi) = make_string_pool("fi");
   eqtb[frozen_fi] = eqtb[cur_val];

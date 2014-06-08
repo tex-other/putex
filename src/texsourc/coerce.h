@@ -100,6 +100,8 @@ void free_node_(halfword, halfword);
 #define free_node(p, s) free_node_((halfword) (p), (halfword) (s))
 void sort_avail(void);
 pointer new_null_box(void);
+pointer new_dir_node_(pointer b, eight_bits dir);
+#define new_dir_node(b, dir) new_dir_node_((pointer) (b), (eight_bits) (dir));
 pointer new_rule(void);
 pointer new_ligature_(quarterword, quarterword, pointer);
 #define new_ligature(f, c, q) new_ligature_((quarterword) (f), (quarterword) (c), (pointer) (q))

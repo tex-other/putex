@@ -30,18 +30,18 @@ boolean open_fmt_file (void)
 {
   integer j;
 
-  j = cur_input.loc_field;
+  j = loc;
 
-  if (buffer[cur_input.loc_field] == '&' || buffer[cur_input.loc_field] == '+')
+  if (buffer[loc] == '&' || buffer[loc] == '+')
   {
-    incr(cur_input.loc_field);
-    j = cur_input.loc_field;
+    incr(loc);
+    j = loc;
     buffer[last] = ' ';
 
     while (buffer[j] != ' ')
       incr(j);
 
-    pack_buffered_name(0, cur_input.loc_field, j - 1);
+    pack_buffered_name(0, loc, j - 1);
 
     if (w_open_in(fmt_file))
       goto lab40;
@@ -98,7 +98,7 @@ boolean open_fmt_file (void)
   }
 
 lab40:
-  cur_input.loc_field = j;
+  loc = j;
 
   return true;
 }

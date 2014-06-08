@@ -1205,7 +1205,7 @@ lab41:;
   link(hb) = 0;
   r = link(ha);
   link(ha) = 0;
-  bchar = hyfbchar;
+  bchar = hyf_bchar;
 
   if ((ha >= hi_mem_min))
     if (font(ha) != hf)

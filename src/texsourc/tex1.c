@@ -75,9 +75,12 @@ void flush_node_list_(pointer p)
       {
         case hlist_node:
         case vlist_node:
+        case dir_node:
         case unset_node:
           {
             flush_node_list(list_ptr(p));
+            delete_glue_ref(space_ptr(p)); // fast
+            delete_glue_ref(xspace_ptr(p)); // fast
             free_node(p, box_node_size);
             goto lab30;
           }
@@ -136,6 +139,7 @@ void flush_node_list_(pointer p)
           if (leader_ptr(p) != 0)
             flush_node_list(leader_ptr(p));
           break;
+        case disp_node:
         case kern_node:
         case math_node:
         case penalty_node:
@@ -253,13 +257,17 @@ pointer copy_node_list_(pointer p)
       r = get_avail();
     else switch (type(p))
     {
+      case dir_node:
       case hlist_node:
       case vlist_node:
       case unset_node:
         {
           r = get_node(box_node_size);
+          mem[r + 7] = mem[p + 7];
           mem[r + 6] = mem[p + 6];
           mem[r + 5] = mem[p + 5];
+          add_glue_ref(space_ptr(r));
+          add_glue_ref(xspace_ptr(r));
           list_ptr(r) = copy_node_list(list_ptr(p));
           words = 5;
         }
@@ -273,10 +281,11 @@ pointer copy_node_list_(pointer p)
       case ins_node:
         {
           r = get_node(ins_node_size);
+          mem[r + 5] = mem[p + 5];
           mem[r + 4] = mem[p + 4];
           add_glue_ref(split_top_ptr(p));
           ins_ptr(r) = copy_node_list(ins_ptr(p));
-          words = ins_node_size - 1;
+          words = ins_node_size - 2;
         }
         break;
       case whatsit_node:
@@ -324,6 +333,7 @@ pointer copy_node_list_(pointer p)
         }
         break;
 
+      case disp_node:
       case kern_node:
       case math_node:
       case penalty_node:
@@ -459,15 +469,21 @@ void push_nest (void)
 
   nest[nest_ptr]= cur_list;
   incr(nest_ptr);
-  head = get_avail();
+  head = new_null_box();//head = get_avail();
   tail = head;
+  prev_node = tail;
   prev_graf = 0;
+  prev_disp = 0;
+  last_jchr = 0;
   mode_line = line;
 }
 /* sec 0217 */
 void pop_nest (void) 
 {
-  free_avail(head);
+//  free_avail(head);
+  delete_glue_ref(space_ptr(head)); // fast
+  delete_glue_ref(xspace_ptr(head)); // fast
+  free_node(head, box_node_size);
   decr(nest_ptr);
   cur_list = nest[nest_ptr];
 }
@@ -489,6 +505,8 @@ void show_activities (void)
     m = nest[p].mode_field;
     a = nest[p].aux_field;
     print_nl("### ");
+    print_direction(nest[p].dir_field);
+    print_string(", ");
     print_mode(m);
     print_string(" entered at line ");
     print_int(abs(nest[p].ml_field));
@@ -1043,6 +1061,13 @@ void print_cmd_chr_ (quarterword cmd, halfword chr_code)
       print(chr_code);
       break;
 
+    case kanji:
+    case kana:
+    case other_kchar:
+      print_string("kanji character ");
+      print_kanji(chr_code);
+      break;
+
     case assign_glue:
     case assign_mu_glue:
       if (chr_code < skip_base)
@@ -1175,6 +1200,14 @@ void print_cmd_chr_ (quarterword cmd, halfword chr_code)
 
     case def_font:
       print_esc("font");
+      break;
+
+    case def_jfont:
+      print_esc("jfont");
+      break;
+      
+    case def_tfont:
+      print_esc("tfont");
       break;
 
     case delim_num:
@@ -1427,6 +1460,26 @@ void print_cmd_chr_ (quarterword cmd, halfword chr_code)
           print_esc("fontname");
           break;
 
+        case kansuji_code:
+          print_esc("kansuji");
+          break;
+
+        case euc_code:
+          print_esc("euc");
+          break;
+        
+        case sjis_code:
+          print_esc("sjis");
+          break;
+        
+        case jis_code:
+          print_esc("jis");
+          break;
+        
+        case kuten_code:
+          print_esc("kuten");
+          break;
+
         default:
           print_esc("jobname");
           break;
@@ -1499,7 +1552,35 @@ void print_cmd_chr_ (quarterword cmd, halfword chr_code)
         case if_case_code:
           print_esc("ifcase");
           break;
+        
+        case if_tdir_code:
+          print_esc("iftdir");
+          break;
 
+        case if_ydir_code:
+          print_esc("ifydir");
+          break;
+
+        case if_ddir_code:
+          print_esc("ifddir");
+          break;
+
+        case if_mdir_code:
+          print_esc("ifmdir");
+          break;
+
+        case if_tbox_code:
+          print_esc("iftbox");
+          break;
+
+        case if_ybox_code:
+          print_esc("ifybox");
+          break;
+
+        case if_dbox_code:
+          print_esc("ifdbox");
+          break;
+ 
         default:
           print_esc("if");
           break;

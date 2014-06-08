@@ -54,7 +54,7 @@ integer calc_pos(integer c)
   c1 = (c >> 8) & 0xff;
   c2 = c & 0xff;
   
-  if(iskanji1(c1))
+  if (iskanji1(c1))
   {
     if (is_internalSJIS())
     {
@@ -67,9 +67,10 @@ integer calc_pos(integer c)
       c2 = c2 % 64;                 /* c2 = 0..63 */
     }
     
-    return(c1 + c2);              /* ret = 0..255 */
-  } else
-    return(c2);
+    return (c1 + c2);              /* ret = 0..255 */
+  }
+  else
+    return (c2);
 }
 
 integer kcatcodekey(integer c)
@@ -112,7 +113,7 @@ void init_default_kanji (const_string file_str, const_string internal_str)
 #endif
 }
 /* Routines needed by pTeX */
-/*
+
 void print_kanji(KANJI_code s)
 {
   if (s > 255)
@@ -140,7 +141,7 @@ void print_kansuji(integer n)
       n = n / 10;
       incr(k);
     }
-  while (!(n = 0));
+  while (!(n == 0));
 
   while (k > 0)
   {
@@ -209,14 +210,118 @@ eight_bits get_jfm_pos(KANJI_code kcode, internal_font_number f)
         sp = mp + 1;
       else
       {
-        return kchar_typ(f, mp);
+        return kchar_type(f, mp);
       }
     }
   }
 
   return kchar_type(f, 0);
 }
+pointer get_kinsoku_pos(KANJI_code c, small_number n)
+{
+  pointer p,s;
 
+  s = calc_pos(c);
+  p = s;
+
+#ifdef DEBUG
+  print_ln();
+  print_string("c:=");
+  print_int(c);
+  print_string(", p:=");
+  print_int(s);
+
+  if (p + kinsoku_base < 0)
+  {
+    print_string("p is negative value");
+    print_ln();
+  }
+#endif
+
+  if (n == new_pos)
+  {
+    do
+      {
+        if ((kinsoku_type(p) == 0) || (kinsoku_code(p) == c))
+          goto done;
+
+        incr(p);
+        
+        if (p > 255)
+          p = 0;
+      }
+    while (!(s == p));
+
+    p = no_entry;
+  }
+  else
+  {
+    do
+      {
+        if (kinsoku_type(p) == 0)
+          goto done1;
+
+        if (kinsoku_code(p) == c)
+          goto done;
+
+        incr(p);
+
+        if (p > 255)
+          p = 0;
+      }
+    while (!(s == p));
+done1:
+    p = no_entry;
+  }
+done:
+  return p;
+}
+pointer get_inhibit_pos(KANJI_code c, small_number n)
+{
+  pointer p, s;
+
+  s = calc_pos(c);
+  p = s;
+  
+  if (n == new_pos)
+  {
+    do
+      {
+        if ((inhibit_xsp_code(p) == 0) || (inhibit_xsp_code(p) == c))
+          goto done;
+
+        incr(p);
+
+        if (p > 255)
+          p = 0;
+      }
+    while (!(s == p));
+    
+    p = no_entry;
+  }
+  else
+  {
+    do
+    {
+      if (inhibit_xsp_code(p) == 0)
+        goto done1;
+      
+      if (inhibit_xsp_code(p) == c)
+        goto done;
+
+      incr(p);
+      
+      if (p > 255)
+        p = 0;
+    }
+    while (!(s ==p));
+done1:
+    p = no_entry;
+  }
+done:
+  return p;
+}
+/*
 pointer get_inhibit_pos(KANJI_code c, small_number n)
 {
   pointer p, s;

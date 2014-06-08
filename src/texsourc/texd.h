@@ -31,19 +31,10 @@ enum {
   out_dpx_flag = (1 << 3),
 };
 
-#define INLINE inline
-
-#define dump_file  fmt_file
-#define out_file   dvi_file
-
 /* Read a line of input as quickly as possible.  */
 extern boolean input_line (FILE *);
 #define input_ln(stream, flag) input_line(stream)
 
-/* `b_open_in' (and out) is used only for reading (and writing) .tfm
-   files; `w_open_in' (and out) only for dump files.  The filenames are
-   passed in as a global variable, `name_of_file'.  */
-   
 #define b_open_in(f)  open_input  (&(f), TFMFILEPATH, FOPEN_RBIN_MODE)
 #define w_open_in(f)  open_input  (&(f), TEXFORMATPATH, FOPEN_RBIN_MODE)
 #define b_open_out(f) open_output (&(f), FOPEN_WBIN_MODE)
@@ -59,7 +50,7 @@ extern boolean input_line (FILE *);
    to read and write the output files; also, be able to make a core dump. */ 
 #ifndef unix
   #define dumpcore() exit(1)
-#else /* unix */
+#else
   #define dumpcore abort
 #endif
 
@@ -72,27 +63,22 @@ extern boolean input_line (FILE *);
 extern int do_dump (char *, int, int, FILE *);
 extern int do_undump (char *, int, int, FILE *);
 
-/* Reading and writing the dump files.  `(un)dumpthings' is called from
-   the change file.*/
 #define dumpthings(base, len)           \
-  do_dump ((char *) &(base), sizeof (base), (int) (len), dump_file)
+  do_dump((char *) &(base), sizeof (base), (int) (len), fmt_file)
 
 #define undumpthings(base, len)           \
-  do_undump ((char *) &(base), sizeof (base), (int) (len), dump_file)
+  do_undump((char *) &(base), sizeof (base), (int) (len), fmt_file)
 
 /* Use the above for all the other dumping and undumping.  */
 #define generic_dump(x)   dumpthings (x, 1)
 #define generic_undump(x) undumpthings (x, 1)
 
-#define dump_wd     generic_dump
-#define undump_wd   generic_undump
 #define dump_hh     generic_dump
 #define undump_hh   generic_undump
-#define dump_qqqq   generic_dump
-#define undump_qqqq generic_undump
 
 /* `dump_int' is called with constant integers, so we put them into a
    variable first.  */
+
 #define dump_int(x)         \
   do                        \
     {                       \
@@ -101,33 +87,10 @@ extern int do_undump (char *, int, int, FILE *);
     }                       \
   while (0)
 
-/* web2c/regfix puts variables in the format file loading into
-   registers.  Some compilers aren't willing to take addresses of such
-   variables.  So we must kludge.  */
-#ifdef REGFIX
-#define undump_int(x)         \
-  do                          \
-    {                         \
-      integer x_val;          \
-      generic_undump (x_val); \
-      x = x_val;              \
-    }                         \
-  while (0)
-#else
 #define undump_int  generic_undump
-#endif
 
-
-/* If we're running on an ASCII system, there is no need to use the
-   `xchr' array to convert characters to the external encoding.  */
-
-#define Xchr(x) xchr[x]
-
-/* following added from new texmf.c file 1996/Jan/12 */
-/* these, of course are useless definitions since parameters not given */
-
-/* Declare routines in texmf.c.  */
 extern void t_open_in();
+
 #include "yandy_macros.h"
 
 // #define max_halfword 65535L  /* for 32 bit memory word */
@@ -329,7 +292,9 @@ typedef char glue_ord;
 typedef struct
 {
   int mode_field;
-  halfword head_field, tail_field;
+  signed char dir_field, adj_dir_field;
+  scaled pdisp_field;
+  halfword head_field, tail_field, pnode_field, last_jchr_field;
   integer pg_field, ml_field;
   memory_word aux_field;
 } list_state_record;
@@ -338,7 +303,7 @@ typedef char group_code;
 /* sec 0300 */
 typedef struct
 {
-  quarterword state_field, index_field; 
+  quarterword state_field, index_field;
   halfword start_field, loc_field, limit_field, name_field;
 } in_state_record; 
 /* sec 0548 */
@@ -386,6 +351,8 @@ EXTERN integer tally;
 EXTERN integer term_offset;
 EXTERN integer file_offset;
 EXTERN ASCII_code trick_buf[error_line + 1];
+EXTERN ASCII_code trick_buf2[error_line + 1];
+EXTERN ASCII_code kcode_pos; // {pTeX: denotes whether first byte or second byte of KANJI}
 EXTERN integer trick_count;
 EXTERN integer first_count;
 EXTERN int interaction;
@@ -750,7 +717,7 @@ EXTERN int hyf_char;
 EXTERN int cur_lang, init_cur_lang;
 EXTERN integer lhyf, rhyf;
 EXTERN integer init_l_hyf, init_r_hyf;
-EXTERN halfword hyfbchar;
+EXTERN halfword hyf_bchar;
 EXTERN char hyf[68];
 EXTERN halfword init_list;
 EXTERN boolean init_lig;
@@ -1040,28 +1007,31 @@ void get_date_and_time (integer *, integer *, integer *, integer *);
 
 char *unixify (char *);
 
-//#include "yandy_macros.h"
 #include "coerce.h"
 
 /* sec 79 */
-extern INLINE void prompt_input(const char *s);
-extern INLINE void synch_h(void);
-extern INLINE void synch_v(void);
-extern INLINE void set_cur_lang(void);
+extern inline void ensure_dvi(void);
+extern inline void ensure_pdf(void);
+extern inline void prompt_input(const char *s);
+extern inline void synch_h(void);
+extern inline void synch_v(void);
+extern inline void set_cur_lang(void);
 extern char * md5_file(FILE * in_file);
-extern INLINE void str_room_ (int val);
+extern inline void str_room_ (int val);
 #define str_room(a) str_room_((int) a)
-extern INLINE void tail_append_ (pointer val);
+extern inline void tail_append_ (pointer val);
 #define tail_append(a) tail_append_((pointer) a)
-extern INLINE void tex_help (unsigned int n, ...);
-extern INLINE void append_char(ASCII_code c);
-extern INLINE void append_lc_hex(ASCII_code c);
-extern INLINE void succumb(void);
-extern INLINE void dvi_out_ (ASCII_code op);
+extern inline void prev_append_ (pointer val);
+#define prev_append(a) prev_append_((pointer) a)
+extern inline void tex_help (unsigned int n, ...);
+extern inline void append_char(ASCII_code c);
+extern inline void append_lc_hex(ASCII_code c);
+extern inline void succumb(void);
+extern inline void dvi_out_ (ASCII_code op);
 #define dvi_out(op) dvi_out_((ASCII_code) (op))
-extern INLINE void free_avail_(halfword p);
+extern inline void free_avail_(halfword p);
 #define free_avail(p) free_avail_((halfword) (p))
-extern INLINE void flush_string (void);
+extern inline void flush_string (void);
 extern str_number load_pool_strings (integer spare_size);
 extern str_number make_string_pool (const char *s);
 #define help0()     tex_help(0)
@@ -1072,7 +1042,7 @@ extern str_number make_string_pool (const char *s);
 #define help5(...)  tex_help(5, __VA_ARGS__)
 #define help6(...)  tex_help(6, __VA_ARGS__)
 
-/********BINDING WITH LIBHARU*********/
+/* for libhpdf backend. */
 typedef struct _mapping_table mapping_table;
 typedef struct _mapping_entry mapping_entry;
 EXTERN HPDF_Doc  yandy_pdf;
@@ -1086,9 +1056,24 @@ EXTERN mapping_table * gentbl;
 EXTERN mapping_table * font_name_hash_init (void);
 EXTERN void font_name_hash_free (mapping_table * tbl);
 EXTERN void pdf_ship_out(pointer p);
-EXTERN void pdf_vlist_out (void);
-EXTERN void pdf_hlist_out (void);
-EXTERN void pdf_begin_text(void);
+EXTERN void pdf_vlist_out(void);
+EXTERN void pdf_hlist_out(void);
 EXTERN void pdf_font_def(internal_font_number f);
-EXTERN void pdf_error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void * user_data);
-/********BINDING WITH LIBHARU*********/
+EXTERN void pdf_error_handler(HPDF_STATUS error_no, HPDF_STATUS detail_no, void * user_data);
+
+/* for ptex's functions */
+boolean skip_mode;
+extern void print_kanji(KANJI_code s);
+extern void print_kansuji(integer n);
+extern void print_dir(eight_bits dir);
+extern void print_direction(integer d);
+extern eight_bits get_jfm_pos(KANJI_code kcode, internal_font_number f);
+extern pointer get_kinsoku_pos(KANJI_code c, small_number n);
+extern pointer get_inhibit_pos(KANJI_code c, small_number n);
+extern int check_kanji(integer c);
+extern boolean is_char_ascii(integer c);
+extern boolean is_char_kanji(integer c);
+extern boolean ismultiprn(integer c);
+extern integer calc_pos(integer c);
+extern integer kcatcodekey (integer c);
+extern void init_default_kanji (const_string file_str, const_string internal_str);

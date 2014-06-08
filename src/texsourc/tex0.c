@@ -20,16 +20,50 @@
 #include "texd.h"
 
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
-INLINE void pack_cur_name(void)
+inline void ensure_dvi(void)
+{
+  if (output_file_name == 0)
+  {
+    if (job_name == 0)
+      open_log_file();
+
+    pack_job_name(".dvi");
+
+    while(!b_open_out(dvi_file))
+    {
+      prompt_file_name("file name for output", ".dvi");
+    }
+
+    output_file_name = b_make_name_string(dvi_file);
+  }
+}
+inline void ensure_pdf(void)
+{
+  if (output_file_name == 0)
+  {
+    if (job_name == 0)
+      open_log_file();
+
+    pack_job_name(".pdf");
+
+    while(!b_open_out(dvi_file))
+    {
+      prompt_file_name("file name for output", ".pdf");
+    }
+
+    output_file_name = b_make_name_string(pdf_file);
+  }
+}
+inline void pack_cur_name(void)
 {
   pack_file_name(cur_name, cur_area, cur_ext);
 }
-INLINE void prompt_input(const char *s)
+inline void prompt_input(const char *s)
 {
   print_string(s);
   term_input();
 }
-INLINE void synch_h(void)
+inline void synch_h(void)
 {
   if (cur_h != dvi_h)
   {
@@ -37,7 +71,7 @@ INLINE void synch_h(void)
     dvi_h = cur_h;
   }
 }
-INLINE void synch_v(void)
+inline void synch_v(void)
 {
   if (cur_v != dvi_v)
   {
@@ -45,7 +79,7 @@ INLINE void synch_v(void)
     dvi_v = cur_v;
   }
 }
-INLINE void set_cur_lang(void)
+inline void set_cur_lang(void)
 {
   if (language <= 0)
     cur_lang = 0;
@@ -54,7 +88,7 @@ INLINE void set_cur_lang(void)
   else
     cur_lang = language;
 }
-INLINE void free_avail_(halfword p)
+inline void free_avail_(halfword p)
 {
   link(p) = avail;
   avail = p;
@@ -62,7 +96,7 @@ INLINE void free_avail_(halfword p)
   decr(dyn_used);
 #endif /* STAT */
 }
-INLINE void dvi_out_(ASCII_code op)
+inline void dvi_out_(ASCII_code op)
 {
   dvi_buf[dvi_ptr] = op;
   incr(dvi_ptr);
@@ -70,7 +104,7 @@ INLINE void dvi_out_(ASCII_code op)
   if (dvi_ptr == dvi_limit)
     dvi_swap();
 }
-INLINE void succumb(void)
+inline void succumb(void)
 {
   if (interaction == error_stop_mode)
     interaction = scroll_mode;
@@ -88,30 +122,30 @@ INLINE void succumb(void)
   history = 3;
   jump_out();
 }
-INLINE void flush_string(void)
+inline void flush_string(void)
 {
   decr(str_ptr);
   pool_ptr = str_start[str_ptr];
 }
-INLINE void append_char(ASCII_code c)
+inline void append_char(ASCII_code c)
 {
   str_pool[pool_ptr] = c;
   incr(pool_ptr);
 }
-INLINE void append_lc_hex(ASCII_code c)
+inline void append_lc_hex(ASCII_code c)
 {
   if (c < 10)
     append_char(c + '0');
   else
     append_char(c - 10 + 'a');
 }
-INLINE void print_err(const char * s)
+inline void print_err(const char * s)
 {
   if (interaction == error_stop_mode);
     print_nl("! ");
   print_string(s);
 }
-INLINE void tex_help(unsigned int n, ...)
+inline void tex_help(unsigned int n, ...)
 {
   int i;
   va_list help_arg;
@@ -127,7 +161,7 @@ INLINE void tex_help(unsigned int n, ...)
 
   va_end(help_arg);
 }
-INLINE void str_room_(int val)
+inline void str_room_(int val)
 {
 #ifdef ALLOCATESTRING
   if (pool_ptr + val > current_pool_size)
@@ -144,10 +178,16 @@ INLINE void str_room_(int val)
   }
 #endif
 }
-INLINE void tail_append_(pointer val)
+inline void tail_append_(pointer val)
 {
   link(tail) = val;
   tail = link(tail);
+}
+inline void prev_append_(pointer val)
+{
+  link(prev_node) = val;
+  link(link(prev_node)) = tail;
+  prev_node = link(prev_node);
 }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 
@@ -158,18 +198,34 @@ void print_ln (void)
   switch (selector)
   {
     case term_and_log:
+      if (kcode_pos == 1)
+      {
+        show_char(' ');
+        putc(' ', log_file);
+      }
+
       show_char('\n');
       term_offset = 0;
-      (void) putc ('\n', log_file);
+      putc('\n', log_file);
       file_offset = 0;
       break;
 
     case log_only:
-      (void) putc ('\n',  log_file);
+      if (kcode_pos == 1)
+      {
+        putc(' ', log_file);
+      }
+
+      putc('\n',  log_file);
       file_offset = 0;
       break;
 
     case term_only:
+      if (kcode_pos == 1)
+      {
+        show_char(' ');
+      }
+
       show_char('\n');
       term_offset = 0;
       break;
@@ -196,12 +252,35 @@ void print_char_ (ASCII_code s)
     }
   }
 
+  if (kcode_pos == 1)
+    kcode_pos = 2;
+  else if (iskanji1(xchr[s]))
+  {
+    kcode_pos = 1;
+
+    if ((selector == term_and_log) || (selector == log_only))
+      if (file_offset >= max_print_line - 1)
+      {
+        putc(' ', log_file);
+        file_offset = 0;
+      }
+
+    if ((selector == term_and_log) || (selector == term_only))
+      if (term_offset >= max_print_line - 1)
+      {
+        show_char(' ');
+        term_offset = 0;
+      }
+  }
+  else
+    kcode_pos = 0;
+
   switch (selector)
   {
     case term_and_log:
-      (void) show_char(Xchr(s));
+      show_char(xchr[s]);
       incr(term_offset);
-      (void) putc(Xchr(s), log_file);
+      putc(xchr[s], log_file);
       incr(file_offset);
 
       if (term_offset == max_print_line)
@@ -212,14 +291,14 @@ void print_char_ (ASCII_code s)
       
       if (file_offset == max_print_line)
       {
-        (void) putc ('\n', log_file);
+        putc ('\n', log_file);
         file_offset = 0;
       }
 
       break;
 
     case log_only:
-      (void) putc(Xchr(s), log_file);
+      putc(xchr[s], log_file);
       incr(file_offset);
 
       if (file_offset == max_print_line)
@@ -228,7 +307,7 @@ void print_char_ (ASCII_code s)
       break;
 
     case term_only:
-      (void) show_char(Xchr(s));
+      show_char(xchr[s]);
       incr(term_offset);
 
       if (term_offset == max_print_line)
@@ -241,7 +320,10 @@ void print_char_ (ASCII_code s)
 
     case pseudo:
       if (tally < trick_count)
+      {
         trick_buf[tally % error_line] = s;
+        trick_buf2[tally % error_line] = kcode_pos;
+      }
 
       break;
 
@@ -267,7 +349,7 @@ void print_char_ (ASCII_code s)
       break;
 
     default:
-      (void) putc(Xchr(s), write_file[selector]);
+      (void) putc(xchr[s], write_file[selector]);
       break;
   }
 
@@ -687,16 +769,16 @@ lab22:
 
             if (last > first + 1)
             {
-              cur_input.loc_field = first + 1;
+              loc = first + 1;
               buffer[first] = 32;
             }
             else
             {
               prompt_input("insert>");
-              cur_input.loc_field = first;
+              loc = first;
             }
             first = last;
-            cur_input.limit_field = last - 1;
+            limit = last - 1;
             return;
           }
           break;
@@ -854,12 +936,12 @@ boolean init_terminal (void)
 
   if (last > first)
   {
-    cur_input.loc_field = first;
+    loc = first;
 
-    while((cur_input.loc_field < last) && (buffer[cur_input.loc_field]== ' '))
-      incr(cur_input.loc_field);    // step over initial white space
+    while((loc < last) && (buffer[loc]== ' '))
+      incr(loc);    // step over initial white space
 
-    if (cur_input.loc_field < last)
+    if (loc < last)
       return true;
   }
 
@@ -883,12 +965,12 @@ boolean init_terminal (void)
       return false;
     }
 
-    cur_input.loc_field = first;
+    loc = first;
 
-    while ((cur_input.loc_field < last) && (buffer[cur_input.loc_field]== ' '))
-      incr(cur_input.loc_field);    // step over intial white space
+    while ((loc < last) && (buffer[loc]== ' '))
+      incr(loc);    // step over intial white space
 
-    if (cur_input.loc_field < last)
+    if (loc < last)
       return true;
 
     sprintf(log_line, "%s\n", "Please type the name of your input file.");
@@ -1352,13 +1434,7 @@ void show_token_list_(integer p, integer q, integer l)
   while ((p != 0) && (tally < l))
   {
     if (p == q)
-    {
-      first_count = tally;
-      trick_count = tally + 1 + error_line - half_error_line;
-
-      if (trick_count < error_line)
-        trick_count = error_line;
-    }
+      set_trick_count();
 
     if ((p < hi_mem_min) || (p > mem_end))
     {
@@ -1370,14 +1446,28 @@ void show_token_list_(integer p, integer q, integer l)
       print_cs(info(p) - cs_token_flag);
     else
     {
-      m = info(p) / 256;
-      c = info(p) % 256;
+      if (check_kanji(info(p)))
+      {
+        m = kcat_code(kcatcodekey(info(p)));
+        c = info(p);
+      }
+      else
+      {
+        m = Hi(info(p));
+        c = Lo(info(p));
+      }
 
-      if (info(p) < 0)
+      if ((m < kanji) && (c > 256))
         print_esc("BAD.");
       else
         switch (m)
         {
+          case kanji:
+          case kana:
+          case other_kchar:
+            print_kanji((c));
+            break;
+
           case left_brace:
           case right_brace:
           case math_shift:
@@ -1690,7 +1780,7 @@ void free_node_(halfword p, halfword s)
 #endif /* STAT */
 }
 /* sec 0136 */
-pointer new_null_box (void) 
+pointer new_null_box(void) 
 {
   pointer p;
 
@@ -1705,6 +1795,119 @@ pointer new_null_box (void)
   glue_sign(p) = normal;
   glue_order(p) = normal;
   glue_set(p) = 0.0;
+  space_ptr(p) = zero_glue;
+  xspace_ptr(p) = zero_glue;
+  add_glue_ref(zero_glue);
+  add_glue_ref(zero_glue);
+
+  return p;
+}
+pointer new_dir_node_(pointer b, eight_bits dir)
+{
+  pointer p;
+
+  if (type(b) > vlist_node)
+  {
+    confusion("new_dir_node:not box");
+    return 0;
+  }
+
+  p = new_null_box();
+  type(p) = dir_node;
+  set_box_dir(p, dir);
+
+  switch (box_dir(b))
+  {
+    case dir_yoko:
+      switch (dir)
+      {
+        case dir_tate: 
+          {
+            width(p) = height(b) + depth(b);
+            depth(p) = width(b) / 2;
+            height(p) = width(b) - depth(p);
+          }
+          break;
+        
+        case dir_dtou:
+          {
+            width(p) = height(b) + depth(b);
+            depth(p) = 0;
+            height(p) = width(b);
+          }
+          break;
+
+        default:
+          {
+            confusion("new_dir_node:y->?");
+            return 0;
+          }
+      }
+      break;
+
+    case dir_tate:
+        switch (dir)
+        {
+          case dir_yoko:
+            {
+              width(p) = height(b) + depth(b);
+              depth(p) = 0;
+              height(p) = width(b);
+            }
+            break;
+          
+          case dir_dtou:
+            {
+              width(p) = width(b);
+              depth(p) = height(b);
+              height(p) = depth(b);
+            }
+            break;
+          
+          default:
+            {
+              confusion("new_dir_node:t->?");
+              return 0;
+            }
+        }
+      break;
+
+    case dir_dtou:
+      switch (dir)
+      {
+        case dir_yoko:
+          {
+            width(p) = height(b) + depth(b);
+            depth(p) = 0;
+            height(p) = width(b);
+          }
+          break;
+
+        case dir_tate:
+          {
+            width(p) = width(b);
+            depth(p) = height(b);
+            height(p) = depth(b);
+          }
+          break;
+        
+        default:
+          {
+            confusion("new_dir_node:d->?");
+            return 0;
+          }
+      }
+      break;
+
+    default:
+      {
+        confusion("new_dir_node:illegal dir");
+        return 0;
+      }
+  }
+
+  link(b) = 0;
+  list_ptr(p) = b;
 
   return p;
 }
@@ -2025,7 +2228,8 @@ void short_display_(integer p)
 {
   integer n; 
 
-  while (p != 0) {      /* want p != null here bkph 93/Dec/15 !!! NOTE: still not fixed in 3.14159 ! */
+  while (p != 0)      /* want p != null here bkph 93/Dec/15 !!! NOTE: still not fixed in 3.14159 ! */
+  {
      if (is_char_node(p))
      {
        if (p <= mem_end)
@@ -2042,13 +2246,21 @@ void short_display_(integer p)
            print_char(' ');
            font_in_short_display = font(p);
          }
-         print(character(p));
+
+         if (font_dir[font(p)] != dir_default)
+         {
+           p = link(p);
+           print_kanji(info(p));
+         }
+         else
+           print(character(p));
        }
      }
-     else switch (mem[p].hh.b0)
+     else switch (type(p))
      {
       case hlist_node:
       case vlist_node:
+      case dir_node:
       case ins_node:
       case whatsit_node:
       case mark_node:
@@ -2102,7 +2314,14 @@ void print_font_and_char_ (integer p)
     }
 
     print_char(' ');
-    print(character(p));
+    
+    if (font_dir[font(p)] != dir_default)
+    {
+      p = link(p);
+      print_kanji(info(p));
+    }
+    else
+      print(character(p));
   }
 }
 /* sec 0176 */
@@ -2385,18 +2604,37 @@ void show_node_list_(integer p)
     }
 
     if ((p >= hi_mem_min))
+    {
       print_font_and_char(p);
+
+      if (font_dir[font(p)] != dir_default)
+        p = link(p);
+    }
     else switch (type(p))
     {
       case hlist_node:
       case vlist_node:
+      case dir_node:
       case unset_node:
         {
-          if (type(p) == hlist_node)
-            print_esc("h");
-          else if (type(p) == vlist_node)
-            print_esc("v");
-          else print_esc("unset");
+          switch (type(p))
+          {
+            case hlist_node:
+              print_esc("h");
+              break;
+            
+            case vlist_node:
+              print_esc("v");
+              break;
+
+            case dir_node:
+              print_esc("dir");
+              break;
+
+            default:
+              print_esc("unset");
+              break;
+          }
 
           print_string("box(");
           print_scaled(height(p));
@@ -2455,6 +2693,12 @@ void show_node_list_(integer p)
               print_string(", shifted ");
               print_scaled(shift_amount(p));
             }
+            
+            if (box_dir(p) != dir_default)
+            {
+              print_string(", ");
+              print_direction(box_dir(p));
+            }
           }
 
           {
@@ -2483,6 +2727,7 @@ void show_node_list_(integer p)
         {
           print_esc("insert");
           print_int(subtype(p));
+          print_dir(ins_dir(p));
           print_string(", natural size ");
           print_scaled(height(p));
           print_string("; split(");
@@ -2501,7 +2746,8 @@ void show_node_list_(integer p)
           }
         }
         break;
-      case 8:
+
+      case whatsit_node:
         switch (subtype(p))
         {
           case open_node:
@@ -2659,6 +2905,11 @@ void show_node_list_(integer p)
         {
           print_esc("penalty ");
           print_int(penalty(p));
+
+          if (subtype(p) == widow_pena)
+            print_string("(for \\jchrwidowpenalty)");
+          else if (subtype(p) == kinsoku_pena)
+            print_string("(for kinsoku)");
         }
         break;
 

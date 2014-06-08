@@ -1402,7 +1402,7 @@ void handle_right_brace (void)
       break;
     case output_group:
       {
-        if ((cur_input.loc_field != 0) || ((token_type != output_text) && (token_type != backed_up)))
+        if ((loc != 0) || ((token_type != output_text) && (token_type != backed_up)))
         {
           print_err("Unbalanced output routine");
           help2("Your sneaky output routine has problematic {'s and/or }'s.",
@@ -1413,7 +1413,7 @@ void handle_right_brace (void)
             {
               get_token();
             }
-          while (!(cur_input.loc_field == 0));
+          while (!(loc == 0));
         }
 
         end_token_list();

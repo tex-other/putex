@@ -20,6 +20,8 @@
 #define null_code       0     // 0
 #define carriage_return 015   // 13
 #define invalid_code    0177  // 127
+/* sec 0036 */
+#define loc cur_input.loc_field
 /* sec 0040 */
 #define length(s) (str_start[(s) + 1] - str_start[(s)])
 /* sec 0041 */
@@ -116,7 +118,13 @@ enum
 #define character       subtype
 /* sec 0135 */
 #define hlist_node      0
-#define box_node_size   7
+#define box_node_size   8 //7
+#define box_dir(a)        (subtype(a)) // {direction of a box}
+#define set_box_dir(a, b) (subtype(a) = b)
+#define dir_default     0 // {direction of the box, default Left to Right}
+#define dir_dtou        1 // {direction of the box, Bottom to Top}
+#define dir_tate        3 // {direction of the box, Top to Bottom}
+#define dir_yoko        4 // {direction of the box, equal default}
 #define width_offset    1
 #define depth_offset    2
 #define height_offset   3
@@ -133,46 +141,54 @@ enum
 #define shrinking       2
 #define glue_offset     6
 #define glue_set(a)     mem[a + glue_offset].gr
+#define space_offset    7 // {position of |glue_set| in a box node}
+#define space_ptr(a)    link(a + space_offset)
+#define xspace_ptr(a)   info(a + space_offset)
 /* sec 0137 */
 #define vlist_node 1
+#define dir_node   2 // {|type| of dir nodes}
 /* sec 0138 */
-#define rule_node      2
+#define rule_node      3 //2
 #define rule_node_size 4
 #define null_flag      -010000000000L
 #define is_running(a)  (a = null_flag)
 /* sec 0140 */
-#define ins_node         3
-#define ins_node_size    5
+#define ins_node         4 //3
+#define ins_node_size    6 //5
 #define float_cost(a)    mem[a + 1].cint
 #define ins_ptr(a)       info(a + 4)
 #define split_top_ptr(a) link(a + 4)
+#define ins_dir(a)       subtype(a + 5) // {direction of |ins_node|}
+/* pTeX's disp node */
+#define disp_node        5 // {|type| of a displace node}
+#define disp_dimen(a)    mem[a + 1].cint
 /* sec 0141 */
-#define mark_node       4
+#define mark_node       6 //4
 #define small_node_size 2
 #define mark_ptr(a)     mem[a + 1].cint
 /* sec 0142 */
-#define adjust_node 5
+#define adjust_node 7 //5
 #define adjust_ptr  mark_ptr
 /* sec 0143 */
-#define ligature_node 6
+#define ligature_node 8 //6
 #define lig_char(a)   (a + 1)
 #define lig_ptr(a)    link(lig_char(a))
 /* sec 0145 */
-#define disc_node     7
+#define disc_node     9 //7
 #define replace_count subtype
 #define pre_break     llink
 #define post_break    rlink
 /* sec 0146 */
-#define whatsit_node 8
+#define whatsit_node 10 //8
 /* sec 0147 */
-#define math_node 9
+#define math_node 11 //9
 #define before    0
 #define after     1
 /* sec 0148 */
 #define precedes_break(a)  (type(a) < math_node)
 #define non_discardable(a) (type(a) < math_node)
 /* sec 0149 */
-#define glue_node      10
+#define glue_node      12 //10
 #define cond_math_glue 98
 #define mu_glue        99
 #define a_leaders      100
@@ -191,16 +207,19 @@ enum
 #define fill              2
 #define filll             3
 /* sec 0155 */
-#define kern_node 11
+#define kern_node 13 //11
 #define explicit  1
 #define acc_kern  2
+#define ita_kern  3 // {|subtype| of kern nodes from \.{\\/}}
 /* sec 0157 */
-#define penalty_node  12
+#define penalty_node  14 //12
+#define widow_pena    1 // {|subtype| of penalty nodes from \.{\\jchrwidowpenalty}}
+#define kinsoku_pena  2 // {|subtype| of penalty nodes from kinsoku}
 #define inf_penalty   inf_bad
 #define eject_penalty -inf_bad
 #define penalty(a)    mem[a + 1].cint
 /* sec 0159 */
-#define unset_node      13
+#define unset_node      15 //13
 #define glue_stretch(a) mem[a + glue_offset].cint
 #define glue_shrink     shift_amount
 #define span_count      subtype
@@ -257,98 +276,109 @@ enum
 #define stop          14
 #define invalid_char  15
 #define delim_num     15
-#define max_char_code 15
+#define kanji         16 //{kanji}
+#define kana          17 //{hiragana, katakana, alphabet}
+#define other_kchar   18 //{kanji codes}
+#define max_char_code 18 //15
 /* sec 0208 */
-#define char_num      16
-#define math_char_num 17
-#define mark          18
-#define xray          19
-#define make_box      20
-#define hmove         21
-#define vmove         22
-#define un_hbox       23
-#define un_vbox       24
-#define remove_item   25
-#define hskip         26
-#define vskip         27
-#define mskip         28
-#define kern          29
-#define mkern         30
-#define leader_ship   31
-#define halign        32
-#define valign        33
-#define no_align      34
-#define vrule         35
-#define hrule         36
-#define insert        37
-#define vadjust       38
-#define ignore_spaces 39
-#define after_assignment 40
-#define after_group      41
-#define break_penalty    42
-#define start_par        43
-#define ital_corr        44
-#define accent           45
-#define math_accent      46
-#define discretionary    47
-#define eq_no            48
-#define left_right       49
-#define math_comp        50
-#define limit_switch     51
-#define above            52
-#define math_style       53
-#define math_choice      54
-#define non_script       55
-#define vcenter          56
-#define case_shift       57
-#define message          58
-#define extension        59
-#define in_stream        60
-#define begin_group      61
-#define end_group        62
-#define omit             63
-#define ex_space         64
-#define no_boundary      65
-#define radical          66
-#define end_cs_name      67
-#define min_internal     68
-#define char_given       68
-#define math_given       69
-#define last_item        70
-#define max_non_prefixed_command 70
+#define char_num      (max_char_code + 1)//16
+#define math_char_num (char_num + 1)//17
+#define mark          (math_char_num + 1)//18
+#define xray          (mark + 1)//19
+#define make_box      (xray + 1)//20
+#define hmove         (make_box + 1)//21
+#define vmove         (hmove + 1)//22
+#define un_hbox       (vmove + 1)//23
+#define un_vbox       (un_hbox + 1)//24
+#define remove_item   (un_vbox + 1)//25
+#define hskip         (remove_item + 1)//26
+#define vskip         (hskip + 1)//27
+#define mskip         (vskip + 1)//28
+#define kern          (mskip + 1)//29
+#define mkern         (kern + 1)//30
+#define leader_ship   (mkern + 1)//31
+#define halign        (leader_ship + 1)//32
+#define valign        (halign + 1)//33
+#define no_align      (valign + 1)//34
+#define vrule         (no_align + 1)//35
+#define hrule         (vrule + 1)//36
+#define insert        (hrule + 1)//37
+#define vadjust       (insert + 1)//38
+#define ignore_spaces (vadjust + 1)//39
+#define after_assignment (ignore_spaces + 1)//40
+#define after_group      (after_assignment + 1)//41
+#define break_penalty    (after_group + 1)//42
+#define start_par        (break_penalty + 1)//43
+#define ital_corr        (start_par + 1)//44
+#define accent           (ital_corr + 1)//45
+#define math_accent      (accent + 1)//46
+#define discretionary    (math_accent + 1)//47
+#define eq_no            (discretionary + 1)//48
+#define left_right       (eq_no + 1)//49
+#define math_comp        (left_right + 1)//50
+#define limit_switch     (math_comp + 1)//51
+#define above            (limit_switch + 1)//52
+#define math_style       (above + 1)//53
+#define math_choice      (math_style + 1)//54
+#define non_script       (math_choice + 1)//55
+#define vcenter          (non_script + 1)//56
+#define case_shift       (vcenter + 1)//57
+#define message          (case_shift + 1)//58
+#define extension        (message + 1)//59
+#define in_stream        (extension + 1)//60
+#define begin_group      (in_stream + 1)//61
+#define end_group        (begin_group + 1)//62
+#define omit             (end_group + 1)//63
+#define ex_space         (omit + 1)//64
+#define no_boundary      (ex_space + 1)//65
+#define radical          (no_boundary + 1)//66
+#define end_cs_name      (radical + 1)//67
+#define min_internal     (end_cs_name + 1)//68
+#define char_given       min_internal//68
+#define math_given       (char_given + 1)//69
+#define last_item        (math_given + 1)//70
+#define inhibit_glue     (last_item + 1) // {inhibit adjust glue ( \.{\\inhibitglue} )}
+#define chg_dir          (inhibit_glue + 1) // {change dir mode by \.{\\tate}, \.{\\yoko}}
+#define max_non_prefixed_command chg_dir//70
 /* sec 0209 */
-#define toks_register     71
-#define assign_toks       72
-#define assign_int        73
-#define assign_dimen      74
-#define assign_glue       75
-#define assign_mu_glue    76
-#define assign_font_dimen 77
-#define assign_font_int   78
-#define set_aux           79
-#define set_prev_graf     80
-#define set_page_dimen    81
-#define set_page_int      82
-#define set_box_dimen     83
-#define set_shape         84
-#define def_code          85
-#define def_family        86
-#define set_font          87
-#define def_font          88
-#define tex_register      89
-#define max_internal      89
-#define advance           90
-#define multiply          91
-#define divide            92
-#define prefix            93
-#define let               94
-#define shorthand_def     95
-#define read_to_cs        96
-#define def               97
-#define set_box           98
-#define hyph_data         99
-#define set_interaction   100
-#define max_command       100
+#define toks_register     (max_non_prefixed_command + 1)//71
+#define assign_toks       (toks_register + 1)//72
+#define assign_int        (assign_toks + 1)//73
+#define assign_dimen      (assign_int + 1)//74
+#define assign_glue       (assign_dimen + 1)//75
+#define assign_mu_glue    (assign_glue + 1)//76
+#define assign_font_dimen (assign_mu_glue + 1)//77
+#define assign_font_int   (assign_font_dimen + 1)//78
+#define assign_kinsoku    (assign_font_int + 1)
+#define assign_inhibit_xsp_code (assign_kinsoku + 1)
+#define set_kansuji_char        (assign_inhibit_xsp_code + 1)
+#define set_aux           (set_kansuji_char + 1)//79
+#define set_prev_graf     (set_aux + 1)//80
+#define set_page_dimen    (set_prev_graf + 1)//81
+#define set_page_int      (set_page_dimen + 1)//82
+#define set_box_dimen     (set_page_int + 1)//83
+#define set_shape         (set_box_dimen + 1)//84
+#define def_code          (set_shape + 1)//85
+#define def_family        (def_code + 1)//86
+#define set_font          (def_family + 1)//87
+#define def_font          (set_font + 1)//88
+#define def_jfont         (def_font + 1) // {define a font file ( \.{\\jfont} )}
+#define def_tfont         (def_jfont + 1) // {define a font file ( \.{\\tfont} )}
+#define tex_register      (def_tfont + 1)//89
+#define max_internal      tex_register//89
+#define advance           (max_internal + 1)//90
+#define multiply          (advance + 1)//91
+#define divide            (multiply + 1)//92
+#define prefix            (divide + 1)//93
+#define let               (prefix + 1)//94
+#define shorthand_def     (let + 1)//95
+#define read_to_cs        (shorthand_def + 1)//96
+#define def               (read_to_cs + 1)//97
+#define set_box           (def + 1)//98
+#define hyph_data         (set_box + 1)//99
+#define set_interaction   (hyph_data + 1)//100
+#define set_auto_spacing  (set_interaction + 1)
+#define max_command       set_auto_spacing//100
 /* sec 0210 */
 #define undefined_cs    (max_command + 1 )
 #define expand_after    (max_command + 2 )
@@ -377,8 +407,13 @@ enum
 /* sec 0212 */
 #define ignore_depth -65536000L
 /* sec 0213 */
+#define direction       cur_list.dir_field //{current direction}
+#define adjust_dir      cur_list.adj_dir_field // {current adjust direction}
 #define mode            cur_list.mode_field
 #define head            cur_list.head_field
+#define prev_node       cur_list.pnode_field // {previous to last |disp_node|}
+#define prev_disp       cur_list.pdisp_field // {displacemant at |prev_node|}
+#define last_jchr       cur_list.last_jchr_field // {final jchar node on current list}
 #define tail            cur_list.tail_field
 #define aux             cur_list.aux_field
 #define prev_depth      aux.cint
@@ -745,7 +780,7 @@ enum
 /* sec 0274 */
 #define saved(a) save_stack[save_ptr + (a)].cint
 /* sec 0289 */
-#define cs_token_flag     07777 // 4095
+#define cs_token_flag     0xFFFF//07777 // 4095
 #define left_brace_token  0400  // 256  = 2^8 * left_brace
 #define left_brace_limit  01000 // 512  = 2^8 * (left_brace + 1)
 #define right_brace_token 01000 // 512  = 2^8 * right_brace
@@ -758,10 +793,16 @@ enum
 #define other_token       06000 // 3072 = 2^8 * other_char
 #define match_token       06400 // 3328 = 2^8 * match
 #define end_match_token   07000 // 3584 = 2^8 * end_match
+/* sec 0302 */
+#define limit cur_input.limit_field
 /* sec 0303 */
-#define mid_line    1
-#define skip_blanks 2 + max_char_code // 17
-#define new_line    3 + max_char_code + max_char_code // 33
+//#define mid_line    1
+//#define skip_blanks 2 + max_char_code // 17
+//#define new_line    3 + max_char_code + max_char_code // 33
+#define mid_line    1 // {|state| code when scanning a line of characters}
+#define mid_kanji   (2 + max_char_code) // {|state| code when scanning a line of characters}
+#define skip_blanks (3 + max_char_code + max_char_code) // {|state| code when ignoring blanks}
+#define new_line    (4 + max_char_code + max_char_code + max_char_code)
 /* sec 0305 */
 #define skipping  1
 #define defining  2
@@ -771,7 +812,7 @@ enum
 /* sec 0307 */
 #define token_list         0
 #define token_type         cur_input.index_field
-#define param_start        cur_input.limit_field
+#define param_start        limit
 #define parameter          0
 #define u_template         1
 #define v_template         2
@@ -788,11 +829,36 @@ enum
 #define every_cr_text      13
 #define mark_text          14
 #define write_text         15
+/* sec 0316 */
+#define begin_pseudoprint() \
+  do                        \
+    {                       \
+      l = tally;            \
+      tally = 0;            \
+      selector = pseudo;    \
+      kcode_pos = 0;        \
+      trick_count = 1000000;\
+    }                       \
+  while (0)
+#define set_trick_count()                                                         \
+  do                                                                              \
+    {                                                                             \
+      first_count = tally;                                                        \
+                                                                                  \
+      if ((first_count > 0) && (trick_buf2[(first_count - 1) % error_line] == 1)) \
+        incr(first_count);                                                        \
+                                                                                  \
+      trick_count = first_count + 1 + error_line - half_error_line;               \
+                                                                                  \
+      if (trick_count < error_line)                                               \
+        trick_count = error_line;                                                 \
+    }                                                                             \
+  while (0)
 /* sec 0323 */
 #define back_list(a) begin_token_list(a, backed_up)
 #define ins_list(a)  begin_token_list(a, inserted)
 /* sec 0344 */
-#define any_state_plus(a) mid_line + (a): case skip_blanks + (a): case new_line + (a)
+#define any_state_plus(a) mid_line + (a): case mid_kanji + (a): case skip_blanks + (a): case new_line + (a)
 /* sec 0347 */
 #define add_delims_to(a) \
   (a) + math_shift:      \
@@ -801,6 +867,27 @@ enum
   case (a) + sub_mark:   \
   case (a) + letter:     \
   case (a) + other_char
+#define all_jcode(a)     \
+  (a) + kanji:           \
+  case (a) + kana:       \
+  case (a) + other_kchar
+/* sec 0352 */
+#define is_hex(a) \
+  (((a >= 48) && (a <= 57)) || ((a >= 97) && (a <= 102)))
+#define hex_to_cur_chr()                  \
+  do                                      \
+    {                                     \
+      if (c <= 57)                        \
+        cur_chr = c - 48;                 \
+      else                                \
+        cur_chr = c - 87;                 \
+                                          \
+      if (cc <= 57)                       \
+        cur_chr = 16 * cur_chr + cc - 48; \
+      else                                \
+        cur_chr = 16 * cur_chr + cc - 87; \
+    }                                     \
+  while (0)
 /* sec 0358 */
 /* sec 0371 */
 #define store_new_token(a)  \
@@ -840,6 +927,14 @@ enum
 #define mu_val    3
 #define ident_val 4
 #define tok_val   5
+/* sec 0413 */
+#define scanned_result(a, b)  \
+  do                          \
+    {                         \
+      cur_val = a;            \
+      cur_val_level = b;      \
+    }                         \
+  while (0)
 /* sec 0416 */
 #define input_line_no_code (glue_val + 1)
 #define badness_code       (glue_val + 2)
@@ -865,10 +960,15 @@ enum
 /* sec 0468 */
 #define number_code        0
 #define roman_numeral_code 1
-#define string_code        2
-#define meaning_code       3
-#define font_name_code     4
-#define job_name_code      5
+#define kansuji_code       2 // {command code for \.{\\kansuji}}
+#define string_code        3 //2
+#define meaning_code       4 //3
+#define font_name_code     5 //4
+#define euc_code           6 // {command code for \.{\\euc}}
+#define sjis_code          7 // {command code for \.{\\sjis}}
+#define jis_code           8 // {command code for \.{\\jis}}
+#define kuten_code         9 // {command code for \.{\\kuten}}
+#define job_name_code      10
 /* sec 0480 */
 #define closed    2
 #define just_open 1
@@ -890,6 +990,13 @@ enum
 #define if_true_code   14
 #define if_false_code  15
 #define if_case_code   16
+#define if_tdir_code   (if_case_code + 1) // { `\.{\\iftdir}' }
+#define if_ydir_code   (if_tdir_code + 1) // { `\.{\\ifydir}' }
+#define if_ddir_code   (if_ydir_code + 1) // { `\.{\\ifddir}' }
+#define if_mdir_code   (if_ddir_code + 1) // { `\.{\\ifmdir}' }
+#define if_tbox_code   (if_mdir_code + 1) // { `\.{\\iftbox}' }
+#define if_ybox_code   (if_tbox_code + 1) // { `\.{\\ifybox}' }
+#define if_dbox_code   (if_ybox_code + 1) // { `\.{\\ifdbox}' }
 /* sec 0489 */
 #define if_node_size     2
 #define if_line_field(a) mem[(a) + 1].cint
@@ -1477,11 +1584,12 @@ enum
 #define end_write_token (cs_token_flag + end_write)
 
 /* Appendix: pTeX*/
-// direction
-#define dir_default 0 // {direction of the box, default Left to Right}
-#define dir_dtou    1 // {direction of the box, Bottom to Top}
-#define dir_tate    3 // {direction of the box, Top to Bottom}
-#define dir_yoko    4 // {direction of the box, equal default}
+#define inhibit_both      0     //{disable to insert space before 2byte-char and after it}
+#define inhibit_previous  1     //{disable to insert space before 2byte-char}
+#define inhibit_after     2     //{disable to insert space after 2byte-char}
+#define no_entry          1000
+#define new_pos           0
+#define cur_pos           1
 // jfm
 #define yoko_jfm_id 11 // {for `yoko-kumi' fonts}
 #define tate_jfm_id 9  // {for `tate-kumi' fonts}

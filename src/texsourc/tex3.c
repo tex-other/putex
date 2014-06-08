@@ -53,23 +53,29 @@ void scan_int (void)
     get_token();
 
     if (cur_tok < cs_token_flag)
-    {
-      cur_val = cur_chr;
+      if ((cur_cmd == kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
+      {
+        skip_mode = false;
+        cur_val = (cur_chr);
+      }
+      else
+      {
+        cur_val = cur_chr;
 
-      if (cur_cmd <= right_brace)
-        if (cur_cmd == right_brace)
-          incr(align_state);
-        else
-          decr(align_state);
-    }
+        if (cur_cmd <= right_brace)
+          if (cur_cmd == right_brace)
+            incr(align_state);
+          else
+            decr(align_state);
+      }
     else if (cur_tok < cs_token_flag + single_base)
       cur_val = cur_tok - cs_token_flag - active_base;
     else
       cur_val = cur_tok - cs_token_flag - single_base;
 
-    if (cur_val > 255)
+    if ((cur_val > 255) && ((cur_cmd < kanji) || (cur_cmd > max_char_code)))
     {
-      print_err("Improper alphabetic constant");
+      print_err("Improper alphabetic or KANJI constant");
       help2("A one-character control sequence belongs after a ` mark.",
         "So I'm essentially inserting \\0 here.");
       cur_val = '0';
@@ -82,6 +88,8 @@ void scan_int (void)
       if (cur_cmd != spacer)
         back_input();
     }
+
+    skip_mode = true;
   }
   else if ((cur_cmd >= min_internal) && (cur_cmd <= max_internal))
   {
@@ -167,6 +175,7 @@ void scan_dimen_(boolean mu, boolean inf, boolean shortcut)
   halfword p, q;
   scaled v;
   integer savecurval;
+  eight_bits t;
 
   f = 0;
   arith_error = false;
@@ -351,6 +360,26 @@ lab31:
     v = quad(cur_font);
   else if (scan_keyword("ex"))
     v = x_height(cur_font);
+  else if (scan_keyword("zw"))
+  {
+    if (direction == dir_tate)
+      v = char_width(cur_tfont, char_info(cur_tfont, 0));
+    else
+      v = char_width(cur_jfont, char_info(cur_jfont, 0));
+  }
+  else if (scan_keyword("zh"))
+  {
+    if (direction == dir_tate)
+    {
+      t = height_depth(char_info(cur_tfont, (0)));
+      v = char_height(cur_tfont, t) + char_depth(cur_tfont, t);
+    }
+    else
+    {
+      t = height_depth(char_info(cur_jfont, (0)));
+      v = char_height(cur_jfont, t) + char_depth(cur_jfont, t);
+    }
+  }
   else
     goto lab45;
 
@@ -594,7 +623,12 @@ halfword str_toks_(pool_pointer b)
   {
     t = str_pool[k];
 
-    if (t == ' ')
+    if (multistrlen((str_pool), pool_ptr, k) == 2)
+    {
+      t = fromBUFF((str_pool), pool_ptr, k);
+      incr(k);
+    }
+    else if (t == ' ')
       t = space_token;
     else
       t = other_token + t;
@@ -684,8 +718,9 @@ void ins_the_toks (void)
 void conv_toks (void)
 {
   char old_setting;
+  KANJI_code cx;
   char c;
-  small_number savescannerstatus;
+  small_number save_scanner_status;
   pool_pointer b;
 
   c = cur_chr;
@@ -694,15 +729,24 @@ void conv_toks (void)
   {
     case number_code:
     case roman_numeral_code:
+    case kansuji_code:
+    case euc_code:
+    case sjis_code:
+    case jis_code:
+    case kuten_code:
       scan_int();
       break;
 
     case string_code:
     case meaning_code:
-      savescannerstatus = scanner_status;
+      save_scanner_status = scanner_status;
       scanner_status = 0;
       get_token();
-      scanner_status = savescannerstatus;
+
+      if ((cur_cmd == kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
+        cx = cur_tok;
+
+      scanner_status = save_scanner_status;
       break;
 
     case font_name_code:
@@ -729,11 +773,33 @@ void conv_toks (void)
       print_roman_int(cur_val);
       break;
 
+    case jis_code:
+      print_int(fromJIS(cur_val));
+      break;
+
+    case euc_code:
+      print_int(fromEUC(cur_val));
+      break;
+
+    case sjis_code:
+      print_int(fromSJIS(cur_val));
+      break;
+
+    case kuten_code:
+      print_int(fromKUTEN(cur_val));
+      break;
+
+    case kansuji_code:
+      print_kansuji(cur_val);
+      break;
+
     case string_code:
       if (cur_cs != 0)
         sprint_cs(cur_cs);
-      else
+      else if (cx == 0)
         print_char(cur_chr);
+      else
+        print_kanji(cx);
       break;
 
     case meaning_code:
@@ -1001,15 +1067,15 @@ void read_toks_(integer n, halfword r)
         }
       }
 
-      cur_input.limit_field = last;
+      limit = last;
 
       if ((end_line_char < 0) || (end_line_char > 255))
-        decr(cur_input.limit_field);
+        decr(limit);
       else
-        buffer[cur_input.limit_field] = end_line_char;
+        buffer[limit] = end_line_char;
 
-      first = cur_input.limit_field + 1;
-      cur_input.loc_field = cur_input.start_field;
+      first = limit + 1;
+      loc = cur_input.start_field;
       cur_input.state_field = new_line;
 
       while (true)
@@ -1046,9 +1112,9 @@ lab30:
 void pass_text (void)
 {
   integer l;
-  small_number savescannerstatus;
+  small_number save_scanner_status;
 
-  savescannerstatus = scanner_status;
+  save_scanner_status = scanner_status;
   scanner_status = skipping;
   l = 0;
   skip_line = line;
@@ -1069,7 +1135,7 @@ void pass_text (void)
       incr(l);
   }
 lab30:
-  scanner_status = savescannerstatus;
+  scanner_status = save_scanner_status;
 }
 /* sec 0497 */
 void change_if_limit_(small_number l, halfword p)
@@ -1108,7 +1174,7 @@ void conditional (void)
   char r;
   integer m, n;
   halfword p, q;
-  small_number savescannerstatus;
+  small_number save_scanner_status;
   halfword savecondptr;
   small_number thisif;
 
@@ -1267,7 +1333,7 @@ void conditional (void)
 
     case ifx_code:
       {
-        savescannerstatus = scanner_status;
+        save_scanner_status = scanner_status;
         scanner_status = 0;
         get_next();
         n = cur_cs;
@@ -1301,7 +1367,7 @@ void conditional (void)
           }
         }
 
-        scanner_status = savescannerstatus;
+        scanner_status = save_scanner_status;
       }
       break;
 
@@ -2050,12 +2116,12 @@ lab30:
     firm_up_the_line();
 
     if ((end_line_char < 0) || (end_line_char > 255))
-      decr(cur_input.limit_field);
+      decr(limit);
     else
-      buffer[cur_input.limit_field] = end_line_char;
+      buffer[limit] = end_line_char;
 
-    first = cur_input.limit_field + 1;
-    cur_input.loc_field = cur_input.start_field;
+    first = limit + 1;
+    loc = cur_input.start_field;
   }
 }
 /* sec 0560 */
