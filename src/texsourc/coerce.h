@@ -138,8 +138,8 @@ void print_glue_(scaled, integer, char *);
 #define print_glue(d, order, s) print_glue_((scaled) (d), (integer) (order), (char *) (s))
 void print_spec_(integer, char *);
 #define print_spec(p, s) print_spec_((integer) (p), (char *) (s))
-void print_fam_and_char_(halfword);
-#define print_fam_and_char(p) print_fam_and_char_((halfword) (p))
+void print_fam_and_char_(halfword, small_number);
+#define print_fam_and_char(p, t) print_fam_and_char_((halfword) (p), (small_number) (t))
 void print_delimiter_(halfword);
 #define print_delimiter(p) print_delimiter_((halfword) (p))
 void print_subsidiary_data_(halfword, ASCII_code);
@@ -339,8 +339,8 @@ halfword math_glue_(halfword, scaled);
 void math_kern_(halfword, scaled);
 #define math_kern(p, m) math_kern_((halfword) (p), (scaled) (m))
 void flush_math(void);
-halfword clean_box_(halfword, small_number);
-#define clean_box(p, s) clean_box_((halfword) (p), (small_number) (s))
+halfword clean_box_(halfword, small_number, halfword);
+#define clean_box(p, s, jc) clean_box_((halfword) (p), (small_number) (s), (halfword) (jc))
 void fetch_(halfword);
 #define fetch(a) fetch_((halfword) (a))
 void make_over_(halfword);

@@ -45,19 +45,17 @@ void char_warning_(internal_font_number f, eight_bits c)
       if (c / 100 > 0)
       {
         print_char(48 + c / 100);
-/*      c = c % 100; */
-        c = c - (c / 100) * 100;      /* ? */
+        c = c - (c / 100) * 100;
         print_char(48 + c / 10);
       }
       else
       {
-/*      c = c % 100; */
         c = c - (c / 100) * 100;      /* ? */
         if (c / 10 > 0) print_char(48 + c / 10);
       }
+
       print_char(48 + c % 10);
       print_char(')');
-/*    print_char(32); */
     }
 /* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
     print_string(" in font ");
@@ -572,6 +570,10 @@ void out_what_(pointer p)
 void hlist_out (void)
 {
   scaled base_line;
+  scaled disp; // {displacement}
+  eight_bits save_dir; // {what |dvi_dir| should pop to}
+  KANJI_code jc; // {temporary register for KANJI codes}
+  pointer ksp_ptr; // {position of |auto_spacing_glue| in the hlist}
   scaled left_edge;
   scaled save_h, save_v;
   halfword this_box;
@@ -596,6 +598,7 @@ void hlist_out (void)
   g_order = glue_order(this_box);
   g_sign = glue_sign(this_box);
   p = list_ptr(this_box);
+  ksp_ptr = space_ptr(this_box);
   incr(cur_s);
 
   if (cur_s > 0)
@@ -605,8 +608,10 @@ void hlist_out (void)
     max_push = cur_s;
 
   save_loc = dvi_offset + dvi_ptr;
+  synch_dir();
   base_line = cur_v;
   left_edge = cur_h;
+  disp = 0;
 
   while (p != 0)
 lab21:
@@ -614,6 +619,7 @@ lab21:
     {
       synch_h();
       synch_v();
+      chain = false;
 
       do
         {
@@ -646,7 +652,6 @@ lab21:
             }
 #endif
 
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
 #ifdef INCREASEFONTS
             /* fnt2 followed by f / 256,  f % 256 */
             else
@@ -656,20 +661,65 @@ lab21:
               dvi_out(((f - 1) & 255)); /* bottom byte */
             }
 #endif
-/* *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** */
             dvi_f = f;
           }
+          
+          if (font_dir[f] == dir_default)
+          {
+            chain = false;
+            
+            if (font_ec[f] >= c)
+              if (font_bc[f] <= c)
+                if char_exists(char_info(f, c))
+                {
+                  if (c >= 128)
+                    dvi_out(set1);
+                  
+                  dvi_out(c);
+                  cur_h = cur_h + char_width(f, char_info(f, c));
+                  goto lab_continue;
+                }
+lab_continue:;
+          }
+          else
+          {
+            if (chain == false)
+              chain = true;
+            else
+            {
+              cur_h = cur_h + width(ksp_ptr);
+              
+              if (g_sign != normal)
+              {
+                if (g_sign == stretching)
+                {
+                  if (stretch_order(ksp_ptr) == g_order)
+                    cur_h = cur_h + round(glue_set(this_box) * stretch(ksp_ptr));
+                }
+                else
+                {
+                  if (shrink_order(ksp_ptr) == g_order)
+                    cur_h = cur_h - round(glue_set(this_box) * shrink(ksp_ptr));
+                }
+              }
 
-          if (c >= 128)
-            dvi_out(set1);
+              synch_h();
+            }
+            
+            p = link(p);
+            jc = toDVI(info(p));
+            dvi_out(set2);
+            dvi_out(Hi(jc));
+            dvi_out(Lo(jc));
+            cur_h = cur_h + char_width(f, char_info(f, c));
+          }
 
-          dvi_out(c);
-          cur_h = cur_h + char_width(f, char_info(f, c));
+          dvi_h = cur_h;
           p = link(p);
         }
       while(!(!(p >= hi_mem_min)));
 
-      dvi_h = cur_h;
+      chain = false;
   }
   else
   {
@@ -677,25 +727,39 @@ lab21:
     {
       case hlist_node:
       case vlist_node:
+      case dir_node:
         if (list_ptr(p) == 0)
           cur_h = cur_h + width(p);
         else
         {
           save_h = dvi_h;
           save_v = dvi_v;
+          save_dir = dvi_dir;
           cur_v = base_line + shift_amount(p);
           temp_ptr = p;
           edge = cur_h;
 
-          if (type(p) == vlist_node)
-            vlist_out();
-          else
-            hlist_out();
+          switch (type(p))
+          {
+            case hlist_node:
+              hlist_out();
+              break;
+            
+            case vlist_node:
+              vlist_out();
+              break;
+            
+            case dir_node:
+              dir_out();
+              break;
+          }
 
           dvi_h = save_h;
           dvi_v = save_v;
+          dvi_dir = save_dir;
           cur_h = edge + width(p);
-          cur_v = base_line;
+          cur_v = base_line + disp;
+          cur_dir_hv = save_dir;
         }
         break;
 
@@ -710,6 +774,11 @@ lab21:
 
       case whatsit_node:
         out_what(p);
+        break;
+      
+      case disp_node:
+        disp = disp_dimen(p);
+        cur_v = base_line + disp;
         break;
 
       case glue_node:
@@ -793,25 +862,38 @@ lab21:
 
               while (cur_h + leader_wd <= edge)
               {
-                cur_v = base_line + shift_amount(leader_box);
+                cur_v = base_line + disp + shift_amount(leader_box);
                 synch_v();
                 save_v = dvi_v;
                 synch_h();
                 save_h = dvi_h;
+                save_dir = dvi_dir;
                 temp_ptr = leader_box;
                 outer_doing_leaders = doing_leaders;
                 doing_leaders = true;
-
-                if (type(leader_box) == vlist_node)
-                  vlist_out();
-                else
-                  hlist_out();
+                
+                switch (type(leader_box))
+                {
+                  case hlist_node:
+                    hlist_out();
+                    break;
+            
+                  case vlist_node:
+                    vlist_out();
+                    break;
+            
+                  case dir_node:
+                    dir_out();
+                    break;
+                }
 
                 doing_leaders = outer_doing_leaders;
                 dvi_v = save_v;
                 dvi_h = save_h;
+                dvi_dir = save_dir;
                 cur_v = base_line;
                 cur_h = save_h + leader_wd + lx;
+                cur_dir_hv = save_dir;
               }
 
               cur_h = edge - 10;
@@ -844,10 +926,10 @@ lab21:
     goto lab15;
 lab14:
     if ((rule_ht == -1073741824L))  /* - 2^30 */
-      rule_ht = height(this_box);
+      rule_ht = height(this_box) + disp;
 
     if ((rule_dp == -1073741824L))     /* - 2^30 */
-      rule_dp = depth(this_box);
+      rule_dp = depth(this_box) - disp;
 
     rule_ht = rule_ht + rule_dp;
 
@@ -896,6 +978,7 @@ void vlist_out (void)
   real glue_temp;
   real cur_glue;
   scaled cur_g;
+  integer save_dir; // {what |dvi_dir| should pop to}
 
   cur_g = 0;
   cur_glue = 0.0;
@@ -912,6 +995,7 @@ void vlist_out (void)
     max_push = cur_s;
 
   save_loc = dvi_offset + dvi_ptr;
+  synch_dir();
   left_edge = cur_h;
   cur_v = cur_v - height(this_box);
   top_edge = cur_v;
@@ -929,6 +1013,7 @@ void vlist_out (void)
       {
         case hlist_node:
         case vlist_node:
+        case dir_node:
           if (list_ptr(p) == 0)
             cur_v = cur_v + height(p) + depth(p);
           else
@@ -937,18 +1022,31 @@ void vlist_out (void)
             synch_v();
             save_h = dvi_h;
             save_v = dvi_v;
+            save_dir = dvi_dir;
             cur_h = left_edge + shift_amount(p);
             temp_ptr = p;
 
-            if (type(p) == vlist_node)
-              vlist_out();
-            else
-              hlist_out();
+            switch (type(p))
+            {
+              case hlist_node:
+                hlist_out();
+                break;
+            
+              case vlist_node:
+                vlist_out();
+                break;
+            
+              case dir_node:
+                dir_out();
+                break;
+            }
 
             dvi_h = save_h;
             dvi_v = save_v;
+            dvi_dir = save_dir;
             cur_v = save_v + depth(p);
             cur_h = left_edge;
+            cur_dir_hv = save_dir;
           }
           break;
 
@@ -1052,20 +1150,33 @@ void vlist_out (void)
                   cur_v = cur_v + height(leader_box);
                   synch_v();
                   save_v = dvi_v;
+                  save_dir = dvi_dir;
                   temp_ptr = leader_box;
                   outer_doing_leaders = doing_leaders;
                   doing_leaders = true;
-
-                  if (type(leader_box) == vlist_node)
-                    vlist_out();
-                  else
-                    hlist_out();
+            
+                  switch (type(leader_box))
+                  {
+                    case hlist_node:
+                      hlist_out();
+                      break;
+            
+                    case vlist_node:
+                      vlist_out();
+                      break;
+            
+                    case dir_node:
+                      dir_out();
+                      break;
+                  }
 
                   doing_leaders = outer_doing_leaders;
                   dvi_v = save_v;
                   dvi_h = save_h;
+                  dvi_dir = save_dir;
                   cur_h = left_edge;
                   cur_v = save_v - height(leader_box) + leader_ht + lx;
+                  cur_dir_hv = save_dir;
                 }
 
                 cur_v = edge - 10;
@@ -1120,6 +1231,7 @@ lab15:
 void dvi_ship_out_(halfword p)
 {
   integer page_loc;
+  pointer del_node;
   char j, k;
   pool_pointer s;
   char old_setting;
@@ -1162,6 +1274,21 @@ void dvi_ship_out_(halfword p)
     end_diagnostic(true);
   }
 
+  if (type(p) == dir_node)
+  {
+    del_node = p;
+    p = list_ptr(p);
+    delete_glue_ref(space_ptr(del_node));
+    delete_glue_ref(xspace_ptr(del_node));
+    free_node(del_node,box_node_size);
+  }
+
+  flush_node_list(link(p));
+  link(p) = 0;
+
+  if (box_dir(p) != dir_yoko)
+    p = new_dir_node(p, dir_yoko);
+
   if ((height(p) > max_dimen) || (depth(p) > max_dimen) ||
       (height(p) + depth(p) + v_offset > max_dimen) ||
       (width(p) + h_offset > max_dimen))
@@ -1192,6 +1319,8 @@ void dvi_ship_out_(halfword p)
   dvi_v = 0;
   cur_h = h_offset;
   dvi_f = null_font;
+  dvi_dir = dir_yoko;
+  cur_dir_hv = dvi_dir;
   ensure_dvi();
 
   if (total_pages == 0)
@@ -1233,10 +1362,20 @@ void dvi_ship_out_(halfword p)
   cur_v = height(p) + v_offset;
   temp_ptr = p;
 
-  if (type(p) == vlist_node)
-    vlist_out();
-  else
-    hlist_out();
+  switch (type(p))
+  {
+    case hlist_node:
+      hlist_out();
+      break;
+    
+    case vlist_node:
+      vlist_out();
+      break;
+    
+    case dir_node:
+      dir_out();
+      break;
+  }
 
   dvi_out(eop); // do not need a endpage in haru.
   incr(total_pages);
@@ -1329,6 +1468,8 @@ lab40:
 halfword hpack_(halfword p, scaled w, small_number m)
 {
   halfword r;
+  pointer k; // {points to a |kanji_space| specification}
+  scaled disp; // {displacement}
   halfword q;
   scaled h, d, x;
   scaled s;
@@ -1344,6 +1485,11 @@ halfword hpack_(halfword p, scaled w, small_number m)
   type(r) = hlist_node;
   subtype(r) = 0;
   shift_amount(r) = 0;
+  space_ptr(r) = cur_kanji_skip;
+  xspace_ptr(r) = cur_xkanji_skip;
+  add_glue_ref(cur_kanji_skip);
+  add_glue_ref(cur_xkanji_skip);
+  k = cur_kanji_skip;
   q = r + list_offset;
   link(q) = p;
   h = 0;
@@ -1357,25 +1503,46 @@ halfword hpack_(halfword p, scaled w, small_number m)
   total_shrink[fill] = 0;
   total_stretch[filll] = 0;
   total_shrink[filll] = 0;
+  disp = 0;
 
   while (p != 0)
   {
 lab21:
+    chain = false;
+
     while ((p >= hi_mem_min))
     {
       f = font(p);
       i = char_info(f, character(p));
       hd = height_depth(i);
       x = x + char_width(f, i);
-      s = char_height(f, hd);
+      s = char_height(f, hd) - disp;
 
       if (s > h)
         h = s;
 
-      s = char_depth(f, hd);
+      s = char_depth(f, hd) + disp;
 
       if (s > d)
         d = s;
+
+      if (font_dir[f] != dir_default)
+      {
+        p = link(p);
+        
+        if (chain)
+        {
+          x = x + width(k);
+          o = stretch_order(k);
+          total_stretch[o] = total_stretch[o] + stretch(k);
+          o = shrink_order(k);
+          total_shrink[o] = total_shrink[o] + shrink(k);
+        }
+        else
+          chain = true;
+      }
+      else
+        chain = false;
 
       p = link(p);
     }
@@ -1386,6 +1553,7 @@ lab21:
       {
         case hlist_node:
         case vlist_node:
+        case dir_node:
         case rule_node:
         case unset_node:
           {
@@ -1394,7 +1562,7 @@ lab21:
             if (type(p) >= rule_node)
               s = 0;
             else
-              s = shift_amount(p);
+              s = shift_amount(p) + disp;
 
             if (height(p) - s > h)
               h = height(p) - s;
@@ -1436,6 +1604,11 @@ lab21:
 
         case whatsit_node:
           break;
+
+        case disp_node:
+          disp = disp_dimen(p);
+          break;
+
         case glue_node:
           {
             g = glue_ptr(p);
@@ -1637,6 +1810,7 @@ lab50:
   show_box(r);
   end_diagnostic(true);
 lab10:
+  last_disp = disp;
   return r;
 }
 /* sec 0668 */
@@ -1654,6 +1828,10 @@ halfword vpackage_(halfword p, scaled h, small_number m, scaled l)
   type(r) = vlist_node;
   subtype(r) = min_quarterword;
   shift_amount(r) = 0;
+  space_ptr(r) = zero_glue;
+  xspace_ptr(r) = zero_glue;
+  add_glue_ref(zero_glue);
+  add_glue_ref(zero_glue);
   list_ptr(r) = p;
   w = 0;
   d = 0;
@@ -1678,6 +1856,7 @@ halfword vpackage_(halfword p, scaled h, small_number m, scaled l)
     {
       case hlist_node:
       case vlist_node:
+      case dir_node:
       case rule_node:
       case unset_node:
         {
@@ -1914,6 +2093,7 @@ halfword new_noad (void)
   mem[nucleus(p)].hh = empty_field;
   mem[subscr(p)].hh = empty_field;
   mem[supscr(p)].hh = empty_field;
+  mem[kcode_noad(p)].hh = empty_field;
 
   return p;
 }

@@ -1076,7 +1076,7 @@ void read_toks_(integer n, halfword r)
 
       first = limit + 1;
       loc = cur_input.start_field;
-      cur_input.state_field = new_line;
+      state = new_line;
 
       while (true)
       {
@@ -1209,7 +1209,12 @@ void conditional (void)
             }
         }
 
-        if ((cur_cmd > active_char) || (cur_chr > 255))
+        if ((cur_cmd == kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
+        {
+          m = cur_cmd;
+          n = cur_chr;
+        }
+        else if ((cur_cmd > active_char) || (cur_chr > 255))
         {
           m = relax;
           n = 256;
@@ -1219,6 +1224,7 @@ void conditional (void)
           m = cur_cmd;
           n = cur_chr;
         }
+
         {
           get_x_token();
 
@@ -1230,7 +1236,11 @@ void conditional (void)
             }
         }
 
-        if ((cur_cmd > active_char) || (cur_chr > 255))
+        if ((cur_cmd == kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
+        {
+          cur_cmd = cur_cmd;
+        }
+        else if ((cur_cmd > active_char) || (cur_chr > 255))
         {
           cur_cmd = relax;
           cur_chr = 256;
@@ -1302,32 +1312,61 @@ void conditional (void)
       break;
 
     case if_hmode_code:
-      b = (abs(mode) == 102);
+      b = (abs(mode) == hmode);
       break;
 
     case if_mmode_code:
-      b = (abs(mode) == 203);
+      b = (abs(mode) == mmode);
       break;
 
     case if_inner_code:
       b = (mode < 0);
       break;
 
+    case if_tdir_code:
+      b = (abs(direction) == dir_tate);
+      break;
+
+    case if_ydir_code:
+      b = (abs(direction) == dir_yoko);
+      break;
+
+    case if_ddir_code:
+      b = (abs(direction) == dir_dtou);
+      break;
+
+    case if_mdir_code:
+      b = (direction < 0);
+      break;
+
     case if_void_code:
     case if_hbox_code:
     case if_vbox_code:
+    case if_tbox_code:
+    case if_ybox_code:
+    case if_dbox_code:
       {
         scan_eight_bit_int();
         p = box(cur_val);
 
         if (thisif == if_void_code)
           b = (p == 0);
-        else if (p == 0)
-          b = false;
-        else if (thisif == if_hbox_code)
-          b = (type(p) == hlist_node);
         else
-          b = (type(p) == vlist_node);
+        {
+          if (type(p) == dir_node)
+            p = list_ptr(p);
+
+          if (thisif == if_hbox_code)
+            b = (type(p) == hlist_node);
+          else if (thisif == if_vbox_code)
+            b = (type(p) == vlist_node);
+          else if (thisif == if_tbox_code)
+            b = (box_dir(p) == dir_tate);
+          else if (thisif == if_ybox_code)
+            b = (box_dir(p) == dir_yoko);
+          else
+            b = (box_dir(p) == dir_dtou);
+        }
       }
       break;
 
@@ -1861,15 +1900,23 @@ void scan_file_name (void)
     }
   }
 
+  skip_mode = false;
+
   while (true)
   {
-    if ((cur_cmd > other_char) || (cur_chr > 255)) 
+    if ((cur_cmd == kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
+    {
+      str_room(2);
+      append_char(Hi(cur_chr)); // {kanji upper byte}
+      append_char(Lo(cur_chr)); // {kanji lower byte}
+    }
+    else if ((cur_cmd > other_char) || (cur_chr > 255)) 
     {
       back_input();
       goto lab30; 
     } 
 
-    if (!more_name(cur_chr))    /* up to next white space */
+    if (((cur_chr == ' ') && (state != token_list) && (loc > limit)) || !more_name(cur_chr))
       goto lab30;
 
     get_x_token();
@@ -1878,6 +1925,7 @@ void scan_file_name (void)
 lab30:
   end_name();
   name_in_progress = false;
+  skip_mode = true;
 }
 /* argument is string .fmt, .log, or .dvi */
 /* sec 0529 */
@@ -2106,7 +2154,7 @@ lab30:
   fflush(stdout);
 #endif
 
-  cur_input.state_field = new_line;
+  state = new_line;
 
   {
     line = 1;

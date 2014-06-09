@@ -376,7 +376,12 @@ void close_files_and_terminate (void)
 
           dvi_out(post_post);
           dvi_four(last_bop);
-          dvi_out(id_byte);
+
+          if (dir_used)
+            dvi_out(ex_id_byte);
+          else
+            dvi_out(id_byte);
+
           k = 4 + ((dvi_buf_size - dvi_ptr) % 4);
 
           while (k > 0)

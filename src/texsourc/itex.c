@@ -218,6 +218,7 @@ void initialize (void)
   doing_leaders = false;
   dead_cycles = 0;
   cur_s = -1;
+  dir_used = false;
   half_buf = dvi_buf_size / 2;
   dvi_limit = dvi_buf_size;
   dvi_ptr = 0;
@@ -227,6 +228,8 @@ void initialize (void)
   right_ptr = 0;
   adjust_tail = 0;
   last_badness = 0;
+  cur_kanji_skip = zero_glue;
+  cur_xkanji_skip = zero_glue;
   pack_begin_line = 0;
   empty_field.rh = 0;
   empty_field.lh = 0;
@@ -306,9 +309,12 @@ void initialize_aux (void)
 void line_break_ (integer final_widow_penalty)
 {
   boolean auto_breaking;
-  halfword prevp;
+  halfword prev_p;
   halfword q, r, s, prevs;
-  internal_font_number f;
+  internal_font_number f, post_f;
+  pointer post_p;
+  ASCII_code cc;
+  boolean first_use;
 /*  small_number j;  */
   int j;                /* 95/Jan/7 */
 /*  unsigned char c;  */
@@ -316,16 +322,19 @@ void line_break_ (integer final_widow_penalty)
 /*  savedbadness = 0; */    /* 96/Feb/9 */
 
   pack_begin_line = mode_line;
+  first_use = true; chain = false;
+  delete_glue_ref(cur_kanji_skip);
+  delete_glue_ref(cur_xkanji_skip);
+  cur_kanji_skip = space_ptr(head);
+  cur_xkanji_skip = xspace_ptr(head);
+  add_glue_ref(cur_kanji_skip);
+  add_glue_ref(cur_xkanji_skip);
   link(temp_head) = link(head);
 
   if ((tail >= hi_mem_min))
-  {
     tail_append(new_penalty(inf_penalty));
-  } 
   else if (type(tail) != glue_node)
-  {
     tail_append(new_penalty(inf_penalty));
-  }
   else
   {
     type(tail) = penalty_node;
@@ -486,27 +495,125 @@ void line_break_ (integer final_widow_penalty)
 
     cur_p = link(temp_head);
     auto_breaking = true;
-    prevp = cur_p;
+    prev_p = cur_p;
 
     while((cur_p != 0) && (link(active) != active))
     {
       if ((cur_p >= hi_mem_min))
       {
-        prevp = cur_p;
+        chain = false;
+        
+        if (is_char_node(cur_p))
+          if (font_dir[font(cur_p)] != dir_default)
+          {
+            switch (prev_p)
+            {
+              case hlist_node:
+              case vlist_node:
+              case dir_node:
+              case rule_node:
+              case ligature_node:
+              case disc_node:
+              case math_node:
+                {
+                  cur_p = prev_p;
+                  try_break(0, unhyphenated);
+                  cur_p = link(cur_p);
+                }
+                break;
+              
+              default:
+                break;
+            }
+          }
+
+        prev_p = cur_p;
+        post_p = cur_p;
+        post_f = font(post_p);
 
         do
           {
-            f = font(cur_p);
+            f = post_f;
+            cc = character(cur_p);
             active_width[1] = active_width[1] + char_width(f, char_info(f, character(cur_p)));
             cur_p = link(cur_p);
+          
+            if (font_dir[f] != dir_default)
+            {
+              prev_p = cur_p;
+              cur_p = post_p;
+              post_p = link(post_p);
+              
+              if (is_char_node(post_p))
+              {
+                post_f = font(post_p);
+                
+                if (font_dir[post_f] != dir_default)
+                  chain = true;
+                else
+                  chain = false;
+
+                try_break(0, unhyphenated);
+              }
+              else
+              {
+                chain = false;
+                
+                switch (type(post_p))
+                {
+                  case hlist_node:
+                  case vlist_node:
+                  case dir_node:
+                  case rule_node:
+                  case ligature_node:
+                  case disc_node:
+                  case math_node:
+                    try_break(0, unhyphenated);
+                    break;
+                  
+                  default:
+                    break;
+                }
+              }
+              
+              if (chain)
+              {
+                if (first_use)
+                {
+                  check_shrinkage(cur_kanji_skip);
+                  first_use = false;
+                }
+                
+                act_width = act_width + width(cur_kanji_skip);
+                active_width[2 + stretch_order(cur_kanji_skip)] =
+                  active_width[2 + stretch_order(cur_kanji_skip)]
+                +stretch(cur_kanji_skip);
+                active_width[6] = active_width[6] + shrink(cur_kanji_skip);
+              }
+              
+              prev_p = cur_p;
+            }
+            else if (is_char_node(post_p))
+            {
+              post_f = font(post_p);
+              chain = false;
+              
+              if (font_dir[post_f] != dir_default)
+                try_break(0, unhyphenated);
+            }
+            
+            cur_p = post_p;
           }
         while(!(!(cur_p >= hi_mem_min)));
+
+        chain = false;
       }
 
       switch(type(cur_p))
       {
         case hlist_node:
         case vlist_node:
+        case dir_node:
         case rule_node:
           active_width[1] = active_width[1] + width(cur_p);
           break;
@@ -522,12 +629,13 @@ void line_break_ (integer final_widow_penalty)
           {
             if (auto_breaking)
             {
-              if ((prevp >= hi_mem_min))
+              if ((prev_p >= hi_mem_min))
                 try_break(0, unhyphenated);
-              else if ((mem[prevp].hh.b0 < 9))
+              else if ((mem[prev_p].hh.b0 < 9))
                 try_break(0, unhyphenated);
-              else if ((type(prevp) == kern_node) && (subtype(prevp) != explicit))
-                try_break(0, unhyphenated);
+              else if ((type(prev_p) == kern_node))
+                if ((subtype(prev_p) != explicit) && (subtype(prev_p) != ita_kern))
+                  try_break(0, unhyphenated);
             }
 
             if ((mem[glue_ptr(cur_p)].hh.b1 != 0) && (mem[glue_ptr(cur_p) + 3].cint != 0))
@@ -551,9 +659,22 @@ void line_break_ (integer final_widow_penalty)
                 {
                   if ((s >= hi_mem_min))
                   {
-                    c = character(s);
                     hf = font(s);
+                    
+                    if (font_dir[hf] != dir_default)
+                    {
+                      prevs = s;
+                      s = link(prevs);
+                      c = info(s);
+                      goto lab22;
+                    }
+                    else
+                      c = character(s);
                   }
+                  else if (type(s) == disp_node)
+                    goto lab22;
+                  else if ((type(s) == penalty_node) && (!subtype(s) == normal))
+                    goto lab22;
                   else if (type(s) == ligature_node)
                     if (lig_ptr(s) == 0)
                       goto lab22;
@@ -686,6 +807,8 @@ lab33:;
                         if (subtype(s) != normal)
                           goto lab34;
                         break;
+                      case disp_node:
+                        break;
                       case whatsit_node:
                       case glue_node:
                       case penalty_node:
@@ -708,7 +831,7 @@ lab31:;
           }
           break;
         case kern_node:
-          if (subtype(cur_p) == explicit)
+          if (subtype(cur_p) == explicit || (subtype(cur_p) == ita_kern))
           {
             if (!(link(cur_p) >= hi_mem_min) && auto_breaking)
               if (type(link(cur_p)) == glue_node)
@@ -740,6 +863,9 @@ lab31:;
                 {
                   f = font(s);
                   disc_width = disc_width + char_width(f, char_info(f, character(s)));
+
+                  if (font_dir[f] != dir_default)
+                    s = link(s);
                 }
                 else switch(type(s))
                 {
@@ -751,9 +877,12 @@ lab31:;
                     break;
                   case hlist_node:
                   case vlist_node:
+                  case dir_node:
                   case rule_node:
                   case kern_node:
                     disc_width = disc_width + width(s);
+                    break;
+                  case disp_node:
                     break;
                   default:
                     {
@@ -779,6 +908,9 @@ lab31:;
               {
                 f = font(s);
                 active_width[1] = active_width[1] + char_width(f, char_info(f, character(s)));
+
+                if (font_dir[f] != dir_default)
+                  s = link(s);
               }
               else switch(type(s))
               {
@@ -791,9 +923,13 @@ lab31:;
 
                 case hlist_node:
                 case vlist_node:
+                case dir_node:
                 case rule_node:
                 case kern_node:
                   active_width[1] = active_width[1] + width(s);
+                  break;
+
+                case disp_node:
                   break;
 
                 default:
@@ -808,7 +944,7 @@ lab31:;
               s = link(s);
             }
 
-            prevp = cur_p;
+            prev_p = cur_p;
             cur_p = s;
             goto lab35;
           }
@@ -831,6 +967,7 @@ lab31:;
           try_break(penalty(cur_p), unhyphenated);
           break;
 
+        case disp_node:
         case mark_node:
         case ins_node:
         case adjust_node:
@@ -844,7 +981,7 @@ lab31:;
           break;
       }
 
-      prevp = cur_p;
+      prev_p = cur_p;
       cur_p = link(cur_p);
 lab35:;
     }
@@ -2270,7 +2407,7 @@ void final_cleanup (void)
 
   while (input_ptr > 0)
   {
-    if (cur_input.state_field == 0)
+    if (state == 0)
     {
       end_token_list();
     }
@@ -2539,7 +2676,7 @@ lab1:
       scanner_status = 0;
       warning_index = 0;
       first = 1;
-      cur_input.state_field = new_line;
+      state = new_line;
       cur_input.start_field = 1;
       cur_input.index_field = 0;
       line = 0;

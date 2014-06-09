@@ -205,19 +205,19 @@ void show_context (void)
   {
     cur_input = input_stack[base_ptr];
 
-    if ((cur_input.state_field != 0))
+    if ((state != 0))
       if ((cur_input.name_field > 17) || (base_ptr == 0))
         bottomline = true;
 
     if ((base_ptr == input_ptr) || bottomline || (nn < error_context_lines))
     {
-      if ((base_ptr == input_ptr) || (cur_input.state_field != token_list) ||
+      if ((base_ptr == input_ptr) || (state != token_list) ||
           (cur_input.index_field != backed_up) || (loc != 0))
       {
         tally = 0;
         old_setting = selector;
 
-        if (cur_input.state_field != 0)
+        if (state != 0)
         {
           if (cur_input.name_field <= 17)
             if ((cur_input.name_field == 0))
@@ -470,7 +470,7 @@ void begin_token_list_ (halfword p, quarterword t)
     incr(input_ptr);
   }
 
-  cur_input.state_field = token_list;
+  state = token_list;
   cur_input.start_field = p;
   cur_input.index_field = t;
 
@@ -558,7 +558,7 @@ void back_input (void)
 {
   halfword p;
 
-  while ((cur_input.state_field == 0) && (loc == 0) &&
+  while ((state == 0) && (loc == 0) &&
       (cur_input.index_field != v_template))
   {
     end_token_list();
@@ -598,7 +598,7 @@ void back_input (void)
     incr(input_ptr);
   }
 
-  cur_input.state_field = token_list;
+  state = token_list;
   cur_input.start_field = p;
   cur_input.index_field = backed_up;
   loc = p;
@@ -673,7 +673,7 @@ void begin_file_reading (void)
   cur_input.index_field = in_open;
   line_stack[cur_input.index_field] = line;
   cur_input.start_field = first;
-  cur_input.state_field = 1;
+  state = 1;
   cur_input.name_field = 0;
 }
 /* sec 0329 */
@@ -695,7 +695,7 @@ void end_file_reading (void)
 /* sec 0330 */
 void clear_for_error_prompt (void) 
 {
-  while ((cur_input.state_field != 0) &&
+  while ((state != 0) &&
       (cur_input.name_field == 0) && (input_ptr > 0) &&
       (loc > limit))
     end_file_reading();
@@ -714,7 +714,7 @@ void check_outer_validity (void)
 
     if (cur_cs != 0)
     {
-      if ((cur_input.state_field == 0) || (cur_input.name_field < 1) || (cur_input.name_field > 17))
+      if ((state == 0) || (cur_input.name_field < 1) || (cur_input.name_field > 17))
       {
         p = get_avail();
         info(p) = cs_token_flag + cur_cs;
@@ -1107,7 +1107,7 @@ lab40:
     while(!(info(r) == end_match_token));
   }
 
-  while((cur_input.state_field == token_list) && (loc == 0) &&
+  while((state == token_list) && (loc == 0) &&
       (cur_input.index_field != v_template))
     end_token_list();
 
@@ -1580,7 +1580,11 @@ void scan_font_ident (void)
     }
   while (!(cur_cmd != spacer));
 
-  if (cur_cmd == def_font)
+  if (cur_cmd == def_jfont)
+    f = cur_jfont;
+  else if (cur_cmd == def_tfont)
+    f = cur_tfont;
+  else if (cur_cmd == def_font)
     f = cur_font;
   else if (cur_cmd == set_font)
     f = cur_chr; 
@@ -2138,7 +2142,7 @@ void get_next (void)
 lab20:
   cur_cs = 0;
 
-  if (cur_input.state_field != token_list)
+  if (state != token_list)
   {
 lab25:
     if (loc <= limit)
@@ -2156,7 +2160,7 @@ lab25:
 lab21:
       cur_cmd = cat_code(cur_chr);
 
-      switch (cur_input.state_field + cur_cmd)
+      switch (state + cur_cmd)
       {
         case any_state_plus(ignore):
         case skip_blanks + spacer:
@@ -2183,11 +2187,11 @@ lab21:
                 cat = cat_code(cur_chr);
 lab26:
               if (cat == letter || cat == kanji || cat == kana)
-                cur_input.state_field = skip_blanks;
+                state = skip_blanks;
               else if (cat == spacer)
-                cur_input.state_field = skip_blanks;
+                state = skip_blanks;
               else
-                cur_input.state_field = mid_line;
+                state = mid_line;
 
               if (cat == other_kchar)
               {
@@ -2336,7 +2340,7 @@ lab40:
             cur_cs = cur_chr + active_base;
             cur_cmd = eq_type(cur_cs);
             cur_chr = equiv(cur_cs);
-            cur_input.state_field = mid_line;
+            state = mid_line;
             
             if (cur_cmd >= outer_call)
               check_outer_validity();
@@ -2386,7 +2390,7 @@ lab40:
                 }
               }
 
-              cur_input.state_field = mid_line;
+              state = mid_line;
           }
           break;
 
@@ -2405,7 +2409,7 @@ lab40:
         case mid_kanji + spacer:
         case mid_line + spacer:
           {
-            cur_input.state_field = skip_blanks;
+            state = skip_blanks;
             cur_chr = ' ';
           }
           break;
@@ -2460,7 +2464,7 @@ lab40:
         case skip_blanks + left_brace:
         case new_line + left_brace:
           {
-            cur_input.state_field = mid_line;
+            state = mid_line;
             incr(align_state);
           }
           break;
@@ -2473,7 +2477,7 @@ lab40:
         case skip_blanks + right_brace:
         case new_line + right_brace:
           {
-            cur_input.state_field = mid_line;
+            state = mid_line;
             decr(align_state);
           }
           break;
@@ -2481,13 +2485,13 @@ lab40:
         case add_delims_to(skip_blanks):
         case add_delims_to(new_line):
         case add_delims_to(mid_kanji):
-          cur_input.state_field = mid_line;
+          state = mid_line;
           break;
 
         case all_jcode(skip_blanks):
         case all_jcode(new_line):
         case all_jcode(mid_line):
-          cur_input.state_field = mid_line;
+          state = mid_line;
           break;
 
         default:
@@ -2496,7 +2500,7 @@ lab40:
     }
     else
     {
-      cur_input.state_field = new_line;
+      state = new_line;
 
       if (cur_input.name_field > 17)
       {

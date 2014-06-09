@@ -151,6 +151,9 @@ lab22:
                   {
                     f = font(v);
                     break_width[1] = break_width[1] - char_width(f, char_info(f, character(v)));
+
+                    if (font_dir[f] != dir_default)
+                      v = link(v);
                   }
                   else switch (type(v))
                   {
@@ -163,9 +166,13 @@ lab22:
 
                     case hlist_node:
                     case vlist_node:
+                    case dir_node:
                     case rule_node:
                     case kern_node:
                       break_width[1] = break_width[1] - width(v);
+                      break;
+
+                    case disp_node:
                       break;
 
                     default:
@@ -183,6 +190,9 @@ lab22:
                   {
                     f = font(s);
                     break_width[1] = break_width[1] + char_width(f, char_info(f, character(s)));
+
+                    if (font_dir[f] != dir_default)
+                      s = link(s);
                   }
                   else switch(type(s))
                   {
@@ -195,9 +205,13 @@ lab22:
 
                     case hlist_node:
                     case vlist_node:
+                    case dir_node:
                     case rule_node:
                     case kern_node:
                       break_width[1] = break_width[1] + width(s);
+                      break;
+
+                    case disp_node:
                       break;
 
                     default:
@@ -220,7 +234,16 @@ lab22:
               while (s != 0)
               {
                 if ((s >= hi_mem_min))
+                {
+                  if (chain)
+                  {
+                    break_width[1] = break_width[1] - width(cur_kanji_skip);
+                    break_width[2 + stretch_order(cur_kanji_skip)] = break_width[2 + stretch_order(cur_kanji_skip)] - stretch(cur_kanji_skip);
+                    break_width[6] = break_width[6] - shrink(cur_kanji_skip);
+                  }
+
                   goto lab30;
+                }
 
                 switch (type(s))
                 {
@@ -234,7 +257,6 @@ lab22:
                     break;
 
                   case penalty_node:
-                    ;
                     break;
 
                   case math_node:
@@ -242,7 +264,7 @@ lab22:
                     break;
 
                   case kern_node:
-                    if (subtype(s) != explicit)
+                    if (subtype(s) != explicit && (subtype(s) != ita_kern))
                       goto lab30;
                     else
                       break_width[1] = break_width[1] - width(s);
@@ -294,7 +316,7 @@ lab30:;
 #ifdef STAT
               incr(pass_number);
               serial(q) = pass_number;
-#endif /* STAT */
+#endif
               prev_break(q) = best_place[fit_class];
               q = get_node(active_node_size);
               break_node(q) = passive;
@@ -485,7 +507,7 @@ lab31:;
 
         if (cur_p == 0)
           print_esc("par");
-        else if (type(cur_p) != glue_node)
+        else if (type(cur_p) != glue_node && !is_char_node(cur_p))
         {
           if (type(cur_p) == penalty_node)
             print_esc("penalty");
@@ -616,6 +638,7 @@ void post_line_break_(integer final_widow_penalty)
   while (!(q == 0));
 
   cur_line = prev_graf + 1;
+  last_disp = 0;
 
   do
     {
@@ -624,69 +647,72 @@ void post_line_break_(integer final_widow_penalty)
       post_disc_break = false;
 
       if (q != 0)
-        if (type(q) == glue_node)
+        if (!is_char_node(q))
         {
-          delete_glue_ref(glue_ptr(q));
-          glue_ptr(q) = right_skip;
-          subtype(q) = right_skip_code + 1;
-          add_glue_ref(right_skip);
-          goto lab30;
-        }
-        else
-        {
-          if (type(q) == disc_node)
+          if (type(q) == glue_node)
           {
-            t = replace_count(q);
-
-            if (t == 0)
-              r = link(q);
-            else
+            delete_glue_ref(glue_ptr(q));
+            glue_ptr(q) = right_skip;
+            subtype(q) = right_skip_code + 1;
+            add_glue_ref(right_skip);
+            goto lab30;
+          }
+          else
+          {
+            if (type(q) == disc_node)
             {
-              r = q;
+              t = replace_count(q);
 
-              while (t > 1)
+              if (t == 0)
+                r = link(q);
+              else
               {
-                r = link(r);
-                decr(t);
+                r = q;
+
+                while (t > 1)
+                {
+                  r = link(r);
+                  decr(t);
+                }
+
+                s = link(r);
+                r = link(s);
+                link(s) = 0;
+                flush_node_list(link(q));
+                replace_count(q) = 0;
               }
 
-              s = link(r);
-              r = link(s);
-              link(s) = 0;
-              flush_node_list(link(q));
-              replace_count(q) = 0;
+              if (post_break(q) != 0)
+              {
+                s = post_break(q);
+
+                while (link(s) != 0)
+                  s = link(s);
+
+                link(s) = r;
+                r = post_break(q);
+                post_break(q) = 0;
+                post_disc_break = true;
+              }
+
+              if (pre_break(q) != 0)
+              {
+                s = prev_break(q);
+                link(q) = s;
+
+                while (link(s) != 0)
+                  s = link(s);
+
+                prev_break(q) = 0;
+                q = s;
+              }
+
+              link(q) = r;
+              disc_break = true;
             }
-
-            if (post_break(q) != 0)
-            {
-              s = post_break(q);
-
-              while (link(s) != 0)
-                s = link(s);
-
-              link(s) = r;
-              r = post_break(q);
-              post_break(q) = 0;
-              post_disc_break = true;
-            }
-
-            if (pre_break(q) != 0)
-            {
-              s = prev_break(q);
-              link(q) = s;
-
-              while (link(s) != 0)
-                s = link(s);
-
-              prev_break(q) = 0;
-              q = s;
-            }
-
-            link(q) = r;
-            disc_break = true;
+            else if ((type(q) == math_node) || (type(q) == kern_node))
+              width(q) = 0;
           }
-          else if ((type(q) == math_node) || (type(q) == kern_node))
-            width(q) = 0;
         }
       else
       {
@@ -705,6 +731,15 @@ lab30:
       link(q) = 0;
       q = link(temp_head);
       link(temp_head) = r;
+      
+      if (last_disp != 0)
+      {
+        r = get_node(small_node_size);
+        type(r) = disp_node;
+        disp_dimen(r) = last_disp;
+        link(r) = q;
+        q = r;
+      }
 
       if (left_skip != 0)
       {
@@ -785,7 +820,7 @@ lab30:
               goto lab31;
 
             if (type(q) == kern_node)
-              if (subtype(q) != 1)
+              if ((subtype(q) != explicit) && (subtype(q) != ita_kern))
                 goto lab31;
 
             r = q;
@@ -1580,6 +1615,7 @@ halfword prune_page_top_(halfword p)
   while(p != 0)
     switch(type(p))
     {
+      case dir_node:
       case hlist_node:
       case vlist_node:
       case rule_node:
@@ -1652,6 +1688,7 @@ halfword vert_break_(halfword p, scaled h, scaled d)
       pi = eject_penalty;
     else switch(type(p))
     {
+      case dir_node:
       case hlist_node:
       case vlist_node:
       case rule_node:
@@ -1784,6 +1821,7 @@ lab30:
 halfword vsplit_(eight_bits n, scaled h)
 {
   halfword v;
+  pointer w;
   halfword p;
   halfword q;
 
@@ -1802,6 +1840,15 @@ halfword vsplit_(eight_bits n, scaled h)
     return 0;
   }
 
+  if (type(v) == dir_node)
+  {
+    w = v;
+    v = list_ptr(v);
+    delete_glue_ref(space_ptr(w));
+    delete_glue_ref(xspace_ptr(w));
+    free_node(w, box_node_size);
+  }
+
   if (type(v) != vlist_node)
   {
     print_err("");
@@ -1814,6 +1861,8 @@ halfword vsplit_(eight_bits n, scaled h)
     return 0;
   }
 
+  flush_node_list(link(v));
+  link(v) = 0;
   q = vert_break(list_ptr(v), h, split_max_depth);
   p = list_ptr(v);
 
@@ -1845,14 +1894,22 @@ halfword vsplit_(eight_bits n, scaled h)
 lab30:;
   q = prune_page_top(q);
   p = list_ptr(v);
-  free_node(v, box_node_size);
- 
+  
   if (q == 0)
     box(n) = 0;
   else
-    box(n) = vpackage(q, 0, 1, 1073741823L);  /* 2^30 - 1 */
+  {
+    box(n) = vpackage(q, 0, 1, max_dimen);
+    set_box_dir(box(n), box_dir(v));
+  }
+  
+  q = vpackage(p, h, exactly, split_max_depth);
+  set_box_dir(q, box_dir(v));
+  delete_glue_ref(space_ptr(v));
+  delete_glue_ref(xspace_ptr(v));
+  free_node(v, box_node_size);
 
-  return vpackage(p, h, exactly, split_max_depth);
+  return q;
 }
 /* sec 0985 */
 void print_totals (void)
@@ -1932,6 +1989,16 @@ void ensure_vbox_(eight_bits n)
   halfword p;
 
   p = box(n);
+  
+  if (p != 0)
+    if (type(p) == dir_node)
+    {
+      p = list_ptr(p);
+      delete_glue_ref(space_ptr(box(n)));
+      delete_glue_ref(xspace_ptr(box(n)));
+      free_node(box(n),box_node_size);
+      box(n) = p;
+    }
 
   if (p != 0)
     if (type(p) == hlist_node)
@@ -2131,7 +2198,8 @@ void fire_up_(halfword c)
   vbadness = inf_bad;
   save_vfuzz = vfuzz;
   vfuzz = max_dimen;
-  box(255) = vpackage(link(page_head), best_size, 0, page_max_depth);
+  box(255) = vpackage(link(page_head), best_size, exactly, page_max_depth);
+  set_box_dir(box(255), page_dir);
   vbadness = save_vbadness;
   vfuzz = save_vfuzz;
 

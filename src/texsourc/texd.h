@@ -640,6 +640,7 @@ EXTERN integer last_bop;
 EXTERN integer dead_cycles;
 EXTERN boolean doing_leaders;
 EXTERN int c, f;
+EXTERN boolean dir_used;
 EXTERN scaled rule_ht, rule_dp, rule_wd;
 EXTERN halfword g;
 EXTERN integer lq, lr;
@@ -661,7 +662,10 @@ EXTERN internal_font_number pdf_f;
 EXTERN integer cur_s; /* sec 616 */
 EXTERN scaled total_stretch[4], total_shrink[4];
 EXTERN integer last_badness;
-EXTERN halfword adjust_tail;
+EXTERN pointer adjust_tail;
+EXTERN scaled last_disp;
+EXTERN pointer cur_kanji_skip;
+EXTERN pointer cur_xkanji_skip;
 EXTERN integer pack_begin_line;
 EXTERN two_halves empty_field;
 EXTERN four_quarters null_delimiter;
@@ -689,6 +693,7 @@ EXTERN scaled background[8];
 EXTERN scaled break_width[8];
 EXTERN boolean no_shrink_error_yet;
 EXTERN halfword cur_p;
+EXTERN boolean chain;
 EXTERN boolean second_pass;
 EXTERN boolean final_pass;
 EXTERN integer threshold;
@@ -1063,6 +1068,9 @@ EXTERN void pdf_error_handler(HPDF_STATUS error_no, HPDF_STATUS detail_no, void 
 
 /* for ptex's functions */
 boolean skip_mode;
+integer dvi_dir;
+integer cur_dir_hv;
+eight_bits page_dir;
 extern void print_kanji(KANJI_code s);
 extern void print_kansuji(integer n);
 extern void print_dir(eight_bits dir);
@@ -1070,6 +1078,8 @@ extern void print_direction(integer d);
 extern eight_bits get_jfm_pos(KANJI_code kcode, internal_font_number f);
 extern pointer get_kinsoku_pos(KANJI_code c, small_number n);
 extern pointer get_inhibit_pos(KANJI_code c, small_number n);
+extern void synch_dir(void);
+extern void dir_out(void);
 extern int check_kanji(integer c);
 extern boolean is_char_ascii(integer c);
 extern boolean is_char_kanji(integer c);

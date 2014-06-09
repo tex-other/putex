@@ -794,6 +794,7 @@ enum
 #define match_token       06400 // 3328 = 2^8 * match
 #define end_match_token   07000 // 3584 = 2^8 * end_match
 /* sec 0302 */
+#define state cur_input.state_field
 #define limit cur_input.limit_field
 /* sec 0303 */
 //#define mid_line    1
@@ -1189,8 +1190,10 @@ enum
 #define pre       247 // i[1] num[4] den[4] mag[4] k[1] x[k]
 #define post      248 //
 #define post_post 249 //
+#define dirchg    255
 /* sec 0587 */
-#define id_byte 2
+#define id_byte    2
+#define ex_id_byte 3
 /* sec 0605 */
 #define movement_node_size 3
 #define location(a) mem[a + 2].cint
@@ -1213,10 +1216,16 @@ enum
 #define v_part(a)     mem[(a) + depth_offset].cint
 #define extra_info(a) info((a) + list_offset)
 /* sec 0681 */
-#define noad_size      4
+#define noad_size      5//4
 #define nucleus(a)     ((a) + 1)
 #define supscr(a)      ((a) + 2)
 #define subscr(a)      ((a) + 3)
+#define kcode_noad(a)  ((a) + 4)
+#define math_kcode(a)         info((a) + 4) // {the |kanji character| field of a noad}
+#define kcode_noad_nucleus(a) ((a) + 3)
+#define math_kcode_nucleus(a) info((a) + 3)
+#define math_jchar      5
+#define math_text_jchar 6
 #define math_type      link
 #define fam            font
 #define math_char      1
@@ -1235,10 +1244,10 @@ enum
 #define limits    1
 #define no_limits 2
 /* sec 0683 */
-#define left_delimiter(a)  ((a) + 4)
+#define left_delimiter(a)  ((a) + 5)
 #define right_delimiter(a) ((a) + 5)
 #define radical_noad       (inner_noad + 1) // 24
-#define radical_noad_size  5
+#define radical_noad_size  6//5
 #define fraction_noad      (radical_noad + 1) // 25
 #define fraction_noad_size 6
 #define small_fam(a)       mem[(a)].qqqq.b0
@@ -1253,8 +1262,8 @@ enum
 #define under_noad        (fraction_noad + 1) // 26
 #define over_noad         (under_noad + 1   ) // 27
 #define accent_noad       (over_noad + 1    ) // 28
-#define accent_noad_size  5
-#define accent_chr(a)     (a) + 4
+#define accent_noad_size  6//5
+#define accent_chr(a)     ((a) + 5)
 #define vcenter_noad      (accent_noad + 1  ) // 29
 #define left_noad         (vcenter_noad + 1 ) // 30
 #define right_noad        (left_noad + 1    ) // 31
@@ -1584,12 +1593,27 @@ enum
 #define end_write_token (cs_token_flag + end_write)
 
 /* Appendix: pTeX*/
+#define print_lc_hex(a)           \
+  do                              \
+    {                             \
+      l = a;                      \
+                                  \
+      if (l < 10)                 \
+        print_char(l + "0");      \
+      else                        \
+        print_char(l - 10 + "a"); \
+    }                             \
+  while (0)
 #define inhibit_both      0     //{disable to insert space before 2byte-char and after it}
 #define inhibit_previous  1     //{disable to insert space before 2byte-char}
 #define inhibit_after     2     //{disable to insert space after 2byte-char}
 #define no_entry          1000
 #define new_pos           0
 #define cur_pos           1
+// dvi's dir
+#define dvi_yoko 0
+#define dvi_tate 1
+#define dvi_dtou 3
 // jfm
 #define yoko_jfm_id 11 // {for `yoko-kumi' fonts}
 #define tate_jfm_id 9  // {for `tate-kumi' fonts}

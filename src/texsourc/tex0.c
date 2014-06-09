@@ -2388,12 +2388,21 @@ void print_spec_(integer p, char * s)
   }
 }
 /* sec 0691 */
-void print_fam_and_char_(halfword p)
+void print_fam_and_char_(halfword p, small_number t)
 {
+  KANJI_code cx;
+
   print_esc("fam");
   print_int(fam(p));
   print_char(' ');
-  print(character(p));
+
+  if (t == math_char)
+    print(character(p));
+  else
+  {
+    cx = math_kcode_nucleus(p);
+    print_kanji(cx);
+  }
 }
 /* sec 0691 */
 void print_delimiter_(halfword p)
@@ -2424,9 +2433,10 @@ void print_subsidiary_data_(halfword p, ASCII_code c)
     switch (math_type(p))
     {
       case math_char:
+      case math_jchar:
         print_ln();
         print_current_string();
-        print_fam_and_char(p);
+        print_fam_and_char(p, math_type(p));
         break;
 
       case sub_box:
@@ -3055,7 +3065,7 @@ void show_node_list_(integer p)
             case accent_noad:
               {
                 print_esc("accent");
-                print_fam_and_char(accent_chr(p));
+                print_fam_and_char(accent_chr(p), math_char);
               }
               break;
 

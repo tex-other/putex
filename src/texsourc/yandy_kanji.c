@@ -321,55 +321,8 @@ done1:
 done:
   return p;
 }
+
 /*
-pointer get_inhibit_pos(KANJI_code c, small_number n)
-{
-  pointer p, s;
-
-  s = calc_pos(c);
-  p = s;
-
-  if (n == new_pos)
-  {
-    do
-      {
-        if (inhibit_xsp_code(p) == 0 || inhibit_xsp_code(p) == c)
-          goto done;
-
-        incr(p);
-
-        if (p > 255)
-          p = 0;
-      }
-    while (!(s == p));
-
-    p = no_entry;
-  }
-  else
-  {
-    do
-      {
-        if (inhibit_xsp_code(p) == 0)
-          goto done1;
-
-        if (inhibit_xsp_code(p) == c)
-          goto done;
-
-        incr(p);
-
-        if (p > 255)
-          p = 0;
-      }
-    while (!(s == p));
-
-done1:
-    p = no_entry;
-  }
-
-done:
-  return p;
-}
-
 void set_math_kchar(integer c)
 {
   pointer p;
@@ -392,7 +345,7 @@ void set_math_kchar(integer c)
   link(tail) = p;
   tail = p;
 }
-
+*/
 void synch_dir(void)
 {
   scaled tmp;
@@ -404,11 +357,11 @@ void synch_dir(void)
       {
         synch_h();
         synch_v();
-        dvi_out(dir_chg);
+        dvi_out(dirchg);
         dvi_out(dvi_yoko);
         dir_used = true;
 
-        switch ()
+        switch (dvi_dir)
         {
           case dir_tate:
             tmp = cur_h;
@@ -420,7 +373,7 @@ void synch_dir(void)
             tmp = cur_h;
             cur_h = cur_v;
             cur_v = -tmp;
-            break
+            break;
         }
 
         dvi_h = cur_h;
@@ -463,7 +416,7 @@ void synch_dir(void)
       {
         synch_h();
         synch_v();
-        dvi_out(dir_chg);
+        dvi_out(dirchg);
         dvi_out(dvi_dtou);
         dir_used = true;
 
@@ -500,8 +453,11 @@ void dir_out(void)
   this_box = temp_ptr;
   temp_ptr = list_ptr(this_box);
 
-  if (type(temp_ptr) != hlist_node && type(temp_ptr) != vlist_out)
+  if (type(temp_ptr) != hlist_node && type(temp_ptr) != vlist_node)
+  {
     confusion("dir_out");
+    return;
+  }
 
   switch (box_dir(this_box))
   {
@@ -558,4 +514,3 @@ void dir_out(void)
   else
     hlist_out();
 }
-*/

@@ -32,15 +32,30 @@ halfword rebox_(halfword b, scaled w)
       b = hpack(b, 0, 1);
 
     p = list_ptr(b);
-
-    if (((p >= hi_mem_min)) && (link(p) == 0))
-    {
-      f = font(p);
-      v = char_width(f, char_info(f, character(p)));
-
-      if (v != width(b))
-        link(p) = new_kern(width(b) - v);
-    }
+    
+    if (is_char_node(p))
+      if (font_dir[font(p)] != dir_default)
+      {
+        if (link(link(p)) == null)
+        {
+          f = font(p);
+          v = char_width(f, char_info(f, character(p)));
+        
+          if (v != width(b))
+            link(link(p)) = new_kern(width(b) - v);
+        }
+      }
+      else if (link(p) == null)
+      {
+        f = font(p);
+        v = char_width(f, char_info(f, character(p)));
+        
+        if (v != width(b))
+          link(p) = new_kern(width(b) - v);
+      }
+    
+    delete_glue_ref(space_ptr(b));
+    delete_glue_ref(xspace_ptr(b));
 
     free_node(b, box_node_size);
     b = new_glue(ss_glue);
@@ -124,7 +139,7 @@ void flush_math (void)
   incompleat_noad = 0;
 }
 /* sec 0720 */
-halfword clean_box_(halfword p, small_number s)
+halfword clean_box_(halfword p, small_number s, halfword jc)
 {
   halfword q;
   small_number save_style;
@@ -137,6 +152,14 @@ halfword clean_box_(halfword p, small_number s)
       {
         cur_mlist = new_noad();
         mem[nucleus(cur_mlist)] = mem[p];
+      }
+      break;
+
+    case math_jchar:
+      {
+        cur_mlist = new_noad();
+        mem[nucleus(cur_mlist)] = mem[p];
+        math_kcode(cur_mlist) = jc;
       }
       break;
 
@@ -186,6 +209,9 @@ lab40:
 
   if ((q >= hi_mem_min))
   {
+    if (font_dir[font(q)] != dir_default)
+      q = link(q);
+
     r = link(q);
 
     if (r != 0)
@@ -225,6 +251,9 @@ void fetch_(halfword a)
   }
   else
   {
+    if (font_dir[cur_f] != dir_default)
+      cur_c = get_jfm_pos(math_kcode_nucleus(a), cur_f);
+
     if ((cur_c >= font_bc[cur_f]) && (cur_c <= font_ec[cur_f]))
       cur_i = char_info(cur_f, cur_c);
     else
@@ -240,7 +269,7 @@ void fetch_(halfword a)
 /* sec 0734 */
 void make_over_(halfword q)
 {
-  info(nucleus(q)) = overbar(clean_box(nucleus(q), 2 * (cur_style / 2) + 1),
+  info(nucleus(q)) = overbar(clean_box(nucleus(q), 2 * (cur_style / 2) + 1, math_kcode(q)),
       3 * default_rule_thickness, default_rule_thickness);
   math_type(nucleus(q)) = sub_box;
 }
@@ -250,7 +279,7 @@ void make_under_(halfword q)
   halfword p, x, y;
   scaled delta;
 
-  x = clean_box(nucleus(q), cur_style);
+  x = clean_box(nucleus(q), cur_style, math_kcode(q));
   p = new_kern(3 * default_rule_thickness);
   link(x) = p;
   link(p) = fraction_rule(default_rule_thickness);
@@ -269,7 +298,15 @@ void make_vcenter_(halfword q)
 
   v = info(nucleus(q));
 
-  if (type(v) != vlist_node)
+  if (type(v) == dir_node)
+  { 
+    if (type(list_ptr(v)) != vlist_node)
+    {
+      confusion("dircenter");
+      return;
+    }
+  }
+  else if (type(v) != vlist_node)
   {
     confusion("vcenter");
     return;         // abort_flag set
@@ -285,7 +322,7 @@ void make_radical_(halfword q)
   halfword x, y;
   scaled delta, clr;
 
-  x = clean_box(nucleus(q), 2 * (cur_style / 2) + 1);
+  x = clean_box(nucleus(q), 2 * (cur_style / 2) + 1, math_kcode(q));
 
   if (cur_style < text_style)
     clr = default_rule_thickness + (abs(math_x_height(cur_size)) / 4);
@@ -362,7 +399,7 @@ void make_math_accent_(halfword q)
       }
     }
 lab31:;
-    x = clean_box(nucleus(q), cramped_style(cur_style));
+    x = clean_box(nucleus(q), cramped_style(cur_style), math_kcode(q));
     w = width(x);
     h = height(x);
 
@@ -400,7 +437,7 @@ lab30:;
         mem[subscr(q)].hh = empty_field;
         math_type(nucleus(q)) = sub_mlist;
         info(nucleus(q)) = x;
-        x = clean_box(nucleus(q), cur_style);
+        x = clean_box(nucleus(q), cur_style, math_kcode(q));
         delta = delta + height(x) - h;
         h = height(x);
       }
@@ -435,8 +472,8 @@ void make_fraction_(halfword q)
   if (thickness(q) == default_code) /* 2^30 */
     thickness(q) = default_rule_thickness;
 
-  x = clean_box(numerator(q), num_style(cur_style));
-  z = clean_box(denominator(q), denom_style(cur_style));
+  x = clean_box(numerator(q), num_style(cur_style), math_kcode(q));
+  z = clean_box(denominator(q), denom_style(cur_style), math_kcode(q));
 
   if (width(x) < width(z))
     x = rebox(x, width(z));
@@ -526,120 +563,188 @@ void make_fraction_(halfword q)
   link(v) = z;
   new_hlist(q) = hpack(x, 0, 1);
 }
-/***************************************************************************/
-scaled make_op_ (halfword);
-/***************************************************************************/
 /* sec 0752 */
 void make_ord_(halfword q)
 {
   integer a;
-  halfword p, r;
+  halfword gp, gq, p, r;
+  halfword rr;
 
 lab20:
-  if (math_type(subscr(q)) == 0)
-    if (math_type(supscr(q)) == 0)
-      if (math_type(nucleus(q)) == math_char)
-      {
-        p = link(q);
-
-        if (p != 0)
-          if ((type(p) >= ord_noad) && (type(p) <= punct_noad))
-            if (math_type(nucleus(p)) == math_char)
-              if (fam(nucleus(p)) == fam(nucleus(q)))
+  if ((math_type(subscr(q)) == 0) && (math_type(supscr(q)) == 0) &&
+    ((math_type(nucleus(q)) == math_char) || (math_type(nucleus(q)) == math_jchar)))
+  {
+    p = link(q);
+    
+    if (p != 0)
+      if ((type(p) >= ord_noad) && (type(p) <= punct_noad))
+        if (fam(nucleus(p)) == fam(nucleus(q)))
+          if (math_type(nucleus(p)) == math_char)
+          {
+            math_type(nucleus(q)) = math_text_char;
+            fetch(nucleus(q));
+            
+            if (char_tag(cur_i) == lig_tag)
+            {
+              a = lig_kern_start(cur_f, cur_i);
+              cur_c = character(nucleus(p));
+              cur_i = font_info[a].qqqq;
+              
+              if (skip_byte(cur_i) > stop_flag)
               {
-                math_type(nucleus(q)) = math_text_char;
-                fetch(nucleus(q));
-
-                if (char_tag(cur_i) == lig_tag)
-                {
-                  a = lig_kern_start(cur_f, cur_i);
-                  cur_c = character(nucleus(p));
-                  cur_i = font_info[a].qqqq;
-
-                  if (skip_byte(cur_i) > stop_flag)
-                  {
-                    a = lig_kern_restart(cur_f, cur_i);
-                    cur_i = font_info[a].qqqq;
-                  }
-
-                  while (true)
-                  {
-                    if (next_char(cur_i) == cur_c)
-                      if (skip_byte(cur_i) <= stop_flag)
-                        if (op_byte(cur_i) >= kern_flag)
-                        {
-                          p = new_kern(char_kern(cur_f, cur_i));
-                          link(p) = link(q);
-                          link(q) = p;
-                          return;
-                        }
-                        else
-                        {
-                          {
-                            if (interrupt != 0)
-                            {
-                              pause_for_instructions();
-                            }
-                          }
-
-                          switch (op_byte(cur_i))
-                          {
-                            case 1:
-                            case 5:
-                              character(nucleus(q)) = rem_byte(cur_i);
-                              break;
-                            case 2:
-                            case 6:
-                              character(nucleus(p)) = rem_byte(cur_i);
-                              break;
-                            case 3:
-                            case 7:
-                            case 11:
-                              {
-                                r = new_noad();
-                                character(nucleus(r)) = rem_byte(cur_i);
-                                fam(nucleus(r)) = fam(nucleus(q));
-                                link(q) = r;
-                                link(r) = p;
-
-                                if (op_byte(cur_i) < 11)
-                                  math_type(nucleus(r)) = math_char;
-                                else
-                                  math_type(nucleus(r)) = math_text_char;
-                              }
-                              break;
-
-                            default:
-                              {
-                                link(q) = link(p);
-                                character(nucleus(q)) = rem_byte(cur_i);
-                                mem[subscr(q)] = mem[subscr(p)];
-                                mem[supscr(q)] = mem[supscr(p)];
-                                free_node(p, noad_size);
-                              }
-                              break;
-                          }
-
-                          if (op_byte(cur_i) > 3)
-                            return;
-
-                          math_type(nucleus(q)) = math_char;
-                          goto lab20;
-                        }
-
-                    if (skip_byte(cur_i) >= stop_flag)
-                      return;
-
-                    a = a + skip_byte(cur_i) + 1;
-                    cur_i = font_info[a].qqqq;
-                  }
-                }
+                a = lig_kern_restart(cur_f, cur_i);
+                cur_i = font_info[a].qqqq;
               }
-      }
+              
+              while (true)
+              {
+                if (next_char(cur_i) == cur_c)
+                  if (skip_byte(cur_i) <= stop_flag)
+                    if (op_byte(cur_i) >= kern_flag)
+                    {
+                      p = new_kern(char_kern(cur_f, cur_i));
+                      link(p) = link(q);
+                      link(q) = p;
+                      return;
+                    }
+                    else
+                    {
+                      {
+                        if (interrupt != 0)
+                        {
+                          pause_for_instructions();
+                        }
+                      }
+
+                      switch (op_byte(cur_i))
+                      {
+                        case 1:
+                        case 5:
+                          character(nucleus(q)) = rem_byte(cur_i);
+                          break;
+                        
+                        case 2:
+                        case 6:
+                          character(nucleus(p)) = rem_byte(cur_i);
+                          break;
+                        
+                        case 3:
+                        case 7:
+                        case 11:
+                          {
+                            r = new_noad();
+                            character(nucleus(r)) = rem_byte(cur_i);
+                            fam(nucleus(r)) = fam(nucleus(q));
+                            link(q) = r;
+                            link(r) = p;
+                            
+                            if (op_byte(cur_i) < 11)
+                              math_type(nucleus(r)) = math_char;
+                            else
+                              math_type(nucleus(r)) = math_text_char;
+                          }
+                          break;
+                        
+                        default:
+                          {
+                            link(q) = link(p);
+                            character(nucleus(q)) = rem_byte(cur_i);
+                            mem[subscr(q)] = mem[subscr(p)];
+                            mem[supscr(q)] = mem[supscr(p)];
+                            free_node(p, noad_size);
+                          }
+                          break;
+                      }
+                      
+                      if (op_byte(cur_i) > 3)
+                        return;
+                      
+                      math_type(nucleus(q)) = math_char;
+                      goto lab20;
+                    }
+
+                if (skip_byte(cur_i) >= stop_flag)
+                  return;
+
+                a = a + skip_byte(cur_i) + 1;
+                cur_i = font_info[a].qqqq;
+              }
+            }
+          }
+          else if (math_type(nucleus(p)) == math_jchar)
+          {
+            math_type(nucleus(q)) = math_text_jchar;
+            fetch(nucleus(p));
+            a = cur_c;
+            fetch(nucleus(q));
+            
+            if (char_tag(cur_i) == gk_tag)
+            {
+              cur_c = a;
+              a = lig_kern_start(cur_f, cur_i); // glue_kern
+
+              do
+                {
+                  cur_i = font_info[a].qqqq;
+                  
+                  if (next_char(cur_i) == cur_c)
+                    if (op_byte(cur_i) < kern_flag)
+                    {
+                      gp = font_glue[cur_f];
+                      rr = rem_byte(cur_i);
+                      
+                      if (gp != 0)
+                      { 
+                        while((type(gp) != rr) && (link(gp) != 0))
+                        {
+                          gp = link(gp);
+                        }
+                        
+                        gq = glue_ptr(gp);
+                      }
+                      else
+                      {
+                        gp = get_node(small_node_size);
+                        font_glue[cur_f] = gp;
+                        gq = 0;
+                      }
+                      
+                      if (gq == 0)
+                      {
+                        type(gp) = rr;
+                        gq = new_spec(zero_glue);
+                        glue_ptr(gp) = gq;
+                        a = exten_base[cur_f] + (((rr)) * 3);
+                        width(gq) = font_info[a].cint;
+                        stretch(gq) = font_info[a + 1].cint;
+                        shrink(gq) = font_info[a + 2].cint;
+                        add_glue_ref(gq);
+                        link(gp) = get_node(small_node_size);
+                        gp = link(gp);
+                        glue_ptr(gp) = 0;
+                        link(gp) = 0;
+                      }
+                      
+                      p = new_glue(gq);
+                      link(p) = link(q);
+                      link(q) = p;
+                      return;
+                    }
+                    else
+                    {
+                      p = new_kern(char_kern(cur_f, cur_i));
+                      link(p) = link(q);
+                      link(q) = p;
+                      return;
+                    }
+                    
+                    incr(a);
+                }
+              while (!(skip_byte(cur_i) >= stop_flag));
+            }
+          }
+  }
 }
-/***************************************************************************/
-void make_scripts_ (halfword, scaled);
-/***************************************************************************/
 /* sec 0762 */
 small_number make_left_right_(halfword q, small_number style, scaled max_d, scaled max_h)
 {
@@ -671,6 +776,7 @@ void mlist_to_hlist (void)
   halfword mlist;
   boolean penalties;
   small_number style;
+  pointer u; // {temporary register}
   small_number save_style;
   halfword q;
   halfword r;
@@ -919,6 +1025,9 @@ lab21:
         }
         break;
 
+      case disp_node:
+        goto lab81;
+
       default:
         {
           confusion("mlist1");
@@ -931,6 +1040,8 @@ lab21:
     {
       case math_char:
       case math_text_char:
+      case math_jchar:
+      case math_text_jchar:
         {
           fetch(nucleus(q));
 
@@ -938,8 +1049,17 @@ lab21:
           {
             delta = char_italic(cur_f, cur_i);
             p = new_character(cur_f, cur_c);
+            u = p;
+            
+            if (font_dir[cur_f] != dir_default)
+            {
+              link(u) = get_avail();
+              u = link(u);
+              info(u) = math_kcode(q);
+            }
 
-            if ((math_type(nucleus(q)) == math_text_char) && (space(cur_f) != 0))
+            if (((math_type(nucleus(q)) == math_text_char) || (math_type(nucleus(q)) == math_text_jchar))
+              && (space(cur_f) != 0))
               delta = 0;
 
             if ((math_type(subscr(q)) == 0) && (delta != 0))
@@ -1005,6 +1125,8 @@ lab82:
     if (depth(z) > max_d)
       max_d = depth(z);
 
+    delete_glue_ref(space_ptr(z));
+    delete_glue_ref(xspace_ptr(z));
     free_node(z, box_node_size);
 lab80:
     r = q;
@@ -1124,6 +1246,16 @@ lab81:
         }
         break;
 
+      case disp_node:
+        {
+          link(p) = q;
+          p = q;
+          q = link(q);
+          link(p) = 0;
+          goto lab30;
+        }
+        break;
+
       default:
         {
           confusion("mlist3");
@@ -1217,6 +1349,14 @@ lab83:
     free_node(r, s);
 lab30:;
   }
+
+  p = new_null_box();
+  link(p) = link(temp_head);
+  adjust_hlist(p, false);
+  link(temp_head) = link(p);
+  delete_glue_ref(space_ptr(p));
+  delete_glue_ref(xspace_ptr(p));
+  free_node(p, box_node_size);
 }
 /* sec 0772 */
 void push_alignment (void)
@@ -1466,6 +1606,13 @@ void fin_row (void)
 
   if (mode == -hmode)
   {
+    adjust_hlist(head, false);
+    delete_glue_ref(cur_kanji_skip);
+    delete_glue_ref(cur_xkanji_skip);
+    cur_kanji_skip = space_ptr(head);
+    cur_xkanji_skip = xspace_ptr(head);
+    add_glue_ref(cur_kanji_skip);
+    add_glue_ref(cur_xkanji_skip);
     p = hpack(link(head), 0, 1);
     pop_nest();
     append_to_vlist(p);
@@ -1496,7 +1643,7 @@ void fin_row (void)
 /* sec 0800 */
 void fin_align (void)
 {
-  halfword p, q, r, s, u, v;
+  halfword p, q, r, s, u, v, z;
   scaled t, w;
   scaled o;
   halfword n;
@@ -1604,8 +1751,20 @@ void fin_align (void)
   {
     rule_save = overfull_rule;
     overfull_rule = 0;
+    z = new_null_box();
+    link(z) = preamble;
+    adjust_hlist(z, false);
+    delete_glue_ref(cur_kanji_skip);
+    delete_glue_ref(cur_xkanji_skip);
+    cur_kanji_skip = space_ptr(z);
+    cur_xkanji_skip = xspace_ptr(z);
+    add_glue_ref(cur_kanji_skip);
+    add_glue_ref(cur_xkanji_skip);
     p = hpack(preamble, saved(1), saved(0));
     overfull_rule = rule_save;
+    delete_glue_ref(space_ptr(z));
+    delete_glue_ref(xspace_ptr(z));
+    free_node(z, box_node_size);
   }
   else
   {
@@ -1651,6 +1810,7 @@ void fin_align (void)
           height(q) = height(p);
         }
 
+        set_box_dir(q, abs(direction));
         glue_order(q) = glue_order(p);
         glue_sign(q) = glue_sign(p);
         glue_set(q) = glue_set(p);
@@ -1698,6 +1858,7 @@ void fin_align (void)
                 type(u) = vlist_node;
                 height(u) = width(s);
               }
+              set_box_dir(u, abs(direction));
             }
             
 
@@ -1771,6 +1932,7 @@ void fin_align (void)
 
               height(r) = w;
               type(r) = vlist_node;
+              set_box_dir(r, abs(direction));
             }
 
             shift_amount(r) = 0;
@@ -1970,6 +2132,13 @@ boolean fin_col (void)
       if (mode == -hmode)
       {
         adjust_tail = cur_tail;
+        adjust_hlist(head, false);
+        delete_glue_ref(cur_kanji_skip);
+        delete_glue_ref(cur_xkanji_skip);
+        cur_kanji_skip = space_ptr(head);
+        cur_xkanji_skip = xspace_ptr(head);
+        add_glue_ref(cur_kanji_skip);
+        add_glue_ref(cur_xkanji_skip);
         u = hpack(link(head), 0, 1);
         w = width(u);
         cur_tail = adjust_tail;
@@ -2104,7 +2273,7 @@ scaled make_op_(halfword q)
     }
 
     delta = char_italic(cur_f, cur_i);
-    x = clean_box(nucleus(q), cur_style);
+    x = clean_box(nucleus(q), cur_style, math_kcode(q));
 
     if ((math_type(subscr(q)) != 0) && (subtype(q) != limits))
       width(x) = width(x) - delta;
@@ -2118,9 +2287,9 @@ scaled make_op_(halfword q)
 
   if (subtype(q) == limits)
   {
-    x = clean_box(supscr(q), sup_style(cur_style));
-    y = clean_box(nucleus(q), cur_style);
-    z = clean_box(subscr(q), sub_style(cur_style));
+    x = clean_box(supscr(q), sup_style(cur_style), math_kcode(q));
+    y = clean_box(nucleus(q), cur_style, math_kcode(q));
+    z = clean_box(subscr(q), sub_style(cur_style), math_kcode(q));
     v = new_null_box();
     type(v) = vlist_node;
     width(v) = width(y);
@@ -2141,6 +2310,8 @@ scaled make_op_(halfword q)
 
     if (math_type(supscr(q)) == 0)
     {
+      delete_glue_ref(space_ptr(x));
+      delete_glue_ref(xspace_ptr(x));
       free_node(x, box_node_size);
       list_ptr(v) = y;
     }
@@ -2161,7 +2332,11 @@ scaled make_op_(halfword q)
     }
 
     if (math_type(subscr(q)) == 0)
+    {
+      delete_glue_ref(space_ptr(z));
+      delete_glue_ref(xspace_ptr(z));
       free_node(z, box_node_size);
+    }
     else
     {
       shift_down = big_op_spacing4 - height(z);
@@ -2207,12 +2382,14 @@ void make_scripts_(halfword q, scaled delta)
 
     shift_up = height(z) - sup_drop(t);
     shift_down = depth(z) + sub_drop(t);
+    delete_glue_ref(space_ptr(z));
+    delete_glue_ref(xspace_ptr(z));
     free_node(z, box_node_size);
   }
 
   if (math_type(supscr(q)) == 0)
   {
-    x = clean_box(subscr(q), sub_style(cur_style));
+    x = clean_box(subscr(q), sub_style(cur_style), math_kcode(q));
     width(x) = width(x) + script_space;
 
     if (shift_down < sub1(cur_size))
@@ -2228,7 +2405,7 @@ void make_scripts_(halfword q, scaled delta)
   else
   {
     {
-      x = clean_box(supscr(q), sup_style(cur_style));
+      x = clean_box(supscr(q), sup_style(cur_style), math_kcode(q));
       width(x) = width(x) + script_space;
 
       if (odd(cur_style))
@@ -2251,7 +2428,7 @@ void make_scripts_(halfword q, scaled delta)
       shift_amount(x) = - (integer) shift_up;
     else
     {
-      y = clean_box(subscr(q), sub_style(cur_style));
+      y = clean_box(subscr(q), sub_style(cur_style), math_kcode(q));
       width(y) = width(y) + script_space;
 
       if (shift_down < sub2(cur_size))

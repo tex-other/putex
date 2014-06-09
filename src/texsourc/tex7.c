@@ -63,6 +63,7 @@ lab22:
       {
         case hlist_node:
         case vlist_node:
+        case dir_node:
         case rule_node:
           if (page_contents < box_there)
           {
@@ -151,7 +152,18 @@ lab22:
               if (box(n) == 0)
                 height(r) = 0;
               else
-                height(r) = height(box(n)) + depth(box(n));
+              {
+                if (ins_dir(p) != box_dir(box(n)))
+                {
+                  print_err("Insertions can only be added to a same direction vbox");
+                  help3("Tut tut: You're trying to \insert into a",
+                    "\box register that now have a different direction.",
+                    "Proceed, and I'll discard its present contents.");
+                  box_error(n);
+                }
+                else
+                  height(r) = height(box(n)) + depth(box(n));
+              }
 
               best_ins_ptr(r) = 0;
               q = skip(n);
