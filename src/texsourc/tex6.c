@@ -2104,6 +2104,30 @@ void fire_up_(halfword c)
         else
         {
           wait = false;
+          n = subtype(p);
+
+          switch (box_dir(box(n)))
+          {
+            case dir_tate:
+            case dir_yoko:
+            case dir_dtou:
+              if (ins_dir(p) != box_dir(box(n)))
+              {
+                print_err("Insertions can only be added to a same direction vbox");
+                help3("Tut tut: You're trying to \\insert into a",
+                  "\\box register that now have a different direction.",
+                  "Proceed, and I'll discard its present contents.");
+                box_error(n);
+                box(n) = new_null_box();
+                last_ins_ptr(r) = box(n) + list_offset;
+              }
+              break;
+  
+            default:
+              set_box_dir(box(n), ins_dir(p));
+              break;
+          }
+
           s = last_ins_ptr(r);
           link(s) = ins_ptr(p);
 
@@ -2124,6 +2148,8 @@ void fire_up_(halfword c)
                   temp_ptr = vpackage(ins_ptr(p), 0, 1, 1073741823L);  /* 2^30 - 1 */
                   height(p) = height(temp_ptr) + depth(temp_ptr);
                   free_node(temp_ptr, box_node_size);
+                  delete_glue_ref(space_ptr(temp_ptr));
+                  delete_glue_ref(xspace_ptr(temp_ptr));
                   wait = true;
                 }
               }
@@ -2131,8 +2157,12 @@ void fire_up_(halfword c)
             best_ins_ptr(r) = 0;
             n = subtype(r);
             temp_ptr = list_ptr(box(n));
+            delete_glue_ref(space_ptr(box(n)));
+            delete_glue_ref(xspace_ptr(box(n)));
+            flush_node_list(link(box(n)));
             free_node(box(n), box_node_size);
             box(n) = vpackage(temp_ptr, 0, 1, 1073741823L);  /* 2^30 - 1 */
+            set_box_dir(box(n), ins_dir(p));
           }
           else
           {

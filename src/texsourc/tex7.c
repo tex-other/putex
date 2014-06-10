@@ -156,8 +156,8 @@ lab22:
                 if (ins_dir(p) != box_dir(box(n)))
                 {
                   print_err("Insertions can only be added to a same direction vbox");
-                  help3("Tut tut: You're trying to \insert into a",
-                    "\box register that now have a different direction.",
+                  help3("Tut tut: You're trying to \\insert into a",
+                    "\\box register that now have a different direction.",
                     "Proceed, and I'll discard its present contents.");
                   box_error(n);
                 }
@@ -444,9 +444,18 @@ void app_space (void)
     q = new_glue(main_p);
     glue_ref_count(main_p) = 0;
   }
-
-  link(tail) = q;
-  tail = q;
+  
+  if (!is_char_node(tail) && (type(tail) == disp_node))
+  {
+    link(prev_node) = q;
+    link(q) = tail;
+    prev_node = q;
+  }
+  else
+  {
+    link(tail) = q;
+    tail = q;
+  }
 }
 /* sec 1047 */
 void insert_dollar_sign (void)
@@ -542,6 +551,7 @@ void append_glue (void)
   }
 
   tail_append(new_glue(cur_val));
+  inhibit_glue_flag = false;
 
   if (s >= skip_code)
   {
@@ -557,10 +567,19 @@ void append_kern (void)
   quarterword s;
 
   s = cur_chr;
-
   scan_dimen(s == mu_glue, false, false);
-  tail_append(new_kern(cur_val));
-  subtype(tail) = s;
+  inhibit_glue_flag = false;
+
+  if (!is_char_node(tail) && (type(tail) == disp_node))
+  {
+    prev_append(new_kern(cur_val));
+    subtype(prev_node) = s;
+  }
+  else
+  {
+    tail_append(new_kern(cur_val));
+    subtype(tail) = s;
+  }
 }
 /* sec 1064 */
 void off_save (void)
@@ -672,11 +691,37 @@ void normal_paragraph (void)
 void box_end_(integer box_context)
 {
   pointer p;
+  pointer q;
 
   if (box_context < box_flag)
   {
     if (cur_box != 0)
     {
+      p = link(cur_box);
+      link(cur_box) = 0;
+      
+      while (p != 0)
+      {
+        q = p;
+        p = link(p);
+        
+        if (box_dir(q) == abs(direction))
+        {
+          list_ptr(q) = cur_box;
+          cur_box = q;
+          link(cur_box) = 0;
+        }
+        else
+        {
+          delete_glue_ref(space_ptr(q));
+          delete_glue_ref(xspace_ptr(q));
+          free_node(q, box_node_size);
+        }
+      }
+
+      if (box_dir(cur_box) != abs(direction))
+        cur_box = new_dir_node(cur_box,abs(direction));
+
       shift_amount(cur_box) = box_context;
 
       if (abs(mode) == vmode)
@@ -732,6 +777,35 @@ void box_end_(integer box_context)
       {
         append_glue();
         subtype(tail) = box_context - (leader_flag - a_leaders);
+        
+        if (type(cur_box) <= dir_node)
+        {
+          p = link(cur_box);
+          link(cur_box) = 0;
+          
+          while (p != 0)
+          {
+            q = p;
+            p = link(p);
+            
+            if (box_dir(q) == abs(direction))
+            {
+              list_ptr(q) = cur_box;
+              cur_box = q;
+              link(cur_box) = 0;
+            }
+            else
+            {
+              delete_glue_ref(space_ptr(q));
+              delete_glue_ref(xspace_ptr(q));
+              free_node(q, box_node_size);
+            }
+          }
+
+          if (box_dir(cur_box) != abs(direction))
+            cur_box = new_dir_node(cur_box,abs(direction));
+        }
+
         leader_ptr(tail) = cur_box;
       }
       else
@@ -750,6 +824,11 @@ void box_end_(integer box_context)
 /* sec 1079 */
 void begin_box_(integer box_context)
 {
+  pointer r; // {running behind |p|}
+  boolean fd; // {a final |disp_node| pair?}
+  scaled disp, pdisp; // {displacement}
+  eight_bits a_dir; // {adjust direction}
+  pointer tx; // {effective tail node}
   pointer p, q;
   quarterword m;
   halfword k;
@@ -791,37 +870,27 @@ void begin_box_(integer box_context)
         }
         else
         {
-          if (!(tail >= hi_mem_min))
-            if ((type(tail) == hlist_node) || (type(tail) == vlist_node))
+          check_effective_tail(goto lab30);
+
+          if (!(is_char_node(tx) || (head != tx)))
+            if ((type(tail) == hlist_node) || (type(tail) == vlist_node) ||
+              (type(tail) == dir_node))
             {
-              q = head;
-
-              do
-                {
-                  p = q;
-
-                  if (!(q >= hi_mem_min))
-                    if (type(q) == disc_node)
-                    {
-                      for (m = 1; m <= replace_count(q); m++)
-                        p = link(p);
-
-                      if (p == tail)
-                        goto lab30;
-                    }
-
-                  q = link(p);
-                }
-              while (!(q == tail));
-
-              cur_box = tail;
+              fetch_effective_tail(goto lab30);
+              cur_box = tx;
               shift_amount(cur_box) = 0;
-              tail = p;
-              link(p) = 0;
-lab30:
-              ;
+              
+              if (type(cur_box) == dir_node)
+              {
+                link(list_ptr(cur_box)) = cur_box;
+                cur_box = list_ptr(cur_box);
+                list_ptr(link(cur_box)) = 0;
+              }
+              else if (box_dir(cur_box) == dir_default)
+                set_box_dir(cur_box, abs(direction));
             }
         }
+lab30:;
       }
       break;
 
@@ -847,10 +916,14 @@ lab30:
       {
         k = cur_chr - vtop_code;
         saved(0) = box_context;
+        a_dir = adjust_dir;
 
         if (k == hmode)
           if ((box_context < box_flag) && (abs(mode) == vmode))
+          {
+            a_dir = abs(direction);
             scan_spec(adjust_hbox_group, true);
+          }
           else
             scan_spec(hbox_group, true);
         else
@@ -868,6 +941,7 @@ lab30:
 
         push_nest();
         mode = - (integer) k;
+        adjust_dir = a_dir;
 
         if (k == vmode)
         {
@@ -939,6 +1013,7 @@ void new_graf_(boolean indented)
     tail_append(new_param_glue(par_skip_code));
 
   push_nest();
+  adjust_dir = abs(direction);
   mode = hmode;
   space_factor = 1000;
   set_cur_lang();
@@ -1014,7 +1089,10 @@ void end_graf (void)
     if (head == tail)
       pop_nest();
     else
+    {
+      adjust_hlist(head, true);
       line_break(widow_penalty);
+    }
 
     normal_paragraph();
     error_count = 0;
@@ -1047,6 +1125,7 @@ void begin_insert_or_adjust (void)
   normal_paragraph();
   push_nest();
   mode = -vmode;
+  direction = adjust_dir;
   prev_depth = ignore_depth;
 }
 /* sec 1101 */
@@ -1059,14 +1138,21 @@ void make_mark (void)
   type(p) = mark_node;
   subtype(p) = 0;
   mark_ptr(p) = def_ref;
-  link(tail) = p;
-  tail = p;
+  
+  if (!is_char_node(tail) && (type(tail) == disp_node))
+    prev_append(p);
+  else
+    tail_append(p);
 }
 /* sec 1103 */
 void append_penalty (void)
 {
   scan_int();
-  tail_append(new_penalty(cur_val));
+
+  if (!is_char_node(tail) && (type(tail) == disp_node))
+    prev_append(new_penalty(cur_val));
+  else
+    tail_append(new_penalty(cur_val));
 
   if (mode == vmode)
     build_page();
@@ -1075,6 +1161,10 @@ void append_penalty (void)
 void delete_last (void)
 {
   pointer p, q;
+  pointer r; // {running behind |p|}
+  boolean fd; // {a final |disp_node| pair?}
+  scaled disp, pdisp; // {displacement}
+  pointer tx; // {effective tail node}
   quarterword m;
 
   if ((mode == vmode) && (tail == head))
@@ -1094,32 +1184,13 @@ void delete_last (void)
   }
   else
   {
-    if (!(tail >= hi_mem_min))
-      if (type(tail) == cur_chr)
+    check_effective_tail(return);
+    
+    if (!is_char_node(tx))
+      if (type(tx) == cur_chr)
       {
-        q = head;
-
-        do
-          {
-            p = q;
-
-            if (!(q >= hi_mem_min))
-              if (type(q) == disc_node)
-              {
-                for (m = 1; m <= replace_count(q); m++)
-                  p = link(p);
-
-                if (p == tail)
-                  return;
-              }
-
-            q = link(p);
-          }
-        while (!(q == tail));
-
-        link(p) = 0;
-        flush_node_list(tail);
-        tail = p;
+        fetch_effective_tail(return);
+        flush_node_list(tx);
       }
   }
 }
@@ -1128,6 +1199,7 @@ void unpackage (void)
 {
   pointer p;
   char c;
+  scaled disp; // {displacement}
 
   c = cur_chr;
   scan_eight_bit_int();
@@ -1135,6 +1207,9 @@ void unpackage (void)
 
   if (p == 0)
     return;
+
+  if (type(p) == dir_node)
+    p = list_ptr(p);
 
   if ((abs(mode) == mmode) || ((abs(mode) == vmode) && (type(p) != vlist_node)) ||
     ((abs(mode) == hmode) && (type(p) != hlist_node)))
@@ -1146,37 +1221,115 @@ void unpackage (void)
     error();
     return;
   }
+  
+  switch (box_dir(p))
+  {
+    case dir_yoko:
+    case dir_tate:
+    case dir_dtou:
+      if (abs(direction) != box_dir(p))
+      {
+        print_err("Incompatible direction list can't be unboxed");
+        help2("Sorry, Pandora. (You sneaky devil.)", 
+          "I refuse to unbox a box in differrent direction.");
+        error();
+        return;
+      }
+  }
+  
+  disp = 0;
 
   if (c == copy_code)
     link(tail) = copy_node_list(list_ptr(p));
   else
   {
+    if (type(box(cur_val)) == dir_node)
+    {
+      delete_glue_ref(space_ptr(box(cur_val)));
+      delete_glue_ref(xspace_ptr(box(cur_val)));
+      free_node(box(cur_val), box_node_size);
+    }
+
     link(tail) = list_ptr(p);
     box(cur_val) = 0;
+    delete_glue_ref(space_ptr(p));
+    delete_glue_ref(xspace_ptr(p));
     free_node(p, box_node_size);
   }
 
   while (link(tail) != 0)
+  {
+    p = tail;
     tail = link(tail);
+    
+    if (!is_char_node(tail))
+      switch (type(tail))
+      {
+        case glue_node:
+          if ((subtype(tail) == kanji_skip_code + 1) ||
+            (subtype(tail)=xkanji_skip_code+1))
+          {
+            link(p) = link(tail);
+            delete_glue_ref(glue_ptr(tail));
+            free_node(tail, small_node_size);
+            tail = p;
+          }
+          break;
+
+        case penalty_node:
+          if (subtype(tail) == widow_pena)
+          {
+            link(p) = link(tail);
+            free_node(tail, small_node_size);
+            tail = p;
+          }
+          break;
+        
+        case disp_node:
+          {
+            prev_disp = disp;
+            disp = disp_dimen(tail);
+            prev_node = p;
+          }
+          break;
+    }
+  }
 }
 /* sec 1113 */
 void append_italic_correction (void)
 {
   pointer p;
   internal_font_number f;
-
+  pointer d; // {|disp_node|}
+  
   if (tail != head)
   {
-    if ((tail >= hi_mem_min))
+    if (!is_char_node(tail) && (type(tail) == disp_node))
+    {
+      d = tail;
+      tail = prev_node;
+    }
+    else
+      d = 0;
+    
+    if ((last_jchr != null) && (link(last_jchr) == tail) && (is_char_node(tail)))
+      p = last_jchr;
+    else if (is_char_node(tail))
       p = tail;
     else if (type(tail) == ligature_node)
-      p = tail + 1;
+      p = lig_char(tail);
     else
       return;
 
     f = font(p);
     tail_append(new_kern(char_italic(f, char_info(f, character(p)))));
-    subtype(tail) = explicit;
+    subtype(tail) = ita_kern;
+    
+    if (d != 0)
+    {
+      prev_node = tail;
+      tail_append(d);
+    }
   }
 }
 /* sec 1117 */
@@ -1222,18 +1375,25 @@ void build_discretionary (void)
       if (type(p) > rule_node)
         if (type(p) != kern_node)
           if (type(p) != ligature_node)
-          {
-            print_err("Improper discretionary list");
-            help1("Discretionary lists must contain only boxes and kerns.");
-            error();
-            begin_diagnostic();
-            print_nl("The following discretionary sublist has been deleted:");
-            show_box(p);
-            end_diagnostic(true);
-            flush_node_list(p);
-            link(q) = 0;
-            goto lab30;
-          }
+            if ((type(p) == penalty_node) && (subtype(p) != normal))
+            {
+              link(q) = link(p);
+              free_node(p, small_node_size);
+              p = q;
+            }
+            else
+            {
+              print_err("Improper discretionary list");
+              help1("Discretionary lists must contain only boxes and kerns.");
+              error();
+              begin_diagnostic();
+              print_nl("The following discretionary sublist has been deleted:");
+              show_box(p);
+              end_diagnostic(true);
+              flush_node_list(p);
+              link(q) = 0;
+              goto lab30;
+            }
 
     q = p;
     p = link(q);
@@ -1283,6 +1443,11 @@ lab30:
           tail = q;
 
         decr(save_ptr);
+        prev_node = tail;
+        tail_append(get_node(small_node_size));
+        type(tail) = disp_node;
+        disp_dimen(tail) = 0;
+        prev_disp = 0;
         return;
       }
       break;
@@ -1299,14 +1464,37 @@ lab30:
 void make_accent (void)
 {
   real s, t;
+  scaled disp; // {displacement}
+  KANJI_code cx; // {temporary register for KANJI}
   pointer p, q, r;
   internal_font_number f;
   scaled a, h, x, w, delta;
   four_quarters i;
 
   scan_char_num();
-  f = cur_font;
-  p = new_character(f, cur_val);
+
+  if (!is_char_ascii(cur_val))
+  {
+    cx = cur_val;
+    
+    if (direction == dir_tate)
+      f = cur_tfont;
+    else
+      f = cur_jfont;
+
+    p = new_character(f, get_jfm_pos(cx, f));
+    
+    if (p != 0)
+    {
+      link(p) = get_avail();
+      info(link(p)) = cx;
+    }
+  }
+  else
+  {
+    f = cur_font;
+    p = new_character(f,cur_val);
+  }
 
   if (p != 0)
   {
@@ -1316,16 +1504,78 @@ void make_accent (void)
     do_assignments();
     q = 0;
     f = cur_font;
-
-    if ((cur_cmd == letter) || (cur_cmd == other_char) || (cur_cmd == char_given))
+    cx = empty;
+    
+    if ((cur_cmd == letter) || (cur_cmd == other_char))
       q = new_character(f, cur_chr);
+    else if ((cur_cmd=kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
+    {
+      if (direction == dir_tate)
+        f = cur_tfont;
+      else
+        f = cur_jfont;
+      
+      cx = cur_chr;
+    }
+    else if (cur_cmd == char_given)
+      if (is_char_ascii(cur_chr))
+        q = new_character(f, cur_chr);
+      else
+      {
+        if (direction == dir_tate)
+          f = cur_tfont;
+        else
+          f = cur_jfont;
+        
+        cx = cur_chr;
+      }
     else if (cur_cmd == char_num)
     {
       scan_char_num();
-      q = new_character(f, cur_val);
+      
+      if (is_char_ascii(cur_val))
+        q = new_character(f, cur_val);
+      else
+      {
+        if (direction == dir_tate)
+          f = cur_tfont;
+        else
+          f = cur_jfont;
+        
+        cx = cur_val;
+      }
     }
     else
       back_input();
+    
+    if (direction == dir_tate)
+    {
+      if (font_dir[f] == dir_tate)
+        disp = 0;
+      else if (font_dir[f] == dir_yoko)
+        disp = t_baseline_shift - y_baseline_shift;
+      else
+        disp = t_baseline_shift;
+    }
+    else
+    {
+      if (font_dir[f] == dir_yoko)
+        disp = 0;
+      else if (font_dir[f] == dir_tate)
+        disp = y_baseline_shift - t_baseline_shift;
+      else
+        disp = y_baseline_shift;
+    }
+    
+    append_disp_node();
+    
+    if (cx != empty)
+    {
+      q = new_character(f, get_jfm_pos(cx, f));
+      link(q) = get_avail();
+      info(link(q)) = cx;
+      last_jchr = q;
+    }
 
     if (q != 0)
     {
@@ -1336,6 +1586,12 @@ void make_accent (void)
 
       if (h != x)
       {
+        delete_glue_ref(cur_kanji_skip);
+        delete_glue_ref(cur_xkanji_skip);
+        cur_kanji_skip = zero_glue;
+        cur_xkanji_skip = zero_glue;
+        add_glue_ref(cur_kanji_skip);
+        add_glue_ref(cur_xkanji_skip);
         p = hpack(p, 0, 1);
         shift_amount(p) = x - h;
       }
@@ -1347,12 +1603,26 @@ void make_accent (void)
       link(r) = p;
       tail = new_kern(- (integer) a - delta);
       subtype(tail) = acc_kern;
-      link(p) = tail;
+      
+      if (h == x)
+      {
+        if (font_dir[font(p)] != dir_default)
+          link(link(p)) = tail;
+        else
+          link(p) = tail;
+      }
+      else
+        link(p) = tail;
+
       p = q;
     }
 
     link(tail) = p;
-    tail = p;
+    if (link(p) != 0)
+      tail = link(p);
+    else
+      tail = p;
+    append_disp_node();
     space_factor = 1000;
   }
 }
@@ -1491,6 +1761,7 @@ void init_math (void)
     }
     else
     {
+      adjust_hlist(head, true);
       line_break(display_widow_penalty);
       v = shift_amount(just_box) + 2 * quad(cur_font);
       w = -max_dimen;  /* - (2^30 - 1) */
@@ -1503,6 +1774,8 @@ lab21:
         {
           f = font(p);
           d = char_width(f, char_info(f, character(p)));
+          if (font_dir[f] != dir_default)
+            p = link(p);
           goto lab40;
         }
 
@@ -1510,6 +1783,7 @@ lab21:
         {
           case hlist_node:
           case vlist_node:
+          case dir_node:
           case rule_node:
             {
               d = width(p);
@@ -1638,6 +1912,8 @@ lab30:;
         begin_token_list(every_math, every_math_text);
     }
   }
+
+  direction = -abs(direction);
 }
 /* sec 1142 */
 void start_eq_no (void)
@@ -1654,10 +1930,12 @@ void start_eq_no (void)
   }
 }
 /* sec 1151 */
-void scan_math_(pointer p)
+void scan_math_(pointer p, pointer q)
 {
   integer c;
+  KANJI_code cx;
 
+  cx = 0;
 lab20:
   do
     {
@@ -1674,19 +1952,32 @@ lab21:
       {
         c = math_code(cur_chr);
 
-        if (c == 32768L)
+        if (is_char_ascii(cur_chr) || (cur_chr == 256))
         {
+          c = (math_code(cur_chr));
+          
+          if (c == 32768L)
           {
-            cur_cs = cur_chr + active_base;
-            cur_cmd = eq_type(cur_cs);
-            cur_chr = equiv(cur_cs);
-            x_token();
-            back_input();
-          }
+            {
+              cur_cs = cur_chr + active_base;
+              cur_cmd = eq_type(cur_cs);
+              cur_chr = equiv(cur_cs);
+              x_token();
+              back_input();
+            }
 
-          goto lab20;
+            goto lab20;
+          }
         }
+        else
+          cx = cur_chr;
       }
+      break;
+
+    case kanji:
+    case kana:
+    case other_kchar:
+      cx = cur_chr;
       break;
 
     case char_num:
@@ -1728,13 +2019,45 @@ lab21:
       break;
   }
 
-  math_type(p) = math_char;
-  character(p) = c % 256;
-
-  if ((c >= var_code) && ((cur_fam >= 0) && (cur_fam < 16)))
-    fam(p) = cur_fam;
+  if (cx == 0)
+  {
+    math_type(p) = math_char;
+    character(p) = (c % 256);
+    
+    if ((c >= var_code) && ((cur_fam >= 0) && (cur_fam < 16)))
+      fam(p) = cur_fam;
+    else
+      fam(p) = (c / 256) % 16;
+    
+    if (font_dir[fam_fnt(fam(p) + cur_size)] != dir_default)
+    {
+      print_err("Not one-byte family");
+      help1("IGNORE.");
+      error();
+    }
+  }
   else
-    fam(p) = (c / 256) % 16;
+  {
+    if (q == 0)
+    {
+      math_type(p) = sub_mlist;
+      info(p) = new_noad();
+      p = nucleus(info(p));
+      q = kcode_noad_nucleus(p);
+    }
+
+    math_type(p) = math_jchar;
+    fam(p) = cur_jfam;
+    character(p) = (0);
+    math_kcode(p - 1) = (cx);
+    
+    if (font_dir[fam_fnt(fam(p) + cur_size)] == dir_default)
+    {
+      print_err("Not two-byte family");
+      help1("IGNORE.");
+      error();
+    }
+  }
 }
 /* sec 1155 */
 void set_math_char_(integer c)
@@ -1768,6 +2091,15 @@ void set_math_char_(integer c)
 
     link(tail) = p;
     tail = p;
+    
+    if (font_dir[fam_fnt(fam(nucleus(p)) + cur_size)] != dir_default)
+    {
+      print_err("Not one-byte family");
+      help1("IGNORE.");
+      error();
+    }
+
+    inhibit_glue_flag = false;
   }
 }
 /* sec 1159 */
@@ -1787,52 +2119,52 @@ void math_limit_switch (void)
 /* sec 1160 */
 void scan_delimiter_(pointer p, boolean r)
 {
-   if (r)
-   {
-     scan_twenty_seven_bit_int();
-   }
-   else
-   {
-     do
+  if (r)
+  {
+    scan_twenty_seven_bit_int();
+  }
+  else
+  {
+    do
       {
         get_x_token();
       }
-     while (!((cur_cmd != spacer) && (cur_cmd != relax)));
+    while (!((cur_cmd != spacer) && (cur_cmd != relax)));
 
-     switch (cur_cmd)
-     {
-       case letter:
-       case other_char:
-         cur_val = del_code(cur_chr);
-         break;
+    switch (cur_cmd)
+    {
+      case letter:
+      case other_char:
+        cur_val = del_code(cur_chr);
+        break;
 
-       case delim_num:
-         scan_twenty_seven_bit_int();
-         break;
+      case delim_num:
+        scan_twenty_seven_bit_int();
+        break;
 
-       default:
-         cur_val = -1;
-         break;
-     }
-   }
+      default:
+        cur_val = -1;
+        break;
+    }
+  }
 
-   if (cur_val < 0)
-   {
-     print_err("Missing delimiter (. inserted)");
-     help6("I was expecting to see something like `(' or `\\{' or",
-         "`\\}' here. If you typed, e.g., `{' instead of `\\{', you",
-         "should probably delete the `{' by typing `1' now, so that",
-         "braces don't get unbalanced. Otherwise just proceed.",
-         "Acceptable delimiters are characters whose \\delcode is",
-         "nonnegative, or you can use `\\delimiter <delimiter code>'.");
-     back_error();
-     cur_val = 0;
-   }
+  if (cur_val < 0)
+  {
+    print_err("Missing delimiter (. inserted)");
+    help6("I was expecting to see something like `(' or `\\{' or",
+        "`\\}' here. If you typed, e.g., `{' instead of `\\{', you",
+        "should probably delete the `{' by typing `1' now, so that",
+        "braces don't get unbalanced. Otherwise just proceed.",
+        "Acceptable delimiters are characters whose \\delcode is",
+        "nonnegative, or you can use `\\delimiter <delimiter code>'.");
+    back_error();
+    cur_val = 0;
+  }
 
-   small_fam(p) = (cur_val / 1048576L) % 16;
-   small_char(p) = (cur_val / 4096) % 256;
-   large_fam(p) = (cur_val / 256) % 16;
-   large_char(p) = cur_val % 256;
+  small_fam(p) = (cur_val / 1048576L) % 16;
+  small_char(p) = (cur_val / 4096) % 256;
+  large_fam(p) = (cur_val / 256) % 16;
+  large_char(p) = cur_val % 256;
 }
 /* sec 1163 */
 void math_radical (void)
@@ -1844,7 +2176,7 @@ void math_radical (void)
   mem[subscr(tail)].hh = empty_field;
   mem[supscr(tail)].hh = empty_field;
   scan_delimiter(left_delimiter(tail), true);
-  scan_math(nucleus(tail));
+  scan_math(nucleus(tail), kcode_noad(tail));
 }
 /* sec 1165 */
 void math_ac (void)
@@ -1874,7 +2206,7 @@ void math_ac (void)
   else
     fam(accent_chr(tail)) = (cur_val / 256) % 16;
 
-  scan_math(nucleus(tail));
+  scan_math(nucleus(tail), kcode_noad(tail));
 }
 /* sec 1172 */
 void append_choices (void)
@@ -1965,6 +2297,7 @@ void sub_sup (void)
 
   t = 0;
   p = 0;
+  inhibit_glue_flag = false;
 
   if (tail != head)
     if (script_allowed(tail))
@@ -1993,7 +2326,7 @@ void sub_sup (void)
       error();
     }
   }
-  scan_math(p);
+  scan_math(p, 0);
 }
 /* sec 1086 */
 void package_(small_number c)
@@ -2003,14 +2336,32 @@ void package_(small_number c)
   scaled d;
 
   d = box_max_depth;
+  delete_glue_ref(cur_kanji_skip);
+  delete_glue_ref(cur_xkanji_skip);
+  if (auto_spacing > 0)
+    cur_kanji_skip = kanji_skip;
+  else
+    cur_kanji_skip = zero_glue;
+  if (auto_xspacing > 0)
+    cur_xkanji_skip = xkanji_skip;
+  else
+    cur_xkanji_skip = zero_glue;
+  add_glue_ref(cur_kanji_skip);
+  add_glue_ref(cur_xkanji_skip);
   unsave();
   save_ptr = save_ptr - 3;
 
   if (mode == -hmode)
+  {
     cur_box = hpack(link(head), saved(2), saved(1));
+    set_box_dir(cur_box, abs(direction));
+    pop_nest();
+  }
   else
   {
     cur_box = vpackage(link(head), saved(2), saved(1), d);
+    set_box_dir(cur_box, abs(direction));
+    pop_nest();
 
     if (c == vtop_code)
     {
@@ -2026,6 +2377,5 @@ void package_(small_number c)
     }
   }
 
-  pop_nest();
   box_end(saved(0));
 }

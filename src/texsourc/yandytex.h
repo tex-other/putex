@@ -96,6 +96,7 @@ typedef enum
 #define incr(x)  ++(x)
 #define fabs(x)  ((x) >= 0.0 ? (x) : -(x))
 #define toint(x) ((integer) (x))
+#define empty    0
 #define a_open_in(f, p) open_input (&(f), p, FOPEN_R_MODE)
 #define a_open_out(f)   open_output (&(f), FOPEN_W_MODE)
 #define a_close(f)	    check_fclose (f)

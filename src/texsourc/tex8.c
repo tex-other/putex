@@ -25,6 +25,7 @@ void math_fraction (void)
   small_number c;
 
   c = cur_chr;
+  inhibit_glue_flag = false;
 
   if (incompleat_noad != 0)
   {
@@ -86,6 +87,7 @@ void math_left_right (void)
   pointer p;
 
   t = cur_chr;
+  inhibit_glue_flag = false;
 
   if ((t == right_noad) && (cur_group != math_left_group))
   {
@@ -129,6 +131,7 @@ void math_left_right (void)
 void after_math (void)
 {
   boolean l;
+  scaled disp; // {displacement}
   boolean danger;
   integer m;
   pointer p;
@@ -171,6 +174,18 @@ void after_math (void)
     danger = true;
   }
 
+  delete_glue_ref(cur_kanji_skip);
+  delete_glue_ref(cur_xkanji_skip);
+  if (auto_spacing > 0)
+    cur_kanji_skip = kanji_skip;
+  else
+    cur_kanji_skip = zero_glue;
+  if (auto_xspacing > 0)
+    cur_xkanji_skip = xkanji_skip;
+  else
+    cur_xkanji_skip = zero_glue;
+  add_glue_ref(cur_kanji_skip);
+  add_glue_ref(cur_xkanji_skip);
   m = mode;
   l = false;
   p = fin_mlist(0);
@@ -235,7 +250,12 @@ void after_math (void)
 
   if (m < 0)
   {
-    tail_append(new_math(math_surround, 0));
+    if (direction ==  dir_tate)
+      disp = t_baseline_shift;
+    else
+      disp = y_baseline_shift;
+    append_disp_node();
+    tail_append(new_math(math_surround, before));
     cur_mlist = p;
     cur_style = text_style;
     mlist_penalties = (mode > 0);
@@ -245,7 +265,8 @@ void after_math (void)
     while(link(tail) != 0)
       tail = link(tail);
 
-    tail_append(new_math(math_surround, 1));
+    tail_append(new_math(math_surround, after));
+    append_disp_node();
     space_factor = 1000;
     unsave();
   }
@@ -303,6 +324,8 @@ void after_math (void)
 
         if (w > z)
         {
+          delete_glue_ref(space_ptr(b));
+          delete_glue_ref(xspace_ptr(b));
           free_node(b, box_node_size);
           b = hpack(p, z, 0);
         }
@@ -402,7 +425,9 @@ void resume_after_display (void)
 
   unsave();
   prev_graf = prev_graf + 3;
+  inhibit_glue_flag = false;
   push_nest();
+  adjust_dir = abs(direction);
   mode = hmode;
   space_factor = 1000;
   set_cur_lang();
@@ -719,6 +744,7 @@ void alter_integer (void)
 void alter_box_dimen (void)
 {
   small_number c;
+  pointer p, q; // {temporary registers}
   eight_bits b;
 
   c = cur_chr;
@@ -726,9 +752,31 @@ void alter_box_dimen (void)
   b = cur_val;
   scan_optional_equals();
   scan_dimen(false, false, false);
-
+  
   if (box(b) != 0)
-    mem[box(b) + c].cint = cur_val;
+  {
+    q = box(b);
+    p = link(q);
+    
+    while (p != 0)
+    {
+      if (abs(direction) == box_dir(p))
+        q = p;
+      p = link(p);
+    }
+    
+    if (box_dir(q) != abs(direction))
+    {
+      p = link(box(b));
+      link(box(b)) = 0;
+      q = new_dir_node(q, abs(direction));
+      list_ptr(q) = 0;
+      link(q) = p;
+      link(box(b)) = q;
+    }
+
+    mem[q+c].cint = cur_val;
+  }
 }
 /* sec 1257 */
 void new_font_(small_number a)
@@ -1047,7 +1095,7 @@ void shift_case (void)
   {
     t = info(p); 
 
-    if (t < cs_token_flag + single_base)
+    if ((t < cs_token_flag + single_base) && !check_kanji(t))
     {
       c = t % 256;
 
@@ -1106,6 +1154,22 @@ void show_whatever (void)
         }
 
         print_meaning();
+        goto lab50;
+      }
+      break;
+
+    case show_mode:
+      {
+        print_nl("> ");
+        if (auto_spacing > 0)
+          print_string("auto spacing mode; ");
+        else
+          print_string("no auto spacing mode; ");
+        print_nl("> ");
+        if (auto_xspacing > 0)
+          print_string("auto xspacing mode");
+        else
+          print_string("no auto xspacing mode");
         goto lab50;
       }
       break;
@@ -1312,6 +1376,7 @@ void fix_language (void)
 void handle_right_brace (void)
 {
   pointer p, q;
+  pointer r;
   scaled d;
   integer f;
 
@@ -1337,11 +1402,15 @@ void handle_right_brace (void)
       break;
 
     case hbox_group:
-      package(0);
+      {
+        adjust_hlist(head, false);
+        package(0);
+      }
       break;
 
     case adjust_hbox_group:
       {
+        adjust_hlist(head, false);
         adjust_tail = adjust_head;
         package(0);
       }
@@ -1371,33 +1440,55 @@ void handle_right_brace (void)
         unsave();
         decr(save_ptr);
         p = vpackage(link(head), 0, 1, 1073741823L);  /* 2^30 - 1 */
+        set_box_dir(p, abs(direction));
         pop_nest();
 
         if (saved(0) < 255)
         {
-          tail_append(get_node(ins_node_size));
-          type(tail) = ins_node;
-          subtype(tail) = saved(0);
-          height(tail) = height(p) + depth(p);
-          ins_ptr(tail) = list_ptr(p);
-          split_top_ptr(tail) = q;
-          depth(tail) = d;
-          float_cost(tail) = f;
+          r = get_node(ins_node_size);
+          type(r) = ins_node;
+          subtype(r) = saved(0);
+          height(r) = height(p) + depth(p);
+          ins_ptr(r) = list_ptr(p);
+          split_top_ptr(r) = q;
+          depth(r) = d;
+          float_cost(r) = f;
+          ins_dir(r) = box_dir(p);
+          
+          if (!is_char_node(tail) && (type(tail) == disp_node))
+            prev_append(r);
+          else
+            tail_append(r);
         }
         else
         {
-          tail_append(get_node(small_node_size));
-          type(tail) = adjust_node;
-          subtype(tail) = 0;
-          adjust_ptr(tail) = list_ptr(p);
-          delete_glue_ref(q);
+          if (box_dir(p) != adjust_dir)
+          {
+            print_err("Direction Incompatible.");
+            help1("\vadjust's argument and outer vlist must have same direction.");
+            error();
+            flush_node_list(list_ptr(p));
+          }
+          else
+          {
+            r = get_node(small_node_size);
+            type(r) = adjust_node;
+            adjust_ptr(r) = list_ptr(p);
+            delete_glue_ref(q);
+            
+            if (!is_char_node(tail) && (type(tail) == disp_node))
+              prev_append(r);
+            else
+              tail_append(r);
+          }
         }
+
+        delete_glue_ref(space_ptr(p));
+        delete_glue_ref(xspace_ptr(p));
         free_node(p, box_node_size);
 
         if (nest_ptr == 0)
-        {
           build_page();
-        }
       }
       break;
     case output_group:
@@ -1484,7 +1575,10 @@ void handle_right_brace (void)
         unsave();
         save_ptr = save_ptr - 2;
         p = vpackage(link(head), saved(1), saved(0), 1073741823L);   /* 2^30 - 1 */
+        set_box_dir(p, abs(direction));
         pop_nest();
+        if( box_dir(p) != abs(direction))
+          p = new_dir_node(p, abs(direction));
         tail_append(new_noad());
         type(tail) = vcenter_noad;
         math_type(nucleus(tail)) = sub_box;
@@ -1509,7 +1603,7 @@ void handle_right_brace (void)
             if (type(p) == ord_noad)
             {
               if (math_type(subscr(p)) == 0)
-                if (math_type(supscr(p)) == 0)
+                if ((math_type(supscr(p)) == 0) && (math_kcode(p) == 0))
                 {
                   mem[saved(0)].hh = mem[nucleus(p)].hh;
                   free_node(p, noad_size);
@@ -1542,6 +1636,11 @@ void handle_right_brace (void)
 void main_control (void) 
 {
   integer t;
+  KANJI_code cx; // {kanji character}
+  pointer kp; // {kinsoku penalty register}
+  pointer gp, gq; // {temporary registers for list manipulation}
+  scaled disp; // {displacement register}
+  boolean ins_kp; // {whether insert kinsoku penalty}
   integer bSuppress; /* 199/Jan/5 */
 
   if (every_job != 0)
@@ -1572,20 +1671,35 @@ lab21:
   if (tracing_commands > 0)
     show_cur_cmd_chr();
 
-/*  the big switch --- don't bother to test abort_flag ??? */
   switch(abs(mode) + cur_cmd)
   {
     case hmode + letter:
     case hmode + other_char:
-    case hmode + char_given:
       goto lab70;
+      break;
+
+    case hmode + kanji:
+    case hmode + kana:
+    case hmode + other_kchar:
+      goto main_loop_j;
+      break;
+
+    case hmode + char_given:
+      if (is_char_ascii(cur_chr))
+        goto lab70;
+      else
+        goto main_loop_j;
       break;
 
     case hmode + char_num:
       {
         scan_char_num();
         cur_chr = cur_val;
-        goto lab70;
+        
+        if (is_char_ascii(cur_chr))
+          goto lab70;
+        else
+          goto main_loop_j;
       }
       break;
 
@@ -1594,6 +1708,7 @@ lab21:
         get_x_token();
 
         if ((cur_cmd == letter) || (cur_cmd == other_char) ||
+          (cur_cmd == kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar) ||
           (cur_cmd == char_given) || (cur_cmd == char_num))
           cancel_boundary = true;
         goto lab21;
@@ -1739,6 +1854,37 @@ lab21:
       begin_box(0);
       break;
 
+    case any_mode(chg_dir):
+      {
+        if (cur_group != align_group)
+          if (head == tail)
+          {
+            direction = cur_chr;
+            
+            if (mode == vmode)
+              page_dir = cur_chr;
+          }
+          else
+          {
+            print_err("Use `");
+            print_cmd_chr(cur_cmd,cur_chr);
+            print("' at top of list");
+            help2("Direction change command is available only while",
+              "current list is null.");
+            error();
+          }
+        else
+        {
+          print_err("You can't use `");
+          print_cmd_chr(cur_cmd,cur_chr);
+          print_string("' in an align");
+          help2("To change direction in an align,", 
+            "you shold use \\hbox or \\vbox with \\tate or \\yoko.");
+          error();
+        }
+      }
+      break;
+
     case vmode + start_par:
       new_graf(cur_chr > 0);
       break;
@@ -1754,6 +1900,9 @@ lab21:
     case vmode + discretionary:
     case vmode + hskip:
     case vmode + valign:
+    case vmode + kanji:
+    case vmode + kana:
+    case vmode + other_kchar:
     case vmode + ex_space:
     case vmode + no_boundary:
       {
@@ -1888,21 +2037,43 @@ lab21:
       {
         tail_append(new_noad());
         back_input();
-        scan_math(nucleus(tail));
+        scan_math(nucleus(tail), kcode_noad(tail));
       }
       break;
 
     case mmode + letter:
     case mmode + other_char:
     case mmode + char_given:
-      set_math_char(math_code(cur_chr));
+      if (is_char_ascii(cur_chr))
+        if (cur_chr < 128)
+          set_math_char((math_code(cur_chr)));
+        else
+          set_math_char(cur_chr);
+      else
+        set_math_kchar(cur_chr);
+      break;
+
+    case mmode+kanji:
+    case mmode+kana:
+    case mmode+other_kchar:
+      {
+        cx = cur_chr;
+        set_math_kchar((cx));
+      }
       break;
 
     case mmode + char_num:
       {
         scan_char_num();
         cur_chr = cur_val;
-        set_math_char(math_code(cur_chr));
+        
+        if (is_char_ascii(cur_chr))
+          if (cur_chr < 128)
+            set_math_char((math_code(cur_chr)));
+          else
+            set_math_char(cur_chr);
+        else
+          set_math_kchar(cur_chr);
       }
       break;
 
@@ -1928,7 +2099,7 @@ lab21:
       {
         tail_append(new_noad());
         type(tail) = cur_chr;
-        scan_math(nucleus(tail));
+        scan_math(nucleus(tail), kcode_noad(tail));
       }
       break;
 
@@ -1949,8 +2120,9 @@ lab21:
       {
         scan_spec(vcenter_group, false);
         normal_paragraph();
+        inhibit_glue_flag = false;
         push_nest();
-        mode = -1;
+        mode = -vmode;
         prev_depth = ignore_depth;
 
         if (every_vbox != 0)
@@ -1993,9 +2165,15 @@ lab21:
         off_save();
       break;
 
+    case any_mode(assign_kinsoku):
+    case any_mode(assign_inhibit_xsp_code):
+    case any_mode(set_auto_spacing):
+    case any_mode(set_kansuji_char):
     case any_mode(toks_register):
     case any_mode(assign_toks):
     case any_mode(assign_int):
+    case any_mode(def_jfont):
+    case any_mode(def_tfont):
     case any_mode(assign_dimen):
     case any_mode(assign_glue):
     case any_mode(assign_mu_glue):
@@ -2059,11 +2237,236 @@ lab21:
     case any_mode(extension):
       do_extension();
       break;
-  } /* end of big switch */
+
+    case any_mode(inhibit_glue):
+      inhibit_glue_flag = true;
+      break;
+  }
+
   goto lab60; /*  main_loop */
 
+main_loop_j:
+  if (is_char_node(tail))
+  {
+    cx = character(tail);
+    {
+      kp = get_kinsoku_pos(cx, cur_pos);
+      
+      if (kp != no_entry)
+      {
+        if (kinsoku_type(kp) == post_break_penalty_code)
+        {
+          tail_append(new_penalty(kinsoku_penalty(kp)));
+          subtype(tail) = kinsoku_pena;
+        }
+      }
+    }
+  }
+  else if (type(tail) == ligature_node)
+  {
+    cx = character(lig_char(tail));
+    {
+      kp = get_kinsoku_pos(cx, cur_pos);
+      
+      if (kp != no_entry)
+      {
+        if (kinsoku_type(kp) == post_break_penalty_code)
+        {
+          tail_append(new_penalty(kinsoku_penalty(kp)));
+          subtype(tail) = kinsoku_pena;
+        }
+      }
+    }
+  }
+
+  if (direction == dir_tate)
+  {
+    if (font_dir[main_f] == dir_tate)
+      disp = 0;
+    else if (font_dir[main_f] == dir_yoko)
+      disp = t_baseline_shift - y_baseline_shift;
+    else
+      disp = t_baseline_shift;
+    
+    main_f = cur_tfont;
+  }
+  else
+  {
+    if (font_dir[main_f] == dir_yoko)
+      disp = 0;
+    else if (font_dir[main_f] == dir_tate)
+      disp = y_baseline_shift - t_baseline_shift;
+    else
+      disp = y_baseline_shift;
+
+    main_f = cur_jfont;
+  }
+  append_disp_node();
+  ins_kp = false;
+  ligature_present = false;
+  cur_l = get_jfm_pos(cur_chr, main_f);
+  main_i = char_info(main_f, (0));
+  goto main_loop_j_3;
+
+main_loop_j_1:
+  space_factor = 1000;
+
+  if (main_f != null_font)
+  {
+    fast_get_avail(main_p);
+    font(main_p) = main_f;
+    character(main_p) = cur_l;
+    link(tail) = main_p;
+    tail = main_p;
+    last_jchr = tail;
+    fast_get_avail(main_p);
+    info(main_p) = cur_chr;
+    link(tail) = main_p;
+    tail = main_p;
+    cx = cur_chr; //@<Insert kinsoku penalty@>;
+  }
+
+  ins_kp = false;
+
+again_2:
+  get_next();
+  main_i = char_info(main_f, cur_l);
+
+  switch (cur_cmd)
+  {
+    case kanji:
+    case kana:
+    case other_kchar:
+      {
+        cur_l = (get_jfm_pos(cur_chr, main_f));
+        goto main_loop_j_3;
+      }
+      break;
+      
+    case letter:
+    case other_char:
+      {
+        ins_kp = true;
+        cur_l = 0;
+        goto main_loop_j_3;
+      }
+  }
+
+  x_token();
+
+  switch (cur_cmd)
+  {
+    case kanji:
+    case kana:
+    case other_kchar:
+      cur_l = get_jfm_pos(cur_chr, main_f);
+      break;
+
+    case letter:
+    case other_char:
+      {
+        ins_kp = true;
+        cur_l = (0);
+      }
+      break;
+
+    case char_given:
+      {
+        if (is_char_ascii(cur_chr))
+        {
+          ins_kp = true;
+          cur_l = (0);
+        }
+        else
+          cur_l = get_jfm_pos(cur_chr, main_f);
+      }
+      break;
+
+    case char_num:
+      {
+        scan_char_num();
+        cur_chr = cur_val;
+        
+        if (is_char_ascii(cur_chr))
+        {
+          ins_kp = true;
+          cur_l = 0;
+        }
+        else
+          cur_l = get_jfm_pos(cur_chr, main_f);
+      }
+      break;
+
+    case inhibit_glue: 
+      {
+        inhibit_glue_flag = true;
+        goto again_2;
+      }
+      break;
+
+    default:
+      {
+        ins_kp = max_halfword;
+        cur_l = 0;
+        cur_r = non_char;
+        lig_stack = 0;
+      }
+      break;
+  }
+
+main_loop_j_3:
+  if (ins_kp == true);// @<Insert |pre_break_penalty| of |cur_chr|@>;
+
+  if (main_f != null_font)
+  {
+    //@<Look ahead for glue or kerning@>;
+  }
+  else
+    inhibit_glue_flag = false;
+
+  if (ins_kp == false)
+    goto main_loop_j_1;
+  else if (ins_kp == true)
+  {
+    ins_kp = false;
+    goto lab70;
+  }
+  else
+  {
+    goto lab21;
+  }
+
 lab70:
+  inhibit_glue_flag = false;
   adjust_space_factor();
+
+  if (direction == dir_tate)
+    disp = t_baseline_shift;
+  else
+    disp = y_baseline_shift;
+
+  {
+    if (!is_char_node(tail) && (type(tail) == disp_node))
+    {
+      if (prev_disp == disp)
+      {
+        free_node(tail,small_node_size);
+        tail = prev_node;
+        link(tail) = 0;
+      }
+      else
+        disp_dimen(tail) = disp;
+    }
+    else if (disp != 0)
+    {
+      prev_node = tail;
+      tail_append(get_node(small_node_size));
+      type(tail) = disp_node;
+      disp_dimen(tail) = disp;
+      prev_disp = disp;
+    }
+  }
+
   main_f = cur_font;
   bchar = font_bchar[main_f];
   false_bchar = font_false_bchar[main_f];
@@ -2099,7 +2502,11 @@ lab80:
 /*  main_loop_move */
 lab90:
   if (lig_stack == 0)
+  {
+    append_disp_node();
+
     goto lab21;
+  }
 
   cur_q = tail;
   cur_l = character(lig_stack);
@@ -2135,25 +2542,49 @@ lab100:
 
   if (cur_cmd == letter)
     goto lab101;
+  if ((cur_cmd == kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
+    goto_main_lig();
   if (cur_cmd == other_char)
     goto lab101;
   if (cur_cmd == char_given)
-    goto lab101;
+  {
+    if (is_char_ascii(cur_chr))
+      goto lab101;
+    else
+      goto_main_lig();
+  }
 
   x_token();
 
   if (cur_cmd == letter)
     goto lab101;
+  if ((cur_cmd == kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
+    goto_main_lig();
   if (cur_cmd == other_char)
     goto lab101;
   if (cur_cmd == char_given)
-    goto lab101;
+  {
+    if (is_char_ascii(cur_chr))
+      goto lab101;
+    else
+      goto_main_lig();
+  }
 
   if (cur_cmd == char_num)
   {
     scan_char_num();
     cur_chr = cur_val;
-    goto lab101;
+
+    if (is_char_ascii(cur_chr))
+      goto lab101;
+    else
+      goto_main_lig();
+  }
+
+  if (cur_cmd == inhibit_glue)
+  {
+    inhibit_glue_flag = true;
+    goto lab100;
   }
 
   if (cur_cmd == no_boundary)
@@ -2165,6 +2596,7 @@ lab100:
 
 lab101:
   adjust_space_factor();
+  inhibit_glue_flag = false;
   fast_get_avail(lig_stack);
   font(lig_stack) = main_f;
   cur_r = cur_chr;
@@ -2355,9 +2787,18 @@ lab120:
   }
   else
     temp_ptr = new_param_glue(space_skip_code);
-
-  link(tail) = temp_ptr;
-  tail = temp_ptr;
+  
+  if (!is_char_node(tail) && (type(tail) == disp_node))
+  {
+    link(prev_node) = temp_ptr;
+    link(temp_ptr) = tail;
+    prev_node = temp_ptr;
+  }
+  else
+  {
+    link(tail) = temp_ptr;
+    tail = temp_ptr;
+  }
   goto lab60;
 }
 /* give_err_help etc followed here in the old tex8.c */

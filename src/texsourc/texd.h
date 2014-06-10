@@ -1067,6 +1067,10 @@ EXTERN void pdf_font_def(internal_font_number f);
 EXTERN void pdf_error_handler(HPDF_STATUS error_no, HPDF_STATUS detail_no, void * user_data);
 
 /* for ptex's functions */
+pointer first_char; // {first printable character}
+pointer last_char; // {last printable character}
+boolean find_first_char; // {find for a first printable character?}
+boolean inhibit_glue_flag;
 boolean skip_mode;
 integer dvi_dir;
 integer cur_dir_hv;
@@ -1078,6 +1082,9 @@ extern void print_direction(integer d);
 extern eight_bits get_jfm_pos(KANJI_code kcode, internal_font_number f);
 extern pointer get_kinsoku_pos(KANJI_code c, small_number n);
 extern pointer get_inhibit_pos(KANJI_code c, small_number n);
+extern boolean check_box(pointer box_p);
+extern void set_math_kchar(integer c);
+extern void adjust_hlist(pointer p, boolean pf);
 extern void synch_dir(void);
 extern void dir_out(void);
 extern int check_kanji(integer c);

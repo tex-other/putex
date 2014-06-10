@@ -1142,6 +1142,7 @@ lab30:                /* common exit point */
 void prefixed_command (void)
 {
   small_number a;
+  integer m; // {ditto}
   internal_font_number f;
   halfword j;
   font_index k;
@@ -1201,10 +1202,14 @@ void prefixed_command (void)
   switch (cur_cmd)
   {
     case set_font:
-      if ((a >= 4))
-        geq_define(cur_font_loc, data, cur_chr);
-      else
-        eq_define(cur_font_loc, data, cur_chr);
+      {
+        if (font_dir[cur_chr] == dir_yoko)
+          define(cur_jfont_loc, data, cur_chr);
+        else if (font_dir[cur_chr] == dir_tate)
+          define(cur_tfont_loc, data, cur_chr);
+        else
+          define(cur_font_loc, data, cur_chr);
+      }
       break;
 
     case def:
@@ -1465,11 +1470,15 @@ void prefixed_command (void)
         p = cur_chr;
         scan_optional_equals();
         scan_int();
-
-        if ((a >= 4))
-          geq_word_define(p, cur_val);
+        if (p == int_base + cur_fam_code)
+        {
+          if (font_dir[fam_fnt(cur_val)] != dir_default)
+            word_define(int_base + cur_jfam_code,cur_val);
+          else
+            word_define(p, cur_val);
+        }
         else
-          eq_word_define(p, cur_val);
+          word_define(p, cur_val);
       }
       break;
 
@@ -1509,7 +1518,13 @@ void prefixed_command (void)
 
     case def_code:
       {
+        if (cur_chr == kcat_code_base)
+          m = kanji;
+        else
+          m = 0;
         if (cur_chr == cat_code_base)
+          n = invalid_char;
+        else if (cur_chr == kcat_code_base)
           n = max_char_code;
         else if (cur_chr == math_code_base)
           n = 32768L; /* 2^15 */
@@ -1522,11 +1537,16 @@ void prefixed_command (void)
 
         p = cur_chr;
         scan_char_num();
-        p = p + cur_val;
+        if (p == kcat_code_base)
+          p = p + kcatcodekey(cur_val);
+        else if (!is_char_ascii(cur_val))
+          p = p + Hi(cur_val);
+        else
+          p = p + cur_val;
         scan_optional_equals();
         scan_int();
 
-        if (((cur_val < 0) && (p < del_code_base)) || (cur_val > n))
+        if (((cur_val < m) && (p < del_code_base)) || (cur_val > n))
         {
           print_err("Invalid code(");
           print_int(cur_val);
@@ -1537,26 +1557,26 @@ void prefixed_command (void)
             print_string("), should be at most ");
 
           print_int(n);
-          help1("I'm going to use 0 instead of that illegal code value.");
+          if (m == 0)
+          {
+            help1("I'm going to use 0 instead of that illegal code value.");
+            error();
+          }
+          else
+          {
+            help1("I'm going to use 16 instead of that illegal code value.");
+            error();
+          }
           error();
-          cur_val = 0;
+          cur_val = m;
         }
 
         if (p < math_code_base)
-          if ((a >= 4))
-            geq_define(p, data, cur_val);
-          else
-            eq_define(p, data, cur_val);
+          define(p, data, cur_val);
         else if (p < del_code_base)
-          if ((a >= 4))
-            geq_define(p, data, cur_val);
-          else
-            eq_define(p, data, cur_val);
-        else 
-          if ((a >= 4))
-            geq_word_define(p, cur_val);
-          else
-            eq_word_define(p, cur_val);
+          define(p, data, cur_val);
+        else
+          word_define(p, cur_val);
       }
       break;
 
@@ -1604,6 +1624,132 @@ void prefixed_command (void)
           help2("Sorry, \\setbox is not allowed after \\halign in a display,",
               "or between \\accent and an accented character.");
           error();
+        }
+      }
+      break;
+
+    case set_kansuji_char:
+      {
+        p = cur_chr;
+        scan_int();
+        n = cur_val;
+        scan_optional_equals();
+        scan_int();
+        
+        if (!is_char_kanji(cur_val))
+        {
+          print_err("Invalid KANSUJI char (");
+          print_hex(cur_val);
+          print_char(')');
+          help1("I'm skip this control sequences.");
+          error();
+          return;
+        }
+        else if ((n < 0) || (n > 9))
+        {
+          print_err("Invalid KANSUJI number (");
+          print_int(n);
+          print_char(')');
+          help1("I'm skip this control sequences.");
+          error();
+          return;
+        }
+        else
+          define(kansuji_base + n, n, (toDVI(cur_val)));
+      }
+      break;
+
+    case set_auto_spacing:
+      {
+        if (cur_chr < 2)
+          p = auto_spacing_code;
+        else
+        {
+          p = auto_xspacing_code;
+          cur_chr = (cur_chr % 2);
+        }
+        define(p, data, cur_chr);
+      }
+      break;
+
+    case assign_inhibit_xsp_code:
+      {
+        p = cur_chr;
+        scan_int();
+        n = cur_val;
+        scan_optional_equals();
+        scan_int();
+        
+        if (is_char_kanji(n))
+        {
+          j = get_inhibit_pos(n, new_pos);
+          
+          if (j == no_entry)
+          {
+            print_err("Inhibit table is full!!");
+            help1("I'm skip this control sequences.");
+            error();
+            return;
+          }
+          
+          define(inhibit_xsp_code_base + j, cur_val, n);
+        }
+        else
+        {
+          print_err("Invalid KANJI code (");
+          print_hex(n);
+          print_char(')');
+          help1("I'm skip this control sequences.");
+          error();
+          return;
+        }
+      }
+      break;
+      
+    case assign_kinsoku:
+      {
+        p = cur_chr;
+        scan_int();
+        n = cur_val;
+        scan_optional_equals();
+        scan_int();
+        
+        if (is_char_ascii(n) || is_char_kanji(n))
+        {
+          j = get_kinsoku_pos(n, new_pos);
+          
+          if (j == no_entry)
+          {
+            print_err("KINSOKU table is full!!");
+            help1("I'm skip this control sequences.");
+            error();
+            return;
+          }
+          
+          if ((p == pre_break_penalty_code) || (p == post_break_penalty_code))
+          {
+            define(kinsoku_base + j, p, n);
+            word_define(kinsoku_penalty_base + j, cur_val);
+          }
+          else confusion("kinsoku");
+        }
+        else
+        {
+          print_err("Invalid KANJI code for ");
+          
+          if (p == pre_break_penalty_code)
+            print_string("pre");
+          else if (p == post_break_penalty_code)
+            print_string("post");
+          else
+            print_char('?');
+          
+          print("breakpenalty (");
+          print_hex(n);
+          print_char(')');
+          help1("I'm skip this control sequences.");
+          error();
+          return;
         }
       }
       break;
@@ -1711,6 +1857,8 @@ void prefixed_command (void)
       }
       break;
 
+    case def_tfont:
+    case def_jfont:
     case def_font:
       new_font(a);
       break;
@@ -4328,27 +4476,27 @@ void init_prim (void)
   par_token = cs_token_flag + par_loc;
   primitive("input", input, 0);
   primitive("endinput", input, 1);
-  primitive("topmark", top_bot_mark, 0);
-  primitive("firstmark", top_bot_mark, 1);
-  primitive("botmark", top_bot_mark, 2);
-  primitive("splitfirstmark", top_bot_mark, 3);
-  primitive("splitbotmark", top_bot_mark, 4);
-  primitive("count", tex_register, 0);
-  primitive("dimen", tex_register, 1);
-  primitive("skip", tex_register, 2);
-  primitive("muskip", tex_register, 3);
-  primitive("spacefactor", set_aux, 102);
-  primitive("prevdepth", set_aux, 1);
+  primitive("topmark", top_bot_mark, top_mark_code);
+  primitive("firstmark", top_bot_mark, first_mark_code);
+  primitive("botmark", top_bot_mark, bot_mark_code);
+  primitive("splitfirstmark", top_bot_mark, split_first_mark_code);
+  primitive("splitbotmark", top_bot_mark, split_bot_mark_code);
+  primitive("count", tex_register, int_val);
+  primitive("dimen", tex_register, dimen_val);
+  primitive("skip", tex_register, glue_val);
+  primitive("muskip", tex_register, mu_val);
+  primitive("spacefactor", set_aux, hmode);
+  primitive("prevdepth", set_aux, vmode);
   primitive("deadcycles", set_page_int, 0);
   primitive("insertpenalties", set_page_int, 1);
-  primitive("wd", set_box_dimen, 1);
-  primitive("ht", set_box_dimen, 3);
-  primitive("dp", set_box_dimen, 2);
-  primitive("lastpenalty", last_item, 0);
-  primitive("lastkern", last_item, 1);
-  primitive("lastskip", last_item, 2);
-  primitive("inputlineno", last_item, 3);
-  primitive("badness", last_item, 4);
+  primitive("wd", set_box_dimen, width_offset);
+  primitive("ht", set_box_dimen, height_offset);
+  primitive("dp", set_box_dimen, depth_offset);
+  primitive("lastpenalty", last_item, int_val);
+  primitive("lastkern", last_item, dimen_val);
+  primitive("lastskip", last_item, glue_val);
+  primitive("inputlineno", last_item, input_line_no_code);
+  primitive("badness", last_item, badness_code);
   primitive("number", convert, number_code);
   primitive("romannumeral", convert, roman_numeral_code);
   primitive("string", convert, string_code);
@@ -4384,19 +4532,19 @@ void init_prim (void)
   primitive("iftbox", if_test, if_tbox_code);
   primitive("ifybox", if_test, if_ybox_code);
   primitive("ifdbox", if_test, if_dbox_code);
-  primitive("fi", fi_or_else, 2);
+  primitive("fi", fi_or_else, fi_code);
   text(frozen_fi) = make_string_pool("fi");
   eqtb[frozen_fi] = eqtb[cur_val];
-  primitive("or", fi_or_else, 4);
-  primitive("else", fi_or_else, 3);
-  primitive("nullfont", set_font, 0);
+  primitive("or", fi_or_else, or_code);
+  primitive("else", fi_or_else, else_code);
+  primitive("nullfont", set_font, null_font);
   text(frozen_null_font) = 795;
   eqtb[frozen_null_font] = eqtb[cur_val];
-  primitive("span", tab_mark, 256);
-  primitive("cr", car_ret, 257);
+  primitive("span", tab_mark, span_code);
+  primitive("cr", car_ret, cr_code);
   text(frozen_cr) = make_string_pool("cr");
   eqtb[frozen_cr] = eqtb[cur_val];
-  primitive("crcr", car_ret, 258);
+  primitive("crcr", car_ret, cr_cr_code);
   text(frozen_end_template) = make_string_pool("endtemplate");
   text(frozen_endv) = make_string_pool("endtemplate");
   eq_type(frozen_endv) = endv;
@@ -4414,72 +4562,75 @@ void init_prim (void)
   primitive("pagedepth", set_page_dimen, 7);
   primitive("end", end_match, 0);
   primitive("dump", stop, 1);
-  primitive("hskip", hskip, 4);
-  primitive("hfil", hskip, 0);
-  primitive("hfill", hskip, 1);
-  primitive("hss", hskip, 2);
-  primitive("hfilneg", hskip, 3);
-  primitive("vskip", vskip, 4);
-  primitive("vfil", vskip, 0);
-  primitive("vfill", vskip, 1);
-  primitive("vss", vskip, 2);
-  primitive("vfilneg", vskip, 3);
-  primitive("mskip", mskip, 5);
-  primitive("kern", kern, 1);
-  primitive("mkern", mkern, 99);
+  primitive("hskip", hskip, skip_code);
+  primitive("hfil", hskip, fil_code);
+  primitive("hfill", hskip, fill_code);
+  primitive("hss", hskip, ss_code);
+  primitive("hfilneg", hskip, fil_neg_code);
+  primitive("vskip", vskip, skip_code);
+  primitive("vfil", vskip, fil_code);
+  primitive("vfill", vskip, fill_code);
+  primitive("vss", vskip, ss_code);
+  primitive("vfilneg", vskip, fil_neg_code);
+  primitive("mskip", mskip, mskip_code);
+  primitive("kern", kern, explicit);
+  primitive("mkern", mkern, mu_glue);
   primitive("moveleft", hmove, 1);
   primitive("moveright", hmove, 0);
   primitive("raise", vmove, 1);
   primitive("lower", vmove, 0);
-  primitive("box", make_box, 0);
-  primitive("copy", make_box, 1);
-  primitive("lastbox", make_box, 2);
-  primitive("vsplit", make_box, 3);
-  primitive("vtop", make_box, 4);
-  primitive("vbox", make_box, 5);
-  primitive("hbox", make_box, 106);
-  primitive("shipout", leader_ship, 99);
-  primitive("leaders", leader_ship, 100);
-  primitive("cleaders", leader_ship, 101);
-  primitive("xleaders", leader_ship, 102);
+  primitive("box", make_box, box_code);
+  primitive("copy", make_box, copy_code);
+  primitive("lastbox", make_box, last_box_code);
+  primitive("vsplit", make_box, vsplit_code);
+  primitive("vtop", make_box, vtop_code);
+  primitive("vbox", make_box, vtop_code + vmode);
+  primitive("hbox", make_box, vtop_code + hmode);
+  primitive("tate", chg_dir, dir_tate);
+  primitive("yoko", chg_dir, dir_yoko);
+  primitive("dtou", chg_dir, dir_dtou);
+  primitive("shipout", leader_ship, a_leaders - 1);
+  primitive("leaders", leader_ship, a_leaders);
+  primitive("cleaders", leader_ship, c_leaders);
+  primitive("xleaders", leader_ship, x_leaders);
   primitive("indent", start_par, 1);
   primitive("noindent", start_par, 0);
-  primitive("unpenalty", remove_item, 12);
-  primitive("unkern", remove_item, 11);
-  primitive("unskip", remove_item, 10);
-  primitive("unhbox", un_hbox, 0);
-  primitive("unhcopy", un_hbox, 1);
-  primitive("unvbox", un_vbox, 0);
-  primitive("unvcopy", un_vbox, 1);
+  primitive("unpenalty", remove_item, penalty_node);
+  primitive("unkern", remove_item, kern_node);
+  primitive("unskip", remove_item, glue_node);
+  primitive("unhbox", un_hbox, box_code);
+  primitive("unhcopy", un_hbox, copy_code);
+  primitive("unvbox", un_vbox, box_code);
+  primitive("unvcopy", un_vbox, copy_code);
   primitive("-", discretionary, 1);
   primitive("discretionary", discretionary, 0);
   primitive("eqno", eq_no, 0);
   primitive("leqno", eq_no, 1);
-  primitive("mathord", math_comp, 16);
-  primitive("mathop", math_comp, 17);
-  primitive("mathbin", math_comp, 18);
-  primitive("mathrel", math_comp, 19);
-  primitive("mathopen", math_comp, 20);
-  primitive("mathclose", math_comp, 21);
-  primitive("mathpunct", math_comp, 22);
-  primitive("mathinner", math_comp, 23);
-  primitive("underline", math_comp, 26);
-  primitive("overline", math_comp, 27);
-  primitive("displaylimits", limit_switch, 0);
-  primitive("limits", limit_switch, 1);
-  primitive("nolimits", limit_switch, 2);
-  primitive("displaystyle", math_style, 0);
-  primitive("textstyle", math_style, 2);
-  primitive("scriptstyle", math_style, 4);
-  primitive("scriptscriptstyle", math_style, 6);
-  primitive("above", above, 0);
-  primitive("over", above, 1);
-  primitive("atop", above, 2);
-  primitive("abovewithdelims", above, 3);
-  primitive("overwithdelims", above, 4);
-  primitive("atopwithdelims", above, 5);
-  primitive("left", left_right, 30);
-  primitive("right", left_right, 31);
+  primitive("mathord", math_comp, ord_noad);
+  primitive("mathop", math_comp, op_noad);
+  primitive("mathbin", math_comp, bin_noad);
+  primitive("mathrel", math_comp, rel_noad);
+  primitive("mathopen", math_comp, open_noad);
+  primitive("mathclose", math_comp, close_noad);
+  primitive("mathpunct", math_comp, punct_noad);
+  primitive("mathinner", math_comp, inner_noad);
+  primitive("underline", math_comp, under_noad);
+  primitive("overline", math_comp, over_noad);
+  primitive("displaylimits", limit_switch, normal);
+  primitive("limits", limit_switch, limits);
+  primitive("nolimits", limit_switch, no_limits);
+  primitive("displaystyle", math_style, display_style);
+  primitive("textstyle", math_style, text_style);
+  primitive("scriptstyle", math_style, script_style);
+  primitive("scriptscriptstyle", math_style, script_script_style);
+  primitive("above", above, above_code);
+  primitive("over", above, over_code);
+  primitive("atop", above, atop_code);
+  primitive("abovewithdelims", above, delimited_code + above_code);
+  primitive("overwithdelims", above, delimited_code + over_code);
+  primitive("atopwithdelims", above, delimited_code + atop_code);
+  primitive("left", left_right, left_noad);
+  primitive("right", left_right, right_noad);
   text(frozen_right) = make_string_pool("right");
   eqtb[frozen_right] = eqtb[cur_val]; 
   primitive("long", prefix, 1);
@@ -4489,15 +4640,15 @@ void init_prim (void)
   primitive("gdef", def, 1);
   primitive("edef", def, 2);
   primitive("xdef", def, 3);
-  primitive("let", let, 0);
-  primitive("futurelet", let, 1);
-  primitive("chardef", shorthand_def, 0);
-  primitive("mathchardef", shorthand_def, 1);
-  primitive("countdef", shorthand_def, 2);
-  primitive("dimendef", shorthand_def, 3);
-  primitive("skipdef", shorthand_def, 4);
-  primitive("muskipdef", shorthand_def, 5);
-  primitive("toksdef", shorthand_def, 6);
+  primitive("let", let, normal);
+  primitive("futurelet", let, normal + 1);
+  primitive("chardef", shorthand_def, char_def_code);
+  primitive("mathchardef", shorthand_def, math_char_def_code);
+  primitive("countdef", shorthand_def, count_def_code);
+  primitive("dimendef", shorthand_def, dimen_def_code);
+  primitive("skipdef", shorthand_def, skip_def_code);
+  primitive("muskipdef", shorthand_def, mu_skip_def_code);
+  primitive("toksdef", shorthand_def, toks_def_code);
   primitive("catcode", def_code, cat_code_base);
   primitive("kcatcode", def_code, kcat_code_base);
   primitive("xspcode", def_code, auto_xsp_code_base);
@@ -4513,10 +4664,10 @@ void init_prim (void)
   primitive("patterns", hyph_data, 1);
   primitive("hyphenchar", assign_font_int, 0);
   primitive("skewchar", assign_font_int, 1);
-  primitive("batchmode", set_interaction, 0);
-  primitive("nonstopmode", set_interaction, 1);
-  primitive("scrollmode", set_interaction, 2);
-  primitive("errorstopmode", set_interaction, 3);
+  primitive("batchmode", set_interaction, batch_mode);
+  primitive("nonstopmode", set_interaction, nonstop_mode);
+  primitive("scrollmode", set_interaction, scroll_mode);
+  primitive("errorstopmode", set_interaction, error_stop_mode);
   primitive("openin", in_stream, 1);
   primitive("closein", in_stream, 0);
   primitive("message", message, 0);
@@ -4527,14 +4678,23 @@ void init_prim (void)
   primitive("showbox", xray, show_box_code);
   primitive("showthe", xray, show_the_code);
   primitive("showlists", xray, show_lists);
-  //primitive("showmode", xray, show_mode);
-  primitive("openout", extension, 0);
-  primitive("write", extension, 1);
+  primitive("showmode", xray, show_mode);
+  primitive("openout", extension, open_node);
+  primitive("write", extension, write_node);
   write_loc = cur_val;
-  primitive("closeout", extension, 2);
-  primitive("special", extension, 3);
-  primitive("immediate", extension, 4);
-  primitive("setlanguage", extension, 5);
+  primitive("closeout", extension, close_node);
+  primitive("special", extension, special_node);
+  primitive("immediate", extension, immediate_code);
+  primitive("setlanguage", extension, set_language_code);
+  primitive("kansujichar", set_kansuji_char, 0);
+  primitive("autospacing", set_auto_spacing, set_auto_spacing_code);
+  primitive("noautospacing", set_auto_spacing, reset_auto_spacing_code);
+  primitive("autoxspacing", set_auto_spacing, set_auto_xspacing_code);
+  primitive("noautoxspacing", set_auto_spacing, reset_auto_xspacing_code);
+  primitive("inhibitglue", inhibit_glue, 0);
+  primitive("inhibitxspcode", assign_inhibit_xsp_code, inhibit_xsp_code_base);
+  primitive("prebreakpenalty", assign_kinsoku, pre_break_penalty_code);
+  primitive("postbreakpenalty", assign_kinsoku, post_break_penalty_code);
   no_new_control_sequence = true; 
 }
 #endif

@@ -1358,6 +1358,17 @@ enum
 #define delta_node      2
 /* sec 0823 */
 #define do_all_six(a) a(1); a(2); a(3); a(4); a(5); a(6)
+/* sec 0825 */
+#define check_shrinkage(a)          \
+do                                  \
+  {                                 \
+    if ((shrink_order(a) != normal) \
+      && (shrink(a) != 0))          \
+    {                               \
+      a  = finite_shrink(a);        \
+    }                               \
+  }                                 \
+while (0)
 /* sec 0829 */
 #define copy_to_cur_active(a) cur_active_width[a] = active_width[a]
 /* sec 0832 */
@@ -1377,6 +1388,8 @@ enum
 #define downdate_width(a)     cur_active_width[(a)] = cur_active_width[(a)] - mem[prev_r + (a)].cint
 /* sec 0861 */
 #define update_active(a) active_width[(a)] = active_width[(a)] + mem[r + (a)].cint
+/* sec 0866 */
+#define act_width active_width[1]
 /* sec 0877 */
 #define next_break prev_break
 /* sec 0908 */
@@ -1489,16 +1502,8 @@ enum
     space_factor = main_s;      \
 }
 /* sec 1035 */
-/* -> false */
-#define wrapup(a)                                         \
-{                                                         \
-  if (cur_l < non_char)                                   \
-  {                                                       \
-    if (link(cur_q) != 0)                                 \
-      if (character(tail) == hyphen_char[main_f])         \
-        ins_disc = true;                                  \
-                                                          \
-    if (ligature_present)                                 \
+#define pack_lig(a)                                       \
+  do                                                      \
     {                                                     \
       main_p = new_ligature(main_f, cur_l, link(cur_q));  \
                                                           \
@@ -1519,6 +1524,18 @@ enum
       tail = main_p;                                      \
       ligature_present = false;                           \
     }                                                     \
+  while (0)
+/* -> false */
+#define wrapup(a)                                         \
+{                                                         \
+  if (cur_l < non_char)                                   \
+  {                                                       \
+    if (link(cur_q) != 0)                                 \
+      if (character(tail) == hyphen_char[main_f])         \
+        ins_disc = true;                                  \
+                                                          \
+    if (ligature_present)                                 \
+      pack_lig(a);                                        \
                                                           \
     if (ins_disc)                                         \
     {                                                     \
@@ -1556,6 +1573,25 @@ enum
 #define over_code      1
 #define atop_code      2
 #define delimited_code 3
+/* sec 1214 */
+#define define(p, t, e)     \
+do                          \
+  {                         \
+    if ((a >= 4))           \
+      geq_define(p, t, e);  \
+    else                    \
+      eq_define(p, t, e);   \
+  }                         \
+while (0)
+#define word_define(p, w)   \
+do                          \
+  {                         \
+    if ((a >= 4))           \
+      geq_word_define(p, w);\
+    else                    \
+      eq_word_define(p, w); \
+  }                         \
+while (0)
 /* sec 1222 */
 #define char_def_code      0
 #define math_char_def_code 1
@@ -1617,3 +1653,146 @@ enum
 // jfm
 #define yoko_jfm_id 11 // {for `yoko-kumi' fonts}
 #define tate_jfm_id 9  // {for `tate-kumi' fonts}
+// penalty
+#define pre_break_penalty_code  1
+#define post_break_penalty_code 2
+// goto_main_lig_loop()
+#define goto_main_lig()                                               \
+do                                                                    \
+  {                                                                   \
+    bchar = non_char;                                                 \
+    cur_r = bchar;                                                    \
+    lig_stack = 0;                                                    \
+                                                                      \
+    if (ligature_present)                                             \
+      pack_lig(rt_hit);                                               \
+                                                                      \
+    if (ins_kp == true)                                               \
+    {                                                                 \
+      cx = cur_l;                                                     \
+      {                                                               \
+        kp = get_kinsoku_pos(cx, cur_pos);                            \
+                                                                      \
+        if (kp != no_entry)                                           \
+        {                                                             \
+          if (kinsoku_type(kp) == pre_break_penalty_code)             \
+          {                                                           \
+            if (!is_char_node(cur_q) && (type(cur_q) == penalty_node))\
+              penalty(cur_q) = penalty(cur_q) + kinsoku_penalty(kp);  \
+            else                                                      \
+            {                                                         \
+              main_p = link(cur_q);                                   \
+              link(cur_q) = new_penalty(kinsoku_penalty(kp));         \
+              subtype(link(cur_q)) = kinsoku_pena;                    \
+              link(link(cur_q)) = main_p;                             \
+            }                                                         \
+          }                                                           \
+          else if (kinsoku_type(kp) == post_break_penalty_code)       \
+          {                                                           \
+            tail_append(new_penalty(kinsoku_penalty(kp)));            \
+            subtype(tail) = kinsoku_pena;                             \
+          }                                                           \
+        }                                                             \
+      }                                                               \
+    }                                                                 \
+                                                                      \
+    ins_kp = false;                                                   \
+    goto main_loop_j;                                                 \
+  }                                                                   \
+while (0)
+//
+#define check_effective_tail_pTeX(a)\
+do                                  \
+  {                                 \
+    tx = tail;                      \
+    if (!is_char_node(tx))          \
+      if (type(tx) == disp_node)    \
+      {                             \
+        tx = prev_node;             \
+        if (!is_char_node(tx))      \
+          if (type(tx) == disp_node)\
+            a;                      \
+      }                             \
+  }                                 \
+while (0)
+//
+#define fetch_effective_tail_pTeX(a)                \
+do                                                  \
+  {                                                 \
+    q = head;                                       \
+    p = 0;                                          \
+    disp = 0;                                       \
+    pdisp = 0;                                      \
+    do                                              \
+      {                                             \
+        r = p;                                      \
+        p=q;                                        \
+        fd = false;                                 \
+        if (!is_char_node(q))                       \
+          if (type(q) == disc_node)                 \
+          {                                         \
+            for (m = 1; m <= replace_count(q); m++) \
+              p = link(p);                          \
+            if (p == tx)                            \
+              a;                                    \
+          }                                         \
+          else if (type(q) == disp_node)            \
+          {                                         \
+            pdisp = disp;                           \
+            disp = disp_dimen(q);                   \
+            fd = true;                              \
+          }                                         \
+        q = link(p);                                \
+      }                                             \
+    while (!(q == tx));                             \
+    q = link(tx);                                   \
+    link(p) = q;                                    \
+    link(tx) = 0;                                   \
+    if (q == 0)                                     \
+      tail = p;                                     \
+    else if (fd)                                    \
+    {                                               \
+      prev_node = r;                                \
+      prev_disp = pdisp;                            \
+      link(p) = 0;                                  \
+      tail = p;                                     \
+      disp_dimen(p) = disp_dimen(q);                \
+      free_node(q, small_node_size);                \
+    }                                               \
+    else                                            \
+      prev_node = p;                                \
+  }                                                 \
+while (0)
+#define check_effective_tail check_effective_tail_pTeX
+#define fetch_effective_tail fetch_effective_tail_pTeX
+// 
+#define append_disp_node()                      \
+do                                              \
+  {                                             \
+    if (disp != 0)                              \
+    {                                           \
+      if (!is_char_node(tail) &&                \
+        (type(tail) == disp_node))              \
+      {                                         \
+        disp_dimen(tail) = 0;                   \
+      }                                         \
+      else                                      \
+      {                                         \
+        prev_node = tail;                       \
+        tail_append(get_node(small_node_size)); \
+        type(tail) = disp_node;                 \
+        disp_dimen(tail) = 0;                   \
+        prev_disp = disp;                       \
+      }                                         \
+    }                                           \
+  }                                             \
+while (0)
+//
+#define reset_auto_spacing_code  0
+#define set_auto_spacing_code    1
+#define reset_auto_xspacing_code 2
+#define set_auto_xspacing_code   3
+//
+#define no_skip     0
+#define after_schar 1 // {denote after single byte character}
+#define after_wchar 2 // {denote after double bytes character}

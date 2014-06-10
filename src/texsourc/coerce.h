@@ -462,8 +462,8 @@ void push_math_(group_code);
 #define push_math(c) push_math_((group_code) (c))
 void init_math(void);
 void start_eq_no(void);
-void scan_math_(pointer);
-#define scan_math(p) scan_math_((pointer) (p))
+void scan_math_(pointer, pointer);
+#define scan_math(p, q) scan_math_((pointer) (p), (pointer) (q))
 void set_math_char_(integer);
 #define set_math_char(c) set_math_char_((integer) (c))
 void math_limit_switch(void);

@@ -1389,6 +1389,43 @@ void print_cmd_chr_ (quarterword cmd, halfword chr_code)
         print_esc("muskip");
       break;
 
+    case set_kansuji_char:
+      print_esc("kansujichar");
+      break;
+
+    case set_auto_spacing:
+      {
+        if ((chr_code % 2) == 0)
+          print_esc("noauto");
+        else
+          print_esc("auto");
+        if (chr_code < 2)
+          print_string("spacing");
+        else
+          print_string("xspacing");
+      }
+      break;
+
+    case inhibit_glue:
+      print_esc("inhibitglue");
+      break;
+
+    case assign_inhibit_xsp_code:
+      print_esc("inhibitxspcode");
+      break;
+      
+    case assign_kinsoku:
+      switch (chr_code)
+      {
+        case pre_break_penalty_code:
+          print_esc("prebreakpenalty");
+          break;
+        case post_break_penalty_code:
+          print_esc("postbreakpenalty");
+          break;
+      }
+      break;
+
     case set_aux:
       if (chr_code == vmode)
         print_esc("prevdepth");
