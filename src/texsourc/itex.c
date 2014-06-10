@@ -304,7 +304,7 @@ void initialize_aux (void)
   page_tail = page_head;
   link(page_head) = 0;
 }
-#endif  // end of ifdef ALLOCATEMAIN
+#endif
 /* sec 0815 */
 void line_break_ (integer final_widow_penalty)
 {
@@ -316,10 +316,10 @@ void line_break_ (integer final_widow_penalty)
   ASCII_code cc;
   boolean first_use;
 /*  small_number j;  */
-  int j;                /* 95/Jan/7 */
+  int j;
 /*  unsigned char c;  */
-  unsigned int c;           /* 95/Jan/7 */
-/*  savedbadness = 0; */    /* 96/Feb/9 */
+  unsigned int c;
+/*  savedbadness = 0; */
 
   pack_begin_line = mode_line;
   first_use = true; chain = false;
@@ -345,7 +345,7 @@ void line_break_ (integer final_widow_penalty)
 
   link(tail) = new_param_glue(par_fill_skip_code);
   init_cur_lang = prev_graf % 65536L;
-  init_l_hyf = prev_graf / 4194304L; /* 2^22 */
+  init_l_hyf = prev_graf / 4194304L;
   init_r_hyf = (prev_graf / 65536L) % 64;
   pop_nest();
   no_shrink_error_yet = true;
@@ -1139,7 +1139,7 @@ lab30:                /* common exit point */
   pack_begin_line = 0;
 }
 /* sec 1211 */
-void prefixed_command (void)
+void prefixed_command(void)
 {
   small_number a;
   integer m; // {ditto}

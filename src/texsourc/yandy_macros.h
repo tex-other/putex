@@ -1766,7 +1766,32 @@ while (0)
 #define check_effective_tail check_effective_tail_pTeX
 #define fetch_effective_tail fetch_effective_tail_pTeX
 // 
-#define append_disp_node()                      \
+#define append_disp_node_at_begin()             \
+do                                              \
+  {                                             \
+    if (!is_char_node(tail) &&                  \
+      (type(tail) == disp_node))                \
+    {                                           \
+      if (prev_disp == disp)                    \
+      {                                         \
+        free_node(tail, small_node_size);       \
+        tail = prev_node;                       \
+        link(tail) = 0;                         \
+      }                                         \
+      else                                      \
+        disp_dimen(tail) = disp;                \
+    }                                           \
+    else if (disp != 0)                         \
+    {                                           \
+      prev_node = tail;                         \
+      tail_append(get_node(small_node_size));   \
+      type(tail) = disp_node;                   \
+      disp_dimen(tail) = disp;                  \
+      prev_disp = disp;                         \
+    }                                           \
+  }                                             \
+while (0)
+#define append_disp_node_at_end()               \
 do                                              \
   {                                             \
     if (disp != 0)                              \

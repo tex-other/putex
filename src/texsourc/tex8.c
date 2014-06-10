@@ -254,7 +254,7 @@ void after_math (void)
       disp = t_baseline_shift;
     else
       disp = y_baseline_shift;
-    append_disp_node();
+    append_disp_node_at_begin();
     tail_append(new_math(math_surround, before));
     cur_mlist = p;
     cur_style = text_style;
@@ -266,7 +266,7 @@ void after_math (void)
       tail = link(tail);
 
     tail_append(new_math(math_surround, after));
-    append_disp_node();
+    append_disp_node_at_end();
     space_factor = 1000;
     unsave();
   }
@@ -2301,7 +2301,7 @@ main_loop_j:
 
     main_f = cur_jfont;
   }
-  append_disp_node();
+  append_disp_node_at_end();
   ins_kp = false;
   ligature_present = false;
   cur_l = get_jfm_pos(cur_chr, main_f);
@@ -2415,11 +2415,89 @@ again_2:
   }
 
 main_loop_j_3:
-  if (ins_kp == true);// @<Insert |pre_break_penalty| of |cur_chr|@>;
+  if (ins_kp == true)
+  {
+    kp = get_kinsoku_pos(cur_chr, cur_pos);
+    
+    if (kp != no_entry)
+    {
+      if (kinsoku_type(kp) == pre_break_penalty_code)
+        if (!is_char_node(tail) && (type(tail) == penalty_node))
+          penalty(tail) = penalty(tail) + kinsoku_penalty(kp);
+        else
+        {
+          tail_append(new_penalty(kinsoku_penalty(kp)));
+          subtype(tail) = kinsoku_pena;
+        }
+    }
+  }
 
   if (main_f != null_font)
   {
-    //@<Look ahead for glue or kerning@>;
+    cur_q = tail;
+    
+    if (inhibit_glue_flag != true)
+    {
+      if (char_tag(main_i) == gk_tag)
+      {
+        main_k = lig_kern_start(main_f, main_i);
+
+        do {
+          main_j = font_info[main_k].qqqq;
+          
+          if (next_char(main_j) == cur_l)
+          {
+            if (op_byte(main_j) < kern_flag)
+            {
+              gp = font_glue[main_f];
+              cur_r = rem_byte(main_j);
+              
+              if (gp != 0)
+              {
+                while (((type(gp) != cur_r) && (link(gp) != 0)))
+                  gp = link(gp);
+                
+                gq = glue_ptr(gp);
+              }
+              else
+              {
+                gp = get_node(small_node_size);
+                font_glue[main_f] = gp;
+                gq = 0;
+              }
+              
+              if (gq == 0)
+              {
+                type(gp) = cur_r;
+                gq = new_spec(zero_glue);
+                glue_ptr(gp) = gq;
+                main_k = exten_base[main_f] + (((cur_r)) * 3);
+                width(gq) = font_info[main_k].cint;
+                stretch(gq) = font_info[main_k+1].cint;
+                shrink(gq) = font_info[main_k+2].cint;
+                add_glue_ref(gq);
+                link(gp) = get_node(small_node_size);
+                gp = link(gp);
+                glue_ptr(gp) = 0;
+                link(gp) = 0;
+              }
+              tail_append(new_glue(gq));
+              subtype(tail) = jfm_skip + 1;
+              goto skip_loop;
+            }
+            else
+            {
+              tail_append(new_kern(char_kern(main_f, main_j)));
+              goto skip_loop;
+            }
+          }
+          incr(main_k);
+        }
+      while (!(skip_byte(main_j) >= stop_flag));
+      }
+    }
+skip_loop:
+    inhibit_glue_flag = false;
   }
   else
     inhibit_glue_flag = false;
@@ -2445,27 +2523,7 @@ lab70:
   else
     disp = y_baseline_shift;
 
-  {
-    if (!is_char_node(tail) && (type(tail) == disp_node))
-    {
-      if (prev_disp == disp)
-      {
-        free_node(tail,small_node_size);
-        tail = prev_node;
-        link(tail) = 0;
-      }
-      else
-        disp_dimen(tail) = disp;
-    }
-    else if (disp != 0)
-    {
-      prev_node = tail;
-      tail_append(get_node(small_node_size));
-      type(tail) = disp_node;
-      disp_dimen(tail) = disp;
-      prev_disp = disp;
-    }
-  }
+  append_disp_node_at_begin();
 
   main_f = cur_font;
   bchar = font_bchar[main_f];
@@ -2503,7 +2561,7 @@ lab80:
 lab90:
   if (lig_stack == 0)
   {
-    append_disp_node();
+    append_disp_node_at_end();
 
     goto lab21;
   }

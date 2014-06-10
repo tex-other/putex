@@ -1567,7 +1567,7 @@ void make_accent (void)
         disp = y_baseline_shift;
     }
     
-    append_disp_node();
+    append_disp_node_at_begin();
     
     if (cx != empty)
     {
@@ -1622,7 +1622,7 @@ void make_accent (void)
       tail = link(p);
     else
       tail = p;
-    append_disp_node();
+    append_disp_node_at_end();
     space_factor = 1000;
   }
 }
