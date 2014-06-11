@@ -2011,7 +2011,7 @@ void scan_something_internal_(small_number level, boolean negative)
         else
           cur_val = 0;
 
-        // find_effective_tail
+        find_effective_tail();
         tx = tail;
 
         if (!is_char_node(tx))
@@ -2133,7 +2133,7 @@ void get_next (void)
 {
   integer k;
   halfword t;
-/*  char cat; */    /* make this an int ? */
+/*  char cat; */
   int cat;      /* make this an int ? 95/Jan/7 */
   int l; // for pTeX
   ASCII_code c, cc;
@@ -2158,7 +2158,7 @@ lab25:
       }
       else
 lab21:
-      cur_cmd = cat_code(cur_chr);
+        cur_cmd = cat_code(cur_chr);
 
       switch (state + cur_cmd)
       {
@@ -2169,18 +2169,18 @@ lab21:
           break;
 
         case any_state_plus(escape):
-          {
+          {printf("\nescape. ");
             if (loc > limit)
               cur_cs = null_cs;
             else
             {
-              k = loc;
+              k = loc;printf("%d. ", buffer[k]);
               cur_chr = buffer[k];
               incr(k);
 
               if (multistrlen(buffer, limit + 1, k - 1) == 2)
               {
-                cat = kcat_code(kcatcodekey(fromBUFF(buffer, limit + 1, k-1)));
+                cat = kcat_code(kcatcodekey(fromBUFF(buffer, limit + 1, k - 1)));
                 incr(k);
               }
               else
@@ -2274,54 +2274,43 @@ lab26:
               }
               else
               {
-                if (buffer[k] == cur_chr)
-                  if (cat == sup_mark)
-                    if (k < limit)
+                if (buffer[k] == cur_chr) if (cat == sup_mark) if (k < limit)
+                {
+                  c = buffer[k + 1];
+                  
+                  if (c < 128)
+                  {
+                    d = 2;
+                    
+                    if (is_hex(c)) if (k + 2 <= limit)
                     {
-                      c = buffer[k + 1];
+                      cc = buffer[k + 2];
 
-                      if (c < 128)             /* ? */
-                      {
-                        d = 2;
-                        if ((((c >= 48) && (c <= 57)) || ((c >= 97) && (c <= 102))))
-                          if (k + 2 <= limit)
-                          {
-                            cc = buffer[k + 2];
-
-                            if ((((cc >= 48) && (cc <= 57)) || ((cc >= 97) && (cc <= 102))))
-                              incr(d);
-                          }
-
-                        if (d > 2)
-                        {
-                          if (c <= 57)
-                            cur_chr = c - 48;
-                          else
-                            cur_chr = c - 87;
-
-                          if (cc <= 57)          /* cc may be used without ... */
-                            cur_chr = 16 * cur_chr + cc - 48;
-                          else
-                            cur_chr = 16 * cur_chr + cc - 87;
-
-                          buffer[k - 1] = cur_chr;
-                        }
-                        else if (c < 64)
-                          buffer[k - 1] = c + 64;
-                        else
-                          buffer[k - 1] = c - 64;
-
-                        limit = limit - d;
-                        first = first - d;
-
-                        while (k <= limit)
-                        {
-                          buffer[k] = buffer[k + d];
-                          incr(k);
-                        }
-                        goto lab26;
-                      }
+                      if (is_hex(cc))
+                        incr(d);
                     }
+                    
+                    if (d > 2)
+                    {
+                      hex_to_cur_chr();
+                      buffer[k - 1] = cur_chr;
+                    }
+                    else if (c < 64)
+                      buffer[k - 1] = c + 64;
+                    else
+                      buffer[k - 1] = c - 64;
+                    
+                    limit = limit - d;
+                    first = first - d;
+                    
+                    while (k <= limit)
+                    {
+                      buffer[k] = buffer[k + d];
+                      incr(k);
+                    }
+                    goto lab26;
+                  }
+                }
               }
               cur_cs = single_base + buffer[loc];
               incr(loc);

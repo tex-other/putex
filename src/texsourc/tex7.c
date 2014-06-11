@@ -1267,7 +1267,7 @@ void unpackage (void)
       {
         case glue_node:
           if ((subtype(tail) == kanji_skip_code + 1) ||
-            (subtype(tail)=xkanji_skip_code+1))
+            (subtype(tail) == xkanji_skip_code+1))
           {
             link(p) = link(tail);
             delete_glue_ref(glue_ptr(tail));
@@ -1508,7 +1508,7 @@ void make_accent (void)
     
     if ((cur_cmd == letter) || (cur_cmd == other_char))
       q = new_character(f, cur_chr);
-    else if ((cur_cmd=kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
+    else if ((cur_cmd == kanji) || (cur_cmd == kana) || (cur_cmd == other_kchar))
     {
       if (direction == dir_tate)
         f = cur_tfont;

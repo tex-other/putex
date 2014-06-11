@@ -1537,6 +1537,7 @@ void prefixed_command(void)
 
         p = cur_chr;
         scan_char_num();
+
         if (p == kcat_code_base)
           p = p + kcatcodekey(cur_val);
         else if (!is_char_ascii(cur_val))

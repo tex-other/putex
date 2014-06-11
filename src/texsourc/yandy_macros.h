@@ -1701,6 +1701,24 @@ do                                                                    \
   }                                                                   \
 while (0)
 //
+#define find_effective_tail()                   \
+do {                                            \
+tx = tail;                                      \
+if (is_char_node(tx))                           \
+  if (type(tx) == disp_node)                    \
+    { tx = prev_node;                           \
+    if (!is_char_node(tx))                      \
+      if (type(tx) == disp_node)                \
+        {tx = head; q = link(head);             \
+        while (q!=prev_node)                    \
+          { if (is_char_node(q)) tx = q;        \
+          else if (type(q) != disp_node) tx = q;\
+          }                                     \
+        q = link(q);                            \
+        }                                       \
+    }                                           \
+} while (0)
+//
 #define check_effective_tail_pTeX(a)\
 do                                  \
   {                                 \

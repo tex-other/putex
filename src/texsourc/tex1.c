@@ -2128,9 +2128,9 @@ void print_cmd_chr_ (quarterword cmd, halfword chr_code)
           print_esc("showlists");
           break;
 
-        //case show_mode:
-        //  print_esc("showmode");
-        //  break;
+        case show_mode:
+          print_esc("showmode");
+          break;
 
         default:
           print_esc("show");
