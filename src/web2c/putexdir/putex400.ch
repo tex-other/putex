@@ -4,7 +4,7 @@
 %%%  Modified and patched version for TeX Live
 %%%
 %%%  Copyright (C) 1997-2004 Chey-Woei Tsay <cwtsay@pu.edu.tw>
-%%%  Copyright (C) 2013      Clerk Ma      <clerkma@gmail.com>
+%%%  Copyright (C) 2013-2014 Clerk Ma      <clerkma@gmail.com>
 %%%
 %%%  This is the change file of PUTeX.
 %%%
@@ -25,8 +25,8 @@
 %%%
 %%%
 %%%  Version 4.0
-%%%		add \PUXcatcode command to set catcodes of dbcs characters.
-%%%		remove print_dbchar (58, 59, 70, 318, print_chinese_int)
+%%%     add \PUXcatcode command to set catcodes of dbcs characters.
+%%%     remove print_dbchar (58, 59, 70, 318, print_chinese_int)
 %%% 
 %%%  Version 4.0-web2c
 %%%     removed the MikTeX part.
@@ -43,9 +43,9 @@
 %%%  see section 224 for cspace skip and cespace skip
 %%%
 %%%  New Indices:
-%%%		@^Input Encoding Dependencies@>
-%%%		@^Modified for handling DBCS characters@>
-%%%		@^CJK Fonts Extension@>
+%%%     @^Input Encoding Dependencies@>
+%%%     @^Modified for handling DBCS characters@>
+%%%     @^CJK Fonts Extension@>
 
 @x
 \def\gglob{20, 26} % this should be the next two sections of "<Global...>"
