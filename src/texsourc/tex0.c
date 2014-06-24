@@ -151,54 +151,54 @@ void print_ (integer s)
           return;
         }
 
-        if ((s == new_line_char))
+        if (s == new_line_char)
           if (selector < pseudo)
           {
             print_ln();
             return;
           }
           
-          nl = new_line_char;
-          new_line_char = -1;
+        nl = new_line_char;
+        new_line_char = -1;
           
-          /* translate ansi to dos 850 */
-          if (!show_in_hex && s < 256 && s >= 32)
+        /* translate ansi to dos 850 */
+        if (!show_in_hex && s < 256 && s >= 32)
+        {
+          if (show_in_dos && s > 127)
           {
-            if (show_in_dos && s > 127)
+            if (wintodos[s - 128] > 0)
             {
-              if (wintodos[s - 128] > 0)
-              {
-                print_char(wintodos[s - 128]);
-              }
-              else
-              {
-                j = str_start[s];
-
-                while (j < str_start[s + 1])
-                {
-                  print_char(str_pool[j]);
-                  incr(j);
-                }
-              }
+              print_char(wintodos[s - 128]);
             }
             else
             {
-              print_char(s);       /* don't translate to hex */
+              j = str_start[s];
+
+              while (j < str_start[s + 1])
+              {
+                print_char(str_pool[j]);
+                incr(j);
+              }
             }
           }
           else
-          {                       /* not just a character */
-            j = str_start[s];
-
-            while (j < str_start[s + 1])
-            {
-              print_char(str_pool[j]);
-              incr(j);
-            }
+          {
+            print_char(s);       /* don't translate to hex */
           }
+        }
+        else
+        {                       /* not just a character */
+          j = str_start[s];
 
-          new_line_char = nl; /* restore eol */
-          return;
+          while (j < str_start[s + 1])
+          {
+            print_char(str_pool[j]);
+            incr(j);
+          }
+        }
+
+        new_line_char = nl; /* restore eol */
+        return;
       }
     }
   }
@@ -1422,7 +1422,7 @@ restart:
     {
       q = p + node_size(p);
 
-      while ((mem[q].hh.rh == empty_flag))
+      while (is_empty(q))
       {
         t = rlink(q);
 
@@ -1513,7 +1513,7 @@ restart:
   {
     if (trace_flag)
     {
-      sprintf(log_line, "mem_min %d, mem_start %d, block_size %d\n", mem_min, mem_start, block_size);
+      sprintf(log_line, "mem_min %lld, mem_start %ld, block_size %d\n", mem_min, mem_start, block_size);
       show_line(log_line, 0);
     }
 
@@ -1985,7 +1985,7 @@ void print_mark_ (integer p)
 /* sec 0176 */
 void print_rule_dimen(scaled d)
 {
-  if ((d == -1073741824L)) /* - 2^30 */
+  if (is_running(d))
     print_char('*');
   else
     print_scaled(d);

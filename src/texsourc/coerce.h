@@ -228,7 +228,7 @@ void find_font_dimen_(boolean);
 void scan_something_internal_(small_number, boolean);
 #define scan_something_internal(level, negative) scan_something_internal_((small_number) (level), (boolean) (negative))
 void scan_int(void);
-void scan_dimen_(bool, bool, bool);
+void scan_dimen_(boolean, boolean, boolean);
 #define scan_dimen(mu, inf, shortcut) scan_dimen_((boolean) (mu), (boolean) (inf), (boolean) (shortcut))
 void scan_glue_(small_number);
 #define scan_glue(level) scan_glue_((small_number) (level))
@@ -238,7 +238,7 @@ halfword str_toks_(pool_pointer);
 halfword the_toks(void);
 void ins_the_toks(void);
 void conv_toks(void);
-halfword scan_toks_(bool, bool);
+halfword scan_toks_(boolean, boolean);
 #define scan_toks(macrodef, xpand) scan_toks_((boolean) (macrodef), (boolean) (xpand))
 void read_toks_(integer, halfword);
 #define read_toks(n, r) read_toks_((integer) (n), (halfword) (r))

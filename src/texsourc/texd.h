@@ -847,6 +847,7 @@ char *unixify (char *);
 #include "coerce.h"
 
 /* sec 79 */
+extern inline void do_nothing(void);
 extern inline void update_terminal(void);
 extern inline void check_full_save_stack(void);
 extern inline void push_input(void);
