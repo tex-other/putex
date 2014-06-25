@@ -40,8 +40,8 @@ void print_file_name_(integer, integer, integer);
 #define print_file_name(n, a, e) print_file_name_((integer) (n), (integer) (a), (integer) (e))
 void print_size_(integer);
 #define print_size(s) print_size_((integer) (s))
-void print_write_whatsit_(str_number, pointer);
-#define print_write_whatsit(s, p) print_write_whatsit_((str_number) (s), (pointer) (p))
+void print_write_whatsit_(const char *, pointer);
+#define print_write_whatsit(s, p) print_write_whatsit_((const char *) (s), (pointer) (p))
 void jump_out(void);
 void error(void);
 void fatal_error(char *);

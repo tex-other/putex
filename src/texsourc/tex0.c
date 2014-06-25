@@ -43,6 +43,7 @@ void print_ln (void)
     case no_print:
     case pseudo:
     case new_string:
+      do_nothing();
       break;
 
     default:
@@ -101,6 +102,7 @@ void print_char_ (ASCII_code s)
       break;
 
     case no_print:
+      do_nothing();
       break;
 
     case pseudo:
@@ -383,10 +385,9 @@ void print_size_ (integer s)
     print_esc("scriptscriptfont");
 } 
 /* sec 1355 */
-void print_write_whatsit_(str_number s, pointer p)
+void print_write_whatsit_(const char * s, pointer p)
 {
-  print_esc("");
-  print(s);
+  print_esc(s);
 
   if (write_stream(p) < 16)
     print_int(write_stream(p)); 
@@ -2310,14 +2311,7 @@ void show_node_list_(integer p)
             }
           }
 
-          {
-            {
-              str_pool[pool_ptr] = 46;
-              incr(pool_ptr);
-            }
-            show_node_list(mem[p + 5].hh.rh);
-            decr(pool_ptr);
-          }
+          node_list_display(list_ptr(p));
         }
         break;
 
@@ -2344,22 +2338,16 @@ void show_node_list_(integer p)
           print_scaled(depth(p));
           prints("); float cost ");
           print_int(float_cost(p));
-          {
-            {
-              str_pool[pool_ptr] = 46;
-              incr(pool_ptr);
-            }
-            show_node_list(mem[p + 4].hh.lh);
-            decr(pool_ptr);
-          }
+          node_list_display(ins_ptr(p));
         }
         break;
-      case 8:
+
+      case whatsit_node:
         switch (subtype(p))
         {
           case open_node:
             {
-              print_write_whatsit(1279, p);   /* debug # (-1 to exit): */
+              print_write_whatsit("openout", p);
               print_char('=');
               print_file_name(open_name(p), open_area(p), open_ext(p));
             }
@@ -2367,13 +2355,13 @@ void show_node_list_(integer p)
 
           case write_node:
             {
-              print_write_whatsit(591, p);  /* write */
+              print_write_whatsit("write", p);
               print_mark(write_tokens(p));
             }
             break;
 
           case close_node:
-            print_write_whatsit(1280, p); /* closeout */
+            print_write_whatsit("closeout", p);
             break;
 
           case special_node:
@@ -2412,16 +2400,8 @@ void show_node_list_(integer p)
             print_char('x');
 
           prints("leaders ");
-
           print_spec(glue_ptr(p), "");
-          {
-            {
-              str_pool[pool_ptr] = 46;
-              incr(pool_ptr);
-            }
-            show_node_list(mem[p + 1].hh.rh);
-            decr(pool_ptr);
-          }
+          node_list_display(leader_ptr(p));
         }
         else
         {
@@ -2525,19 +2505,9 @@ void show_node_list_(integer p)
             print_int(replace_count(p));
           }
 
-          {
-            {
-              str_pool[pool_ptr] = 46;
-              incr(pool_ptr);
-            }
-            show_node_list(mem[p + 1].hh.lh);
-            decr(pool_ptr);
-          }
-          {
-            str_pool[pool_ptr]= 124;
-            incr(pool_ptr);
-          }
-          show_node_list(mem[p + 1].hh.rh);
+          node_list_display(pre_break(p));
+          append_char('|');
+          show_node_list(post_break(p));
           decr(pool_ptr);
         }
         break;
@@ -2552,14 +2522,7 @@ void show_node_list_(integer p)
       case adjust_node:
         {
           print_esc("vadjust");
-          {
-            {
-              str_pool[pool_ptr] = 46;
-              incr(pool_ptr);
-            }
-            show_node_list(mem[p + 1].cint);
-            decr(pool_ptr);
-          }
+          node_list_display(adjust_ptr(p));
         }
         break;
 

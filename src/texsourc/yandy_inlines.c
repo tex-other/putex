@@ -163,6 +163,13 @@ inline void succumb (void)
   history = error_stop_mode;
   jump_out();
 }
+/* sec 0180 */
+inline void node_list_display(integer p)
+{
+  append_char('.');
+  show_node_list(p);
+  decr(pool_ptr);
+}
 /* sec 0214 */
 inline void tail_append_ (pointer val)
 {
