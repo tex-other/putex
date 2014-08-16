@@ -55,7 +55,6 @@
   #include <kpathsea/concatn.h>
 #endif
 #include "zlib.h"
-#include "md5.h"
 
 typedef long long integer;
 typedef double    glue_ratio;

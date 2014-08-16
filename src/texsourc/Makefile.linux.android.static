@@ -9,13 +9,13 @@
 #
 
 CC = arm-linux-androideabi-gcc
-CFLAGS = -c -O2 -Wno-unused-result -Ilibmd5 -I/home/clerk/android/include
+CFLAGS = -c -O2 -Wno-unused-result -I/home/clerk/android/include
 LDFLAGS = /home/clerk/android/lib/libkpathsea.a -lz
 
 objects = yandytex.o itex.o openinou.o subroute.o local.o \
 	tex0.o tex1.o tex2.o tex3.o tex4.o \
 	tex5.o tex6.o tex7.o tex8.o tex9.o \
-	pool.o md5.o utils.o
+	pool.o utils.o
 
 headers = yandytex.h texd.h coerce.h macros.h memory.h
 
@@ -69,9 +69,6 @@ tex9.o: tex9.c $(headers)
 
 pool.o: pool.c $(headers)
 	$(CC) $(CFLAGS) pool.c
-
-md5.o: libmd5/md5.c $(headers)
-	$(CC) $(CFLAGS) libmd5/md5.c
 
 utils.o: utils.c $(headers)
 	$(CC) $(CFLAGS) utils.c

@@ -10,25 +10,22 @@ LINK = link
 RC = rc
 
 CFLAGS=/nologo /c /MT /GF /Gy /W4 \
-	/I"kpathsea" /I"zlib" /I"libmd5"
+	/I"kpathsea" /I"zlib"
 
 LFLAGS=/NOLOGO /MAP
 
 objs = yandytex.obj itex.obj openinou.obj subroute.obj local.obj \
 	tex0.obj tex1.obj tex2.obj tex3.obj tex4.obj \
 	tex5.obj tex6.obj tex7.obj tex8.obj tex9.obj \
-	pool.obj yandytex.res md5.obj utils.obj
+	pool.obj yandytex.res utils.obj
 
 yandytex.exe: $(objs)
 	$(LINK) $(LFLAGS) yandytex itex openinou subroute local \
 	tex0 tex1 tex2 tex3 tex4 tex5 tex6 tex7 tex8 tex9 \
-	pool yandytex.res md5 utils \
+	pool yandytex.res utils \
 	kpathsea\kpathsea.lib zlib\zlib.lib
 	del ..\yandy\bin\yandytex.exe
 	copy yandytex.exe ..\yandy\bin\yandytex.exe
-
-md5.obj: libmd5\md5.c
-	$(CC) -Ilibmd5 $(CFLAGS) libmd5\md5.c
 
 yandytex.res: yandytex.rc
 	$(RC) /nologo yandytex.rc

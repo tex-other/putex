@@ -8,13 +8,13 @@
 #
 
 CC = gcc
-CFLAGS = -g -c -O2 -Wno-unused-result -Ilibmd5
+CFLAGS = -g -c -O2 -Wno-unused-result
 LDFLAGS = /home/clerk/dev/android/lib/libkpathsea.a libdpx.a libpng.a libpaper.a /home/clerk/dev/android/lib/libz.a /home/clerk/dev/android/lib/libkpathsea.a -lm
 
 objects = yandytex.o itex.o openinou.o subroute.o local.o \
 	tex0.o tex1.o tex2.o tex3.o tex4.o \
 	tex5.o tex6.o tex7.o tex8.o tex9.o \
-	pool.o md5.o utils.o dpx.o
+	pool.o utils.o dpx.o
 
 headers = yandytex.h texd.h coerce.h macros.h memory.h
 
@@ -71,9 +71,6 @@ tex9.o: tex9.c $(headers)
 
 pool.o: pool.c $(headers)
 	$(CC) $(CFLAGS) pool.c
-
-md5.o: libmd5/md5.c $(headers)
-	$(CC) $(CFLAGS) libmd5/md5.c
 
 utils.o: utils.c $(headers)
 	$(CC) $(CFLAGS) utils.c

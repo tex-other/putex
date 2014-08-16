@@ -146,10 +146,7 @@ void pdf_ship_out (pointer p)
     pdf_doc_set_creator("TeX");
     pdf_files_init();
     pdf_init_device(0.000015202, 2, 0);
-    // 0.000015259 1/65535
-    // 0.000152018
     pdf_open_document(pdf_file_name, 0, 595.0, 842.0, 0, 0, (1 << 4));
-    //pdf_open_document(pdf_file_name, 0, 595.0 * 65535, 842.0 * 65535, 0, 0, (1 << 4));
     spc_exec_at_begin_document();
   }
 

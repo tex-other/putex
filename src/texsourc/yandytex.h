@@ -835,7 +835,6 @@ extern void prompt_input (const char * s);
 extern void synch_h (void);
 extern void synch_v (void);
 extern void set_cur_lang (void);
-extern char * md5_file (FILE * in_file);
 extern void str_room (int val);
 extern void tail_append_ (pointer val);
 #define tail_append(a) tail_append_((pointer) a)
