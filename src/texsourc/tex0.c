@@ -1373,7 +1373,7 @@ void flush_list_(pointer p)
   }
 }
 /* sec 0125 */
-pointer get_node_(integer s)
+pointer get_node (integer s)
 {
   pointer p;
   pointer q;
@@ -1494,7 +1494,7 @@ found:
   return r; 
 } 
 /* sec 0130 */
-void free_node_(pointer p, halfword s)
+void free_node (pointer p, halfword s)
 { 
   pointer q;
 

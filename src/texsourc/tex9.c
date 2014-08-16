@@ -19,6 +19,42 @@
 
 #include "yandytex.h"
 
+extern void pdf_init_fontmaps(void);
+extern void pdf_close_fontmaps(void);
+
+extern void pdf_doc_set_creator(const char * creator);
+
+// primitive \pdfminorversion
+extern void pdf_set_version(unsigned version);
+// pdfobj.c
+extern void pdf_set_compression(int level);
+extern void pdf_files_init(void);
+extern void pdf_files_close(void);
+
+extern void pdf_init_device(double dvi2pts, int precision, int black_and_white);
+extern void pdf_close_device(void);
+
+extern void pdf_open_document(const char *filename,
+  int do_encryption,
+  double media_width, double media_height,
+  double annot_grow_amount, int bookmark_open_depth,
+  int check_gotos);
+extern void pdf_close_document(void);
+extern void pdf_doc_begin_page(double scale, double x_origin, double y_origin);
+extern void pdf_doc_end_page(void);
+extern int spc_exec_at_begin_document(void);
+extern int spc_exec_at_end_document(void);
+extern int spc_exec_at_begin_page(void);
+extern int spc_exec_at_end_page(void);
+
+typedef signed long spt_t;
+extern int  pdf_dev_locate_font(const char *font_name, spt_t ptsize);
+extern void pdf_dev_set_rule(spt_t xpos, spt_t ypos, spt_t width, spt_t height);
+extern void pdf_dev_set_string(spt_t xpos, spt_t ypos,
+  const void *instr_ptr, int instr_len,
+  spt_t width,
+  int   font_id, int ctype);
+
 /* sec 1284 */
 void give_err_help (void)
 {
@@ -246,7 +282,68 @@ void close_files_and_terminate (void)
       }
   }
 #endif
+///*
+  {
+    spc_exec_at_end_document();
+    pdf_close_document();
+    pdf_close_device();
+    pdf_files_close();
+    pdf_close_fontmaps();
 
+    if (total_pages == 0)
+      print_nl("No pages of output.");
+    else
+    {
+      if (total_pages >= 65536)
+      {
+        sprintf(log_line, "\nWARNING: page count (dvi_t) in DVI file will be %lld not %lld\n",
+          (total_pages % 65536), total_pages);
+
+        if (log_opened)
+          fputs(log_line, log_file);
+
+        show_line(log_line, 1);
+      }
+
+      print_nl("Output written on ");
+
+      if (full_file_name_flag && pdf_file_name != NULL)
+        prints(pdf_file_name);
+      else
+        slow_print(output_file_name);
+
+      prints(" (");
+      print_int(total_pages);
+      prints(" page");
+
+      if (total_pages != 1)
+        print_char('s');
+
+      prints(", ");
+      print_int(pdf_output_stats());
+      prints(" bytes).");
+      b_close(pdf_file);
+    }
+  }
+//*/
+/*
+{
+  pdf_set_version(5);
+  pdf_set_compression(0);
+  pdf_doc_set_creator("Y&Y TeX 2.3.0");
+  pdf_files_init();
+  pdf_init_device(1, 2, 0);
+  pdf_open_document("test.pdf", 0, 595.0, 842.0, 0, 0, (1 << 4));
+  pdf_doc_begin_page(1, 0, 0);
+  spc_exec_at_begin_page();
+  spc_exec_at_end_page();
+  pdf_doc_end_page();
+  pdf_close_document(); // bytes written
+  pdf_close_device();
+  pdf_files_close();
+}
+*/
+/*
   switch (shipout_flag)
   {
     case out_dvi_flag:
@@ -348,7 +445,7 @@ void close_files_and_terminate (void)
       }
       break;
   }
-
+*/
   if (log_opened)
   {
     wlog_cr();

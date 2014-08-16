@@ -427,21 +427,23 @@ void special_out (pointer p)
 
   selector = old_setting;
   str_room(1);
-
+  graphics_mode();
+  spc_exec_special(str_pool + str_start[str_ptr], cur_length, cur_h * 0.000015202, -cur_v * 0.000015202, 1.0);
+/*
   if (cur_length < 256)
   {
     dvi_out(xxx1);
     dvi_out(cur_length);
   }
   else
-  {
+  {Mag
     dvi_out(xxx4);
     dvi_four(cur_length); 
   } 
 
   for (k = str_start[str_ptr]; k <= pool_ptr - 1; k++)
     dvi_out(str_pool[k]);
-
+*/
   pool_ptr = str_start[str_ptr];
 }
 /* sec 1370 */
@@ -632,20 +634,17 @@ reswitch:
               dvi_out(fnt1);
               dvi_out(f - 1);
             }
+            else
+            {
+              dvi_out(fnt2);
+              dvi_out(((f - 1) >> 8));
+              dvi_out(((f - 1) & 255));
+            }
 #else
             else
             {
               dvi_out(fnt1);
               dvi_out(f - 1);
-            }
-#endif
-
-#ifdef INCREASEFONTS
-            else
-            {
-              dvi_out(fnt2);
-              dvi_out(((f - 1) >> 8));  /* top byte */
-              dvi_out(((f - 1) & 255)); /* bottom byte */
             }
 #endif
 
@@ -1250,13 +1249,21 @@ done:
 }
 void ship_out (pointer p)
 {
+  //printf("init pdf devices.");
+  //dvi_ship_out_(p);
+  //printf("DPX test");
+  pdf_ship_out(p);
+  /*
   switch (shipout_flag)
   {
     case out_dvi_flag:
     case out_xdv_flag:
       dvi_ship_out_(p);
       break;
-  }
+    case out_pdf_flag:
+      //pdf_ship_out(p);
+      break;
+  }*/
 }
 /* sec 0645 */
 void scan_spec (group_code c, boolean three_codes)

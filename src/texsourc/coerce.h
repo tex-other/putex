@@ -85,10 +85,8 @@ void runaway (void);
 pointer get_avail (void);
 void flush_list_(pointer p);
 #define flush_list(p) flush_list_((pointer) (p))
-pointer get_node_(integer s);
-#define get_node(s) get_node_((integer) (s))
-void free_node_(pointer p, halfword s);
-#define free_node(p, s) free_node_((pointer) (p), (halfword) (s))
+pointer get_node (integer s);
+void free_node (pointer p, halfword s);
 void sort_avail (void);
 pointer new_null_box (void);
 pointer new_rule (void);
@@ -254,6 +252,7 @@ void movement (scaled w, eight_bits o);
 void special_out (pointer p);
 void hlist_out (void);
 void vlist_out (void);
+void pdf_ship_out (pointer p);
 void ship_out (pointer p);
 void prune_movements (integer l);
 void write_out (pointer p);

@@ -2864,7 +2864,7 @@ void deslash_all (int ac, char **av)
 
 int main_init (int ac, char ** av)
 {
-  kpse_set_program_name(av[0], NULL);
+  kpse_set_program_name(av[0], "dvipdfmx");
   xputenv("engine", "yandytex");
 
   if (sizeof(memory_word) != sizeof(halfword) * 2)
