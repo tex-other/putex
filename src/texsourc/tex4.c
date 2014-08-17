@@ -18,6 +18,7 @@
 #define EXTERN extern
 
 #include "yandytex.h"
+#include "dpx.h"
 
 /* sec 0581 */
 void char_warning_(internal_font_number f, eight_bits c)
@@ -411,8 +412,8 @@ void special_out (pointer p)
   char old_setting;
   pool_pointer k;
 
-  synch_h();
-  synch_v();
+  pdf_synch_h();//synch_h();
+  pdf_synch_h();//synch_v();
   old_setting = selector;
   selector = new_string;
 
@@ -436,7 +437,7 @@ void special_out (pointer p)
     dvi_out(cur_length);
   }
   else
-  {Mag
+  {
     dvi_out(xxx4);
     dvi_four(cur_length); 
   } 
@@ -1248,10 +1249,7 @@ done:
 #endif
 }
 void ship_out (pointer p)
-{
-  //printf("init pdf devices.");
-  //dvi_ship_out_(p);
-  //printf("DPX test");
+{;
   pdf_ship_out(p);
   /*
   switch (shipout_flag)

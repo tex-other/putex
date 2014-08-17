@@ -20,6 +20,7 @@
 #define EXTERN extern
 
 #include "yandytex.h"
+#include "dpx.h"
 
 void ensure_pdf_open(void)
 {
@@ -36,26 +37,6 @@ void ensure_pdf_open(void)
     output_file_name = b_make_name_string(pdf_file);
   }
 }
-
-extern void pdf_set_version(unsigned version);
-extern void pdf_set_compression(int level);
-extern void pdf_doc_set_creator(const char * creator);
-extern void pdf_files_init(void);
-extern void pdf_init_device(double dvi2pts, int precision, int black_and_white);
-extern void pdf_open_document(const char *filename,
-  int do_encryption,
-  double media_width, double media_height,
-  double annot_grow_amount, int bookmark_open_depth,
-  int check_gotos);
-extern void pdf_doc_begin_page(double scale, double x_origin, double y_origin);
-extern void pdf_doc_end_page(void);
-extern int spc_exec_at_begin_document(void);
-extern int spc_exec_at_end_document(void);
-extern int spc_exec_at_begin_page(void);
-extern int spc_exec_at_end_page(void);
-extern void read_config_file (const char *config);
-extern void pdf_hlist_out (void);
-extern void pdf_vlist_out (void);
 
 void pdf_ship_out (pointer p)
 {
