@@ -17,8 +17,8 @@
 
 #define EXTERN extern
 
-#include "yandytex.h"
 #include "dpx.h"
+#include "yandytex.h"
 
 /* sec 1284 */
 void give_err_help (void)

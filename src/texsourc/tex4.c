@@ -17,8 +17,8 @@
 
 #define EXTERN extern
 
-#include "yandytex.h"
 #include "dpx.h"
+#include "yandytex.h"
 
 /* sec 0581 */
 void char_warning_(internal_font_number f, eight_bits c)

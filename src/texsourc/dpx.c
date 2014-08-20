@@ -19,8 +19,8 @@
 
 #define EXTERN extern
 
-#include "yandytex.h"
 #include "dpx.h"
+#include "yandytex.h"
 
 void ensure_pdf_open(void)
 {
@@ -115,10 +115,6 @@ void pdf_ship_out (pointer p)
 
   if (total_pages == 0)
   {
-    //kpse_init_prog("", 600, NULL, NULL);
-    //kpse_set_program_enabled(kpse_pk_format, true, kpse_src_texmf_cnf);
-    //pdf_font_set_dpi(600);
-    //dpx_delete_old_cache(image_cache_life);
     pdf_set_version(5);
     pdf_set_compression(9);
     pdf_init_fontmaps();

@@ -1,10 +1,13 @@
 extern void pdf_init_fontmaps(void);
 extern void pdf_close_fontmaps(void);
 extern void pdf_doc_set_creator(const char * creator);
+extern void pdf_doc_set_producer(const char * producer);
 extern void pdf_set_version(unsigned version);
 extern void pdf_set_compression(int level);
 extern void pdf_files_init(void);
 extern void pdf_files_close(void);
+extern void graphics_mode (void);
+extern long pdf_output_stats (void);
 extern void pdf_init_device(double dvi2pts, int precision, int black_and_white);
 extern void pdf_close_device(void);
 extern void pdf_open_document(const char *filename,
@@ -22,6 +25,7 @@ extern int spc_exec_at_end_document(void);
 extern int spc_exec_at_begin_page(void);
 extern int spc_exec_at_end_page(void);
 typedef signed long spt_t;
+extern int dvi_locate_font (const char * name, spt_t ptsize);
 extern int spc_exec_special (const char *buffer, long size, double x_user, double y_user, double dpx_mag);
 extern int  pdf_dev_locate_font(const char *font_name, spt_t ptsize);
 extern void pdf_dev_set_rule(spt_t xpos, spt_t ypos, spt_t width, spt_t height);
