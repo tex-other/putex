@@ -452,7 +452,7 @@ fin_rule:
       pdf_synch_h();
       cur_v = base_line + rule_dp;
       pdf_synch_v();
-      pdf_dev_set_rule(dvi_h, dvi_v, rule_wd, rule_ht);
+      pdf_dev_set_rule(dvi_h, -dvi_v, rule_wd, rule_ht);
       cur_v = base_line;
       dvi_h = dvi_h + rule_wd;
     }
@@ -675,7 +675,7 @@ fin_rule:
       {
         pdf_synch_h();
         pdf_synch_v();
-        pdf_dev_set_rule(cur_h, -cur_v, rule_wd, rule_ht);
+        pdf_dev_set_rule(dvi_h, -dvi_v, rule_wd, rule_ht);
       }
 
       goto next_p;
