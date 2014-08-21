@@ -41,3 +41,11 @@ extern void pdf_hlist_out (void);
 extern void pdf_vlist_out (void);
 extern void pdf_synch_h (void);
 extern void pdf_synch_h (void);
+typedef struct pdf_rect
+{
+  double llx, lly, urx, ury;
+} pdf_rect;
+extern void pdf_dev_set_rect (pdf_rect *rect,
+                  spt_t x_user, spt_t y_user,
+                  spt_t width,  spt_t height, spt_t depth);
+extern void pdf_doc_expand_box (const pdf_rect *rect);

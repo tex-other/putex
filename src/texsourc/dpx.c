@@ -196,7 +196,7 @@ int pdf_get_font_id (internal_font_number f)
   char * sbuf = malloc(length(font_name[f]) + 1);
   int id;
   memset(sbuf, 0, length(font_name[f]) + 1);
-  memcpy(sbuf, str_pool + str_start[font_name[f]], length(font_name[f]));    
+  memcpy(sbuf, str_pool + str_start[font_name[f]], length(font_name[f]));
   id = dvi_locate_font(sbuf, font_size[f]);
   free(sbuf);
 
@@ -256,7 +256,7 @@ reswitch:
         if (!font_used[f])
         {
           font_used[f] = true;
-          font_id[f]   = pdf_get_font_id(f); 
+          font_id[f]   = pdf_get_font_id(f);
         }
 
         dvi_f = f;
@@ -265,6 +265,14 @@ reswitch:
       char cbuf[2] = {c, 0};
       pdf_dev_set_string(cur_h, -cur_v, cbuf, 1, char_width(f, char_info(f, c)), font_id[dvi_f], 1);
       cur_h = cur_h + char_width(f, char_info(f, c));
+      {
+        pdf_rect rect;
+        pdf_dev_set_rect(&rect, dvi_h, -dvi_v,
+            char_width (f, char_info(f, c)),
+            char_height(f, c),
+            char_depth (f, c));
+        pdf_doc_expand_box(&rect);
+      }
       p = link(p);
     } while (!(!is_char_node(p)));
 
