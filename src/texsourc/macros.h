@@ -55,6 +55,14 @@ enum
   error_message_issued = 2,
   fatal_error_stop     = 3,
 };
+/* sec 0079 */
+#define help0()     tex_help(0)
+#define help1(...)  tex_help(1, __VA_ARGS__)
+#define help2(...)  tex_help(2, __VA_ARGS__)
+#define help3(...)  tex_help(3, __VA_ARGS__)
+#define help4(...)  tex_help(4, __VA_ARGS__)
+#define help5(...)  tex_help(5, __VA_ARGS__)
+#define help6(...)  tex_help(6, __VA_ARGS__)
 /* sec 0096 */
 #define check_interrupt()     \
 do                            \

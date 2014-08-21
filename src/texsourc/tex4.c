@@ -410,7 +410,7 @@ done:
 void special_out (pointer p)
 {
   char old_setting;
-  pool_pointer k;
+  //pool_pointer k;
 
   pdf_synch_h();//synch_h();
   pdf_synch_h();//synch_v();
@@ -429,7 +429,7 @@ void special_out (pointer p)
   selector = old_setting;
   str_room(1);
   graphics_mode();
-  spc_exec_special(str_pool + str_start[str_ptr], cur_length, cur_h * 0.000015202, -cur_v * 0.000015202, 1.0);
+  spc_exec_special((const char *)str_pool + str_start[str_ptr], cur_length, cur_h * 0.000015202, -cur_v * 0.000015202, 1.0);
 /*
   if (cur_length < 256)
   {

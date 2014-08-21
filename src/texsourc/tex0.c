@@ -162,31 +162,10 @@ void print_ (integer s)
           
         nl = new_line_char;
         new_line_char = -1;
-          
-        /* translate ansi to dos 850 */
+
         if (!show_in_hex && s < 256 && s >= 32)
         {
-          if (show_in_dos && s > 127)
-          {
-            if (wintodos[s - 128] > 0)
-            {
-              print_char(wintodos[s - 128]);
-            }
-            else
-            {
-              j = str_start[s];
-
-              while (j < str_start[s + 1])
-              {
-                print_char(str_pool[j]);
-                incr(j);
-              }
-            }
-          }
-          else
-          {
-            print_char(s);       /* don't translate to hex */
-          }
+          print_char(s);       /* don't translate to hex */
         }
         else
         {                       /* not just a character */

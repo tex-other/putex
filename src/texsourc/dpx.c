@@ -15,8 +15,6 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
    02110-1301 USA.  */
 
-/* Y&Y TeX's DVIPDFMX backend. */
-
 #define EXTERN extern
 
 #include "dpx.h"
@@ -42,8 +40,6 @@ void pdf_ship_out (pointer p)
 {
   integer page_loc;
   char j, k;
-  pool_pointer s;
-  char old_setting;
 
   if (tracing_output > 0)
   {
@@ -82,8 +78,8 @@ void pdf_ship_out (pointer p)
   }
 
   if ((height(p) > max_dimen) || (depth(p) > max_dimen) ||
-    (height(p) + depth(p) + v_offset > max_dimen) ||
-    (width(p) + h_offset > max_dimen))
+      (height(p) + depth(p) + v_offset > max_dimen) ||
+      (width(p) + h_offset > max_dimen))
   {
     print_err("Huge page cannot be shipped out");
     help2("The page just created is more than 18 feet tall or",
@@ -266,7 +262,7 @@ reswitch:
       pdf_dev_set_string(cur_h, -cur_v, cbuf, 1, char_width(f, char_info(f, c)), font_id[dvi_f], 1);
       {
         pdf_rect rect;
-        pdf_dev_set_rect(&rect, cur_h, -dvi_v,
+        pdf_dev_set_rect(&rect, cur_h, -cur_v,
           char_width (f, char_info(f, c)),
           char_height(f, height_depth(char_info(f, c))),
           char_depth (f, height_depth(char_info(f, c))));
@@ -307,12 +303,12 @@ reswitch:
         break;
 
       case rule_node:
-      {
-        rule_ht = height(p);
-        rule_dp = depth(p);
-        rule_wd = width(p);
-        goto fin_rule;
-      }
+        {
+          rule_ht = height(p);
+          rule_dp = depth(p);
+          rule_wd = width(p);
+          goto fin_rule;
+        }
         break;
 
       case whatsit_node:
@@ -320,102 +316,102 @@ reswitch:
         break;
 
       case glue_node:
-      {
-        g = glue_ptr(p);
-        rule_wd = width(g) - cur_g;
-
-        if (g_sign != normal)
         {
-          if (g_sign == stretching)
+          g = glue_ptr(p);
+          rule_wd = width(g) - cur_g;
+
+          if (g_sign != normal)
           {
-            if (stretch_order(g) == g_order)
+            if (g_sign == stretching)
             {
-              cur_glue = cur_glue + stretch(g);
+              if (stretch_order(g) == g_order)
+              {
+                cur_glue = cur_glue + stretch(g);
+                vet_glue(glue_set(this_box) * cur_glue);
+                cur_g = round(glue_temp);
+              }
+            }
+            else if (shrink_order(g) == g_order)
+            {
+              cur_glue = cur_glue - shrink(g);
               vet_glue(glue_set(this_box) * cur_glue);
               cur_g = round(glue_temp);
             }
           }
-          else if (shrink_order(g) == g_order)
+
+          rule_wd = rule_wd + cur_g;
+
+          if (subtype(p) >= a_leaders)
           {
-            cur_glue = cur_glue - shrink(g);
-            vet_glue(glue_set(this_box) * cur_glue);
-            cur_g = round(glue_temp);
-          }
-        }
+            leader_box = leader_ptr(p);
 
-        rule_wd = rule_wd + cur_g;
-
-        if (subtype(p) >= a_leaders)
-        {
-          leader_box = leader_ptr(p);
-
-          if (type(leader_box) == rule_node)
-          {
-            rule_ht = height(leader_box);
-            rule_dp = depth(leader_box);
-            goto fin_rule;
-          }
-
-          leader_wd = width(leader_box);
-
-          if ((leader_wd > 0) && (rule_wd > 0))
-          {
-            rule_wd = rule_wd + 10;
-            edge = cur_h + rule_wd;
-            lx = 0;
-
-            if (subtype(p) == a_leaders)
+            if (type(leader_box) == rule_node)
             {
-              save_h = cur_h;
-              cur_h = left_edge + leader_wd * ((cur_h - left_edge) / leader_wd);
-
-              if (cur_h < save_h)
-                cur_h = cur_h + leader_wd;
+              rule_ht = height(leader_box);
+              rule_dp = depth(leader_box);
+              goto fin_rule;
             }
-            else
-            {
-              lq = rule_wd / leader_wd;
-              lr = rule_wd % leader_wd;
 
-              if (subtype(p) == c_leaders)
-                cur_h = cur_h + (lr / 2);
+            leader_wd = width(leader_box);
+
+            if ((leader_wd > 0) && (rule_wd > 0))
+            {
+              rule_wd = rule_wd + 10;
+              edge = cur_h + rule_wd;
+              lx = 0;
+
+              if (subtype(p) == a_leaders)
+              {
+                save_h = cur_h;
+                cur_h = left_edge + leader_wd * ((cur_h - left_edge) / leader_wd);
+
+                if (cur_h < save_h)
+                  cur_h = cur_h + leader_wd;
+              }
               else
               {
-                lx = (2 * lr + lq + 1) / (2 * lq + 2);
-                cur_h = cur_h + ((lr - (lq - 1)* lx) / 2);
+                lq = rule_wd / leader_wd;
+                lr = rule_wd % leader_wd;
+
+                if (subtype(p) == c_leaders)
+                  cur_h = cur_h + (lr / 2);
+                else
+                {
+                  lx = (2 * lr + lq + 1) / (2 * lq + 2);
+                  cur_h = cur_h + ((lr - (lq - 1)* lx) / 2);
+                }
               }
+
+              while (cur_h + leader_wd <= edge)
+              {
+                cur_v = base_line + shift_amount(leader_box);
+                pdf_synch_v();
+                save_v = dvi_v;
+                pdf_synch_h();
+                save_h = dvi_h;
+                temp_ptr = leader_box;
+                outer_doing_leaders = doing_leaders;
+                doing_leaders = true;
+
+                if (type(leader_box) == vlist_node)
+                  pdf_vlist_out();
+                else
+                  pdf_hlist_out();
+
+                doing_leaders = outer_doing_leaders;
+                dvi_v = save_v;
+                dvi_h = save_h;
+                cur_v = base_line;
+                cur_h = save_h + leader_wd + lx;
+              }
+
+              cur_h = edge - 10;
+              goto next_p;
             }
-
-            while (cur_h + leader_wd <= edge)
-            {
-              cur_v = base_line + shift_amount(leader_box);
-              pdf_synch_v();
-              save_v = dvi_v;
-              pdf_synch_h();
-              save_h = dvi_h;
-              temp_ptr = leader_box;
-              outer_doing_leaders = doing_leaders;
-              doing_leaders = true;
-
-              if (type(leader_box) == vlist_node)
-                pdf_vlist_out();
-              else
-                pdf_hlist_out();
-
-              doing_leaders = outer_doing_leaders;
-              dvi_v = save_v;
-              dvi_h = save_h;
-              cur_v = base_line;
-              cur_h = save_h + leader_wd + lx;
-            }
-
-            cur_h = edge - 10;
-            goto next_p;
           }
-        }
 
-        goto move_past;
-      }
+          goto move_past;
+        }
         break;
 
       case kern_node:
@@ -424,12 +420,12 @@ reswitch:
         break;
 
       case ligature_node:
-      {
-        mem[lig_trick] = mem[lig_char(p)];
-        link(lig_trick) = link(p);
-        p = lig_trick;
-        goto reswitch;
-      }
+        {
+          mem[lig_trick] = mem[lig_char(p)];
+          link(lig_trick) = link(p);
+          p = lig_trick;
+          goto reswitch;
+        }
         break;
 
       default:

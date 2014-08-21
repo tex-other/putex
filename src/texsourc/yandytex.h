@@ -30,10 +30,11 @@
 
 #define block_size 1000 /* block_size for variable length node alloc */
 
-#define min_quarterword 0
 #ifdef INCREASEFONTS
+  #define min_quarterword 0
   #define max_quarterword 65535L
 #else
+  #define min_quarterword 0
   #define max_quarterword 255
 #endif
 
@@ -121,7 +122,6 @@ EXTERN integer max_buf_stack;
   #define max_trie_op       500
 #endif
 
-
 #define dvi_buf_size 16384
 
 #define hash_extra (255 - font_max)
@@ -136,7 +136,7 @@ EXTERN integer max_buf_stack;
 #ifdef INCREASEFONTS
   typedef unsigned short quarterword;
 #else
-  typedef unsigned char quarterword;
+  typedef unsigned char  quarterword;
 #endif
 
 /* typedef unsigned long halfword; NO NO: since mem_min may be < 0 */
@@ -485,7 +485,6 @@ EXTERN dvi_index half_buf;
 EXTERN dvi_index dvi_limit;
 EXTERN dvi_index dvi_ptr;
 EXTERN integer dvi_offset;
-EXTERN integer pdf_offset;
 EXTERN integer dvi_gone;
 EXTERN pointer down_ptr, right_ptr;
 EXTERN scaled dvi_h, dvi_v;
@@ -744,7 +743,6 @@ EXTERN int mem_extra_low;
 EXTERN int new_hyphen_prime;
 EXTERN int missing_characters;
 EXTERN boolean show_in_hex;
-EXTERN boolean show_in_dos;
 EXTERN boolean show_fmt_flag;
 EXTERN boolean show_tfm_flag;
 EXTERN boolean truncate_long_lines;
@@ -784,7 +782,6 @@ extern int current_buf_size;
 extern const char * banner;
 extern const char * application;
 extern const char * yandyversion;
-extern unsigned char wintodos[128];
 extern char log_line[256];
 extern char * dvi_directory;
 extern char * log_directory;
@@ -850,17 +847,7 @@ extern void flush_string (void);
 extern str_number load_pool_strings (integer spare_size);
 extern str_number make_string_pool (const char * s);
 extern void print_plus (int i, const char * s);
-#define help0()     tex_help(0)
-#define help1(...)  tex_help(1, __VA_ARGS__)
-#define help2(...)  tex_help(2, __VA_ARGS__)
-#define help3(...)  tex_help(3, __VA_ARGS__)
-#define help4(...)  tex_help(4, __VA_ARGS__)
-#define help5(...)  tex_help(5, __VA_ARGS__)
-#define help6(...)  tex_help(6, __VA_ARGS__)
-extern char * md5_file_name(const char * file_name);
 extern void fget (void);
 extern str_number get_job_name (str_number job);
 extern void show_font_info (void);
-
-EXTERN int shipout_flag;
 #endif

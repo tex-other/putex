@@ -21,8 +21,8 @@
 
 #include "yandytex.h"
 
-#define dump_ext_length     4
-#define edit_value          tex_edit_value
+#define dump_ext_length 4
+#define edit_value      tex_edit_value
 
 extern char * replacement[];
 int    gargc;

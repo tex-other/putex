@@ -85,28 +85,6 @@ boolean mem_spec_flag     = false;
 boolean format_spec       = false;
 boolean reorder_arg_flag  = true;  /* put command line flags/arguments first */
 
-/* Mapping from Windows ANSI to DOS code page 850 96/Jan/20 */
-
-unsigned char wintodos[128] =
-{
-    0,   0,   0, 159,   0,   0,   0,   0,
-   94,   0,   0,   0,   0,   0,   0,   0,
-    0,  96,  39,   0,   0,   7,   0,   0,
-  126,   0,   0,   0,   0,   0,   0,   0,
-   32, 173, 189, 156, 207, 190, 221,  21,
-    0, 184, 166, 174, 170,  45, 169,   0,
-  248, 241, 253, 252,   0, 230,  20, 250,
-    0, 251, 167, 175, 172, 171, 243, 168,
-  183, 181, 182, 199, 142, 143, 146, 128,
-  212, 144, 210, 211, 222, 214, 215, 216,
-  209, 165, 227, 224, 226, 229, 153, 158,
-  157, 235, 233, 234, 154, 237, 232, 225,
-  133, 160, 131, 198, 132, 134, 145, 135,
-  138, 130, 136, 137, 141, 161, 140, 139,
-  208, 164, 149, 162, 147, 228, 148, 246,
-  155, 151, 163, 150, 129, 236, 231, 152
-};
-
 void show_usage (void)
 {
   printf("\n"
@@ -2189,7 +2167,6 @@ void knuthify (void)
   restrict_to_ascii     = false; /* don't complain non ASCII */
   allow_patterns        = false; /* don't allow pattern redefinition */
   show_in_hex           = true;  /* show character code in hex */
-  show_in_dos           = false; /* redundant with previous */
   show_numeric          = false; /* don't show character code decimal */
   show_missing          = false; /* don't show missing characters */
   civilize_flag         = false; /* don't reorder date fields */
@@ -2293,9 +2270,6 @@ int analyze_flag (int c, char * optarg)
       break;
     case 'w':
       show_in_hex = true;
-      break;
-    case 'j':
-      show_in_dos = true;
       break;
     case 'n':
       restrict_to_ascii = true; /* 0 - 127 1994/Jan/21 */
@@ -2578,7 +2552,6 @@ int read_command_line (int ac, char **av)
 
 int init_commands (int ac, char **av)
 {
-  shipout_flag          = out_dvi_flag;
   is_initex             = false; 
   allow_patterns        = false;
   reset_exceptions      = false;
@@ -2589,7 +2562,6 @@ int init_commands (int ac, char **av)
   verbose_flag          = false;
   restrict_to_ascii     = false;
   show_in_hex           = false; /* default is not to show as hex code ^^ 00/Jun/18 */
-  show_in_dos           = false; /* default is not to translate to DOS 850 */ 
   return_flag           = true;  // hard wired now
   trimeof               = true;  // hard wired now
   deslash               = true;
