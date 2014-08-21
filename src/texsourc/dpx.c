@@ -264,15 +264,15 @@ reswitch:
 
       char cbuf[2] = {c, 0};
       pdf_dev_set_string(cur_h, -cur_v, cbuf, 1, char_width(f, char_info(f, c)), font_id[dvi_f], 1);
-      cur_h = cur_h + char_width(f, char_info(f, c));
       {
         pdf_rect rect;
-        pdf_dev_set_rect(&rect, dvi_h, -dvi_v,
-            char_width (f, char_info(f, c)),
-            char_height(f, c),
-            char_depth (f, c));
+        pdf_dev_set_rect(&rect, cur_h, -dvi_v,
+          char_width (f, char_info(f, c)),
+          char_height(f, height_depth(char_info(f, c))),
+          char_depth (f, height_depth(char_info(f, c))));
         pdf_doc_expand_box(&rect);
       }
+      cur_h = cur_h + char_width(f, char_info(f, c));
       p = link(p);
     } while (!(!is_char_node(p)));
 
