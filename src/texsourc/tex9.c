@@ -249,27 +249,15 @@ void close_files_and_terminate (void)
 #endif
 
   {
-    spc_exec_at_end_document();
-    pdf_close_document();
-    pdf_close_device();
-    pdf_files_close();
-    pdf_close_fontmaps();
-
     if (total_pages == 0)
       print_nl("No pages of output.");
     else
     {
-      if (total_pages >= 65536)
-      {
-        sprintf(log_line, "\nWARNING: page count (dvi_t) in DVI file will be %lld not %lld\n",
-          (total_pages % 65536), total_pages);
-
-        if (log_opened)
-          fputs(log_line, log_file);
-
-        show_line(log_line, 1);
-      }
-
+      spc_exec_at_end_document();
+      pdf_close_document();
+      pdf_close_device();
+      pdf_files_close();
+      pdf_close_fontmaps();
       print_nl("Output written on ");
 
       if (full_file_name_flag && pdf_file_name != NULL)
