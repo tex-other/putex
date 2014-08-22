@@ -119,6 +119,9 @@ void pdf_ship_out (pointer p)
     pdf_doc_set_creator("TeX");
     pdf_files_init();
     pdf_init_device(0.000015202, 2, 0);
+    // TODO: pdfTeX's page width and height.
+    // page_width  = pdf_page_width  != 0 ? <- : width(p)             + 2 * (pdf_h_origin + h_offset);
+    // page_height = pdf_page_height != 0 ? <- : height(p) + depth(p) + 2 * (pdf_v_origin + v_offset);
     pdf_open_document(pdf_file_name, 0, 595.0, 842.0, 0, 0, (1 << 4));
     spc_exec_at_begin_document();
   }
@@ -199,6 +202,19 @@ int pdf_get_font_id (internal_font_number f)
   return id;
 }
 
+void pdf_out_char (internal_font_number f, ASCII_code c)
+{
+  pdf_rect rect;
+  char cbuf[2];
+  cbuf[0] = c;
+  cbuf[1] = 0;
+  pdf_dev_set_string(cur_h, -cur_v, cbuf, 1, char_width(f, char_info(f, c)), font_id[f], 1);
+  pdf_dev_set_rect(&rect, cur_h, -cur_v, char_width(f, char_info(f, c)),
+      char_height(f, height_depth(char_info(f, c))),
+      char_depth(f, height_depth(char_info(f, c))));
+  pdf_doc_expand_box(&rect);
+}
+
 void pdf_hlist_out (void)
 {
   scaled base_line;
@@ -258,16 +274,7 @@ reswitch:
         dvi_f = f;
       }
 
-      char cbuf[2] = {c, 0};
-      pdf_dev_set_string(cur_h, -cur_v, cbuf, 1, char_width(f, char_info(f, c)), font_id[dvi_f], 1);
-      {
-        pdf_rect rect;
-        pdf_dev_set_rect(&rect, cur_h, -cur_v,
-          char_width (f, char_info(f, c)),
-          char_height(f, height_depth(char_info(f, c))),
-          char_depth (f, height_depth(char_info(f, c))));
-        pdf_doc_expand_box(&rect);
-      }
+      pdf_out_char(dvi_f, c);
       cur_h = cur_h + char_width(f, char_info(f, c));
       p = link(p);
     } while (!(!is_char_node(p)));
