@@ -67,7 +67,7 @@ void print_banner (void)
 {
   char dist_ver[256];
   memset(dist_ver, 0, sizeof(dist_ver));
-  sprintf(dist_ver, "%s (%s %s/%s)", banner, application, yandyversion, dist);
+  sprintf(dist_ver, "%s (%s %s)", banner, application, yandyversion);
   prints(dist_ver);
 }
 
@@ -159,8 +159,8 @@ void stamp_it (char * s)
 
   strcpy(date, compiledate);
   scivilize(date);
-  sprintf(s, "%s %s (compiled time: %s %s with %s)",
-    application, yandyversion, date, compiletime, compiler);
+  sprintf(s, "%s %s (compiled time: %s %s with %s/%s)",
+    application, yandyversion, date, compiletime, dist, compiler);
   s += strlen(s);
 }
 
