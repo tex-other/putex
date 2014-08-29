@@ -1,6 +1,4 @@
-/* Copyright 1992 Karl Berry
-   Copyright 2007 TeX Users Group
-   Copyright 2014 Clerk Ma
+/* Copyright 2014 Clerk Ma
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
