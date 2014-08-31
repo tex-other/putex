@@ -739,35 +739,3 @@ int do_undump (char *p, int item_size, int nitems, FILE *in_file)
 
   return 0;
 }
-
-#ifdef FUNNY_CORE_DUMP
-
-void funny_core_dump (void)
-{
-  int pid, w;
-  union wait status;
-
-  switch (pid = vfork ())
-  {
-    case -1:
-      perrormod ("vfork");
-      exit (-1);
-
-    case 0:
-       (void) signal (SIGQUIT, SIG_DFL);
-       (void) kill (getpid (), SIGQUIT);
-       (void) write (2, "how did we get here?\n", 21);
-       exit (1);
-
-    default:
-      while ((w = wait (&status)) != pid && w != -1)
-        ;
-
-      if (status.w_coredump)
-        exit (0);
-
-      (void) write (2, "attempt to dump core failed\n", 28);
-      exit (1);
-  }
-}
-#endif /* FUNNY_CORE_DUMP */

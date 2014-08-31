@@ -31,10 +31,6 @@
 
 extern int shorten_file_name;
 
-#ifdef FUNNY_CORE_DUMP
-  extern void funny_core_dump(void);
-#endif
-
 #ifdef BUILDNAMEDIRECT
 char * xconcat (char * buffer, char * s1, char * s2)
 {

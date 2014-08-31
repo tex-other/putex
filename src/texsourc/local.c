@@ -18,6 +18,13 @@
    02110-1301 USA.
 */
 
+#if   defined (__ANDROID__)
+  #define malloc_usable_size dlmalloc_usable_size
+#elif defined (__APPLE__)
+  #include <malloc/malloc.h>
+  #define malloc_usable_size malloc_size
+#endif
+
 #define EXTERN extern
 
 #include "yandytex.h"
@@ -29,12 +36,6 @@
   #define REALLOC ourrealloc
 #else
   #define REALLOC realloc
-#endif
-
-#if   defined (__ANDROID__)
-  #define malloc_usable_size dlmalloc_usable_size
-#elif defined (__APPLE__)
-  #define malloc_usable_size malloc_size
 #endif
 
 #if   defined (__clang__)
@@ -2891,7 +2892,11 @@ int main_init (int ac, char ** av)
   return 0;
 }
 
+#ifdef __APPLE__
+#undef CLK_TCK
+#endif
 #define CLK_TCK CLOCKS_PER_SEC
+
 
 void show_inter_val (clock_t inter_val)
 {
