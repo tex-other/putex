@@ -1879,6 +1879,7 @@ boolean load_fmt_file (void)
   return true;
 
 bad_fmt:
+  wake_up_terminal();
   puts("(Fatal format file error; I'm stymied)");
 
   return false;
