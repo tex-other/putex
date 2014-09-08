@@ -84,7 +84,7 @@ void initialize (void)
     xord[chr(i)] = invalid_code;
 
 #ifdef JOKE
-  for (i = 128; i <= 255 ; i++)
+  for (i = 128; i <= 255; i++)
     xord[xchr[i]] = i;
 
   for (i = 0; i <= 126; i++)
